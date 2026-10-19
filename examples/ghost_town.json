@@ -1,0 +1,542 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+  "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RDDDDDDDDDDDDDDDDDDDddddddDDDDDDDDDDDDDDDDDDDR",
+  "RXXXXXXXXXXXXXXXXXXXddddddXXXXXXXXXXXXXXXXXXXR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR",
+  "RWWWWWWWWWWWWWWWWWfbddddddbfWWWWWWWWWWWWWWWWWR"
+ ],
+ "legend": {
+  "W": {
+   "wall": "boards",
+   "h": 1.0,
+   "facade": {
+    "style": "western",
+    "storeys": [
+     1,
+     2
+    ],
+    "widths": [
+     2,
+     4
+    ],
+    "lit": 0.3,
+    "seed": 8
+   }
+  },
+  "X": {
+   "wall": "boards",
+   "h": 2.2,
+   "top": "planks"
+  },
+  "f": {
+   "floor": "planks"
+  },
+  "b": {
+   "wall": "planks",
+   "h": 0.15,
+   "top": "planks",
+   "ceil": "planks"
+  },
+  "d": {
+   "floor": "desert_wash"
+  },
+  "D": {
+   "floor": "desert_wash"
+  },
+  "R": {
+   "wall": [
+    "sandstone",
+    "sandstone",
+    "sandstone_pale",
+    "sandstone",
+    "sandstone"
+   ],
+   "h": 6.0,
+   "top": "desert_wash"
+  }
+ },
+ "camera": {
+  "x": 22.9,
+  "y": 70.0,
+  "angle": 270,
+  "fov": 64,
+  "height": 0.5
+ },
+ "title": "Ghost town - a frontier main street",
+ "sky": "day",
+ "ceiling_height": 1.3,
+ "ambient": [
+  0.42,
+  0.38,
+  0.34
+ ],
+ "fog": {
+  "color": [
+   0.86,
+   0.76,
+   0.62
+  ],
+  "density": 0.008
+ },
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 120,
+   "elevation": 62,
+   "intensity": 1.1
+  }
+ ],
+ "sprites": [
+  {
+   "id": "cowboy",
+   "x": 22.9,
+   "y": 63.0,
+   "type": "cowboy",
+   "facing": 90
+  },
+  {
+   "x": 21.2,
+   "y": 67.6,
+   "type": "tumbleweed"
+  },
+  {
+   "x": 24.4,
+   "y": 52.2,
+   "type": "tumbleweed",
+   "scale": 0.36
+  },
+  {
+   "x": 20.6,
+   "y": 63.0,
+   "type": "water_trough",
+   "angle": 90
+  },
+  {
+   "x": 19.5,
+   "y": 65.5,
+   "type": "barrel"
+  },
+  {
+   "x": 19.6,
+   "y": 66.2,
+   "type": "crate"
+  },
+  {
+   "x": 26.5,
+   "y": 46.6,
+   "type": "barrel"
+  },
+  {
+   "x": 26.5,
+   "y": 47.3,
+   "type": "barrel",
+   "flip": true
+  },
+  {
+   "x": 19.6,
+   "y": 42.0,
+   "type": "wagon_wheel"
+  },
+  {
+   "x": 26.4,
+   "y": 61.0,
+   "type": "crate"
+  },
+  {
+   "x": 24.8,
+   "y": 41.0,
+   "type": "cart",
+   "flip": true
+  },
+  {
+   "x": 22.0,
+   "y": 49.0,
+   "type": "cow_skull"
+  },
+  {
+   "x": 17.0,
+   "y": 24.0,
+   "type": "windpump"
+  },
+  {
+   "x": 18.4,
+   "y": 25.2,
+   "type": "water_trough"
+  },
+  {
+   "x": 30.0,
+   "y": 22.0,
+   "type": "saguaro"
+  },
+  {
+   "x": 34.5,
+   "y": 27.5,
+   "type": "saguaro",
+   "scale": 2.4
+  },
+  {
+   "x": 10.0,
+   "y": 18.0,
+   "type": "saguaro",
+   "scale": 3.6,
+   "flip": true
+  },
+  {
+   "x": 27.5,
+   "y": 30.0,
+   "type": "prickly_pear"
+  },
+  {
+   "x": 13.5,
+   "y": 28.5,
+   "type": "prickly_pear",
+   "flip": true
+  },
+  {
+   "x": 38.0,
+   "y": 14.0,
+   "type": "saguaro"
+  },
+  {
+   "x": 6.0,
+   "y": 30.0,
+   "type": "saguaro",
+   "scale": 2.8
+  },
+  {
+   "id": "barkeep",
+   "x": 20.3,
+   "y": 38.4,
+   "type": "shopkeeper",
+   "facing": 0
+  }
+ ],
+ "scatter": [
+  {
+   "of": "desert",
+   "on": "D",
+   "density": 0.2,
+   "sizes": {
+    "tiny": 4,
+    "small": 2
+   },
+   "seed": 9
+  }
+ ],
+ "shots": [
+  {
+   "x": 22.9,
+   "y": 70.0,
+   "angle": 270,
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "High noon",
+     "at": "top",
+     "box": true
+    }
+   ],
+   "post": [
+    {
+     "fx": "grade",
+     "tint": [
+      1.06,
+      1.0,
+      0.9
+     ],
+     "saturation": 1.05
+    }
+   ]
+  },
+  {
+   "x": 23.6,
+   "y": 41.6,
+   "look_at": [
+    19.0,
+    39.0,
+    1.0
+   ],
+   "fov": 62,
+   "overlays": [
+    {
+     "type": "bubble",
+     "anchor": "barkeep",
+     "name": "The Barkeep",
+     "text": "Whiskey's warm and the piano's dead. Come in anyway."
+    }
+   ]
+  },
+  {
+   "x": 22.9,
+   "y": 66.0,
+   "angle": 270,
+   "extra_sprites": [
+    {
+     "id": "ghost",
+     "x": 22.6,
+     "y": 56.0,
+     "type": "ghost",
+     "facing": 90
+    },
+    {
+     "x": 19.55,
+     "y": 40.0,
+     "type": "lantern",
+     "z": 0.95
+    },
+    {
+     "x": 19.55,
+     "y": 49.5,
+     "type": "lantern",
+     "z": 0.95
+    },
+    {
+     "x": 19.55,
+     "y": 59.0,
+     "type": "lantern",
+     "z": 0.95
+    },
+    {
+     "x": 26.45,
+     "y": 44.5,
+     "type": "lantern",
+     "z": 0.95
+    },
+    {
+     "x": 26.45,
+     "y": 54.0,
+     "type": "lantern",
+     "z": 0.95
+    },
+    {
+     "x": 26.45,
+     "y": 64.0,
+     "type": "lantern",
+     "z": 0.95
+    }
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Ghost town",
+     "at": "top",
+     "box": true
+    }
+   ],
+   "overrides": {
+    "sky": "sunset",
+    "ambient": [
+     0.16,
+     0.13,
+     0.18
+    ],
+    "lights": [
+     {
+      "type": "sun",
+      "azimuth": 250,
+      "elevation": 4,
+      "intensity": 0.45
+     },
+     {
+      "x": 19.55,
+      "y": 40.0,
+      "z": 1.0,
+      "radius": 3.4,
+      "color": [
+       1.0,
+       0.62,
+       0.3
+      ],
+      "intensity": 1.2
+     },
+     {
+      "x": 19.55,
+      "y": 49.5,
+      "z": 1.0,
+      "radius": 3.4,
+      "color": [
+       1.0,
+       0.62,
+       0.3
+      ],
+      "intensity": 1.2
+     },
+     {
+      "x": 19.55,
+      "y": 59.0,
+      "z": 1.0,
+      "radius": 3.4,
+      "color": [
+       1.0,
+       0.62,
+       0.3
+      ],
+      "intensity": 1.2
+     },
+     {
+      "x": 26.45,
+      "y": 44.5,
+      "z": 1.0,
+      "radius": 3.4,
+      "color": [
+       1.0,
+       0.62,
+       0.3
+      ],
+      "intensity": 1.2
+     },
+     {
+      "x": 26.45,
+      "y": 54.0,
+      "z": 1.0,
+      "radius": 3.4,
+      "color": [
+       1.0,
+       0.62,
+       0.3
+      ],
+      "intensity": 1.2
+     },
+     {
+      "x": 26.45,
+      "y": 64.0,
+      "z": 1.0,
+      "radius": 3.4,
+      "color": [
+       1.0,
+       0.62,
+       0.3
+      ],
+      "intensity": 1.2
+     }
+    ],
+    "fog": {
+     "color": [
+      0.32,
+      0.2,
+      0.22
+     ],
+     "density": 0.02,
+     "glow": 0.8
+    }
+   },
+   "post": [
+    {
+     "fx": "bloom",
+     "threshold": 0.55,
+     "strength": 0.6,
+     "radius": 5
+    }
+   ]
+  },
+  {
+   "x": 23.0,
+   "y": 33.0,
+   "look_at": [
+    17.0,
+    24.0,
+    2.4
+   ],
+   "fov": 66,
+   "overrides": {
+    "sky": "sunset",
+    "ambient": [
+     0.3,
+     0.22,
+     0.24
+    ],
+    "lights": [
+     {
+      "type": "sun",
+      "azimuth": 236,
+      "elevation": 6,
+      "intensity": 0.8
+     }
+    ],
+    "fog": {
+     "color": [
+      0.6,
+      0.38,
+      0.32
+     ],
+     "density": 0.012
+    }
+   }
+  }
+ ],
+ "contact_shadows": 0.5,
+ "supersample": 2
+}

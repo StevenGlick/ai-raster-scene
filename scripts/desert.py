@@ -1,7 +1,8 @@
 """The desert, drawn with the pixel-art toolkit (scripts/pixelart.py): a red-rock canyon - walls of
 layered sandstone, the swirled rock of a slot canyon, the dry wash on its floor, the stone rooms
 of an old cliff dwelling with their T-shaped doors - and the things that live in it: saguaro and
-prickly pear, tumbleweed, a bleached skull, a painted pot.
+prickly pear, tumbleweed, a bleached skull, a painted pot - and for the frontier town beside it, a
+windpump, a water trough and a wagon wheel.
 
 As in the other toolkit modules, every shape is stamped into a height field, lit from the upper
 left and snapped onto hue-shifted ramps; every texture tiles.
@@ -28,6 +29,9 @@ DRY = ramp('#a8865a', dark=0.4, light=1.18)
 BONE = ramp('#e8e0cc', dark=0.45, light=1.06)
 POT_WHITE = ramp('#e4dccb', dark=0.5, light=1.05)
 POT_BLACK = ramp('#2a2622', dark=0.6, light=1.6)
+GALV = ramp('#9aa0a4', dark=0.35, light=1.25, cool=0.12)
+GREY_WOOD = ramp('#8a8072', dark=0.32, light=1.25)
+TROUGH_WATER = ramp('#3a5a5e', dark=0.4, light=1.5)
 
 
 # ---------------------------------------------------------------- textures
@@ -285,6 +289,76 @@ def spr_clay_pot():
     return _prop(cv, [POT_WHITE, POT_BLACK], relief=1.0, cavity=0.35, shadow=0.45)
 
 
+def spr_windpump():
+    """A windpump on a lattice tower: four legs splaying out to the ground, cross-braced, a
+    platform at the top and on it the wheel of galvanised blades with its tail vane, the pump rod
+    running down the middle to the well head."""
+    w, h = 72, 168
+    cx = 36
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    top = 46
+    legs = [((cx - 4, top), (cx - 22, h - 1)), ((cx + 4, top), (cx + 22, h - 1)),
+            ((cx - 2, top), (cx - 11, h - 1)), ((cx + 2, top), (cx + 11, h - 1))]
+    for (x0, y0), (x1, y1) in legs:
+        cv.stroke([(x0, y0), (x1, y1)], 1.8, z=0.2, dome=0.6, mat=1)
+    for k in range(5):                                         # cross-bracing between the legs
+        ya, yb = top + 4 + k * 23, top + 4 + (k + 1) * 23
+        if yb > h - 2:
+            break
+        wa = 4 + 18 * (ya - top) / (h - top)
+        wb = 4 + 18 * (yb - top) / (h - top)
+        cv.stroke([(cx - wa, ya), (cx + wb, yb)], 0.8, z=0.4, dome=0.3, mat=1)
+        cv.stroke([(cx + wa, ya), (cx - wb, yb)], 0.8, z=0.4, dome=0.3, mat=1)
+        cv.stroke([(cx - wb, yb), (cx + wb, yb)], 0.9, z=0.4, dome=0.3, mat=1)
+    cv.stroke([(cx, top), (cx, h - 6)], 0.8, z=0.6, dome=0.3, mat=0)          # the pump rod
+    cv.box(cx - 8, top - 2, 16, 3, z=0.6, top=0.6, bevel=1, mat=1)             # the platform
+    cv.polygon([(cx + 3, top - 16), (cx + 34, top - 22), (cx + 34, top - 8), (cx + 3, top - 13)], z=0.8, top=0.5,
+               bevel=1.0, mat=0, tone=-0.04)                                   # the tail vane
+    wy, R = top - 17, 17
+    for k in range(18):                                        # the wheel: blades fanned round a hub
+        a = k * 2 * np.pi / 18
+        b = a + 0.12
+        cv.polygon([(cx - 4 + np.cos(a) * 5, wy + np.sin(a) * 5), (cx - 4 + np.cos(a) * R, wy + np.sin(a) * R),
+                    (cx - 4 + np.cos(b) * R, wy + np.sin(b) * R), (cx - 4 + np.cos(b) * 5, wy + np.sin(b) * 5)],
+                   z=1.2, top=0.4, bevel=0.6, mat=0, tone=0.03 * (k % 2))
+    a = np.linspace(0, 2 * np.pi, 40)
+    cv.stroke(list(zip(cx - 4 + np.cos(a) * R, wy + np.sin(a) * R)), 0.9, z=1.6, dome=0.3, mat=0)
+    cv.stroke(list(zip(cx - 4 + np.cos(a) * 9, wy + np.sin(a) * 9)), 0.8, z=1.6, dome=0.3, mat=0)
+    cv.ellipse(cx - 4, wy, 2.6, 2.6, z=1.8, dome=0.8, mat=1)
+    return _prop(cv, [GALV, GREY_WOOD], relief=1.0, cavity=0.35, shadow=0.4)
+
+
+def spr_water_trough():
+    """A water trough of grey boards on short legs, water standing in it to near the brim."""
+    w, h = 48, 20
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (5, 41):
+        cv.stroke([(x, 10), (x, h)], 2.4, z=0.0, dome=0.6, mat=0, tone=-0.06)
+    cv.polygon([(2, 3), (46, 3), (44, 15), (4, 15)], z=0.3, top=1.0, bevel=1.5, mat=0)
+    for y in (7, 11):
+        cv.stroke([(3, y), (45, y)], 0.6, dome=0.3, mode='carve')
+    cv.ellipse(24, 3.8, 21, 1.5, z=1.4, dome=0.1, mat=1)
+    cv.stroke([(2, 3), (46, 3)], 1.2, z=1.5, dome=0.4, mat=0, tone=0.06)
+    return _prop(cv, [GREY_WOOD, TROUGH_WATER], relief=1.0, cavity=0.4, shadow=0.45)
+
+
+def spr_wagon_wheel():
+    """A wagon wheel leaning against a wall: an iron-shod rim, twelve spokes, a heavy hub."""
+    w, h = 40, 40
+    cx, cy, R = 20, 20, 18
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    a = np.linspace(0, 2 * np.pi, 48)
+    cv.stroke(list(zip(cx + np.cos(a) * R, cy + np.sin(a) * R)), 3.0, z=0.4, dome=0.8, mat=0)
+    cv.stroke(list(zip(cx + np.cos(a) * (R + 1.2), cy + np.sin(a) * (R + 1.2))), 1.0, z=0.8, dome=0.4, mat=1)
+    for k in range(12):
+        b = k * np.pi / 6
+        cv.stroke([(cx + np.cos(b) * 3, cy + np.sin(b) * 3), (cx + np.cos(b) * (R - 1), cy + np.sin(b) * (R - 1))],
+                  1.6, z=0.3, dome=0.6, taper=(1.2, 0.8), mat=0)
+    cv.ellipse(cx, cy, 4.0, 4.0, z=0.8, dome=1.0, mat=0, tone=-0.04)
+    cv.ellipse(cx, cy, 1.6, 1.6, z=1.6, dome=0.6, mat=1)
+    return _prop(cv, [GREY_WOOD, ramp('#3a3a3e', dark=0.45, light=1.7)], relief=1.0, cavity=0.4, shadow=0.45)
+
+
 TEXTURES = {
     'sandstone': lambda n: (tex_sandstone(n), None),
     'sandstone_pale': lambda n: (tex_sandstone(n, pale=True), None),
@@ -296,6 +370,8 @@ TEXTURES = {
 TEXTURE_NOISE = {'sandstone': 1.4, 'sandstone_pale': 1.4, 'slot_rock': 0.6, 'desert_wash': 1.6, 'pueblo_stone': 1.2,
                  'pueblo_door': 0.8}
 SPRITES = {'saguaro': spr_saguaro, 'prickly_pear': spr_prickly_pear, 'tumbleweed': spr_tumbleweed,
-           'cow_skull': spr_cow_skull, 'clay_pot': spr_clay_pot}
-SPRITE_HEIGHT = {'saguaro': 3.2, 'prickly_pear': 0.6, 'tumbleweed': 0.45, 'cow_skull': 0.2, 'clay_pot': 0.34}
+           'cow_skull': spr_cow_skull, 'clay_pot': spr_clay_pot, 'windpump': spr_windpump,
+           'water_trough': spr_water_trough, 'wagon_wheel': spr_wagon_wheel}
+SPRITE_HEIGHT = {'saguaro': 3.2, 'prickly_pear': 0.6, 'tumbleweed': 0.45, 'cow_skull': 0.2, 'clay_pot': 0.34,
+                 'windpump': 4.2, 'water_trough': 0.4, 'wagon_wheel': 0.55}
 DEBRIS_SETS = {'desert': ['rocks', 'rocks', 'rocks', 'prickly_pear', 'tumbleweed', 'cow_skull', 'dry_tuft']}

@@ -933,7 +933,24 @@ def check_glass_facades():
         assert img.shape[0] == round(roof_['scale'] * 64) and img[..., 3].mean() > 0.3
     assert kinds == {'gable', 'eaves'}, kinds
     assert not any('"layer":"roof"' in sp['type'] for sp in R.World(street).fringe_sprites)
-    print('ok glass pass (tint, blur), facades (buildings, layers, corners, side walls, reveals, neon, timber roofs)')
+
+    # 9. a frontier street: a false front in the wall's plane on every building, signs that do not
+    # repeat along the street and include a saloon, and the porch out at the boardwalk's edge
+    town = dict(street, ceiling_height=1.3, legend=dict(street['legend'], B={'wall': 'boards', 'h': 1, 'facade': {
+        'style': 'western', 'widths': [2, 3], 'storeys': [1, 2], 'seed': 4}}))
+    sprites = R.World(town).fringe_sprites
+    walls = [sp for sp in sprites if '"layer":"wall"' in sp['type']]
+    fronts = [sp for sp in sprites if '"layer":"roof"' in sp['type']]
+    porches = [sp for sp in sprites if '"layer":"porch"' in sp['type']]
+    assert len(fronts) == len(porches) == len(walls) >= 6
+    names = [json.loads(sp['type'][7:])['name'] for sp in fronts]
+    assert 'SALOON' in names and len(set(names)) == len(names), names
+    for wall_, front, porch in zip(walls, fronts, porches):
+        assert json.loads(front['type'][7:])['kind'] == 'front' and front['z'] == wall_['scale']
+        assert abs(front['length'] - wall_['length']) < 1e-6, 'a false front is flush with the building'
+        assert porch['y'] > wall_['y'] + 0.8 and abs(porch['scale'] - 1.3) < 1e-6, 'the porch at the walk edge'
+    print('ok glass pass (tint, blur), facades (buildings, layers, corners, side walls, reveals, neon, timber roofs, '
+          'western fronts)')
 
 
 def check_docs():

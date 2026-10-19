@@ -435,6 +435,10 @@ class World:
             bounds.append(hi)
             spans = list(zip(bounds[:-1], bounds[1:]))
             heights, looks = [], []
+            western = any(buildings.FACADE_STYLES[st].get('western')
+                          for st in (spec['style'] if isinstance(spec['style'], list) else [spec['style']]))
+            names = buildings.street_names(np.random.default_rng([seed, 'nswe'.index(d), line + 1000, a + 1000, 5]),
+                                           len(spans)) if western else None
             for i, (s0, s1) in enumerate(spans):
                 # a corner building takes its look from the corner, the same from either face
                 if (i == 0 and kl == 'convex') or (i == len(spans) - 1 and kh == 'convex'):
@@ -450,6 +454,9 @@ class World:
                               seed=int(rng.integers(1, 2 ** 31)), lit=float(spec.get('lit', 0.35)))
                 if 'shops' in spec:
                     params['shops'] = float(spec['shops'])
+                corner = (i == 0 and kl == 'convex') or (i == len(spans) - 1 and kh == 'convex')
+                if names and not corner:                  # a corner building's sign comes from its look, both faces
+                    params['name'] = names[i]
                 for layer, frac in self.FACADE_LAYERS:
                     fields = dict(type=buildings.layer_name(layer, **params), scale=float(storeys),
                                   flip=d in 'ne')                 # read left to right from the street
@@ -464,12 +471,13 @@ class World:
                 roof = buildings.roof_of(spec['style'], look, s1 - s0)
                 if roof:
                     kind, cover, rh, chim = roof
-                    over = 0.1
-                    off = depth + 0.05 if kind == 'gable' else depth - min(0.4, depth * 0.45)
+                    over = 0.0 if kind == 'front' else 0.1
+                    off = depth + 0.05 if kind in ('gable', 'front') else depth - min(0.4, depth * 0.45)
                     out.append(self._card(d, line, s0 - over, s1 + over, off + 0.03 * (i % 2),
                                           type=buildings.layer_name('roof', style=spec['style'], look=look, kind=kind,
                                                                     cover=cover, chimney=chim,
-                                                                    w=round(s1 - s0 + 2 * over, 3), h=rh),
+                                                                    w=round(s1 - s0 + 2 * over, 3), h=rh,
+                                                                    **({'name': params['name']} if 'name' in params else {})),
                                           scale=rh, z=float(storeys), flip=d in 'ne'))
                 # a style with blade signs hangs one or two out over the street, square to the front
                 look_style = buildings.FACADE_STYLES[buildings.pick_style(spec['style'], look)]
@@ -485,6 +493,14 @@ class World:
                                     'x': at if d in 'ns' else mid, 'y': mid if d in 'ns' else at,
                                     'angle': 90.0 if d in 'ns' else 0.0, 'planes': 1, 'length': out_len,
                                     'scale': tall, 'z': z, 'shadow': False, 'flip': d in 'nw'})
+                # a western building's covered boardwalk: posts and fascia out at the edge of the walk,
+                # as tall as the scene's ceiling, which roofs the walk's cells
+                walk = float(spec.get('porch', look_style.get('porch', 0)))
+                if walk > 0:
+                    out.append(self._card(d, line, s0 + 0.01, s1 - 0.01, depth + walk - 0.05,
+                                          type=buildings.layer_name('porch', style=spec['style'], look=look,
+                                                                    w=round(s1 - s0 - 0.02, 3), h=round(self.ceil_h, 3)),
+                                          scale=self.ceil_h, flip=d in 'ne'))
             # a taller building shows its side wall above a lower neighbour
             for i in range(len(spans) - 1):
                 h0, h1 = heights[i], heights[i + 1]

@@ -9,7 +9,9 @@ of a building's walls, each building on the street with its own images:
     glass   the panes, drawn last by the glass pass: what is behind them, tinted and blurred
     drape   curtains, blinds, shutters or net curtains, a different choice in every window
     room    the rooms behind: lit or dark, a lamp, a picture, a shelf, now and then a figure
-    roof    (village styles) the roof over the street: a gable end, or the slope of thatch or tiles
+    roof    (village styles) the roof over the street: a gable end, or the slope of thatch or tiles;
+            (western) a false front standing up over the roofline with the building's painted sign
+    porch   (western) the posts and fascia of a covered boardwalk, out at the edge of the walk
 
 so a window has a reveal, the glass sits in it, the curtains hang behind the glass and the room
 is further back still, and as the camera moves the layers slide against each other. The wall is
@@ -27,6 +29,7 @@ from functools import lru_cache
 import numpy as np
 
 from pixelart import Canvas, ramp, smooth_noise
+from pixelfont import PixelFont
 
 PX = 64            # pixels per world unit, as the textures; a storey is a unit tall
 
@@ -78,7 +81,41 @@ FACADE_STYLES = {
         'timber_colors': ['#2a1e16', '#33261c', '#3e3026', '#4e4236', '#5c544a'],
         'roofs': ['thatch', 'thatch', 'tile'], 'gables': 0.5,
     },
+    'western': {
+        'description': 'a frontier main street: clapboard in faded paint, peeling to grey wood, false fronts standing '
+                       'up over the roofline with painted signs, sash windows in plain casings, a saloon with batwing '
+                       'doors, and the posts and fascia of a covered boardwalk out in front',
+        'colors': ['#8a4e3a', '#b8945e', '#7e8a70', '#9a948a', '#cfc4a8', '#7a6450', '#a8a08a', '#6e5a48'],
+        'mortar': '#2e261e', 'trim': '#d4c8aa',
+        'frames': ['#e2dac6', '#3e3226', '#5a2a22', '#2e3a2e'],
+        'doors': ['#4a3424', '#5a2a1a', '#3a3a2e', '#6a4a30'],
+        'bay': (1.0, 1.4), 'shops': 0.5, 'courses': False, 'clapboard': True, 'western': True,
+        'fronts': ['flat', 'flat', 'stepped', 'curved', 'pediment'], 'porch': 1.0,
+    },
 }
+
+# the signs of a frontier town, and which of them keep a shop window
+WESTERN_NAMES = ['SALOON', 'HOTEL', 'BANK', 'GENERAL STORE', 'DRY GOODS', 'SHERIFF', 'BARBER', 'LIVERY',
+                 'ASSAY OFFICE', 'UNDERTAKER', 'GUNSMITH', 'POST OFFICE', 'BLACKSMITH', 'MERCANTILE']
+WESTERN_SHOPS = {'GENERAL STORE', 'DRY GOODS', 'BARBER', 'GUNSMITH', 'MERCANTILE'}
+_FONT = PixelFont()
+
+
+def western_name(look):
+    """The sign over a western building, chosen by its look (so its false front and its plan agree)."""
+    return WESTERN_NAMES[int(np.random.default_rng([int(look) % (2 ** 31), 47]).integers(len(WESTERN_NAMES)))]
+
+
+def street_names(rng, n):
+    """Signs for a run of n western buildings: no name twice before every name has been used, and
+    a saloon among the first buildings of every street."""
+    names = []
+    while len(names) < n:
+        names += [WESTERN_NAMES[i] for i in rng.permutation(len(WESTERN_NAMES))]
+    names = names[:n]
+    if 'SALOON' not in names:
+        names[int(rng.integers(0, n))] = 'SALOON'
+    return names
 
 # the colours neon comes in: pink, cyan, gold, violet, green
 NEON = [(1.0, 0.24, 0.66), (0.25, 0.95, 1.0), (1.0, 0.8, 0.25), (0.66, 0.42, 1.0), (0.35, 1.0, 0.5)]
@@ -109,12 +146,16 @@ def layer_image(name):
         return _blade(p)
     if layer == 'roof':
         return _roof(p)
+    if layer == 'porch':
+        return _porch(p)
     plan = _plan(json.dumps(p, sort_keys=True))
     return {'wall': _wall, 'frame': _frame, 'glass': _glass, 'drape': _drape, 'room': _room}[layer](plan)
 
 
 def _surface(S):
-    """What a style's walls are made of: 'brick', 'plaster' or 'concrete'."""
+    """What a style's walls are made of: 'brick', 'plaster', 'concrete' or 'clapboard'."""
+    if S.get('clapboard'):
+        return 'clapboard'
     return 'concrete' if S.get('concrete') else 'plaster' if S.get('plaster') else 'brick'
 
 
@@ -140,6 +181,10 @@ def _plan(key):
     frame = _rgb(S['frames'][look.integers(len(S['frames']))])
     door_col = _rgb(S['doors'][look.integers(len(S['doors']))])
     shop = look.random() < float(p.get('shops', S['shops']))
+    name = (p.get('name') or western_name(p.get('look', 0))) if S.get('western') else None
+    if name:
+        shop = name in WESTERN_SHOPS
+    batwing = name == 'SALOON'
     lit = float(p.get('lit', 0.35))
     bays = max(1, int(round(W / PX / look.uniform(*S['bay']))))
     bay_w = W / bays
@@ -152,7 +197,7 @@ def _plan(key):
         for b in range(bays):
             cx = int((b + 0.5) * bay_w)
             if st == 0 and b == door_bay:
-                dw, dh = int(PX * 0.42), int(PX * 0.8)
+                dw, dh = int(PX * (0.58 if batwing else 0.42)), int(PX * 0.8)
                 door = (cx - dw // 2, floor_y - dh, cx + dw // 2, floor_y)
                 continue
             if st == 0 and shop:
@@ -196,7 +241,7 @@ def _plan(key):
             signs.append({'box': (x - 6, top, x + 6, H - int(PX * 1.1)), 'color': NEON[int(rng.integers(len(NEON)))]})
     return {'W': W, 'H': H, 'storeys': storeys, 'color': color, 'frame': frame, 'door_col': door_col,
             'mortar': _rgb(S['mortar']), 'trim': _rgb(S['trim']), 'windows': windows, 'door': door,
-            'signs': signs, 'acs': acs, 'bays': bays, 'bay_w': bay_w,
+            'signs': signs, 'acs': acs, 'bays': bays, 'bay_w': bay_w, 'name': name, 'batwing': batwing,
             'style': S, 'seed': int(p.get('seed', 0)), 'look': int(p.get('look', 0))}
 
 
@@ -206,9 +251,23 @@ def _plan(key):
 def _brick_tile(kind='brick'):
     """A seamless 64x64 tile of neutral brick, plaster or concrete, lit from the upper left: a
     building's colour is multiplied in, so every building shades the same way whatever its colour."""
-    rng = np.random.default_rng({'brick': 17, 'plaster': 18, 'concrete': 19}[kind])
+    rng = np.random.default_rng({'brick': 17, 'plaster': 18, 'concrete': 19, 'clapboard': 20}[kind])
     cv = Canvas(PX, ground=-0.6, mat=1)
-    if kind == 'concrete':                          # cast panels, four to a unit, with form-tie holes
+    if kind == 'clapboard':                         # lapped boards, eight to a storey, each thicker at its foot
+        cv.mat[:] = 0
+        for row in range(8):
+            y0 = row * 8
+            cv.z[y0:y0 + 8] = (0.15 + 0.85 * np.arange(8) / 7.0)[:, None].astype(np.float32)
+            cv.tone[y0:y0 + 8] = rng.normal(0, 0.045)
+            cv.mat[y0 + 7] = 1                      # the shadow line under the board's foot
+            for _ in range(int(rng.integers(0, 2))):  # a butt joint
+                x = int(rng.integers(0, PX))
+                cv.z[y0:y0 + 7, x] -= 0.35
+        for _ in range(46):                         # grain
+            x, y = rng.random() * PX, rng.random() * PX
+            cv.stroke([(x, y), (x + rng.uniform(6, 16), y + rng.normal(0, 0.2))], 0.5, dome=0.15, mode='carve')
+        cv.noise(0.05, cells=12, rng=rng)
+    elif kind == 'concrete':                          # cast panels, four to a unit, with form-tie holes
         for j in range(2):
             for i in range(2):
                 cv.box(i * 32 + 0.5, j * 32 + 0.5, 31, 31, z=0.0, top=0.6, bevel=1.0, mat=0, tone=rng.normal(0, 0.05))
@@ -265,9 +324,17 @@ def _wall(plan):
     trim = plan['trim']
     alpha = np.ones((H, W), np.float32)
     timber = S.get('timber')
+    western = S.get('western')
     if timber:                                                            # oak framing; the roof is a layer of its own
         _timbers(rgb, plan)
         _shade_rect(rgb, (0, H - 7, W, H), np.array((0.42, 0.4, 0.37), np.float32))     # a stone plinth
+    elif western:                                                         # the false front carries the cornice
+        prng = np.random.default_rng(plan['seed'] + 31)
+        peel = (smooth_noise(W, H, max(3, W // 10), prng, wrap=False) > 0.74) & ~m        # paint gone to grey wood
+        rgb[peel] = (np.array((0.5, 0.47, 0.42), np.float32)[None, :] * (0.45 + 0.95 * L[peel][:, None]))
+        low = np.clip((np.arange(H) - (H - 20)) / 20.0, 0, 1)[:, None, None]             # dust kicked up the foot
+        rgb *= 1 - 0.18 * low
+        _shade_rect(rgb, (0, H - 6, W, H), np.array((0.3, 0.24, 0.18), np.float32))       # the sill board
     else:
         if S.get('courses'):
             for st in range(1, plan['storeys']):
@@ -282,6 +349,12 @@ def _wall(plan):
     for wnd in plan['windows']:
         x0, y0, x1, y1 = wnd['box']
         if timber and not wnd.get('shop'):                              # the rails are its sill and head
+            alpha[y0:y1, x0:x1] = 0
+            continue
+        if western and not wnd.get('shop'):                             # a plain board casing, a cap over it
+            _shade_rect(rgb, (x0 - 3, y0 - 3, x1 + 3, y1 + 3), trim, bevel=1)
+            _shade_rect(rgb, (x0 - 5, y0 - 7, x1 + 5, y0 - 3), trim * 1.05, bevel=1)
+            rgb[y0 - 3:y0 - 1, x0 - 5:x1 + 5] *= 0.55                  # its shadow
             alpha[y0:y1, x0:x1] = 0
             continue
         if wnd.get('shop') and wnd.get('neon') is not None:            # a neon sign over the shop
@@ -346,6 +419,8 @@ def _frame(plan):
         rgba[y1 - 1:y1, x0:x1, :3] *= 0.6
     if plan['door'] and timber:
         _plank_door(rgba, plan['door'], plan['door_col'])
+    elif plan['door'] and plan.get('batwing'):
+        _batwing(rgba, plan['door'], plan['door_col'])
     elif plan['door']:
         x0, y0, x1, y1 = plan['door']
         dc = plan['door_col']
@@ -369,7 +444,7 @@ def _glass(plan):
     rgba = np.zeros((H, W, 4), np.float32)
     rng = np.random.default_rng(plan['seed'] + 11)
     boxes = [w['box'] for w in plan['windows']]
-    if plan['door'] and not plan['style'].get('timber'):         # a plank door has no light in it
+    if plan['door'] and not plan['style'].get('timber') and not plan.get('batwing'):   # plank and batwing: no light
         x0, y0, x1, y1 = plan['door']
         boxes.append((x0 + 3, y0 + 3, x1 - 3, y0 + int((y1 - y0) * 0.3) - 1))
     for x0, y0, x1, y1 in boxes:
@@ -483,6 +558,18 @@ def _room(plan):
                 for b in range(X0 + 4, X1 - 4, 4):
                     if rng.random() < 0.8:
                         rgb[y - 3:y, b:b + 2] = (np.array([0.6, 0.3, 0.2]) + rng.random(3) * 0.4) * (1 if wnd['lit'] else 0.2)
+    if plan.get('batwing') and plan['door']:                       # the saloon, lamp-lit behind its doors
+        x0, y0, x1, y1 = plan['door']
+        X0, X1, Y0 = max(0, x0 - 14), min(W, x1 + 14), max(0, y0 - 10)
+        yy, xx = np.mgrid[0:y1 - Y0, 0:X1 - X0]
+        glow = np.clip(1.1 - np.hypot((xx - (X1 - X0) / 2) / ((X1 - X0) * 0.6), (yy - (y1 - Y0) * 0.3) / ((y1 - Y0) * 0.9)),
+                       0.2, 1)
+        rgb[Y0:y1, X0:X1] = np.array([1.0, 0.68, 0.36], np.float32) * (0.3 + 0.7 * glow[..., None])
+        em[Y0:y1, X0:X1] = 0.5 + 0.5 * glow
+        for fx in (X0 + 6, X1 - 9):                                 # two drinkers at the bar
+            rgb[y0 + 8:y0 + 13, fx:fx + 4] = (0.08, 0.05, 0.04)
+            rgb[y0 + 13:y1, fx - 1:fx + 5] = (0.08, 0.05, 0.04)
+            em[y0 + 8:y1, fx - 1:fx + 5] *= 0.3
     return np.concatenate([rgb, np.ones((H, W, 1), np.float32)], -1), em
 
 
@@ -614,6 +701,10 @@ def roof_of(style, look, w):
     units, chimney) - a gable end facing the street on a narrow house, or the slope of a roof
     running along it, of thatch or tiles - or None for a style without roofs."""
     S = FACADE_STYLES[pick_style(style, look)]
+    if S.get('western'):                                     # a false front: (kind 'front', its shape, height)
+        r = np.random.default_rng([int(look) % (2 ** 31), 46])
+        shape = str(S['fronts'][int(r.integers(len(S['fronts'])))])
+        return 'front', shape, round(float(r.uniform(0.55, 0.9)), 3), False
     if not S.get('roofs'):
         return None
     r = np.random.default_rng([int(look) % (2 ** 31), 43])
@@ -706,6 +797,8 @@ def _roof(p):
     W, H = max(8, int(round(float(p['w']) * PX))), max(8, int(round(float(p['h']) * PX)))
     rng = np.random.default_rng([int(p.get('look', 0)) % (2 ** 31), 44])
     kind, cover, chimney = p['kind'], p['cover'], p.get('chimney')
+    if kind == 'front':
+        return _false_front(dict(p, name=p.get('name') or western_name(p.get('look', 0))), S)
     rgb = np.zeros((H, W, 3), np.float32)
     alpha = np.zeros((H, W), np.float32)
     if kind == 'eaves':
@@ -754,6 +847,121 @@ def _roof(p):
         lip = (off > half) & (off <= half + (7 if cover == 'thatch' else 3))   # the covering showing over them
         rgb[lip] = cover_c * (0.8 + 0.3 * rng.random((int(lip.sum()), 1)))
         alpha[lip] = 1
+    return np.concatenate([np.clip(rgb, 0, 1), alpha[..., None]], -1).astype(np.float32), np.zeros((H, W), np.float32)
+
+
+def _batwing(rgba, box, dc):
+    """A saloon's batwing doors: two louvred half doors hung in the middle of the opening, the
+    dark room showing above and below them."""
+    x0, y0, x1, y1 = box
+    h = y1 - y0
+    top, bot = y0 + int(h * 0.26), y0 + int(h * 0.74)
+    mid = (x0 + x1) // 2
+    for a, b in ((x0 + 1, mid - 1), (mid + 1, x1 - 1)):
+        rgba[top:bot, a:b, :3] = dc
+        rgba[top:bot, a:b, 3] = 1.0
+        for yy in range(top + 3, bot - 3, 3):                          # louvres
+            rgba[yy, a + 2:b - 2, :3] = dc * 0.55
+        rgba[top:top + 2, a:b, :3] = np.clip(dc * 1.5, 0, 1)           # the top rail
+        rgba[bot - 2:bot, a:b, :3] = dc * 0.6
+        rgba[top:bot, a:a + 1, :3] = np.clip(dc * 1.4, 0, 1)
+    for a, b in ((x0 + 1, x0 + 4), (x1 - 4, x1 - 1)):                 # the corners clipped round
+        rgba[top:top + 2, a:b, 3] = 0
+
+
+def _porch(p):
+    """The front of a covered boardwalk, out at the edge of the walk: a post at each end and one
+    every metre and a half, each with a knee brace under the fascia board, and on some buildings a
+    hitching rail between two posts. The roof itself is the boardwalk's ceiling."""
+    S = FACADE_STYLES[pick_style(p.get('style', 'western'), p.get('look', 0))]
+    W, H = max(8, int(round(float(p['w']) * PX))), max(16, int(round(float(p['h']) * PX)))
+    rng = np.random.default_rng([int(p.get('look', 0)) % (2 ** 31), 49])
+    wood = np.array((0.46, 0.38, 0.3), np.float32) * float(rng.uniform(0.85, 1.1))
+    rgba = np.zeros((H, W, 4), np.float32)
+
+    def bar(x0, y0, x1, y1, c):
+        x0, y0, x1, y1 = (int(round(v)) for v in (x0, y0, x1, y1))
+        rgba[max(0, y0):y1, max(0, x0):x1, :3] = c
+        rgba[max(0, y0):y1, max(0, x0):x1, 3] = 1.0
+    n = max(1, int(round(W / (PX * 1.5))))
+    xs = [3 + (W - 9) * k / n for k in range(n + 1)]
+    for x in xs:                                                       # posts, lit on the left
+        bar(x, 9, x + 5, H, wood)
+        bar(x, 9, x + 1, H, np.clip(wood * 1.4, 0, 1))
+        bar(x + 4, 9, x + 5, H, wood * 0.6)
+        for side in (-1, 1):                                           # knee braces
+            for k in range(7):
+                bx = x + 2 + side * (3 + k)
+                if 0 <= bx < W:
+                    bar(bx, 9 + k, bx + 1, 11 + k, wood * 0.85)
+    bar(0, 0, W, 9, wood * 1.05)                                       # the fascia
+    bar(0, 0, W, 1, np.clip(wood * 1.5, 0, 1))
+    bar(0, 8, W, 9, wood * 0.55)
+    if rng.random() < 0.6 and len(xs) >= 2:                            # a hitching rail
+        k = int(rng.integers(len(xs) - 1))
+        y = H - int(PX * 0.42)
+        bar(xs[k] + 5, y, xs[k + 1], y + 3, wood * 0.9)
+        bar(xs[k] + 5, y, xs[k + 1], y + 1, np.clip(wood * 1.3, 0, 1))
+    return rgba, np.zeros((H, W), np.float32)
+
+
+def _false_front(p, S):
+    """A false front: the building's clapboard carried up past the roofline into a square, stepped,
+    curved or pedimented top with a cornice along it, and the building's sign painted on a board."""
+    W, H = max(8, int(round(float(p['w']) * PX))), max(8, int(round(float(p['h']) * PX)))
+    look = np.random.default_rng(int(p.get('look', 0)) % (2 ** 32))                # the building's own paint
+    color = _rgb(S['colors'][look.integers(len(S['colors']))]) * float(look.uniform(0.88, 1.12))
+    lum, mortar = _brick_tile('clapboard')
+    off = (H % PX)
+    L = lum[np.ix_((np.arange(H) + PX - off) % PX, np.arange(W) % PX)]
+    m = mortar[np.ix_((np.arange(H) + PX - off) % PX, np.arange(W) % PX)]
+    rgb = np.where(m[..., None], _rgb(S['mortar'])[None, None, :] * (0.55 + 0.6 * L[..., None]),
+                   color[None, None, :] * (0.45 + 0.95 * L[..., None]))
+    rng = np.random.default_rng([int(p.get('look', 0)) % (2 ** 31), 48])
+    peel = (smooth_noise(W, H, max(3, W // 10), rng, wrap=False) > 0.76) & ~m
+    rgb[peel] = (np.array((0.5, 0.47, 0.42), np.float32)[None, :] * (0.45 + 0.95 * L[peel][:, None]))
+    xs = np.arange(W) + 0.5
+    shape = p['cover']
+    if shape == 'stepped':                                              # a raised middle
+        top = np.where(np.abs(xs - W / 2) < W * 0.28, 0.0, H * 0.32)
+    elif shape == 'curved':                                             # a curved parapet
+        u = np.clip(np.abs(xs - W / 2) / (W / 2), 0, 1)
+        top = H * 0.36 * (1 - np.cos(np.pi * np.clip(u * 1.25, 0, 1))) / 2
+    elif shape == 'pediment':                                           # a low triangle over a square front
+        u = np.abs(xs - W / 2) / (W / 2)
+        top = H * 0.3 * u
+    else:
+        top = np.zeros(W)
+    yy = np.arange(H)[:, None]
+    alpha = (yy >= top[None, :]).astype(np.float32)
+    trim = _rgb(S['trim'])
+    cap = (yy >= top[None, :]) & (yy < top[None, :] + 5)              # a cornice following the top
+    rgb[cap] = trim * 0.95
+    rgb[(yy >= top[None, :]) & (yy < top[None, :] + 1)] = np.clip(trim * 1.15, 0, 1)
+    under = (yy >= top[None, :] + 5) & (yy < top[None, :] + 7)
+    rgb[under] *= 0.5
+    name = p.get('name') or ''
+    if name:                                                            # the sign
+        bw_max = W - 18
+        scale = 2 if _FONT.getlength(name) * 2 + 14 <= bw_max else 1
+        mask = np.asarray(_FONT.render_mask(name, scale), np.float32) / 255.0
+        th, tw = mask.shape
+        bw, bh = min(bw_max, tw + 14), th + 8
+        bx0 = (W - bw) // 2
+        by0 = min(H - bh - 4, max(int(top.max()) + 8, H - bh - 8))
+        light_paint = color.mean() > 0.5
+        board = np.array((0.24, 0.17, 0.12), np.float32) if light_paint else np.array((0.88, 0.84, 0.72), np.float32)
+        ink = np.array((0.92, 0.86, 0.66), np.float32) if light_paint else np.array((0.45, 0.1, 0.08), np.float32)
+        if bx0 >= 0 and by0 >= 0:
+            _shade_rect(rgb, (bx0 - 2, by0 - 2, bx0 + bw + 2, by0 + bh + 2), trim * 0.8, bevel=1)
+            rgb[by0:by0 + bh, bx0:bx0 + bw] = board
+            tx0, ty0 = bx0 + (bw - tw) // 2, by0 + (bh - th) // 2 + 1
+            sub = rgb[ty0:ty0 + th, tx0:tx0 + tw]
+            hh, ww = sub.shape[:2]
+            ink_m = mask[:hh, :ww] > 0.5
+            sub[ink_m] = ink
+            fade = (smooth_noise(ww, hh, 4, rng, wrap=False) > 0.8) & (rng.random((hh, ww)) < 0.35)   # a little flaking
+            sub[ink_m & fade] = board * 1.1
     return np.concatenate([np.clip(rgb, 0, 1), alpha[..., None]], -1).astype(np.float32), np.zeros((H, W), np.float32)
 
 
