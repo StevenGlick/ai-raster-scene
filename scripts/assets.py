@@ -2633,6 +2633,16 @@ NO_CONTACT_SHADOW |= sea.NO_CONTACT_SHADOW
 FRINGES.update(sea.FRINGES)
 DEBRIS_SETS.update(sea.DEBRIS_SETS)
 
+# ---------------------------------------------------------------- the haunted house
+# Cobwebs, a candelabra, a family portrait, a grandfather clock, a balustrade and bats, drawn
+# with the toolkit in haunted.py.
+import haunted  # noqa: E402
+
+SPRITES.update(haunted.SPRITES)
+SPRITE_HEIGHT.update(haunted.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(haunted.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= haunted.NO_CONTACT_SHADOW
+
 _dcache = {}
 
 
