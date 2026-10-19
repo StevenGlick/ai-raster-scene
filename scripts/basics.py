@@ -1,6 +1,7 @@
 """Everyday materials and props redrawn with the pixel-art toolkit (scripts/pixelart.py): grass,
 a clipped hedge, dirt, gravel, wood panelling, water, slates, cobbles, ceiling beams, raw rock (dry,
-wet, a floor of it, under snow), ice, sand, plaster and ivy on brick; a barrel,
+wet, a floor of it, under snow), ice, sand, plaster and ivy on brick, velvet curtains, acoustic
+ceiling tiles, corrugated iron and dark marble; a barrel,
 a broken one, a crate, a fountain, a rowboat, a bench, flowers, a statue, an iron bed, a
 wheelchair, a table, a chest, glowing mushrooms, a buoy and an alien egg. These are the oldest
 things in the set - the first versions were noise and flat shapes - and they turn up in a great
@@ -476,6 +477,101 @@ def tex_ivy(name):
                       ramp('#2e5a2a', dark=0.3, light=1.3), ramp('#5a8a34', dark=0.3)], cavity=0.45, shadow=0.55)
 
 
+def tex_curtain(name, base='#6a1a1e'):
+    """Heavy velvet curtains: folds of every width hanging straight down, each a rounded column
+    lit on its left with a sheen along its crest, deep shadow where two folds meet."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=-1.2, mat=0)
+    x = 0.0
+    while x < T:                                                     # folds of varying width, tiling across
+        wd = float(rng.uniform(9, 17))
+        if x + wd > T - 6:
+            wd = T - x
+        xs = np.arange(int(np.floor(x)), int(np.ceil(x + wd)))
+        u = (xs + 0.5 - x) / wd
+        prof = np.sqrt(np.clip(1 - (2 * u - 1) ** 2, 0, 1)) * rng.uniform(0.8, 1.2)
+        cv.z[:, xs % T] = np.maximum(cv.z[:, xs % T], (prof[None, :] * 1.6 - 0.2).astype(np.float32))
+        cv.tone[:, xs % T] = rng.normal(0, 0.04)
+        x += wd
+    sway = smooth_noise(T, T, 2, rng, cells_y=2)                     # a little sway in the folds' light
+    cv.tone += (0.06 * (sway - 0.5)).astype(np.float32)
+    return _tile(cv, [ramp(base, dark=0.3, light=1.5, warm=0.1)], dither=0.3, relief=1.8, cavity=0.45, shadow=0.5,
+                 ambient=0.18, diffuse=0.55)
+
+
+def tex_acoustic(name):
+    """Acoustic ceiling tiles, four to a unit: each a shallow bevelled square in a grid of thin
+    metal runners, the face pitted with fissures and pin-holes, a tea-coloured water stain or two."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=-0.4, mat=1)
+    for j in range(2):
+        for i in range(2):
+            cv.box(i * 32 + 1, j * 32 + 1, 30, 30, z=0.0, top=0.6, bevel=2.2, mat=0, tone=rng.normal(0, 0.025))
+    pits = rng.random((T, T)) < 0.09
+    cv.z[pits & (cv.mat == 0)] -= 0.25
+    for _ in range(40):                                              # fissures
+        x, y = rng.random() * T, rng.random() * T
+        a = rng.uniform(0, np.pi)
+        cv.stroke([(x, y), (x + np.cos(a) * 2.5, y + np.sin(a) * 2.5)], 0.5, dome=0.2, mode='carve')
+    for _ in range(int(rng.integers(1, 3))):                         # water stains, a ring and a pale middle
+        x, y, r = rng.random() * T, rng.random() * T, rng.uniform(4, 9)
+        yy, xx = np.mgrid[0:T, 0:T]
+        d = np.hypot((xx - x + T / 2) % T - T / 2, (yy - y + T / 2) % T - T / 2)
+        cv.tone -= (0.1 * np.exp(-((d - r) / 1.2) ** 2) + 0.03 * (d < r)).astype(np.float32)
+    return _tile(cv, [ramp('#bcb8a8', dark=0.45, light=1.1), ramp('#7a7a74', dark=0.4, light=1.3)], dither=0.25,
+                 cavity=0.35, shadow=0.35)
+
+
+def tex_corrugated(name):
+    """Corrugated iron: galvanised sheets in rounded ribs, two sheets to a unit lapped at the seam,
+    nail heads in rows along the purlins, rust breaking out round the nails and running down in
+    streaks, a sheet here and there gone rustier than its neighbour."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=0.0, mat=0)
+    xs = np.arange(T)
+    rib = 0.6 * np.sin(2 * np.pi * xs / 6.4)                         # ten ribs a sheet
+    cv.z[:] = rib[None, :].astype(np.float32)
+    for x0 in (0, 32):                                               # the lap where one sheet lies on the next
+        cv.z[:, (x0 + np.arange(2)) % T] += 0.5
+        cv.z[:, (x0 + 2) % T] -= 0.5
+    rust_sheet = [rng.random() < 0.5, rng.random() < 0.5]
+    for y in (6, 38):                                                # nail rows on the purlins
+        for x in np.arange(3.2, T, 6.4):
+            cv.ellipse(x, y, 0.8, 0.8, z=0.9, dome=0.3, mat=2)
+            if rng.random() < 0.6:                                   # a rust streak running down from it
+                L = rng.uniform(6, 20)
+                cv.tone[int(y):int(y + L), int(x) % T] -= 0.12
+                cv.mat[int(y) + 1:int(y + L * 0.6), int(x) % T] = 1
+    blotch = (smooth_noise(T, T, 9, rng) > 0.74) & (rng.random((T, T)) < 0.7)
+    for k in range(2):
+        if rust_sheet[k]:
+            blotch[:, k * 32:(k + 1) * 32] |= (smooth_noise(T, T, 12, rng)[:, k * 32:(k + 1) * 32] > 0.7)
+    cv.mat[blotch & (cv.mat == 0)] = 1
+    cv.tone += (0.1 * (smooth_noise(T, T, 3, rng) - 0.5)).astype(np.float32)          # the zinc dulled unevenly
+    return _tile(cv, [ramp('#7a7c78', dark=0.35, light=1.3, cool=0.08), ramp('#7a4a30', dark=0.35, light=1.25),
+                      ramp('#4a4a48', dark=0.45, light=1.5)], dither=0.3, relief=1.5, cavity=0.3, shadow=0.35,
+                 ambient=0.2, diffuse=0.55)
+
+
+def tex_marble_dark(name):
+    """Dark polished marble in square slabs: grey-black stone with long, soft, continuous veins of
+    white and grey drifting across it, a fine joint between the slabs."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=-0.3, mat=1)
+    for j in range(2):
+        for i in range(2):
+            cv.box(i * 32 + 0.5, j * 32 + 0.5, 31, 31, z=0.0, top=0.3, bevel=1.0, mat=0)
+    yy, xx = np.mgrid[0:T, 0:T].astype(np.float32)
+    warp = smooth_noise(T, T, 3, rng) * 0.6 + smooth_noise(T, T, 6, rng) * 0.4
+    for k, (fx, fy, wd, strength) in enumerate(((1, 1, 0.012, 0.5), (2, -1, 0.008, 0.32), (1, 2, 0.006, 0.22))):
+        phase = 2 * np.pi * (fx * xx + fy * yy) / T + 7.0 * warp + rng.uniform(0, 2 * np.pi)
+        vein = np.exp(-(np.sin(phase / 2) ** 2) / wd)                 # thin where the sine crosses zero
+        cv.tone += (strength * vein).astype(np.float32)
+    cv.tone += (0.06 * (smooth_noise(T, T, 4, rng) - 0.5)).astype(np.float32)
+    return _tile(cv, [ramp('#3a3836', dark=0.5, light=2.4, cool=0.05), ramp('#1e1c1a', dark=0.5, light=1.6)],
+                 dither=0.3, relief=0.6, cavity=0.2, shadow=0.2, ambient=0.22, diffuse=0.45)
+
+
 # ---------------------------------------------------------------- props
 
 def spr_barrel():
@@ -867,6 +963,12 @@ TEXTURES = {
     'plaster': lambda n: (tex_plaster(n), None),
     'plaster_white': lambda n: (tex_plaster(n, '#d8d4c4', '#6a6050', 0.45), None),
     'ivy': lambda n: (tex_ivy(n), None),
+    'curtain': lambda n: (tex_curtain(n), None),
+    'curtain_black': lambda n: (tex_curtain(n, '#24181c'), None),
+    'acoustic': lambda n: (tex_acoustic(n), None),
+    'ceiling_plaster': lambda n: (tex_plaster(n, '#a8a08a', '#4a4030', 0.3), None),
+    'corrugated': lambda n: (tex_corrugated(n), None),
+    'marble_dark': lambda n: (tex_marble_dark(n), None),
 }
 SPRITES = {'barrel': spr_barrel, 'broken_barrel': spr_broken_barrel, 'crate': spr_crate, 'fountain': spr_fountain,
            'rowboat': spr_rowboat, 'bench': spr_bench, 'flowers': spr_flowers, 'statue': spr_statue,

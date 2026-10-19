@@ -21,7 +21,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 147 | 135 | 12 | 0 | 0 |
+| Textures | 147 | 141 | 6 | 0 | 0 |
 | Props | 202 | 199 | 3 | 0 | 0 |
 | Characters | 27 | 25 | 2 | 0 | 0 |
 | Decals | 24 | 19 | 5 | 0 | 0 |
@@ -39,7 +39,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 45 | 38 | 7 | 0 | 0 |
-| **all** | **593** | **556** | **37** | **0** | **0** |
+| **all** | **593** | **562** | **31** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -76,7 +76,7 @@ Weakest first, and in the order the new scenes need them.
 | `ivy` | good |  | rainy_street | Redrawn with the toolkit in basics.py: red brick with woody stems climbing and branching and clusters of dark leaves, the newest brighter. |
 | `concrete` | good |  | bunker_lab, garden_encounter, gui_lantern, gui_menus, hospital_garden, post_presets, sewer_tunnels, tunnel_encounter, underground_waterway |  |
 | `marble` | good |  | cathedral_ruin, chapel_graveyard, dream_chess, dream_world, gui_themes, gui_trade, library_medium, mansion_library |  |
-| `marble_dark` | polish |  | - | Veins read as dotted lines; make them continuous and softer. |
+| `marble_dark` | good |  | - | Redrawn with the toolkit in basics.py: dark slabs with long, thin, continuous veins of white and grey drifting across them. |
 | `rock` | good |  | castle_keep, coast_lighthouse, crystal_cave, garden_encounter, gui_lantern, gui_menus, hospital_garden, kelp_forest, post_presets, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: masses of every size, each a facet tilted to the light, split by crevices that wander, widen and close; finer cracks, grain. |
 | `rock_wet` | good |  | crystal_cave, gui_lantern, kelp_forest, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: the same rock darker and blue-grey, with glints of water where the faces catch the light. |
 | `snow_rock` | good |  | winter_lake | Redrawn with the toolkit in basics.py: faceted rock with snow lying on the top of every mass, thick on the flats, and drifted in the crevices. |
@@ -102,7 +102,7 @@ Weakest first, and in the order the new scenes need them.
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
 | `iron_door` | good |  | bunker_lab, garden_encounter, ghost_corridor, gui_hud, gui_lantern, gui_menus, hospital_corridor, hospital_garden, post_presets, rainy_street, tunnel_encounter, underground_waterway |  |
-| `corrugated` | polish |  | rainy_street | Rust blotches repeat visibly. |
+| `corrugated` | good |  | rainy_street | Redrawn with the toolkit in basics.py: galvanised sheets in rounded ribs lapped at the seam, nail rows, rust in patches and streaks from the nails. |
 | `rust` | good |  | bunker_lab, rainy_street |  |
 | `pipes` | good |  | bunker_lab, sewer_tunnels |  |
 | `panel` | good |  | bunker_lab, derelict_ship, orbital_hangar, space_station |  |
@@ -177,16 +177,16 @@ Weakest first, and in the order the new scenes need them.
 
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
-| `acoustic` | polish |  | ghost_corridor, gui_hud, hospital_corridor | Flat; a slight bevel per tile. |
-| `ceiling_plaster` | polish |  | gui_themes, gui_trade, library_medium | A hard horizontal band across the middle of the tile. |
+| `acoustic` | good |  | ghost_corridor, gui_hud, hospital_corridor | Redrawn with the toolkit in basics.py: four bevelled tiles a unit in a grid of runners, pitted with fissures and pin-holes, a water stain. |
+| `ceiling_plaster` | good |  | gui_themes, gui_trade, library_medium | Redrawn with the toolkit in basics.py: the plaster render in a darker tone, with no band across it. |
 | `beams` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, mansion_library | Redrawn with the toolkit in basics.py: two oak beams a unit, proud of the limewash: a lit edge, a side in shadow and a soft shadow on the plaster; grain and checks. |
 
 ### Fabric and interior
 
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
-| `curtain` | polish |  | gui_themes, gui_trade, library_medium, mansion_library | Folds are even stripes; vary width and add a hem. |
-| `curtain_black` | polish |  | - | Same as curtain. |
+| `curtain` | good |  | gui_themes, gui_trade, library_medium, mansion_library | Redrawn with the toolkit in basics.py: velvet folds of every width, each a rounded column lit on its left, deep shadow between. |
+| `curtain_black` | good |  | - | Redrawn with the toolkit in basics.py: the same folds in black velvet. |
 | `wallpaper` | good |  | gui_themes, gui_trade, library_medium, mansion_library |  |
 | `wallpaper_green` | good |  | - |  |
 
@@ -908,6 +908,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, polish pass 3b.** Redrawn with the toolkit in `scripts/basics.py`: `curtain`, `curtain_black`, `acoustic`, `ceiling_plaster`, `corrugated`, `marble_dark`.
 - **2026-10-19, polish pass 3.** Redrawn with the toolkit in `scripts/basics.py`: `bed`, `wheelchair`, `table`, `chest`, `glowshroom`, `buoy`, `alien_egg` (its veins glow, so a dark hive still reads as a field of eggs).
 - **2026-10-19, winter woods.** forest.py: `tree_winter` (recursive bare branches with snow along them), `birch_winter`, `bush_snow`, `deer`, `forest_deep_snow` and a `forest_snow` fringe (the green and autumn wood unchanged, hashed); `snow` redrawn. `examples/winter_woods.py` with four gallery shots.
 - **2026-10-19, the ghost town.** A `western` facade style: clapboard false fronts with painted signs (drawn with the pixel font, shuffled along each street), batwing doors on the saloon, and a `porch` layer - posts and fascia out at the edge of a boardwalk whose `ceil` is the porch roof. desert.py: `windpump`, `water_trough`, `wagon_wheel`. `examples/ghost_town.py` with four gallery shots.

@@ -224,17 +224,6 @@ def tex_metal_door(name, c='#4a4e52'):
     return grain(img, rng, 0.06)
 
 
-def tex_corrugated(name, c='#6a6a62'):
-    rng = _rng(name)
-    img = np.zeros((T, T, 3))
-    for x in range(T):
-        img[:, x] = col(c) * (0.7 + 0.35 * np.sin(x * np.pi / 4))
-    rust = np.clip((fbm(T, rng, 4, 4) - 0.55) * 3, 0, 1)
-    img = img * (1 - rust[..., None]) + col('#7a4528') * rust[..., None]
-    img[:, :] *= np.linspace(0.85, 1.0, T)[:, None, None]
-    return grain(np.clip(img, 0, 1), rng, 0.05)
-
-
 def tex_window(name, wall='#8a8578', lit=True, frame='#3a3028', glass_on='#f0c860', glass_off='#1c2228', style='stone'):
     """A facade texture: wall material with a 4-pane window. Returns (rgb, emissive)."""
     base = tex_stone(name + 'w', wall) if style == 'stone' else tex_plaster(name + 'w', wall, '#5a4a38', 0.4)
@@ -283,15 +272,6 @@ def tex_wallpaper(name, c='#4a2a2a', pattern='#6a4030'):
             if abs(abs(dx) + abs(dy) - 5) < 1 or (abs(dx) < 1 and abs(dy) < 1):
                 img[y, x] = col(pattern)
     img[-10:] = tex_wood_panel(name + 'wb', '#3a2416')[-10:]
-    return grain(img, rng, 0.04)
-
-
-def tex_curtain(name, c='#6a1a1a'):
-    rng = _rng(name)
-    img = np.zeros((T, T, 3))
-    for x in range(T):
-        img[:, x] = col(c) * (0.55 + 0.45 * (0.5 + 0.5 * np.sin(x * np.pi / 8)))
-    img *= np.linspace(1.0, 0.75, T)[:, None, None]
     return grain(img, rng, 0.04)
 
 
@@ -359,15 +339,6 @@ def tex_marble(name, c='#d8d4cc'):
     img[0, :] *= 0.6; img[:, 0] *= 0.6
     img[32, :] *= 0.6; img[:, 32] *= 0.6
     return img
-
-
-def tex_acoustic(name):
-    rng = _rng(name)
-    img = tex_tile(name + 'a', '#b8b4a4', '#6a6858', 32)
-    holes = (np.add.outer(np.arange(T), np.arange(T)) % 4 == 0) & (np.arange(T)[:, None] % 4 == 0)
-    img[holes] *= 0.7
-    stain = np.clip((fbm(T, rng, 4, 4) - 0.6) * 3, 0, 1)
-    return img * (1 - 0.4 * stain[..., None])
 
 
 # ------------------------------------------------- woodland, weather and industrial
@@ -1017,12 +988,9 @@ TEXTURES = {
     'boards': _plain(tex_planks, '#5a4430', False),
     'concrete': _plain(tex_concrete),
     'iron_door': _plain(tex_metal_door),
-    'corrugated': _plain(tex_corrugated),
     'bookshelf': _plain(tex_bookshelf),
     'wallpaper': _plain(tex_wallpaper),
     'wallpaper_green': _plain(tex_wallpaper, '#26402e', '#4a6a40'),
-    'curtain': _plain(tex_curtain),
-    'curtain_black': _plain(tex_curtain, '#1a1418'),
     'window_lit': _em(tex_window),
     'window_dark': _em(tex_window, lit=False),
     'window_lit_plaster': _em(tex_window, '#c9bb98', style='plaster'),
@@ -1042,11 +1010,8 @@ TEXTURES = {
     'carpet': _plain(tex_carpet),
     'carpet_green': _plain(tex_carpet, '#1e3a2a', '#9a8a4a'),
     'marble': _plain(tex_marble),
-    'marble_dark': _plain(tex_marble, '#4a4844'),
     'wood_floor': _plain(tex_planks, '#5a3e26'),
     'concrete_floor': _plain(tex_concrete, '#6e6e68'),
-    'acoustic': _plain(tex_acoustic),
-    'ceiling_plaster': _plain(tex_plaster, '#a8a08a', '#4a4030', 0.3),
     'mud': _plain(tex_mud),
     'asphalt': _plain(tex_asphalt),
     'grate': _plain(tex_grate),
