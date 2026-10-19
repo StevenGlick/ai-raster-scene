@@ -42,6 +42,10 @@ def find_sprite(scene, sid, cam=None):
     return None
 
 
+# How far the edge of solid ground drops into a void floor before the sky shows beneath it.
+VOID_DEPTH = 2.5
+
+
 def resolve_camera(scene, cam):
     """Fill in `angle` from a camera's `look_at` (a sprite id, [x, y] or [x, y, z]).
 
@@ -106,6 +110,8 @@ class World:
         self.ceil_tid = np.full((self.mh, self.mw), -1, np.int32)
         self.drop = np.zeros((self.mh, self.mw), np.float32)  # how far this floor sits below z=0
         self.reflect = np.zeros((self.mh, self.mw), np.float32)  # how mirror-like each floor is
+        self.void = np.zeros((self.mh, self.mw), bool)           # no ground: the sky shows below
+        self.side_tid = np.full((self.mh, self.mw), -1, np.int32)  # texture of a cell's sunken edge
         self.tex = []
         self.tex_key = []    # the material name each texture id came from
         self.tex_noise = []  # its relative surface-noise multiplier
@@ -124,6 +130,8 @@ class World:
                     stack = spec['wall'] if isinstance(spec['wall'], list) else [spec['wall']]
                     tids = [self.tid(t) for t in stack]
                     self.wall_tid[y, x] = tids[0]
+                    if spec.get('side'):
+                        self.side_tid[y, x] = self.tid(spec['side'])
                     if len(tids) > 1:
                         self.stacks[(y, x)] = tids
                     if any(self.tex_alpha[t] is not None for t in tids):
@@ -139,11 +147,19 @@ class World:
                         if spec.get('ceil'):  # an altar or a step under a roof: the roof is above it
                             self.ceil_tid[y, x] = self.tid(spec['ceil'])
                 else:
-                    self.floor_tid[y, x] = self.tid(spec.get('floor', default.get('floor', 'concrete_floor')))
+                    floor = spec.get('floor', default.get('floor', 'concrete_floor'))
                     if spec.get('ceil'):
                         self.ceil_tid[y, x] = self.tid(spec['ceil'])
+                    if spec.get('side'):
+                        self.side_tid[y, x] = self.tid(spec['side'])
+                    if floor == 'void':
+                        # no ground at all: the sky carries on below the horizon, and the edge of
+                        # the ground beside it drops VOID_DEPTH into it like a cliff
+                        self.void[y, x] = True
+                        self.drop[y, x] = VOID_DEPTH
+                        continue
+                    self.floor_tid[y, x] = self.tid(floor)
                     self.drop[y, x] = min(0.9, max(0.0, float(spec.get('drop', 0.0))))
-                    floor = spec.get('floor', default.get('floor', 'concrete_floor'))
                     self.reflect[y, x] = min(1.0, max(0.0, float(spec.get('reflect', assets.texture_reflect(floor)))))
 
         self._apply_heights(scene)
@@ -177,7 +193,7 @@ class World:
         floors, ceils = Counter(), Counter()
         for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)):
             ny, nx = y + dy, x + dx
-            if 0 <= ny < self.mh and 0 <= nx < self.mw and self.height[ny, nx] <= 0:
+            if 0 <= ny < self.mh and 0 <= nx < self.mw and self.height[ny, nx] <= 0 and not self.void[ny, nx]:
                 floors[int(self.floor_tid[ny, nx])] += 1
                 ceils[int(self.ceil_tid[ny, nx])] += 1
         if want_floor:
@@ -217,6 +233,8 @@ class World:
         h = float(self.height[cy, cx])
         if h > 0:
             return h if h < 0.95 and not self.see[cy, cx] else 0.0
+        if self.void[cy, cx]:
+            return 0.0   # nothing to stand on: `z` is simply the height (a whale in the sky)
         return -float(self.drop[cy, cx])
 
     def _load_decals(self, scene, decals):
@@ -336,8 +354,8 @@ class World:
             if sp.get('fullbright') or sp.get('blend', 'alpha') != 'alpha' or float(sp.get('opacity', 1)) < 1:
                 continue  # ghosts, glows and light sources cast nothing
             cx, cy = int(math.floor(float(sp['x']))), int(math.floor(float(sp['y'])))
-            if not (0 <= cy < self.mh and 0 <= cx < self.mw) or self.height[cy, cx] > 0:
-                continue  # standing on top of a block, not on the floor
+            if not (0 <= cy < self.mh and 0 <= cx < self.mw) or self.height[cy, cx] > 0 or self.void[cy, cx]:
+                continue  # standing on top of a block, or over a void: no floor to shade
             width = float(sp.get('scale', 1.0)) * assets.sprite_aspect(sp['type'], defs) * float(sp.get('stretch', 1.0))
             out.append({'tex': 'contact_shadow', 'surface': 'floor', 'x': float(sp['x']), 'y': float(sp['y']),
                         # wider than the prop: half the disc hides behind its feet, and the
@@ -679,6 +697,7 @@ class Renderer:
         self.ripple = float(rf.get('ripple', 1.0))
         # a sun or moon light shows itself in the sky (unless it asks not to)
         self.discs = [s_['disc'] for s_ in self.suns if s_['disc']]
+        self.sky_objects = list(scene.get('sky_objects') or [])
         self._skies = {}
         sn = scene.get('surface_noise', SURFACE_NOISE_DEFAULT)
         by_texture = {}
@@ -897,16 +916,19 @@ class Renderer:
         sky_rows = int(max(1, math.ceil(horizon)))
         if sky_name:
             pano_w = int(round(W * 2 * math.pi / fov))
-            key = (pano_w, max(sky_rows, H // 2), round(proj, 3))
+            # a void floor shows sky under the horizon too: stars in space, cloud far below otherwise
+            below = max(2, H - sky_rows + 2) if w.void.any() else 0
+            key = (pano_w, max(sky_rows, H // 2), round(proj, 3), below)
             if key not in self._skies:  # identical for every shot that shares a lens and pitch
                 self._skies[key] = assets.make_sky(sky_name, pano_w, key[1], skyline=self.s.get('skyline'),
-                                                   proj=proj, discs=self.discs)
+                                                   proj=proj, discs=self.discs, objects=self.sky_objects,
+                                                   below=below)
             pano = self._skies[key]
-            ph = pano.shape[0]
+            ph = key[1]
             ang_cols = (np.arctan2(rdy, rdx) % (2 * math.pi)) / (2 * math.pi) * pano_w
             ang_cols = ang_cols.astype(int) % pano_w
-            rows = np.arange(min(H, sky_rows + 2))
-            pr = np.clip(ph - (horizon - rows) - 1, 0, ph - 1).astype(int)
+            rows = np.arange(H) if below else np.arange(min(H, sky_rows + 2))
+            pr = np.clip(ph - (horizon - rows) - 1, 0, pano.shape[0] - 1).astype(int)
             img[rows] = pano[pr][:, ang_cols]
             if self.fog_c is not None and self.s.get('fog_sky', True):
                 k = float(self.s['fog'].get('sky_mix', 0.35))
@@ -920,14 +942,14 @@ class Renderer:
         ys = np.arange(H)
         frows = ys[ys + 0.5 > horizon + 0.5]
         crows = ys[ys + 0.5 < horizon - 0.5]
-        drops = sorted({float(v) for v in np.unique(w.drop) if v > 1e-6}, reverse=True)
+        drops = sorted({float(v) for v in np.unique(w.drop[~w.void]) if v > 1e-6}, reverse=True)
         drop0 = None
         if drops and frows.size:
             # where the un-sunken plane lands, so a deep pass can fill the submerged bank
             D0 = (camz * proj / (frows + 0.5 - horizon))[:, None] * np.ones((1, W))
             m0x = np.clip(np.floor(px + rdx[None, :] * D0).astype(int), 0, w.mw - 1)
             m0y = np.clip(np.floor(py + rdy[None, :] * D0).astype(int), 0, w.mh - 1)
-            drop0 = w.drop[m0y, m0x]
+            drop0 = np.where(w.void[m0y, m0x], 0.0, w.drop[m0y, m0x])
 
         for kind, dr in [('floor', v) for v in drops] + [('floor', 0.0), ('ceil', 0.0)]:
             if kind == 'floor':
@@ -965,6 +987,9 @@ class Renderer:
                     lip = (valid & (cdrop <= 1e-6) & (drop0 > 1e-6)) if dr == drops[0] \
                         else np.zeros(D.shape, bool)
                     valid = valid & ((np.abs(cdrop - dr) < 1e-6) | lip)
+                    if lip.any():   # a bank's sunken edge shows the cell's `side` texture, if it has one
+                        st = w.side_tid[my[lip], mx[lip]]
+                        tids[lip] = np.where(st >= 0, st, tids[lip])
                 else:
                     valid = valid & (cdrop <= 1e-6)
             if not valid.any():
@@ -1027,6 +1052,7 @@ class Renderer:
         prev_see = np.full(W, bool(w.see[cy0, cx0]) if inside else False)
         # drop of the cell each ray is leaving: a wall rising out of sunken water starts below z=0
         prev_d = np.full(W, w.drop[cy0, cx0] if inside else 0.0, np.float32)
+        prev_void = np.full(W, bool(w.void[cy0, cx0]) if inside else False)
         active = np.ones(W, bool)
         max_dist = float(self.s.get('max_distance', 64))
         hits = []  # ('face' | 'top', nearest distance, column, ...), drawn far to near
@@ -1053,8 +1079,16 @@ class Renderer:
             rise = active & (hgt > prev_h + 1e-6) & (dist > 1e-4) & ~(see_c & prev_see)
             low = active & ~see_c & (hgt > 1e-6) & (hgt < camz - 1e-6)
             for c in np.nonzero(rise)[0]:
-                hits.append(('face', dist[c], c, int(not xs[c]), mapx[c], mapy[c], hgt[c], prev_d[c],
+                # a wall or fence at the brink stops at the ground; the cliff under it is the bank
+                below = 0.0 if prev_void[c] else prev_d[c]
+                hits.append(('face', dist[c], c, int(not xs[c]), mapx[c], mapy[c], hgt[c], below,
                              bool(see_c[c])))
+            vo = inb & w.void[cyc, cxc]
+            # climbing out of a void onto anything solid: the edge of the ground is a cliff
+            bank = active & prev_void & ~vo & (dist > 1e-4)
+            for c in np.nonzero(bank)[0]:
+                lvl = float(w.drop[cyc[c], cxc[c]]) if hgt[c] <= 1e-6 else 0.0
+                hits.append(('bank', dist[c], c, int(not xs[c]), mapx[c], mapy[c], lvl))
             for c in np.nonzero(low)[0]:
                 hits.append(('top', dist[c], c, mapx[c], mapy[c], hgt[c], exitd[c]))
             top = horizon - (hgt - camz) * proj / np.maximum(dist, 1e-4)
@@ -1064,6 +1098,7 @@ class Renderer:
             prev_h = np.where(active & ~see_c, hgt, prev_h)
             prev_see = np.where(active, see_c, prev_see)
             prev_d = np.where(active, np.where(inb, w.drop[cyc, cxc], 0), prev_d)
+            prev_void = np.where(active, vo, prev_void)
 
         # far to near; at the same distance a block's top goes down before its face
         hits.sort(key=lambda h: (-h[1], h[0] == 'face'))
@@ -1096,6 +1131,37 @@ class Renderer:
                                   flash(rows, np.full(len(rows), c), ed), sun)
                 img[y0:y1, c] = colr
                 depth[y0:y1, c] = dd
+                continue
+            if hit[0] == 'bank':
+                _, dist, c, side, mx, my, lvl = hit
+                wallx = py + dist * rdy[c] if side == 0 else px + dist * rdx[c]
+                jag = 0.6 + 0.4 * (0.5 + 0.5 * math.sin(wallx * 5.3 + mx * 1.7 + my * 2.9)
+                                   * math.cos(wallx * 2.2 - my * 0.7))
+                top = horizon + (camz + lvl) * proj / dist
+                bot = horizon + (camz + VOID_DEPTH * jag) * proj / dist
+                y0, y1 = max(0, int(math.ceil(top - 0.5))), min(H, int(math.ceil(bot - 0.5)))
+                tid = w.side_tid[my, mx] if w.side_tid[my, mx] >= 0 else w.floor_tid[my, mx]
+                if y1 <= y0 or tid < 0:
+                    continue
+                rows = np.arange(y0, y1)
+                keep = depth[y0:y1, c] > dist
+                if not keep.any():
+                    continue
+                z = (horizon - (rows + 0.5)) * dist / proj + camz
+                rgb, em = w.tex[tid]
+                u = min(T - 1, int((wallx - math.floor(wallx)) * T))
+                v = ((1 - (z % 1.0)) * T).astype(int).clip(0, T - 1)
+                alb = rgb[v, u] * (0.85 - 0.55 * np.clip(-z / VOID_DEPTH, 0, 1))[:, None]
+                if side == 1:
+                    alb = alb * 0.78
+                hx = px + rdx[c] * dist - rdx[c] / rlen[c] * 0.04
+                hy = py + rdy[c] * dist - rdy[c] / rlen[c] * 0.04
+                ed = np.full(len(rows), dist * rlen[c])
+                colr = self.shade(alb, np.repeat(sample_lm(self.lm, self.lres, np.array([hx]), np.array([hy])),
+                                                 len(rows), 0), z, ed, None,
+                                  flash(rows, np.full(len(rows), c), ed), 0.0)
+                img[rows[keep], c] = colr[keep]
+                depth[rows[keep], c] = dist
                 continue
             _, dist, c, side, mx, my, hgt, below, see_hit = hit
             top = horizon - (hgt - camz) * proj / dist
@@ -1143,6 +1209,10 @@ class Renderer:
                         solid[m] = w.tex_alpha[stack[k]][v[m], u] > 0.5
                 # a facade can change material per storey, so the amount varies down the column
                 wall_amt = self.tex_amount[np.asarray(stack, np.int32)[storey]]
+            if below > 1e-6:
+                under = (z < -1e-6) & (depth[y0:y1, c] <= dist)
+                if under.any():
+                    solid = ~under if solid is None else solid & ~under
             if solid is not None and not solid.any():
                 continue
             if self.sn is not None:
@@ -1444,12 +1514,12 @@ SCENE_KEYS = {
     'scatter', 'grime', 'grime_debris', 'grime_decals', 'surface_noise', 'decals', 'decal_defs',
     'palette', 'auto_levels', 'dither', 'scanlines', 'overbright', 'lightmap_res', 'max_distance',
     'supersample', 'overlays', 'ui', 'post', 'icon_defs', 'viewmodel_defs', 'seed',
-    'skyline', 'contact_shadows', 'heights', 'height_unit', 'reflections',
+    'skyline', 'contact_shadows', 'heights', 'height_unit', 'reflections', 'sky_objects',
     'title', 'description', 'notes',  # free-form metadata, never read
 }
 SHOT_KEYS = {'x', 'y', 'angle', 'look_at', 'fov', 'height', 'pitch', 'flashlight', 'overlays', 'overrides',
              'post', 'scanlines', 'seed', 'supersample', 'extra_sprites', 'title', 'description', 'notes'}
-CELL_KEYS = {'wall', 'h', 'top', 'floor', 'ceil', 'drop', 'reflect'}
+CELL_KEYS = {'wall', 'h', 'top', 'floor', 'ceil', 'drop', 'reflect', 'side'}
 ASSET_EXTS = ('.png', '.ttf', '.otf')
 
 

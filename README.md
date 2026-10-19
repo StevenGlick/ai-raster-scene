@@ -18,7 +18,7 @@ It ships as a Claude skill and works as Claude's retro imagination: ask for a pi
 
 ## Settings
 
-Interiors, streets, woodland, coast, castles, chapels, caves, sewers and snow, all from the same renderer and the same built-in materials.
+Interiors, streets, woodland, coast, castles, chapels, caves, sewers, snow, starships, alien worlds and dreams, all from the same renderer and the same built-in materials.
 
 | | |
 |---|---|
@@ -31,15 +31,33 @@ Interiors, streets, woodland, coast, castles, chapels, caves, sewers and snow, a
 | ![Something wading in the cave lake, reflected](docs/gallery/cave_beast.png) | ![Something in the storm drain](docs/gallery/sewer_thing.png) |
 | ![The cabin on the ice by moonlight](docs/gallery/winter_night.png) | ![The same lake by day, through shot overrides](docs/gallery/winter_day.png) |
 
+## Space, alien worlds and dreams
+
+| | |
+|---|---|
+| ![A ringed planet through the observation deck's glass, mirrored in the floor](docs/gallery/station_deck.png) | ![A light-strip corridor leading to the deck](docs/gallery/station_corridor.png) |
+| ![A derelict ship on emergency power](docs/gallery/derelict_corridor.png) | ![Found footage from the hive](docs/gallery/derelict_hive.png) |
+| ![A landing site under a gas giant](docs/gallery/alien_landing.png) | ![The monolith and the one who waits by it](docs/gallery/alien_monolith.png) |
+| ![A staircase to nowhere on an island in the sky](docs/gallery/dream_stair.png) | ![Koi over a mirror lake](docs/gallery/dream_mirror.png) |
+
+## Ask Claude
+
+Asked what it would look like and where it would want to be, Claude picked a small figure whose head is a paper lantern lit from inside, in a coat the colour of fired clay, carrying an open book. It picked a round reading room at the top of a tower, above a sea of cloud. The shelves are there because it was made from an enormous amount of human writing, the fire because conversations go better somewhere warm, and the open balcony because the questions that stay interesting are the open ones. The avatar is the `claude` character, and [`examples/claude_study.py`](examples/claude_study.py) has ready-made shots for answering a question in a picture.
+
+| | |
+|---|---|
+| ![Claude's avatar in its reading room, answering](docs/gallery/claude_ask.png) | ![On the balcony above the clouds](docs/gallery/claude_balcony.png) |
+
 ## Features
 
 - **2.5D raycaster** with multi-hit rays: walls of any height, so towers rise over hedges; per-storey wall textures for building facades; low blocks with real tops for steps, daises and altars
 - **See-through walls**: iron fences, railings, picket fences, chain-link, jail bars, portcullises, lattices and smashed windows, with the scene showing through the gaps
-- **Floors, ceilings and open sky** per cell, with six procedural sky panoramas (night, dusk, storm, day, overcast, blood) and distant skylines (mountains, hills, treeline, city)
+- **Floors, ceilings and open sky** per cell, with nine procedural sky panoramas (night, dusk, storm, day, overcast, blood, deep space, alien, dream), distant skylines (mountains, hills, treeline, city), and planets, ringed gas giants, moons and stranger things hung in the sky
+- **Void floors**: no ground at all, just sky carrying on below the horizon, for space outside a station's viewport or islands adrift over a sea of cloud with ragged cliffs underneath
 - **Lighting**: coloured point lights baked into a shadowed lightmap, a sun or moon with long cast shadows and its disc in the sky, emissive texels (lit windows, stained glass, glowing runes), flashlight cone, exponential fog, Doom-style light banding, and a soft contact shadow under every prop
 - **Reflections**: water, ice, wet streets and puddles mirror the lamps, windows and figures beyond them
 - **The 90s look**: 320x200 framebuffer, Bayer-dithered 256-colour palette, chunky nearest-neighbour upscale, optional scanlines and 2x supersampling
-- **Sprites**: 60 procedural props - scenery, light fixtures, wall decorations, castle furnishings, debris and vegetation - a 13-character pixel-art cast, any PNG, or new pixel art written as text grids right in the scene
+- **Sprites**: 85 procedural props - scenery, light fixtures, wall decorations, castle furnishings, sci-fi gear, alien flora, dream objects, debris and vegetation - an 18-character pixel-art cast, any PNG, or new pixel art written as text grids right in the scene
 - **Procedural scatter**: declare debris by set, density and size class and the loader expands it into hundreds of placed props, clumped by a noise field so it drifts and leaves bare patches instead of spreading evenly - and never piles up on a camera or in front of a speaker
 - **One grime dial**: raises surface variation, debris density and wall/floor wear together
 - **Surface variation**: a world-space noise field breaks up texture tiling on walls, floors and ceilings - anchored to the world, so it stays put as the camera moves instead of crawling like film grain, and scaled per material so plaster stays subtle while cobble and rust vary hard
@@ -51,7 +69,7 @@ Interiors, streets, woodland, coast, castles, chapels, caves, sewers and snow, a
 - **24 item icons** and a draw-op format (with automatic outlines) for new icons and held items
 - **Post-processing**: colour grading, bloom, vignette, grain, rain, snow, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 16 one-word presets
 - **Authoring tools**: `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
-- **No assets to download**: all 83 textures, 60 props, 13 characters, 16 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
+- **No assets to download**: all 103 textures, 85 props, 18 characters, 16 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
 
 ![Character cast](docs/gallery/cast.png)
 
@@ -98,7 +116,7 @@ git clone https://github.com/StevenGlick/ai-raster-scene
 cd ai-raster-scene
 python package_skill.py
 ```
-writes `dist/ai-raster-scene.zip` (about 150 KB) containing only what the skill needs at runtime - `SKILL.md`, `scripts/`, `references/`, `examples/` and `requirements.txt`. The README gallery, tests and CI config are deliberately left out; `docs/` alone is several megabytes of PNG and is no use inside a skill.
+writes `dist/ai-raster-scene.zip` (about 180 KB) containing only what the skill needs at runtime - `SKILL.md`, `scripts/`, `references/`, `examples/` and `requirements.txt`. The README gallery, tests and CI config are deliberately left out; `docs/` alone is several megabytes of PNG and is no use inside a skill.
 
 - Claude apps: upload that zip as a custom skill in Claude's settings.
 - Claude Code: clone straight into your skills folder, `git clone https://github.com/StevenGlick/ai-raster-scene ~/.claude/skills/ai-raster-scene` (or a project's `.claude/skills/`), or unzip the package there.

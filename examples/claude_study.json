@@ -1,0 +1,330 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "                              ",
+  "                              ",
+  "              rrr             ",
+  "             rbbbr            ",
+  "            rbbbbbr           ",
+  "           rbbbbbbbr          ",
+  "           rbbbbbbbr          ",
+  "           rbbbbbbbr          ",
+  "            rbbbbbr           ",
+  "             bbbbb            ",
+  "           KKbbbbbKK          ",
+  "          KK.......KK         ",
+  "         KK.........KK        ",
+  "        CK...........KC       ",
+  "        KK....uuu....KK       ",
+  "        K....uuuuu....K       ",
+  "        K....uuuuu....K       ",
+  "        K....uuuuu....K       ",
+  "        KK....uuu....KK       ",
+  "        CK...........KC       ",
+  "         KK.........KK        ",
+  "          KK.......KK         ",
+  "           KKK...KKK          ",
+  "             KKFKK            ",
+  "                              ",
+  "                              ",
+  "                              ",
+  "                              ",
+  "                              ",
+  "                              "
+ ],
+ "legend": {
+  " ": {
+   "floor": "void"
+  },
+  "K": {
+   "wall": "bookshelf",
+   "h": 2.2
+  },
+  "C": {
+   "wall": [
+    "star_chart",
+    "bookshelf"
+   ],
+   "h": 2.2
+  },
+  "F": {
+   "wall": [
+    "fireplace",
+    "stone"
+   ],
+   "h": 2.2
+  },
+  ".": {
+   "floor": "wood_floor",
+   "ceil": "beams"
+  },
+  "u": {
+   "floor": "carpet",
+   "ceil": "beams"
+  },
+  "b": {
+   "floor": "flagstone",
+   "side": "stone"
+  },
+  "r": {
+   "wall": "railing",
+   "h": 1.0,
+   "floor": "flagstone"
+  }
+ },
+ "camera": {
+  "x": 14.4,
+  "y": 19.4,
+  "look_at": [
+   15.4,
+   8.0,
+   0.8
+  ],
+  "fov": 72
+ },
+ "title": "Claude's reading room - the top of the tower",
+ "ceiling_height": 2.2,
+ "sky": "night",
+ "ambient": [
+  0.14,
+  0.12,
+  0.14
+ ],
+ "lights": [
+  {
+   "type": "moon",
+   "azimuth": 270,
+   "elevation": 12,
+   "intensity": 0.55,
+   "disc_size": 3.4
+  },
+  {
+   "x": 15.0,
+   "y": 22.0,
+   "z": 0.4,
+   "radius": 6.0,
+   "color": [
+    1.0,
+    0.62,
+    0.32
+   ],
+   "intensity": 1.5
+  },
+  {
+   "x": 15.0,
+   "y": 16.4,
+   "z": 1.8,
+   "radius": 6.5,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 9.4,
+   "y": 16.0,
+   "z": 1.1,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 20.6,
+   "y": 16.0,
+   "z": 1.1,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 18.6,
+   "y": 19.2,
+   "z": 0.8,
+   "radius": 2.6,
+   "color": [
+    1.0,
+    0.8,
+    0.5
+   ],
+   "intensity": 0.8
+  }
+ ],
+ "sprites": [
+  {
+   "id": "claude",
+   "x": 15.2,
+   "y": 14.6,
+   "type": "claude"
+  },
+  {
+   "x": 15.0,
+   "y": 16.4,
+   "type": "chandelier",
+   "z": 1.72
+  },
+  {
+   "x": 9.3,
+   "y": 16.0,
+   "type": "sconce",
+   "z": 1.0
+  },
+  {
+   "x": 20.7,
+   "y": 16.0,
+   "type": "sconce",
+   "z": 1.0
+  },
+  {
+   "x": 18.6,
+   "y": 19.4,
+   "type": "writing_desk"
+  },
+  {
+   "x": 12.4,
+   "y": 20.2,
+   "type": "armchair"
+  },
+  {
+   "x": 19.6,
+   "y": 13.2,
+   "type": "orrery"
+  },
+  {
+   "x": 10.8,
+   "y": 13.4,
+   "type": "globe"
+  },
+  {
+   "x": 16.4,
+   "y": 4.6,
+   "type": "telescope"
+  },
+  {
+   "x": 11.0,
+   "y": 18.2,
+   "type": "book_stack"
+  },
+  {
+   "x": 20.2,
+   "y": 16.8,
+   "type": "book_stack",
+   "flip": true
+  },
+  {
+   "x": 13.0,
+   "y": 13.2,
+   "type": "open_book",
+   "z": 0.95,
+   "scale": 0.2
+  },
+  {
+   "x": 17.6,
+   "y": 14.4,
+   "type": "open_book",
+   "z": 1.2,
+   "scale": 0.2
+  },
+  {
+   "x": 12.2,
+   "y": 16.2,
+   "type": "open_book",
+   "z": 1.35,
+   "scale": 0.2,
+   "flip": true
+  },
+  {
+   "x": 18.0,
+   "y": 11.8,
+   "type": "open_book",
+   "z": 0.8,
+   "scale": 0.2
+  }
+ ],
+ "shots": [
+  {
+   "x": 14.4,
+   "y": 19.4,
+   "look_at": [
+    15.4,
+    8.0,
+    0.8
+   ],
+   "fov": 72,
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "The reading room at the top of the tower",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 14.6,
+   "y": 17.4,
+   "look_at": "claude",
+   "fov": 60,
+   "overlays": [
+    {
+     "type": "bubble",
+     "anchor": "claude",
+     "name": "Claude",
+     "text": "Ask me anything. I'll tell you what I know, and what I don't."
+    }
+   ]
+  },
+  {
+   "x": 14.0,
+   "y": 7.4,
+   "height": 0.8,
+   "look_at": [
+    16.0,
+    -8.0,
+    -1.4
+   ],
+   "fov": 70,
+   "extra_sprites": [
+    {
+     "id": "claude_out",
+     "x": 15.1,
+     "y": 4.8,
+     "type": "claude"
+    }
+   ]
+  },
+  {
+   "x": 14.0,
+   "y": 16.0,
+   "look_at": [
+    15.0,
+    23.0,
+    0.5
+   ],
+   "fov": 66,
+   "overlays": [
+    {
+     "type": "dialog",
+     "portrait": "claude",
+     "name": "Claude",
+     "text": "A longer answer goes here, in a box like this one, with my lantern in the corner."
+    }
+   ]
+  }
+ ],
+ "contact_shadows": 0.5,
+ "supersample": 2
+}

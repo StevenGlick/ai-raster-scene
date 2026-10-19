@@ -1,0 +1,355 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "                        ",
+  "                        ",
+  "                        ",
+  "###VVVVVVVVVVVVVVVVVV###",
+  "##TooooooooooooooooooS##",
+  "##TooooooooooooooooooS##",
+  "##SooooooooooooooooooT##",
+  "##TooooooooooooooooooS##",
+  "##TooooooooooooooooooS##",
+  "##SooooooooooooooooooT##",
+  "##TooooooooooooooooooS##",
+  "##TooooooooooooooooooS##",
+  "##SooooooooooooooooooT##",
+  "###########cc###########",
+  "##########LccL##########",
+  "##########LccL##########",
+  "##########LccL##########",
+  "##########LccL##########",
+  "##########LccL##########",
+  "##########LccL##########",
+  "##########LccL##########",
+  "##########LccL##########",
+  "##########LccL##########",
+  "##########LccL##########",
+  "###########BB###########",
+  "########################"
+ ],
+ "legend": {
+  " ": {
+   "floor": "void"
+  },
+  "#": {
+   "wall": "hull_dark",
+   "h": 2.0
+  },
+  "V": {
+   "wall": [
+    "viewport",
+    "viewport"
+   ],
+   "h": 2.0,
+   "floor": "obsidian",
+   "ceil": "panel"
+  },
+  "T": {
+   "wall": [
+    "tech_panel",
+    "hull_dark"
+   ],
+   "h": 2.0
+  },
+  "S": {
+   "wall": [
+    "server",
+    "server"
+   ],
+   "h": 2.0
+  },
+  "o": {
+   "floor": "obsidian",
+   "ceil": "panel"
+  },
+  "c": {
+   "floor": "deck",
+   "ceil": "panel"
+  },
+  "L": {
+   "wall": [
+    "hull_lit",
+    "hull"
+   ],
+   "h": 2.0
+  },
+  "B": {
+   "wall": [
+    "blast_door",
+    "hull_dark"
+   ],
+   "h": 2.0
+  }
+ },
+ "camera": {
+  "x": 10.6,
+  "y": 9.2,
+  "look_at": [
+   12.5,
+   3.5,
+   0.95
+  ],
+  "fov": 76
+ },
+ "title": "Space station - the observation deck",
+ "ceiling_height": 2.0,
+ "sky": "space",
+ "sky_objects": [
+  {
+   "type": "ringed",
+   "azimuth": 285,
+   "elevation": 8,
+   "size": 14,
+   "color": [
+    0.86,
+    0.66,
+    0.46
+   ],
+   "color2": [
+    0.8,
+    0.72,
+    0.6
+   ],
+   "lit_from": 205,
+   "phase": 0.7,
+   "tilt": 0.22,
+   "angle": -12
+  },
+  {
+   "type": "moon",
+   "azimuth": 300,
+   "elevation": 26,
+   "size": 2.4,
+   "lit_from": 205
+  },
+  {
+   "type": "sun",
+   "azimuth": 228,
+   "elevation": 20,
+   "size": 1.0
+  }
+ ],
+ "ambient": [
+  0.13,
+  0.14,
+  0.18
+ ],
+ "lights": [
+  {
+   "x": 11.5,
+   "y": 4.8,
+   "z": 1.0,
+   "radius": 8.0,
+   "color": [
+    1.0,
+    0.78,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "x": 5.0,
+   "y": 4.8,
+   "z": 1.0,
+   "radius": 5.0,
+   "color": [
+    1.0,
+    0.78,
+    0.55
+   ],
+   "intensity": 0.6
+  },
+  {
+   "x": 18.0,
+   "y": 4.8,
+   "z": 1.0,
+   "radius": 5.0,
+   "color": [
+    1.0,
+    0.78,
+    0.55
+   ],
+   "intensity": 0.6
+  },
+  {
+   "x": 8.0,
+   "y": 10.2,
+   "z": 0.6,
+   "radius": 3.5,
+   "color": [
+    0.4,
+    0.9,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "x": 3.6,
+   "y": 11.0,
+   "z": 0.7,
+   "radius": 3.0,
+   "color": [
+    0.4,
+    1.0,
+    0.6
+   ],
+   "intensity": 0.6
+  },
+  {
+   "x": 20.4,
+   "y": 7.0,
+   "z": 0.7,
+   "radius": 3.0,
+   "color": [
+    0.4,
+    1.0,
+    0.6
+   ],
+   "intensity": 0.6
+  },
+  {
+   "x": 11.5,
+   "y": 15.0,
+   "z": 1.8,
+   "radius": 3.6,
+   "color": [
+    0.65,
+    0.85,
+    1.0
+   ],
+   "intensity": 0.8
+  },
+  {
+   "x": 11.5,
+   "y": 18.5,
+   "z": 1.8,
+   "radius": 3.6,
+   "color": [
+    0.65,
+    0.85,
+    1.0
+   ],
+   "intensity": 0.8
+  },
+  {
+   "x": 11.5,
+   "y": 22.0,
+   "z": 1.8,
+   "radius": 3.6,
+   "color": [
+    0.65,
+    0.85,
+    1.0
+   ],
+   "intensity": 0.8
+  }
+ ],
+ "sprites": [
+  {
+   "x": 8.0,
+   "y": 10.2,
+   "type": "hologram",
+   "scale": 0.7
+  },
+  {
+   "id": "android",
+   "x": 13.6,
+   "y": 5.4,
+   "type": "android"
+  },
+  {
+   "id": "astronaut",
+   "x": 9.0,
+   "y": 7.6,
+   "type": "astronaut"
+  },
+  {
+   "x": 3.4,
+   "y": 11.0,
+   "type": "console"
+  },
+  {
+   "x": 20.6,
+   "y": 7.0,
+   "type": "console"
+  },
+  {
+   "x": 19.4,
+   "y": 11.6,
+   "type": "sci_crate"
+  },
+  {
+   "x": 18.5,
+   "y": 11.9,
+   "type": "sci_crate",
+   "scale": 0.28
+  },
+  {
+   "x": 4.0,
+   "y": 4.6,
+   "type": "sci_crate",
+   "scale": 0.3
+  },
+  {
+   "x": 12.0,
+   "y": 18.0,
+   "type": "drone",
+   "z": 1.05
+  }
+ ],
+ "shots": [
+  {
+   "x": 10.6,
+   "y": 9.2,
+   "look_at": [
+    12.5,
+    3.5,
+    0.95
+   ],
+   "fov": 76,
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Observation deck, high orbit",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 12.0,
+   "y": 23.4,
+   "look_at": [
+    12.0,
+    4.0,
+    0.7
+   ],
+   "fov": 70
+  },
+  {
+   "x": 5.4,
+   "y": 11.2,
+   "look_at": "astronaut",
+   "fov": 64,
+   "overrides": {
+    "ui": {
+     "theme": "terminal"
+    }
+   },
+   "overlays": [
+    {
+     "type": "dialog",
+     "portrait": "android",
+     "name": "Station",
+     "text": "Orbit stable. Ring crossing in eleven minutes."
+    }
+   ]
+  }
+ ],
+ "supersample": 2
+}

@@ -500,12 +500,44 @@ def check_new_features():
     assert not R.World(off_room)._contact_shadows(off_room), 'contact_shadows: 0 must turn them off'
     assert frame(room)[150:200].mean() < frame(dict(room, contact_shadows=0))[150:200].mean() - 1e-4
 
-    # 8. Grid.disc leaves no one-cell nub at its extremes
+    # 8. void floors: the sky carries on under the horizon, and an island across the void shows
+    #    its cliff; sprites over a void stand at their own z
+    def islands(far):
+        legend = {' ': {'floor': 'void'}, 'g': {'floor': 'grass', 'side': 'rock'}}
+        g = maptools.Grid(21, 21, fill=' ').disc(10, 18, 2.2, 'g')
+        if far:
+            g.disc(10, 7, 3.2, 'g')
+        return dict(flat, sky='day', map=g.rows(), legend=legend, camera={'x': 10.5, 'y': 18.5, 'angle': 270})
+    w = R.World(islands(True))
+    assert w.void[0, 0] and not w.void[18, 10] and w.base_z(0.5, 0.5) == 0.0
+    near_sky = frame(islands(False))
+    assert near_sky[104:112, 150:170].mean() > 0.3, 'void must show the sky below the horizon, not black'
+    cliff = frame(islands(True))[128:150, 150:170].mean()
+    assert cliff < near_sky[128:150, 150:170].mean() - 0.1, 'an island across the void must show its cliff'
+
+    # 9. sky objects and the new presets paint the panorama, and the sky wraps round 360 seamlessly
+    plain = assets.make_sky('dusk', 720, 120, proj=proj)
+    for kind in assets.SKY_OBJECTS:
+        sky = assets.make_sky('dusk', 720, 120, proj=proj,
+                              objects=[{'type': kind, 'azimuth': 90, 'elevation': 15, 'size': 8}])
+        assert np.abs(sky - plain).max() > 0.1, f'sky object {kind} draws nothing'
+    try:
+        assets.make_sky('dusk', 720, 120, objects=[{'type': 'teapot'}])
+        raise AssertionError('an unknown sky object must fail loudly')
+    except KeyError:
+        pass
+    for preset in assets.SKY_PRESETS:
+        sky = assets.make_sky(preset, 720, 120, proj=proj, below=40)
+        assert sky.shape == (160, 720, 3) and sky[120:].mean() > 0.01, f'{preset} has nothing under the horizon'
+        assert np.abs(sky[:, 0] - sky[:, -1]).mean() < 0.02, f'{preset} has a seam at 0/360 degrees'
+
+    # 10. Grid.disc leaves no one-cell nub at its extremes
     g = maptools.Grid(21, 21, fill='#').disc(10, 10, 8, '.')
     for lines in (g.g, list(zip(*g.g))):                  # rows, then columns
         edge = [ln for ln in lines if '.' in ln]
         assert edge[0].count('.') > 1 and edge[-1].count('.') > 1, 'a whole-number radius left a nub'
-    print('ok new features (look_at, see-through, heights, sun, reflections, skyline, contact shadows)')
+    print('ok new features (look_at, see-through, heights, sun, reflections, skyline, contact shadows, '
+          'void floors, sky objects)')
 
 
 def check_docs():
@@ -552,6 +584,7 @@ def check_docs():
     need('SKILL.md (scatter sets)', skill, assets.DEBRIS_SETS)
     need('SKILL.md (cast)', skill, CHARACTERS)
     need('reference (skylines)', ref, assets.SKYLINES)
+    need('reference (sky presets and objects)', ref, list(assets.SKY_PRESETS) + list(assets.SKY_OBJECTS))
     need('reference/Textures (see-through and emissive)', section(ref, '## Textures'),
          [t for t in assets.TEXTURES if assets.get_alpha(t) is not None or assets.get_texture(t)[1] is not None])
 

@@ -890,6 +890,295 @@ def tex_door_wood(name, c='#5a3c22'):
     return np.clip(img, 0, 1)
 
 
+# ------------------------------------------------- sci-fi, alien, dream and study materials
+
+def tex_hull(name, c='#8a929c', strip=None):
+    """Starship interior plating: panels between trim bands, rivets, a recessed band at eye
+    height. With `strip` (a colour) that band is a glowing light strip (emissive), so a corridor
+    of it draws lines of light to the vanishing point."""
+    rng = _rng(name)
+    n = fbm(T, rng, 12, 3)
+    yy, xx = np.mgrid[0:T, 0:T]
+    panel = (xx // 32) + (yy // 32) * 2
+    tone = 0.9 + 0.12 * ((panel * 37 + 5) % 4) / 3.0
+    img = col(c)[None, None, :] * tone[..., None] * (0.9 + 0.18 * n[..., None])
+    img *= np.linspace(1.06, 0.86, T)[:, None, None]
+    trim = col(c) * 0.42
+    img[yy < 3] = trim
+    img[yy >= 60] = trim * 0.8
+    img[(yy >= 28) & (yy < 36)] = col(c) * 0.55
+    img[(xx % 32) < 1] *= 0.55
+    img[(yy == 3) | (yy == 36)] *= 1.25
+    img[(yy == 27) | (yy == 59)] *= 0.7
+    rivet = (np.hypot((xx % 32) - 4, (yy % 32) - 7) < 1.3) | (np.hypot((xx % 32) - 28, (yy % 32) - 7) < 1.3)
+    img[rivet & ((yy < 28) | (yy >= 36)) & (yy >= 3) & (yy < 60)] = np.clip(col(c) * 1.25, 0, 1)
+    em = None
+    if strip:
+        em = np.zeros((T, T), np.float32)
+        band = (yy >= 30) & (yy < 34)
+        img[band] = col(strip)
+        em[band] = 1.0
+        img[(yy == 29) | (yy == 34)] = np.clip(col(strip) * 0.45 + col(c) * 0.3, 0, 1)
+    return grain(np.clip(img, 0, 1), rng, 0.02), em
+
+
+def tex_tech_panel(name, c='#3a424c'):
+    """Dark instrument panels: readouts with lines of glowing text and rows of indicator lights
+    (emissive). Bridges, labs, control rooms."""
+    rng = _rng(name)
+    n = fbm(T, rng, 10, 3)
+    yy, xx = np.mgrid[0:T, 0:T]
+    img = col(c)[None, None, :] * (0.85 + 0.25 * n[..., None])
+    em = np.zeros((T, T), np.float32)
+    img[((xx % 32) < 1) | ((yy % 32) < 1)] *= 0.5
+    for x0, y0 in ((4, 5), (36, 5), (4, 37), (36, 37)):
+        img[y0:y0 + 10, x0:x0 + 24] = col('#0c1418')
+        for r in range(y0 + 2, y0 + 9, 3):
+            ln = int(rng.integers(8, 22))
+            img[r, x0 + 2:x0 + 2 + ln] = col('#5ae0c8')
+            em[r, x0 + 2:x0 + 2 + ln] = 1.0
+        for k in range(4):
+            cc = ('#ff4a3a', '#ffc040', '#4aff7a', '#4ac0ff')[int(rng.integers(0, 4))]
+            img[y0 + 14:y0 + 16, x0 + 2 + k * 6:x0 + 4 + k * 6] = col(cc)
+            em[y0 + 14:y0 + 16, x0 + 2 + k * 6:x0 + 4 + k * 6] = 1.0
+        img[y0 + 19:y0 + 21, x0:x0 + 24] = col(c) * 0.6
+    return np.clip(img, 0, 1), em
+
+
+def tex_server(name):
+    """Racks of computers: rows of units with blinking status lights (emissive)."""
+    rng = _rng(name)
+    xx = np.mgrid[0:T, 0:T][1]
+    img = col('#22262c')[None, None, :] * (0.85 + 0.25 * fbm(T, rng, 12, 2)[..., None])
+    em = np.zeros((T, T), np.float32)
+    img[(xx % 32) < 2] = col('#3a3e46')
+    for y in range(2, T - 4, 5):
+        for x0 in (3, 35):
+            img[y:y + 4, x0:x0 + 27] = col('#2e333a')
+            img[y + 3, x0:x0 + 27] *= 0.6
+            img[y + 1:y + 3, x0 + 19:x0 + 26] = col('#14181c')
+            for _ in range(int(rng.integers(1, 5))):
+                x = x0 + int(rng.integers(1, 17))
+                cc = ('#4aff7a', '#4aff7a', '#ffc040', '#4ac0ff', '#ff4a3a')[int(rng.integers(0, 5))]
+                img[y + 1, x] = col(cc)
+                em[y + 1, x] = 1.0
+    return np.clip(img, 0, 1), em
+
+
+def tex_blast_door(name, c='#6a7078'):
+    """A heavy sliding blast door: two leaves meeting in a toothed seam, hazard chevrons top and
+    bottom, a red status light (emissive)."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    img = col(c)[None, None, :] * (0.85 + 0.25 * fbm(T, rng, 10, 3)[..., None])
+    img[:, :3] = col(c) * 0.45
+    img[:, -3:] = col(c) * 0.45
+    for y in (16, 31, 46):
+        img[y:y + 2, 5:59] = col(c) * 0.6
+        img[y + 2, 5:59] = np.clip(col(c) * 1.25, 0, 1)
+    bands = (yy >= 53) | (yy < 6)
+    img[bands] = col('#1a1a1a')
+    img[bands & (((xx + yy) // 5) % 2 == 0)] = col('#e0b030')
+    seam = np.abs(xx - 31.5 - np.where((yy // 6) % 2 == 0, 1.5, -1.5)) < 1.2
+    img[seam] = col('#121416')
+    em = np.zeros((T, T), np.float32)
+    light = np.hypot(xx - 31.5, yy - 10) < 2.2
+    img[light] = col('#ff4030')
+    em[light] = 1.0
+    return np.clip(img, 0, 1), em
+
+
+def tex_hazard(name):
+    """Worn yellow-and-black hazard stripes: loading bays, airlocks, the edge of a drop."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    stripe = (((xx + yy) // 8) % 2 == 0)[..., None]
+    img = np.where(stripe, col('#d8a828')[None, None, :], col('#1c1c1e')[None, None, :]).astype(np.float64)
+    wear = np.clip((fbm(T, rng, 8, 4) - 0.55) * 4, 0, 1)
+    img = img * (1 - 0.45 * wear[..., None]) + col('#6a6458')[None, None, :] * 0.45 * wear[..., None]
+    return grain(np.clip(img, 0, 1), rng, 0.05)
+
+
+def tex_deck(name, c='#4a4e54'):
+    """Starship deck plating: big plates with a raised tread and corner bolts."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    img = col(c)[None, None, :] * (0.85 + 0.25 * fbm(T, rng, 10, 3)[..., None])
+    tread = (((xx + (yy // 4 % 2) * 4) % 8) < 3) & (yy % 4 == 1)
+    img[tread] *= 1.3
+    img[((xx % 32) < 1) | ((yy % 32) < 1)] = col('#1e2024')
+    img[np.hypot((xx % 32) - 3.5, (yy % 32) - 3.5) < 1.2] = col('#8a8e94')
+    return grain(np.clip(img, 0, 1), rng, 0.03)
+
+
+def tex_grid_floor(name, c='#0a0e18', line='#3ac8ff'):
+    """A black floor ruled with glowing grid lines (emissive): holodecks, cyberspace, dreams.
+    Glossy, so it reflects a little by default."""
+    yy, xx = np.mgrid[0:T, 0:T]
+    img = np.zeros((T, T, 3)) + col(c)[None, None, :]
+    em = np.zeros((T, T), np.float32)
+    major = ((xx % 32) < 1) | ((yy % 32) < 1)
+    minor = (((xx % 8) < 1) | ((yy % 8) < 1)) & ~major
+    img[minor] = col(line) * 0.3
+    em[minor] = 0.35
+    img[major] = col(line)
+    em[major] = 1.0
+    return img, em
+
+
+def tex_viewport(name, c='#7a828c'):
+    """An observation window (see-through): a slim hull frame round an opening from just above
+    the floor to just under the top, with struts at the tile edges, so a row of them reads as one
+    glass wall. Stack two for a window two storeys tall."""
+    rgb, _ = tex_hull(name + 'h', c)
+    rgb = rgb.copy()
+    yy, xx = np.mgrid[0:T, 0:T]
+    opening = (yy >= 6) & (yy < 56) & (xx >= 3) & (xx < 61)
+    rim = ~opening & (yy >= 4) & (yy < 58) & (xx >= 1) & (xx < 63)
+    rgb[rim] = col(c) * 0.4
+    return np.clip(rgb, 0, 1), None, (~opening).astype(np.float32)
+
+
+def tex_hex(name, c='#2a4a50', edge='#6a9a98'):
+    """Hexagonal panelling: alien architecture, shield walls, hives of the tidier kind."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    cx = np.array([i * 16 + (j % 2) * 8 for j in range(4) for i in range(4)], float)
+    cy = np.array([j * 16 for j in range(4) for i in range(4)], float)
+    dx = np.abs(xx[..., None] - cx[None, None, :])
+    dy = np.abs(yy[..., None] - cy[None, None, :])
+    d = np.hypot(np.minimum(dx, T - dx), np.minimum(dy, T - dy))
+    near = np.sort(d, axis=2)
+    cell = np.argmin(d, axis=2)
+    tone = 0.8 + 0.3 * ((cell * 29 + 3) % 5) / 4
+    img = col(c)[None, None, :] * tone[..., None] * (0.85 + 0.25 * fbm(T, rng, 8, 3)[..., None])
+    img[(near[..., 1] - near[..., 0]) < 1.6] = col(edge)
+    return grain(np.clip(img, 0, 1), rng, 0.03)
+
+
+def tex_alien_rock(name, c='#3a2a4a', vein='#4af0d0'):
+    """Dark violet rock split by glowing veins (emissive): alien worlds, otherworldly caves."""
+    img = tex_rock(name + 'r', c)
+    v1 = np.abs(fbm(T, _rng(name + 'v'), 3, 4) - 0.5)
+    v2 = np.abs(fbm(T, _rng(name + 'w'), 5, 3) - 0.5)
+    line = (v1 < 0.018) | (v2 < 0.012)
+    glow = (v1 < 0.05) & ~line
+    img[glow] = img[glow] * 0.6 + col(vein) * 0.25
+    img[line] = col(vein)
+    em = np.zeros((T, T), np.float32)
+    em[line] = 1.0
+    return np.clip(img, 0, 1), em
+
+
+def tex_alien_ground(name, c='#6a4a6e'):
+    """Violet dust drifting over teal grit, with crystal flecks that catch the light."""
+    rng = _rng(name)
+    n = fbm(T, rng, 6, 4)
+    img = col(c)[None, None, :] * (0.65 + 0.6 * n[..., None])
+    drift = np.clip((fbm(T, _rng(name + 'd'), 4, 3) - 0.5) * 3, 0, 1)
+    img = img * (1 - 0.4 * drift[..., None]) + col('#3a6a72')[None, None, :] * 0.4 * drift[..., None]
+    s = rng.random((T, T))
+    img[s > 0.985] = col('#c8f0ff')
+    img[s < 0.04] *= 0.6
+    return grain(np.clip(img, 0, 1), rng, 0.04)
+
+
+def tex_organic(name, c='#7a2a3a'):
+    """A living wall: ridged flesh with dark veins and wet highlights. Hives, infested ships."""
+    rng = _rng(name)
+    yy = np.mgrid[0:T, 0:T][0]
+    n = fbm(T, rng, 6, 4)
+    ridge = 0.5 + 0.5 * np.sin((yy + n * 18) * 2 * np.pi / 16)
+    img = col(c)[None, None, :] * (0.55 + 0.6 * ridge[..., None]) * (0.85 + 0.3 * n[..., None])
+    img[np.abs(fbm(T, _rng(name + 'v'), 4, 4) - 0.5) < 0.02] = col('#3a0c18')
+    hi = (ridge > 0.92) & (rng.random((T, T)) > 0.6)
+    img[hi] = np.clip(img[hi] * 1.5 + 0.1, 0, 1)
+    img[rng.random((T, T)) > 0.992] = col('#1a0408')
+    return np.clip(img, 0, 1)
+
+
+def tex_sky_wall(name):
+    """A wall painted as blue sky with white clouds: a door in it opens onto more sky."""
+    rng = _rng(name)
+    img = col('#6a9ede')[None, None, :] * (0.94 + 0.1 * fbm(T, rng, 4, 3)[..., None])
+    cl = np.clip((fbm(T, _rng(name + 'c'), 4, 5) - 0.5) * 3.5, 0, 1)
+    shade = np.clip(fbm(T, _rng(name + 's'), 6, 3) - 0.3, 0, 1)
+    cloud = col('#f8fbff')[None, None, :] * (1 - 0.35 * shade[..., None])
+    return np.clip(img * (1 - cl[..., None]) + cloud * cl[..., None], 0, 1)
+
+
+def tex_cloud_floor(name, c='#f4f0f8'):
+    """Ground made of cloud: soft billows with lavender hollows, to walk on in a dream."""
+    n = fbm(T, _rng(name), 4, 5)
+    m = fbm(T, _rng(name + 'm'), 8, 3)
+    billow = np.clip((n - 0.35) * 2.2, 0, 1)
+    img = col('#c8b8e0')[None, None, :] * (1 - billow[..., None]) + col(c)[None, None, :] * billow[..., None]
+    return np.clip(img * (0.92 + 0.12 * m[..., None]), 0, 1)
+
+
+def tex_obsidian(name, c='#16141c'):
+    """Polished black stone slabs with a violet sheen. Reflective by default: mirror floors."""
+    rng = _rng(name)
+    img = col(c)[None, None, :] * (0.8 + 0.5 * fbm(T, rng, 5, 4)[..., None])
+    streak = np.clip((fbm(T, _rng(name + 's'), 3, 4) - 0.55) * 3, 0, 1)
+    img = img + col('#3a2a5a')[None, None, :] * streak[..., None] * 0.6
+    yy, xx = np.mgrid[0:T, 0:T]
+    img[((xx % 32) < 1) | ((yy % 32) < 1)] *= 0.6
+    return np.clip(img, 0, 1)
+
+
+def tex_fireplace(name):
+    """A stone hearth under a wooden mantel with a log fire burning in it (emissive)."""
+    rng = _rng(name)
+    img = tex_stone(name + 's', '#8a7a6a', '#4a4038')
+    em = np.zeros((T, T), np.float32)
+    yy, xx = np.mgrid[0:T, 0:T]
+    mantel = (yy >= 20) & (yy < 26)
+    img[mantel] = (col('#5a3a22')[None, None, :] * (0.85 + 0.3 * rng.random((T, T)))[..., None])[mantel]
+    img[yy == 25] = col('#3a2414')
+    mouth = ((yy >= 34) & (yy < 62) & (np.abs(xx - 31.5) <= 17)) | \
+            ((yy >= 30) & (yy < 34) & (np.abs(xx - 31.5) <= 17 - (34 - yy) * 1.5))
+    img[mouth] = col('#140c0a')
+    tall = 8 + 16 * fbm(T, _rng(name + 'f'), 8, 3)[20]
+    flame = mouth & (yy >= 56 - tall[None, :]) & (yy < 56) & (np.abs(xx - 31.5) <= 13)
+    heat = np.clip((56 - yy) / np.maximum(tall[None, :], 1), 0, 1)[..., None]
+    fc = col('#fff0a0')[None, None, :] * (1 - heat) + col('#ff6020')[None, None, :] * heat
+    img[flame] = fc[flame]
+    em[flame] = 1.0
+    logs = mouth & (yy >= 56) & (yy < 61) & (np.abs(xx - 31.5) <= 14)
+    img[logs] = col('#3a2416')
+    ember = logs & (rng.random((T, T)) > 0.75)
+    img[ember] = col('#ff7030')
+    em[ember] = 0.9
+    return np.clip(img, 0, 1), em
+
+
+def tex_star_chart(name, c='#141c34'):
+    """Old star charts on deep blue paper, ruled in gold: constellations and an astrolabe ring.
+    The stars faintly glow (emissive)."""
+    rng = _rng(name)
+    img = col(c)[None, None, :] * (0.8 + 0.35 * fbm(T, rng, 8, 3)[..., None])
+    yy, xx = np.mgrid[0:T, 0:T]
+    em = np.zeros((T, T), np.float32)
+    gold = col('#c8a048')
+    r = np.hypot(xx - 31.5, yy - 31.5)
+    img[(np.abs(r - 25) < 0.7) | (np.abs(r - 14) < 0.5)] = gold * 0.75
+    pts = rng.random((9, 2)) * 48 + 8
+    lines = Image.new('L', (T, T), 0)
+    ld = ImageDraw.Draw(lines)
+    for a, b in ((0, 1), (1, 2), (2, 3), (1, 4), (4, 5), (6, 7), (7, 8)):
+        ld.line([tuple(pts[a]), tuple(pts[b])], fill=255, width=1)
+    img[np.asarray(lines) > 0] = gold
+    faint = rng.random((T, T)) > 0.985
+    img[faint] = col('#d8d8f0') * 0.8
+    em[faint] = 0.6
+    for (x, y) in pts:
+        img[int(y), int(x)] = col('#fff4c8')
+        em[int(y), int(x)] = 1.0
+    img[:, :1] = col('#3a2a1a')
+    return np.clip(img, 0, 1), em
+
+
 # ---------------------------------------------------------------- registry
 
 def _plain(fn, *a, **k):
@@ -976,7 +1265,6 @@ TEXTURES = {
     'snow': _plain(tex_snow),
     'asphalt': _plain(tex_asphalt),
     'grate': _plain(tex_grate),
-    # see-through: the renderer looks past their holes (fences, bars, railings, broken glass)
     'castle': _plain(tex_castle),
     'flagstone': _plain(tex_flagstone),
     'stained_glass': _em(tex_stained_glass),
@@ -984,6 +1272,29 @@ TEXTURES = {
     'snow_rock': _plain(tex_snow_rock),
     'slime_brick': _plain(tex_slime_brick),
     'door_wood': _plain(tex_door_wood),
+    # sci-fi
+    'hull': _em(tex_hull),
+    'hull_lit': _em(tex_hull, strip='#7ae8ff'),
+    'hull_red': _em(tex_hull, '#6a6e76', '#ff3a2a'),
+    'hull_dark': _em(tex_hull, '#4a5058'),
+    'tech_panel': _em(tex_tech_panel),
+    'server': _em(tex_server),
+    'blast_door': _em(tex_blast_door),
+    'hazard': _plain(tex_hazard),
+    'deck': _plain(tex_deck),
+    'grid_floor': _em(tex_grid_floor),
+    'hex_panel': _plain(tex_hex),
+    # alien and dream
+    'alien_rock': _em(tex_alien_rock),
+    'alien_ground': _plain(tex_alien_ground),
+    'organic': _plain(tex_organic),
+    'sky_wall': _plain(tex_sky_wall),
+    'cloud_floor': _plain(tex_cloud_floor),
+    'obsidian': _plain(tex_obsidian),
+    # the study
+    'fireplace': _em(tex_fireplace),
+    'star_chart': _em(tex_star_chart),
+    # see-through: the renderer looks past their holes (fences, bars, railings, broken glass)
     'bars': _masked(tex_bars),
     'fence_iron': _masked(tex_fence_iron),
     'chainlink': _masked(tex_chainlink),
@@ -992,6 +1303,7 @@ TEXTURES = {
     'portcullis': _masked(tex_portcullis),
     'window_broken': _masked(tex_window_broken),
     'lattice': _masked(tex_lattice),
+    'viewport': _masked(tex_viewport),
 }
 
 _cache = {}
@@ -1911,6 +2223,461 @@ def spr_lectern():
     return _finish(im, em, w, h)
 
 
+# ---- sci-fi
+
+
+def spr_stasis_pod():
+    """An upright cryo pod: frosted glass lit from inside (emissive), a sleeper's shape."""
+    w, h = 24, 56
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.rounded_rectangle([1 * S, 2 * S, 23 * S, 50 * S], radius=10 * S, fill='#4a525c')
+    d.rounded_rectangle([1 * S, 2 * S, 23 * S, 50 * S], radius=10 * S, outline='#2a3036', width=S)
+    glass = [4 * S, 6 * S, 20 * S, 46 * S]
+    d.rounded_rectangle(glass, radius=7 * S, fill='#9ae8f0')
+    de.rounded_rectangle(glass, radius=7 * S, fill=170)
+    d.ellipse([10 * S, 11 * S, 14 * S, 15 * S], fill='#5a9aaa')
+    d.rounded_rectangle([9 * S, 16 * S, 15 * S, 38 * S], radius=2 * S, fill='#5a9aaa')
+    de.ellipse([10 * S, 11 * S, 14 * S, 15 * S], fill=120)
+    de.rounded_rectangle([9 * S, 16 * S, 15 * S, 38 * S], radius=2 * S, fill=120)
+    for x in (6, 18):
+        d.line([(x * S, 9 * S), (x * S, 43 * S)], fill='#d8f8ff', width=S // 2)
+    d.rectangle([0, 48 * S, 24 * S, 56 * S], fill='#2e343c')
+    for i, c in enumerate(('#4aff7a', '#ffc040', '#4ac0ff')):
+        box = [(5 + i * 5) * S, 51 * S, (7 + i * 5) * S, 53 * S]
+        d.rectangle(box, fill=c)
+        de.rectangle(box, fill=255)
+    return _finish(im, em, w, h)
+
+
+def spr_hologram():
+    """A wireframe world turning over its emitter, in glowing cyan (emissive)."""
+    w, h = 26, 40
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    cyan, dim = '#6af0ff', '#3ab0c8'
+    for draw, a, b in ((d, cyan, dim), (de, 255, 190)):
+        draw.ellipse([3 * S, 1 * S, 23 * S, 21 * S], outline=a, width=S)
+        for k in (4, 8):
+            draw.ellipse([(13 - k) * S, 1 * S, (13 + k) * S, 21 * S], outline=b, width=S // 2)
+        for y in (6, 11, 16):
+            half = float(np.sqrt(max(0.0, 100 - (y - 11) ** 2)))
+            draw.line([((13 - half) * S, y * S), ((13 + half) * S, y * S)], fill=b, width=S // 2)
+        for x in (8, 13, 18):
+            draw.line([(x * S, 22 * S), (13 * S, 33 * S)], fill=b, width=S // 2)
+    d.ellipse([6 * S, 32 * S, 20 * S, 37 * S], fill='#3a4048')
+    d.ellipse([9 * S, 32 * S, 17 * S, 34 * S], fill=cyan)
+    de.ellipse([9 * S, 32 * S, 17 * S, 34 * S], fill=255)
+    d.rectangle([8 * S, 35 * S, 18 * S, 40 * S], fill='#2a2e34')
+    return _finish(im, em, w, h)
+
+
+def spr_sci_crate():
+    """A ribbed metal cargo crate with hazard corners and a lit label (emissive)."""
+    w, h = 24, 20
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.rectangle([0, 2 * S, 24 * S, 20 * S], fill='#5a6068')
+    d.rectangle([0, 0, 24 * S, 3 * S], fill='#7a8088')
+    d.rectangle([2 * S, 5 * S, 22 * S, 18 * S], outline='#3a3e44', width=S)
+    for x0 in (0, 20):
+        for k in range(3):
+            d.polygon([((x0 + k * 2) * S, 20 * S), ((x0 + k * 2 + 1) * S, 20 * S),
+                       ((x0 + k * 2 + 4) * S, 16 * S), ((x0 + k * 2 + 3) * S, 16 * S)], fill='#e0b030')
+    d.rectangle([9 * S, 8 * S, 15 * S, 11 * S], fill='#6af0ff')
+    de.rectangle([9 * S, 8 * S, 15 * S, 11 * S], fill=210)
+    return _finish(im, em, w, h)
+
+
+def spr_drone():
+    """A hovering drone with one glowing eye (emissive). Float it with z (0.6-1.2)."""
+    w, h = 22, 14
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.rectangle([0, 5 * S, 22 * S, 7 * S], fill='#2a2e34')
+    d.rectangle([0, 3 * S, 5 * S, 4 * S], fill='#8a9098')
+    d.rectangle([17 * S, 3 * S, 22 * S, 4 * S], fill='#8a9098')
+    d.ellipse([5 * S, 1 * S, 17 * S, 13 * S], fill='#3a3e46')
+    d.ellipse([7 * S, 2 * S, 15 * S, 7 * S], fill='#5a606a')
+    d.ellipse([9 * S, 6 * S, 13 * S, 10 * S], fill='#ff4030')
+    de.ellipse([9 * S, 6 * S, 13 * S, 10 * S], fill=255)
+    return _finish(im, em, w, h)
+
+
+def spr_lander():
+    """A small landing craft on splayed legs, cockpit and engines lit (emissive)."""
+    w, h = 64, 44
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    hull, dark = '#c8ccd2', '#6a6e76'
+    for x0, x1 in ((14, 6), (50, 58), (32, 32)):
+        d.line([(x0 * S, 28 * S), (x1 * S, 41 * S)], fill=dark, width=2 * S)
+        d.rectangle([(x1 - 3) * S, 41 * S, (x1 + 3) * S, 44 * S], fill='#4a4e56')
+    d.ellipse([22 * S, 28 * S, 42 * S, 33 * S], fill='#ffb060')
+    de.ellipse([22 * S, 28 * S, 42 * S, 33 * S], fill=200)
+    d.polygon([(10 * S, 30 * S), (54 * S, 30 * S), (60 * S, 20 * S), (48 * S, 6 * S), (16 * S, 6 * S),
+               (4 * S, 20 * S)], fill=hull)
+    d.polygon([(16 * S, 6 * S), (48 * S, 6 * S), (44 * S, 1 * S), (20 * S, 1 * S)], fill='#a8acb4')
+    d.polygon([(4 * S, 20 * S), (60 * S, 20 * S), (54 * S, 30 * S), (10 * S, 30 * S)], fill='#a8acb4')
+    d.rectangle([4 * S, 19 * S, 60 * S, 21 * S], fill=dark)
+    cockpit = [(24 * S, 8 * S), (40 * S, 8 * S), (43 * S, 15 * S), (21 * S, 15 * S)]
+    d.polygon(cockpit, fill='#7ae0ff')
+    de.polygon(cockpit, fill=190)
+    d.line([(32 * S, 8 * S), (32 * S, 15 * S)], fill=dark, width=S)
+    d.rectangle([12 * S, 10 * S, 17 * S, 13 * S], fill='#e07a2a')
+    for x, c in ((6, '#ff3020'), (57, '#30ff60')):
+        d.rectangle([x * S, 18 * S, (x + 2) * S, 20 * S], fill=c)
+        de.rectangle([x * S, 18 * S, (x + 2) * S, 20 * S], fill=255)
+    return _finish(im, em, w, h)
+
+
+def spr_antenna():
+    """A lattice mast with a dish and a red warning light on top (emissive)."""
+    w, h = 20, 64
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.line([(7 * S, 63 * S), (9 * S, 8 * S)], fill='#8a8e96', width=S)
+    d.line([(13 * S, 63 * S), (11 * S, 8 * S)], fill='#8a8e96', width=S)
+    for y in range(12, 62, 6):
+        d.line([(8 * S, y * S), (12 * S, (y + 6) * S)], fill='#6a6e76', width=S // 2)
+        d.line([(12 * S, y * S), (8 * S, (y + 6) * S)], fill='#6a6e76', width=S // 2)
+    d.ellipse([0, 10 * S, 11 * S, 22 * S], fill='#c8ccd2')
+    d.ellipse([2 * S, 12 * S, 9 * S, 20 * S], fill='#9aa0a8')
+    d.line([(5 * S, 16 * S), (10 * S, 14 * S)], fill='#4a4e56', width=S // 2)
+    d.ellipse([8 * S, 1 * S, 12 * S, 5 * S], fill='#ff3020')
+    de.ellipse([8 * S, 1 * S, 12 * S, 5 * S], fill=255)
+    d.line([(10 * S, 5 * S), (10 * S, 9 * S)], fill='#8a8e96', width=S // 2)
+    d.rectangle([4 * S, 61 * S, 16 * S, 64 * S], fill='#4a4e56')
+    return _finish(im, em, w, h)
+
+
+# ---- alien
+
+
+def spr_alien_plant():
+    """A tall alien stalk hung with glowing seed pods (emissive). Pair it with a light."""
+    w, h = 22, 44
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    pts = [(11, 44), (10, 35), (12, 26), (10, 17), (12, 8), (11, 3)]
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        d.line([(x0 * S, y0 * S), (x1 * S, y1 * S)], fill='#2e5a4c', width=2 * S)
+    for (x, y, dx) in ((10, 34, -7), (12, 26, 7), (10, 18, -6)):
+        d.polygon([(x * S, y * S), ((x + dx) * S, (y - 4) * S), ((x + dx * 0.6) * S, (y + 1) * S)], fill='#2a7a62')
+    for (x, y, r) in ((4, 29, 3), (18, 21, 3), (5, 13, 2.5), (14, 5, 3), (17, 36, 2)):
+        box = [(x - r) * S, (y - r) * S, (x + r) * S, (y + r) * S]
+        d.ellipse(box, fill='#ff6ad8')
+        de.ellipse(box, fill=230)
+        d.ellipse([(x - r / 2) * S, (y - r / 2) * S, x * S, y * S], fill='#ffd0f4')
+    return _finish(im, em, w, h)
+
+
+def spr_monolith():
+    """A tall black slab, perfectly smooth. It was here before anyone."""
+    w, h = 16, 56
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.rectangle([1 * S, 0, 15 * S, 56 * S], fill='#0a0a0e')
+    d.rectangle([1 * S, 0, 2 * S, 56 * S], fill='#2a2a36')
+    d.rectangle([1 * S, 0, 15 * S, 1 * S], fill='#2a2a36')
+    return _finish(im, em, w, h)
+
+
+def spr_orb():
+    """A floating sphere of light (emissive, with its own glow). Hang it in the air with z."""
+    w = h = 14
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    for r, c, e in ((7, '#a888ff', 170), (5, '#d8c8ff', 230), (3, '#ffffff', 255)):
+        box = [(7 - r) * S, (7 - r) * S, (7 + r) * S, (7 + r) * S]
+        d.ellipse(box, fill=c)
+        de.ellipse(box, fill=e)
+    return _finish(im, em, w, h)
+
+
+def spr_alien_egg():
+    """A leathery egg with a glowing slit (emissive). Something inside is nearly ready."""
+    w, h = 16, 20
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.ellipse([1 * S, 2 * S, 15 * S, 20 * S], fill='#5a4a3a')
+    d.ellipse([3 * S, 4 * S, 10 * S, 13 * S], fill='#76664e')
+    for (x0, y0, x1, y1) in ((4, 8, 6, 18), (11, 6, 12, 17), (8, 12, 9, 19)):
+        d.line([(x0 * S, y0 * S), (x1 * S, y1 * S)], fill='#3a2a20', width=S // 2)
+    slit = [(8 * S, 2 * S), (10 * S, 5 * S), (8 * S, 8 * S), (6 * S, 5 * S)]
+    d.polygon(slit, fill='#a0ff60')
+    de.polygon(slit, fill=220)
+    return _finish(im, em, w, h)
+
+
+def spr_floating_rock():
+    """A chunk of earth adrift in the air: grass on top, roots trailing below. Set z."""
+    w, h = 40, 44
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.polygon([(2 * S, 8 * S), (38 * S, 8 * S), (31 * S, 22 * S), (24 * S, 33 * S), (20 * S, 42 * S),
+               (15 * S, 32 * S), (8 * S, 21 * S)], fill='#6a5a4a')
+    d.polygon([(20 * S, 8 * S), (38 * S, 8 * S), (31 * S, 22 * S), (24 * S, 33 * S), (20 * S, 42 * S)], fill='#4e4236')
+    for (x, y) in ((12, 20), (26, 18), (19, 28)):
+        d.ellipse([(x - 2) * S, (y - 1) * S, (x + 2) * S, (y + 1) * S], fill='#8a7a64')
+    for (x0, y0, x1, y1) in ((14, 30, 12, 38), (25, 30, 28, 37), (20, 40, 21, 44)):
+        d.line([(x0 * S, y0 * S), (x1 * S, y1 * S)], fill='#3a2e22', width=S // 2)
+    d.ellipse([1 * S, 3 * S, 39 * S, 13 * S], fill='#3e7a32')
+    d.ellipse([3 * S, 3 * S, 37 * S, 10 * S], fill='#5a9a44')
+    return _finish(im, em, w, h)
+
+
+# ---- dream
+
+
+def spr_door_frame():
+    """A door standing on its own in the open, swung ajar. Through it: whatever is behind."""
+    w, h = 30, 48
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    paint, shadow = '#ece4d4', '#b8ae9c'
+    d.rectangle([8 * S, 0, 28 * S, 4 * S], fill=paint)
+    d.rectangle([8 * S, 0, 11 * S, 46 * S], fill=paint)
+    d.rectangle([25 * S, 0, 28 * S, 46 * S], fill=paint)
+    d.rectangle([10 * S, 4 * S, 11 * S, 46 * S], fill=shadow)
+    d.rectangle([8 * S, 45 * S, 28 * S, 48 * S], fill='#8a7a64')
+    leaf = [(8 * S, 4 * S), (1 * S, 7 * S), (1 * S, 46 * S), (8 * S, 45 * S)]
+    d.polygon(leaf, fill='#4a6a8a')
+    d.line([(4 * S, 9 * S), (4 * S, 42 * S)], fill='#3a5470', width=S // 2)
+    d.ellipse([2 * S, 25 * S, 4 * S, 27 * S], fill='#c8a040')
+    return _finish(im, em, w, h)
+
+
+def spr_sky_whale():
+    """A whale swimming through the sky with stars along its back. Float it high with z."""
+    w, h = 64, 28
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    body, dark, belly = '#3a4a7a', '#2a3660', '#a8b8d8'
+    d.polygon([(47 * S, 13 * S), (56 * S, 15 * S), (63 * S, 5 * S), (60 * S, 15 * S), (64 * S, 25 * S),
+               (56 * S, 18 * S)], fill=dark)
+    d.ellipse([6 * S, 4 * S, 52 * S, 24 * S], fill=body)
+    d.ellipse([0, 6 * S, 24 * S, 24 * S], fill=body)
+    d.chord([2 * S, 10 * S, 48 * S, 26 * S], 0, 180, fill=belly)
+    for x in range(8, 40, 4):
+        d.line([(x * S, 20 * S), ((x + 3) * S, 22 * S)], fill='#8898b8', width=S // 2)
+    d.polygon([(22 * S, 18 * S), (31 * S, 18 * S), (24 * S, 27 * S)], fill=dark)
+    d.ellipse([7 * S, 13 * S, 9 * S, 15 * S], fill='#e8e8f0')
+    for (x, y) in ((16, 7), (22, 5), (29, 6), (35, 7), (41, 9), (26, 9)):
+        d.rectangle([x * S, y * S, (x + 1) * S, (y + 1) * S], fill='#fff4c8')
+        de.rectangle([x * S, y * S, (x + 1) * S, (y + 1) * S], fill=255)
+    return _finish(im, em, w, h)
+
+
+def spr_koi():
+    """A koi swimming through the air. Float it with z; flip it to turn it round."""
+    w, h = 26, 12
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.polygon([(19 * S, 6 * S), (26 * S, 1 * S), (24 * S, 6 * S), (26 * S, 11 * S)], fill='#f2a050')
+    d.ellipse([2 * S, 2 * S, 21 * S, 10 * S], fill='#f08a3a')
+    d.ellipse([7 * S, 2 * S, 13 * S, 6 * S], fill='#f4f0e8')
+    d.ellipse([13 * S, 5 * S, 18 * S, 9 * S], fill='#f4f0e8')
+    d.polygon([(9 * S, 9 * S), (13 * S, 9 * S), (10 * S, 12 * S)], fill='#f2a050')
+    d.ellipse([4 * S, 4 * S, 6 * S, 6 * S], fill='#1a1a1a')
+    return _finish(im, em, w, h)
+
+
+def spr_pocket_watch():
+    """A great pocket watch hanging in the air on its chain. Float it with z."""
+    w, h = 28, 36
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    for y in range(0, 6, 2):
+        d.ellipse([12 * S, y * S, 16 * S, (y + 3) * S], outline='#c8a040', width=S // 2)
+    d.rectangle([12 * S, 5 * S, 16 * S, 8 * S], fill='#b08a34')
+    d.ellipse([1 * S, 7 * S, 27 * S, 33 * S], fill='#c8a040')
+    d.ellipse([3 * S, 9 * S, 25 * S, 31 * S], fill='#f4eedc')
+    for k in range(12):
+        a = k * np.pi / 6
+        x, y = 14 + 9.5 * np.sin(a), 20 - 9.5 * np.cos(a)
+        d.rectangle([(x - 0.5) * S, (y - 0.5) * S, (x + 0.5) * S, (y + 0.5) * S], fill='#3a3028')
+    d.line([(14 * S, 20 * S), (9 * S, 16 * S)], fill='#2a2420', width=S)
+    d.line([(14 * S, 20 * S), (19 * S, 14 * S)], fill='#2a2420', width=S // 2)
+    return _finish(im, em, w, h)
+
+
+def _chess(w, h, crown):
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    c, s, hi = '#e8e4dc', '#bcb6aa', '#fbf8f2'
+    cx = w / 2
+    d.rounded_rectangle([1 * S, (h - 5) * S, (w - 1) * S, h * S], radius=S, fill=c)
+    d.rectangle([3 * S, (h - 8) * S, (w - 3) * S, (h - 5) * S], fill=s)
+    top = 12 if crown else 11
+    d.polygon([((cx - 4) * S, (h - 8) * S), ((cx + 4) * S, (h - 8) * S), ((cx + 2) * S, top * S),
+               ((cx - 2) * S, top * S)], fill=c)
+    d.polygon([((cx + 1) * S, (h - 8) * S), ((cx + 4) * S, (h - 8) * S), ((cx + 2) * S, top * S),
+               ((cx + 1) * S, top * S)], fill=s)
+    d.rectangle([(cx - 4) * S, (top - 1) * S, (cx + 4) * S, (top + 1) * S], fill=s)
+    if crown:
+        d.polygon([((cx - 4) * S, (top - 1) * S), ((cx + 4) * S, (top - 1) * S), ((cx + 5) * S, 6 * S),
+                   ((cx - 5) * S, 6 * S)], fill=c)
+        d.rectangle([(cx - 1) * S, 0, (cx + 1) * S, 6 * S], fill=c)
+        d.rectangle([(cx - 3) * S, 2 * S, (cx + 3) * S, 4 * S], fill=c)
+    else:
+        d.ellipse([(cx - 5) * S, 1 * S, (cx + 5) * S, (top + 0.5) * S], fill=c)
+        d.ellipse([(cx - 3) * S, 2 * S, (cx - 1) * S, 5 * S], fill=hi)
+    return _finish(im, em, w, h)
+
+
+def spr_chess_pawn():
+    """A giant marble pawn. Tint it dark for the other side."""
+    return _chess(18, 30, False)
+
+
+def spr_chess_king():
+    """A giant marble king, crowned and crossed. Tint it dark for the other side."""
+    return _chess(18, 48, True)
+
+
+def spr_balloon():
+    """A striped hot-air balloon drifting overhead. Float it high with z."""
+    w, h = 30, 46
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.polygon([(5 * S, 22 * S), (25 * S, 22 * S), (19 * S, 34 * S), (11 * S, 34 * S)], fill='#d84a3a')
+    for (x0, x1), c in (((1, 29), '#d84a3a'), ((7, 23), '#f0c860'), ((12, 18), '#d84a3a')):
+        d.ellipse([x0 * S, 0, x1 * S, 30 * S], fill=c)
+    d.polygon([(11 * S, 22 * S), (19 * S, 22 * S), (17 * S, 34 * S), (13 * S, 34 * S)], fill='#f0c860')
+    for x0, x1 in ((11, 12), (19, 18)):
+        d.line([(x0 * S, 34 * S), (x1 * S, 40 * S)], fill='#4a3a2a', width=S // 2)
+    d.rectangle([11 * S, 40 * S, 19 * S, 46 * S], fill='#7a5a32')
+    d.rectangle([11 * S, 40 * S, 19 * S, 41 * S], fill='#5a3e20')
+    return _finish(im, em, w, h)
+
+
+# ---- the study
+
+
+def spr_telescope():
+    """A brass refracting telescope on a wooden tripod, pointed at the sky."""
+    w, h = 32, 40
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    for x1 in (7, 19, 31):
+        d.line([(19 * S, 18 * S), (x1 * S, 40 * S)], fill='#5a3a22', width=S + S // 2)
+    d.line([(6 * S, 4 * S), (25 * S, 18 * S)], fill='#b08a3c', width=4 * S)
+    d.line([(7 * S, 3 * S), (25 * S, 16 * S)], fill='#e0c070', width=S)
+    d.ellipse([2 * S, 0, 9 * S, 7 * S], fill='#7a5a22')
+    d.ellipse([3 * S, 1 * S, 8 * S, 6 * S], fill='#2a3a4a')
+    d.line([(25 * S, 18 * S), (28 * S, 21 * S)], fill='#3a2a1a', width=2 * S)
+    d.ellipse([16 * S, 13 * S, 22 * S, 19 * S], fill='#5a3a22')
+    return _finish(im, em, w, h)
+
+
+def spr_globe():
+    """A globe on a turned wooden stand inside its brass meridian."""
+    w, h = 20, 28
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.ellipse([2 * S, 1 * S, 18 * S, 17 * S], fill='#3a6a8a')
+    for (x0, y0, x1, y1) in ((5, 4, 10, 9), (11, 8, 15, 14), (6, 11, 9, 15)):
+        d.ellipse([x0 * S, y0 * S, x1 * S, y1 * S], fill='#c8b070')
+    d.ellipse([4 * S, 3 * S, 9 * S, 7 * S], outline='#6a9aba', width=S // 2)
+    d.arc([0, 0, 20 * S, 18 * S], 100, 260, fill='#c8a040', width=S)
+    d.rectangle([9 * S, 18 * S, 11 * S, 23 * S], fill='#5a3a22')
+    d.ellipse([4 * S, 22 * S, 16 * S, 28 * S], fill='#4a3020')
+    return _finish(im, em, w, h)
+
+
+def spr_armchair():
+    """A deep wingback reading chair in oxblood leather."""
+    w, h = 28, 26
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    leather, dark, hi = '#6a2a26', '#4a1a18', '#8a3e36'
+    d.rounded_rectangle([4 * S, 0, 24 * S, 19 * S], radius=3 * S, fill=leather)
+    for x0 in (1, 21):
+        d.rounded_rectangle([x0 * S, 3 * S, (x0 + 6) * S, 21 * S], radius=2 * S, fill=dark)
+    d.rectangle([5 * S, 15 * S, 23 * S, 20 * S], fill=hi)
+    for x in (9, 14, 19):
+        for y in (5, 10):
+            d.rectangle([x * S, y * S, (x + 1) * S, (y + 1) * S], fill=dark)
+    for x0 in (2, 24):
+        d.rectangle([x0 * S, 21 * S, (x0 + 2) * S, 26 * S], fill='#2a1a10')
+    return _finish(im, em, w, h)
+
+
+def spr_book_stack():
+    """A tottering pile of books."""
+    w, h = 20, 18
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    rows = ((1, 18, 14, 18, '#7a2a2a'), (3, 17, 10, 14, '#2a4a6a'), (2, 15, 7, 10, '#3a5a32'),
+            (5, 19, 3, 7, '#8a6a2a'), (4, 14, 0, 3, '#5a2a4a'))
+    for (x0, x1, y0, y1, c) in rows:
+        d.rectangle([x0 * S, y0 * S, x1 * S, y1 * S], fill=c)
+        d.rectangle([x0 * S, y0 * S, x1 * S, (y0 + 1) * S], fill='#e8dcc0')
+        d.line([((x0 + 2) * S, y0 * S), ((x0 + 2) * S, y1 * S)], fill='#c8a040', width=S // 2)
+    return _finish(im, em, w, h)
+
+
+def spr_open_book():
+    """An open book with softly glowing pages (emissive). Float a few with z for magic."""
+    w, h = 22, 12
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.polygon([(0, 4 * S), (11 * S, 6 * S), (22 * S, 4 * S), (22 * S, 11 * S), (11 * S, 12 * S),
+               (0, 11 * S)], fill='#6a2a22')
+    for x0, x1 in ((1, 11), (11, 21)):
+        page = [(x0 * S, (2 if x0 == 1 else 4) * S), (x1 * S, (4 if x0 == 1 else 2) * S),
+                (x1 * S, 10 * S), (x0 * S, 10 * S)]
+        d.polygon(page, fill='#fff4dc')
+        de.polygon(page, fill=120)
+    for y in (5, 7):
+        d.line([(2 * S, y * S), (9 * S, (y + 1) * S)], fill='#8a7a62', width=S // 2)
+        d.line([(13 * S, (y + 1) * S), (20 * S, y * S)], fill='#8a7a62', width=S // 2)
+    return _finish(im, em, w, h)
+
+
+def spr_writing_desk():
+    """A writing desk with papers, an inkwell and quill, and a lit candle (emissive)."""
+    w, h = 44, 30
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    wood, dark = '#6a4428', '#4a2e1a'
+    d.rectangle([0, 12 * S, 44 * S, 16 * S], fill=wood)
+    d.rectangle([0, 12 * S, 44 * S, 13 * S], fill='#8a6040')
+    d.rectangle([2 * S, 16 * S, 14 * S, 27 * S], fill=dark)
+    for y in (18, 22):
+        d.rectangle([4 * S, y * S, 12 * S, (y + 3) * S], fill=wood)
+        d.rectangle([7 * S, (y + 1) * S, 9 * S, (y + 2) * S], fill='#c8a040')
+    for x in (2, 40):
+        d.rectangle([x * S, 16 * S, (x + 2) * S, 30 * S], fill=dark)
+    d.polygon([(16 * S, 12 * S), (28 * S, 12 * S), (27 * S, 10 * S), (17 * S, 10 * S)], fill='#f0e6d0')
+    d.rectangle([31 * S, 9 * S, 35 * S, 12 * S], fill='#1a1a2a')
+    d.line([(33 * S, 9 * S), (37 * S, 1 * S)], fill='#f4f0e8', width=S)
+    d.rectangle([6 * S, 6 * S, 8 * S, 12 * S], fill='#efe6d0')
+    d.ellipse([5 * S, 2 * S, 9 * S, 7 * S], fill='#ffd060')
+    de.ellipse([5 * S, 2 * S, 9 * S, 7 * S], fill=255)
+    return _finish(im, em, w, h)
+
+
+def spr_orrery():
+    """A brass orrery: planets on their arms round a glowing sun (emissive)."""
+    w, h = 32, 34
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    brass = '#b08a3c'
+    d.line([(16 * S, 14 * S), (16 * S, 30 * S)], fill=brass, width=S)
+    d.ellipse([8 * S, 29 * S, 24 * S, 34 * S], fill='#4a3020')
+    d.ellipse([1 * S, 6 * S, 31 * S, 18 * S], outline=brass, width=S // 2)
+    d.ellipse([6 * S, 8 * S, 26 * S, 16 * S], outline=brass, width=S // 2)
+    for (x, y, r, c) in ((2, 11, 2, '#c8784a'), (25, 9, 1.5, '#6a9ac8'), (29, 15, 2.5, '#d8b880'),
+                         (8, 15, 1.5, '#a8a8a0')):
+        d.line([(16 * S, 12 * S), (x * S, y * S)], fill=brass, width=S // 2)
+        d.ellipse([(x - r) * S, (y - r) * S, (x + r) * S, (y + r) * S], fill=c)
+    d.ellipse([13 * S, 9 * S, 19 * S, 15 * S], fill='#ffd060')
+    de.ellipse([13 * S, 9 * S, 19 * S, 15 * S], fill=255)
+    return _finish(im, em, w, h)
+
+
 SPRITES = {
     'lamp_post': spr_lamp_post, 'statue': spr_statue, 'flowers': spr_flowers, 'palm': spr_palm,
     'tree': spr_tree, 'barrel': spr_barrel, 'crate': spr_crate, 'lantern': spr_lantern,
@@ -1929,6 +2696,16 @@ SPRITES = {
     'table': spr_table, 'pew': spr_pew, 'stalagmite': spr_stalagmite, 'crystal': spr_crystal,
     'glowshroom': spr_glowshroom, 'snowy_pine': spr_snowy_pine, 'snowman': spr_snowman,
     'grave_cross': spr_grave_cross, 'ladder': spr_ladder, 'lectern': spr_lectern,
+    'stasis_pod': spr_stasis_pod, 'hologram': spr_hologram, 'sci_crate': spr_sci_crate,
+    'drone': spr_drone, 'lander': spr_lander, 'antenna': spr_antenna,
+    'alien_plant': spr_alien_plant, 'monolith': spr_monolith, 'orb': spr_orb, 'alien_egg': spr_alien_egg,
+    'floating_rock': spr_floating_rock,
+    'door_frame': spr_door_frame, 'sky_whale': spr_sky_whale, 'koi': spr_koi,
+    'pocket_watch': spr_pocket_watch, 'chess_pawn': spr_chess_pawn, 'chess_king': spr_chess_king,
+    'balloon': spr_balloon,
+    'telescope': spr_telescope, 'globe': spr_globe, 'armchair': spr_armchair,
+    'book_stack': spr_book_stack, 'open_book': spr_open_book, 'writing_desk': spr_writing_desk,
+    'orrery': spr_orrery,
 }
 
 # default world size (height in map units) for each sprite
@@ -1946,6 +2723,18 @@ SPRITE_HEIGHT = {
     'throne': 0.95, 'armor': 0.66, 'chains': 0.6, 'chest': 0.3, 'table': 0.36, 'pew': 0.42,
     'stalagmite': 0.8, 'crystal': 0.36, 'glowshroom': 0.16, 'snowy_pine': 3.4, 'snowman': 0.62,
     'grave_cross': 0.55, 'ladder': 1.0, 'lectern': 0.5,
+    'stasis_pod': 1.0, 'hologram': 0.55, 'sci_crate': 0.35, 'drone': 0.22, 'lander': 1.6,
+    'antenna': 2.4, 'alien_plant': 1.1, 'monolith': 2.2, 'orb': 0.2, 'alien_egg': 0.35,
+    'floating_rock': 1.6, 'door_frame': 1.1, 'sky_whale': 2.0, 'koi': 0.35, 'pocket_watch': 0.8,
+    'chess_pawn': 0.9, 'chess_king': 1.5, 'balloon': 2.6, 'telescope': 0.8, 'globe': 0.45,
+    'armchair': 0.6, 'book_stack': 0.22, 'open_book': 0.12, 'writing_desk': 0.55, 'orrery': 0.6,
+}
+
+# Placement fields a built-in prop carries unless the scene overrides them, like a character's
+# `defaults`: things that glow bring their own soft aura.
+PROP_DEFAULTS = {
+    'orb': {'aura': {'color': [0.72, 0.6, 1.0], 'strength': 0.6, 'radius': 0.3}},
+    'hologram': {'aura': {'color': [0.4, 0.9, 1.0], 'strength': 0.35, 'radius': 0.18}},
 }
 
 # ---------------------------------------------------------------- debris and scatter
@@ -1971,6 +2760,8 @@ DEBRIS_SETS = {
     'litter': ['sack', 'bucket', 'crate', 'barrel', 'broken_barrel', 'bones'],
     'wreckage': ['rubble', 'rubble', 'broken_barrel', 'rocks', 'bones', 'sack', 'bucket'],
     'cave': ['rocks', 'rocks', 'rocks', 'stalagmite', 'glowshroom', 'crystal', 'bones'],
+    'alien': ['rocks', 'rocks', 'crystal', 'glowshroom', 'alien_plant', 'alien_egg'],
+    'derelict': ['rubble', 'rubble', 'sci_crate', 'bones', 'rocks', 'alien_egg'],
 }
 
 # What `grime` stamps on surfaces when it is turned up.
@@ -2050,6 +2841,7 @@ def sprite_defaults(spec, defs=None):
         out.update(d.get('defaults', {}))
     elif isinstance(spec, str) and spec in SPRITE_HEIGHT:
         out['scale'] = SPRITE_HEIGHT[spec]
+        out.update(PROP_DEFAULTS.get(spec, {}))
     return out
 
 
@@ -2121,12 +2913,16 @@ TEXTURE_NOISE = {
     'lattice': 1.0, 'portcullis': 1.2, 'window_broken': 1.4,
     'castle': 2.0, 'flagstone': 2.2, 'stained_glass': 0.3, 'ice': 0.8, 'snow_rock': 1.8,
     'slime_brick': 1.4, 'door_wood': 1.0,
+    'hull': 0.6, 'hull_lit': 0.5, 'hull_red': 0.6, 'hull_dark': 0.6, 'tech_panel': 0.5, 'server': 0.4,
+    'blast_door': 0.7, 'hazard': 1.2, 'deck': 1.0, 'grid_floor': 0.2, 'hex_panel': 0.8,
+    'alien_rock': 1.8, 'alien_ground': 2.0, 'organic': 1.6, 'sky_wall': 0.3, 'cloud_floor': 0.5,
+    'obsidian': 0.6, 'fireplace': 0.6, 'star_chart': 0.4, 'viewport': 0.6,
 }
 
 
 # How mirror-like a floor is by default. Any floor cell can set its own "reflect" (wet asphalt,
 # polished marble); puddle decals carry their own (DECAL_REFLECT).
-TEXTURE_REFLECT = {'water': 0.5, 'ice': 0.38}
+TEXTURE_REFLECT = {'water': 0.5, 'ice': 0.38, 'obsidian': 0.45, 'grid_floor': 0.3}
 DECAL_REFLECT = {'puddle': 0.35, 'puddle_shine': 0.55, 'puddle_dark': 0.25}
 
 
@@ -2377,7 +3173,8 @@ DECALS = {
 # under a fire reads as a hole), and things that hang or mount on walls.
 NO_CONTACT_SHADOW = {'campfire', 'brazier', 'candles', 'lantern', 'ceiling_lamp', 'chandelier',
                      'sconce', 'ivy_hang', 'painting', 'banner', 'wall_clock', 'pipe_valve',
-                     'chains', 'ladder', 'crystal', 'glowshroom'}
+                     'chains', 'ladder', 'crystal', 'glowshroom', 'hologram', 'drone', 'orb',
+                     'floating_rock', 'sky_whale', 'koi', 'pocket_watch', 'balloon', 'open_book'}
 
 _dcache = {}
 
@@ -2507,11 +3304,13 @@ def draw_skyline(sky, spec, proj, seed=0):
     return sky
 
 
-def draw_disc(sky, az_deg, el_deg, proj, colour, radius_deg=2.2, glow=0.35):
-    """A sun or moon at an azimuth/elevation, with a soft additive halo. Wraps around 360."""
+def draw_disc(sky, az_deg, el_deg, proj, colour, radius_deg=2.2, glow=0.35, hrow=None):
+    """A sun or moon at an azimuth/elevation, with a soft additive halo. Wraps around 360.
+    `hrow` is the panorama row of the horizon (the last row, unless the sky continues below)."""
     h, w = sky.shape[:2]
+    hrow = h - 1 if hrow is None else hrow
     cx = (az_deg % 360) / 360.0 * w
-    cy = h - 1 - proj * np.tan(np.radians(el_deg))
+    cy = hrow - proj * np.tan(np.radians(el_deg))
     r = max(2.0, proj * np.tan(np.radians(radius_deg)))
     dx = _wrapdist(w, cx)[None, :]
     dy = (np.arange(h) - cy)[:, None]
@@ -2524,49 +3323,272 @@ def draw_disc(sky, az_deg, el_deg, proj, colour, radius_deg=2.2, glow=0.35):
     return sky
 
 
-def make_sky(preset, w, h, seed=3, skyline=None, proj=None, discs=()):
-    """Panorama (h, w, 3) covering 360 degrees. h is the height above the horizon line.
+# ---------------------------------------------------------------- sky objects
+# Planets, moons and stranger things painted into the sky panorama. Like the skyline they are
+# placed in degrees (azimuth on the camera compass, elevation above the horizon, size as an
+# angular radius), so they keep their size and place at any resolution or field of view.
+
+SKY_OBJECTS = ('planet', 'ringed', 'moon', 'sun', 'eye')
+
+
+def _sky_object_frame(sky, o, proj, hrow, default_size):
+    """Pixel offsets of the whole panorama from an object's centre, in units of its radius."""
+    h, w = sky.shape[:2]
+    cx = (float(o.get('azimuth', 0)) % 360) / 360.0 * w
+    cy = hrow - proj * np.tan(np.radians(float(o.get('elevation', 20))))
+    r = max(2.0, proj * np.tan(np.radians(float(o.get('size', default_size)))))
+    xs = np.arange(w)
+    dx = ((xs - cx + w / 2) % w) - w / 2          # signed, wrapping round 360
+    dy = np.arange(h) - cy
+    return dx[None, :] / r, dy[:, None] / r, r
+
+
+def _lambert(nx, ny, o):
+    """Light on a sphere's face: `lit_from` is the screen direction the light comes from, in
+    degrees (0 right, 90 below, 180 left, 270 above), `phase` how far round the side it is."""
+    a = np.radians(float(o.get('lit_from', 210)))
+    side = float(o.get('phase', 0.75))               # 0 = lit face-on, 1 = lit from the side
+    lx, ly, lz = np.cos(a) * side, np.sin(a) * side, 1.0 - side * 0.85
+    n = np.sqrt(lx * lx + ly * ly + lz * lz)
+    nz = np.sqrt(np.clip(1 - nx * nx - ny * ny, 0, 1))
+    return np.clip((nx * lx + ny * ly + nz * lz) / n, 0, 1), nz
+
+
+def draw_sky_object(sky, o, proj, hrow, seed=0):
+    """Paint one entry of a scene's `sky_objects` into the panorama."""
+    kind = o.get('type', 'planet')
+    if kind not in SKY_OBJECTS:
+        raise KeyError(f"unknown sky object '{kind}'. Sky objects: {', '.join(SKY_OBJECTS)}")
+    rng = np.random.default_rng(int(o.get('seed', seed)) * 97 + 13)
+    defaults = {'planet': ('#c87a4a', '#e8b07a', 9), 'ringed': ('#d8b880', '#a8784a', 7),
+                'moon': ('#c8c4b8', '#8a867c', 3.5), 'sun': ('#fff0c0', '#ffb060', 3),
+                'eye': ('#5a9a6a', '#f2ece0', 8)}[kind]
+    c1 = np.array(o['color'] if 'color' in o else col(defaults[0]), np.float32)
+    c2 = np.array(o['color2'] if 'color2' in o else col(defaults[1]), np.float32)
+    nx, ny, r = _sky_object_frame(sky, o, proj, hrow, defaults[2])
+    d2 = nx * nx + ny * ny
+    inside = d2 <= 1
+    glow = float(o.get('glow', {'sun': 0.9, 'eye': 0.15}.get(kind, 0.25)))
+    if glow > 0:   # a haze of the object's own colour round it (atmosphere, corona)
+        halo = np.clip(1 - np.sqrt(d2) / (3.2 if kind == 'sun' else 1.6), 0, 1) ** 2 * glow
+        sky += halo[..., None] * (c2 if kind == 'sun' else c1)[None, None, :]
+
+    if kind == 'sun':
+        core = np.clip(1 - d2, 0, 1) ** 0.25
+        sky[inside] = (c1[None, :] * (0.85 + 0.15 * core[inside][:, None]))
+        return sky
+
+    if kind == 'eye':
+        # an almond of white with an iris that follows the viewer: the stuff of bad dreams
+        lid = np.abs(ny) <= 0.62 * np.clip(1 - nx * nx, 0, 1) ** 0.75
+        white = lid & (np.abs(nx) <= 1)
+        veins = (np.abs(np.sin(nx * 23 + ny * 7) * np.cos(ny * 19)) > 0.985) & white
+        sky[white] = c2 * (0.88 + 0.12 * np.clip(1 - d2, 0, 1))[white][:, None]
+        sky[veins] = np.array([0.75, 0.25, 0.25], np.float32)
+        ir = np.sqrt(nx * nx + ny * ny)
+        iris = white & (ir <= 0.42)
+        rings = 0.75 + 0.25 * np.sin(np.arctan2(ny, nx) * 24)
+        sky[iris] = c1 * (0.6 + 0.5 * (1 - ir[iris] / 0.42))[:, None] * rings[iris][:, None]
+        sky[white & (ir <= 0.17)] = np.array([0.03, 0.02, 0.03], np.float32)
+        sky[white & (np.hypot(nx + 0.08, ny + 0.08) <= 0.05)] = np.array([1, 1, 1], np.float32)
+        rim = (~lid) & (np.abs(ny) <= 0.62 * np.clip(1 - nx * nx, 0, 1) ** 0.75 + 0.07) & (np.abs(nx) <= 1.02)
+        sky[rim] = np.array([0.1, 0.06, 0.07], np.float32)
+        return sky
+
+    shade, nz = _lambert(nx, ny, o)
+    if kind == 'moon':
+        tone = np.ones_like(d2)
+        for _ in range(int(o.get('craters', 14))):
+            ccx, ccy, cr = rng.uniform(-0.8, 0.8), rng.uniform(-0.8, 0.8), rng.uniform(0.06, 0.24)
+            m = (nx - ccx) ** 2 + (ny - ccy) ** 2 <= cr * cr
+            tone[m] *= 0.78
+        surface = c1[None, None, :] * tone[..., None]
+        mare = np.clip(np.sin(nx * 4.1 + 1.3) * np.cos(ny * 3.3) - 0.35, 0, 1)
+        surface = surface * (1 - mare[..., None] * 0.3) + c2[None, None, :] * mare[..., None] * 0.3
+    else:
+        # banded gas giant: latitude bands warped by a little turbulence
+        warp = np.sin(nx * 5 + ny * 2.0 + rng.random() * 6) * 0.08
+        band = 0.5 + 0.5 * np.sin((ny + warp) * float(o.get('bands', 9)) + rng.random() * 6)
+        surface = c1[None, None, :] * (1 - band[..., None] * 0.55) + c2[None, None, :] * band[..., None] * 0.55
+        if kind == 'planet' and o.get('storm', True):
+            st = ((nx - 0.25) / 0.22) ** 2 + ((ny - 0.3) / 0.11) ** 2 <= 1
+            surface[st] = surface[st] * 0.55 + np.array([0.75, 0.3, 0.2], np.float32) * 0.45
+    lit = surface * (0.06 + 0.94 * shade[..., None])
+    rim = np.clip(1 - nz, 0, 1) ** 3 * 0.35            # atmosphere brightening the limb
+    lit = lit + (c1 * 0.6)[None, None, :] * (rim * np.clip(shade * 1.5, 0, 1))[..., None]
+
+    if kind == 'ringed':
+        tilt = float(o.get('tilt', 0.24))
+        rot = np.radians(float(o.get('angle', -14)))
+        rx = nx * np.cos(rot) + ny * np.sin(rot)
+        ry = -nx * np.sin(rot) + ny * np.cos(rot)
+        rho = np.sqrt(rx * rx + (ry / tilt) ** 2)
+        ring = (rho >= 1.35) & (rho <= 2.35)
+        dens = (0.55 + 0.45 * np.sin(rho * 31)) * np.where((rho > 1.8) & (rho < 1.88), 0.1, 1.0)
+        ring_c = c2[None, None, :] * (0.7 + 0.3 * dens[..., None])
+        a = (dens * 0.85)[..., None]
+        back = ring & (ry < 0)
+        sky[back] = (sky * (1 - a) + ring_c * a)[back]
+        sky[inside] = lit[inside]
+        front = ring & (ry >= 0)
+        sky[front] = (sky * (1 - a) + ring_c * a)[front]
+        return sky
+    sky[inside] = lit[inside]
+    return sky
+
+
+# ---------------------------------------------------------------- sky presets
+
+# top, middle and horizon colours of each preset's gradient
+SKY_PRESETS = {
+    'night': ('#05070e', '#1b2232', '#26304a'),
+    'dusk': ('#1f2333', '#4a3550', '#a0605a'),
+    'storm': ('#141820', '#262c38', '#3a4250'),
+    'day': ('#4a7ab0', '#8ab4d8', '#c8dce8'),
+    'overcast': ('#5a6068', '#7a8088', '#9aa0a4'),
+    'blood': ('#120608', '#3a0e10', '#7a2018'),
+    'space': ('#010104', '#020208', '#05050e'),
+    'alien': ('#06262a', '#1c6458', '#d0b868'),
+    'dream': ('#6a86d6', '#d6a2cc', '#ffdcae'),
+}
+_CLOUD_COVER = {'night': 0.62, 'dusk': 0.55, 'storm': 0.42, 'day': 0.6, 'overcast': 0.3, 'blood': 0.55,
+                'alien': 0.5, 'dream': 0.5}
+_CLOUD_COLOUR = {'night': '#2a3245', 'dusk': '#5a3a4a', 'storm': '#1c2028', 'day': '#e8eef4',
+                 'overcast': '#6a7078', 'blood': '#2a0a0c', 'alien': '#7a3a6a', 'dream': '#fff2f6'}
+# the sea of cloud seen from above, under a void floor: sunlit tops, shadowed hollows
+_CLOUD_SEA = {'night': ('#4a5672', '#121828'), 'dusk': ('#d89880', '#3a2c48'),
+              'storm': ('#3e4652', '#141820'), 'day': ('#f2f5fa', '#9aaccc'),
+              'overcast': ('#a0a6ae', '#5a6068'), 'blood': ('#7a2a1e', '#1e0608'),
+              'alien': ('#9ae0c0', '#2a3a5a'), 'dream': ('#fff6fa', '#c0a0d8')}
+
+
+def _wrapnoise(w, h, cx, cy, rng):
+    """Smooth value noise over the panorama that wraps seamlessly round 360 degrees:
+    a cy x cx grid of random values, interpolated with periodic indices across the width."""
+    g = rng.random((cy, cx))
+    u = np.arange(w) * cx / w
+    i0 = np.floor(u).astype(int) % cx
+    i1 = (i0 + 1) % cx
+    fu = u - np.floor(u)
+    fu = fu * fu * (3 - 2 * fu)
+    v = np.linspace(0, cy - 1, h)
+    j0 = np.floor(v).astype(int).clip(0, cy - 1)
+    j1 = np.minimum(j0 + 1, cy - 1)
+    fv = v - np.floor(v)
+    fv = (fv * fv * (3 - 2 * fv))[:, None]
+    top = g[j0][:, i0] * (1 - fu) + g[j0][:, i1] * fu
+    bot = g[j1][:, i0] * (1 - fu) + g[j1][:, i1] * fu
+    return (top * (1 - fv) + bot * fv).astype(np.float32)
+
+
+def _stars(sky, rng, density, bright=1.0, rows=None):
+    """Scatter stars of varied brightness and colour, a few of them big."""
+    h, w = sky.shape[:2]
+    rows = slice(None) if rows is None else rows
+    sub = sky[rows]
+    m = rng.random(sub.shape[:2]) < density
+    k = int(m.sum())
+    level = (0.35 + 0.65 * rng.random(k) ** 2.2) * bright
+    tint = np.array([[1, 1, 1], [0.75, 0.85, 1.0], [1.0, 0.9, 0.75], [1.0, 0.8, 0.8]], np.float32)
+    sub[m] = np.maximum(sub[m], tint[rng.integers(0, 4, k)] * level[:, None])
+    big = np.argwhere(m)[level > 0.85 * bright]
+    for (y, x) in big[:max(1, k // 40)]:
+        for dy, dx in ((0, 1), (1, 0), (0, -1), (-1, 0)):
+            yy, xx = y + dy, (x + dx) % w
+            if 0 <= yy < sub.shape[0]:
+                sub[yy, xx] = np.maximum(sub[yy, xx], sub[y, x] * 0.55)
+    sky[rows] = sub
+
+
+def _space(w, h, below, proj, rng):
+    """Deep space all the way round: a starfield, coloured nebula and the band of a galaxy,
+    continuing under the horizon so a viewport or a void floor shows stars below as well."""
+    rows = h + below
+    hrow = h - 1
+    sky = np.zeros((rows, w, 3), np.float32) + col('#020208')[None, None, :]
+    yy = np.arange(rows)[:, None]
+    az = np.arange(w)[None, :] / w * 2 * np.pi
+    band_el = 18 * np.sin(az + rng.random() * 6.28) + 6 * np.sin(2 * az + rng.random() * 6.28)
+    band_row = hrow - proj * np.tan(np.radians(band_el))
+    near = np.exp(-((yy - band_row) / (proj * 0.12)) ** 2)
+    n1 = _wrapnoise(w, rows, 18, 6, rng)
+    n2 = _wrapnoise(w, rows, 40, 12, rng)
+    dust = np.clip(near * (0.6 * n1 + 0.4 * n2) * 1.4 - 0.25, 0, 1)
+    sky += dust[..., None] * col('#4a3a6a')[None, None, :] * 0.55
+    sky += (near * n2 * 0.25)[..., None] * col('#8a7a9a')[None, None, :] * 0.4
+    neb = np.clip((_wrapnoise(w, rows, 7, 3, rng) - 0.62) * 3.0, 0, 1) * np.clip(n2 * 1.4, 0, 1)
+    sky += neb[..., None] * col('#2a6a8a')[None, None, :] * 0.5
+    neb2 = np.clip((_wrapnoise(w, rows, 5, 2, rng) - 0.66) * 3.0, 0, 1) * n1
+    sky += neb2[..., None] * col('#8a2a5a')[None, None, :] * 0.45
+    _stars(sky, rng, 0.006)
+    m = rng.random((rows, w)) < 0.02 * near
+    sky[m] = np.maximum(sky[m], 0.55)
+    return np.clip(sky, 0, 1)
+
+
+def _cloud_sea(w, below, proj, preset, horizon_colour, rng):
+    """What lies under a void floor: a deck of cloud far below, seen from above, melting into
+    the horizon haze. Each row looks down at a steeper angle and so at nearer cloud."""
+    lit, shadow = (col(c) for c in _CLOUD_SEA[preset])
+    k = np.arange(1, below + 1, dtype=np.float64)[:, None]
+    az = (np.arange(w) / w * 2 * np.pi)[None, :]
+    down = k / proj                                   # tan of the angle below the horizon
+    dist = 1.0 / down
+    N = 128
+    tex, fine = fbm(N, rng, 4, 5), fbm(N, rng, 8, 4)
+    X, Y = dist * np.cos(az) * 12.0, dist * np.sin(az) * 12.0
+    n = (0.7 * tex[Y.astype(np.int64) % N, X.astype(np.int64) % N]
+         + 0.3 * fine[(Y * 2.3).astype(np.int64) % N, (X * 2.3).astype(np.int64) % N])
+    billow = np.clip((n - 0.42) * 3.2, 0, 1) ** 0.7
+    sea = shadow[None, None, :] * (1 - billow[..., None]) + lit[None, None, :] * billow[..., None]
+    haze = np.exp(-down / 0.07)[..., None]
+    return (sea * (1 - haze) + horizon_colour[None, None, :] * haze).astype(np.float32)
+
+
+def make_sky(preset, w, h, seed=3, skyline=None, proj=None, discs=(), objects=(), below=0):
+    """Panorama covering 360 degrees: h rows above the horizon line, plus `below` rows under it
+    for scenes with void floors (stars in space, otherwise a sea of cloud far beneath).
 
     `skyline` adds distant silhouettes (see draw_skyline). `discs` are suns and moons placed by
-    directional lights; when any are given, the preset's own decorative moon is left out.
+    directional lights and `objects` the scene's `sky_objects`; when either is given, the
+    preset's own decorative moon is left out.
     """
+    if preset not in SKY_PRESETS:
+        raise KeyError(f"unknown sky '{preset}'. Skies: {', '.join(SKY_PRESETS)}, or null for none")
     rng = np.random.default_rng(seed)
-    presets = {
-        'night': ('#05070e', '#1b2232', '#26304a'),
-        'dusk': ('#1f2333', '#4a3550', '#a0605a'),
-        'storm': ('#141820', '#262c38', '#3a4250'),
-        'day': ('#4a7ab0', '#8ab4d8', '#c8dce8'),
-        'overcast': ('#5a6068', '#7a8088', '#9aa0a4'),
-        'blood': ('#120608', '#3a0e10', '#7a2018'),
-    }
-    top, mid, hor = [col(c) for c in presets[preset]]
-    t = np.linspace(0, 1, h)[:, None]
-    g = np.where(t < 0.6, top * (1 - t / 0.6) + mid * (t / 0.6), mid * (1 - (t - 0.6) / 0.4) + hor * ((t - 0.6) / 0.4))
-    sky = np.repeat(g[:, None, :], w, axis=1).reshape(h, w, 3)
-    # clouds: horizontal-stretched noise bands
-    cn = np.zeros((h, w))
-    for cells, amp in ((6, 1.0), (12, 0.5), (24, 0.25)):
-        base = rng.random((max(2, cells // 3), cells))
-        im = Image.fromarray((base * 255).astype(np.uint8)).resize((w, h), Image.BICUBIC)
-        cn += np.asarray(im) / 255 * amp
-    cn /= 1.75
-    cover = {'night': 0.62, 'dusk': 0.55, 'storm': 0.42, 'day': 0.6, 'overcast': 0.3, 'blood': 0.55}[preset]
-    mask = np.clip((cn - cover) * 4, 0, 1) * (t < 0.85)
-    ccol = {'night': '#2a3245', 'dusk': '#5a3a4a', 'storm': '#1c2028', 'day': '#e8eef4', 'overcast': '#6a7078', 'blood': '#2a0a0c'}[preset]
-    sky = sky * (1 - mask[..., None] * 0.85) + col(ccol) * mask[..., None] * 0.85
-    if preset in ('night', 'storm', 'blood', 'dusk'):
-        stars = (rng.random((h, w)) > 0.997) & (t[:, 0][:, None] < 0.6) & (mask < 0.2)
-        sky[stars] = col('#c8c8d0') * (0.5 if preset != 'night' else 1)
-    if preset in ('night', 'blood') and not discs:
-        mx, my, r = int(w * 0.62), int(h * 0.28), max(4, h // 14)
-        yy, xx = np.mgrid[0:h, 0:w]
-        m = (yy - my) ** 2 + (xx - mx) ** 2 < r * r
-        sky[m] = col('#e6e0c8') if preset == 'night' else col('#d04a30')
     proj = proj or w / (2 * np.pi)
+    if preset == 'space':
+        sky = _space(w, h, below, proj, rng)
+    else:
+        top, mid, hor = [col(c) for c in SKY_PRESETS[preset]]
+        t = np.linspace(0, 1, h)[:, None]
+        g = np.where(t < 0.6, top * (1 - t / 0.6) + mid * (t / 0.6), mid * (1 - (t - 0.6) / 0.4) + hor * ((t - 0.6) / 0.4))
+        sky = np.repeat(g[:, None, :], w, axis=1).reshape(h, w, 3)
+        # clouds: horizontal-stretched noise bands
+        cn = np.zeros((h, w))
+        for cells, amp in ((6, 1.0), (12, 0.5), (24, 0.25)):
+            cn += _wrapnoise(w, h, cells, max(2, cells // 3), rng) * amp   # seamless at 0/360
+        cn /= 1.75
+        mask = np.clip((cn - _CLOUD_COVER[preset]) * 4, 0, 1) * (t < 0.85)
+        sky = sky * (1 - mask[..., None] * 0.85) + col(_CLOUD_COLOUR[preset]) * mask[..., None] * 0.85
+        if preset in ('night', 'storm', 'blood', 'dusk', 'alien'):
+            stars = (rng.random((h, w)) > 0.997) & (t[:, 0][:, None] < 0.6) & (mask < 0.2)
+            sky[stars] = col('#c8c8d0') * (0.5 if preset != 'night' else 1)
+        if preset in ('night', 'blood') and not discs and not objects:
+            mx, my, r = int(w * 0.62), int(h * 0.28), max(4, h // 14)
+            yy, xx = np.mgrid[0:h, 0:w]
+            m = (yy - my) ** 2 + (xx - mx) ** 2 < r * r
+            sky[m] = col('#e6e0c8') if preset == 'night' else col('#d04a30')
+        if below:
+            sky = np.concatenate([sky, _cloud_sea(w, below, proj, preset, hor, rng)], axis=0)
+    sky = sky.astype(np.float32)
+    for i, o in enumerate(objects):
+        draw_sky_object(sky, o, proj, h - 1, seed + i)
     for d in discs:
-        draw_disc(sky, d['azimuth'], d['elevation'], proj, d['color'], d.get('radius', 2.2), d.get('glow', 0.35))
+        draw_disc(sky, d['azimuth'], d['elevation'], proj, d['color'], d.get('radius', 2.2),
+                  d.get('glow', 0.35), h - 1)
     if skyline:
-        draw_skyline(sky, skyline, proj, seed)
+        draw_skyline(sky[:h], skyline, proj, seed)
     return np.clip(sky, 0, 1).astype(np.float32)
 
 

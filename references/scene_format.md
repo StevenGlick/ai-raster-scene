@@ -24,8 +24,9 @@ A scene is one JSON file, read as UTF-8. Only `map`, `legend` and `camera` are r
 | `ceiling_height` | `1.0` | z of every ceiling. Walls in roofed areas should be at least this tall |
 | `camera` | required | `{x, y, angle or look_at, fov=66, height=0.5, pitch=0, flashlight}` |
 | `shots` | none | list of camera dicts; each inherits from `camera`. Renders `out_01.png`, `out_02.png`... |
-| `sky` | `"night"` | `night`, `dusk`, `storm`, `day`, `overcast`, `blood`, or `null` for fully indoor |
+| `sky` | `"night"` | `night`, `dusk`, `storm`, `day`, `overcast`, `blood`, `space`, `alien`, `dream`, or `null` for fully indoor |
 | `skyline` | none | distant silhouettes on the horizon: `mountains`, `hills`, `treeline`, `city` (see Sky and skyline) |
+| `sky_objects` | `[]` | planets, ringed planets, moons, suns and stranger things painted into the sky (see Sky objects) |
 | `ambient` | `[0.18,0.18,0.22]` | base light RGB. Night exterior ~0.13, dark interior ~0.05 |
 | `lights` | `[]` | point lights, plus `sun` and `moon` directional lights (see Lights) |
 | `heights` | none | a digit layer over the map setting wall heights, for steps, daises and altars (see Heights) |
@@ -69,7 +70,9 @@ Open cell:
 "~": {"floor": "water", "drop": 0.16}              // surface sits 0.16 below the surrounding floor
 "=": {"floor": "asphalt", "reflect": 0.3}          // wet street: mirrors what stands on it
 ```
-- `reflect` (0-1) makes a floor mirror-like (see Reflections). `water` (0.5) and `ice` (0.38) reflect by default; set `"reflect": 0` to stop them.
+- `reflect` (0-1) makes a floor mirror-like (see Reflections). `water` (0.5), `ice` (0.38), `obsidian` (0.45) and `grid_floor` (0.3) reflect by default; set `"reflect": 0` to stop them.
+- `"floor": "void"` means no ground at all (see Void floors): the sky carries on below the horizon, so the cell is open air, deep space or the drop off the edge of a floating island.
+- `side` is the texture of a cell's edge where it drops away: the bank under the waterline beside a `drop`, or the cliff under an island beside a void. Without it the cell's floor texture is used.
 - `drop` (0 to 0.9) sinks a cell's floor below `z=0`. This is what stops water sitting flush with the bank: the sunken surface is rendered as its own plane, a wall standing in the water carries on down to the surface, and sprites placed in a sunken cell rest on the lower surface (so a `rowboat` floats on the water rather than hovering over it). Keep drops small - 0.1 to 0.25 reads as water, more reads as a pit. Where a sunken cell meets an ordinary *floor* cell, the bank face between them is approximated by a darkened strip rather than modelled.
 
 Wall cell (solid block, `h` units tall):
@@ -112,6 +115,21 @@ That gives a 0.3 dais behind a 0.1 step, which is a flight of stairs in one stri
 - Sprites placed in the cell of a block lower than 0.95 rest on its top (a throne on a dais, candles on an altar). In a `drop` cell they rest on the sunken surface. Either way `z` counts from that surface.
 - Camera `height` is measured from `z=0`, not from the block underneath. To stand on a 0.3 dais, put the camera in a dais cell and set `height` to 0.8.
 
+### Void floors: space, open air, floating islands
+
+A cell with `"floor": "void"` has no ground. Where you would see its floor you see sky instead: the panorama carries on below the horizon, as stars all the way round under the `space` sky, and as a sea of cloud far beneath under any other.
+
+```json
+" ": {"floor": "void"},
+"g": {"floor": "grass", "side": "rock"},
+"V": {"wall": ["viewport", "viewport"], "h": 2, "floor": "obsidian", "ceil": "panel"}
+```
+- Fill a map with void and draw islands on it for a world adrift in the sky. Each island's edge drops away as a cliff with a ragged underside, textured with the cell's `side` (or its floor). Walls standing at the brink sit on that cliff too.
+- Put void outside a `viewport` wall for a spaceship or station: looking out, space surrounds you, above the horizon and below it.
+- Surround the islands with void all the way to the map edge. The ground past the edge carries on as the edge cells, so a map whose edge is grass is a continent, not an island.
+- Sprites over a void have nothing to stand on: their `z` is simply their height. Scatter, grime and contact shadows skip void cells by themselves.
+- A void cell can still have a `ceil`, but it rarely makes sense. A balcony or a ship's hull wants its own open cells or walls between the void and the roof.
+
 ## Textures
 
 Any texture slot accepts:
@@ -119,11 +137,11 @@ Any texture slot accepts:
 - a PNG path (resized to 64x64, nearest). Relative paths are looked up beside the scene file first, then in the working directory - the same goes for PNG sprites, decals and TTF fonts,
 - `{"base": "brick", "tint": [0.8, 0.9, 1.1], "brightness": 0.7}` for a recoloured variant.
 
-Built-ins with emissive texels (glow regardless of lighting): `window_lit`, `window_lit_plaster`, `window_teal`, `runes`, `stained_glass`. Their dark counterparts are `window_dark`, `window_dark_plaster`.
+Built-ins with emissive texels (glow regardless of lighting): `window_lit`, `window_lit_plaster`, `window_teal`, `runes`, `stained_glass`, `hull_lit` and `hull_red` (a light strip at eye height), `tech_panel` (readouts), `server` (status lights), `blast_door` (a warning light), `grid_floor` (glowing grid lines), `alien_rock` (glowing veins), `fireplace` (the fire), `star_chart` (the stars). Their dark counterparts are `window_dark`, `window_dark_plaster`.
 
-See-through built-ins (see See-through walls): `bars`, `fence_iron`, `chainlink`, `railing`, `picket`, `portcullis`, `window_broken`, `lattice`. A PNG with transparent pixels behaves the same way.
+See-through built-ins (see See-through walls): `bars`, `fence_iron`, `chainlink`, `railing`, `picket`, `portcullis`, `window_broken`, `lattice`, and `viewport` (an observation window from just above the floor to just under the top: stack two for a glass wall two storeys tall). A PNG with transparent pixels behaves the same way.
 
-The built-ins also include castle and dungeon stone (`castle`, `flagstone`, `slime_brick`, `door_wood`) and winter ground (`snow`, `ice`, `snow_rock`). `python scripts/assets.py catalog.png` draws them all, with see-through textures over a checkerboard.
+The built-ins also include castle and dungeon stone (`castle`, `flagstone`, `slime_brick`, `door_wood`), winter ground (`snow`, `ice`, `snow_rock`), starships (`hull`, `hull_dark`, `hazard`, `deck`, `hex_panel`, plus the lit ones above), alien and dream worlds (`alien_ground`, `organic` living walls, `sky_wall` painted with sky and clouds, `cloud_floor`, polished `obsidian`), and a study's `fireplace` and `star_chart`. `python scripts/assets.py catalog.png` draws them all, with see-through textures over a checkerboard.
 
 ## Lights
 
@@ -183,6 +201,35 @@ Open cells (no `ceil`) show a 360-degree sky panorama: `sky` picks the preset. `
 - Heights are in degrees above the horizon, so the silhouette keeps its proportions at any resolution or field of view. It is painted into the sky, so it never occludes anything in the map and costs nothing per frame.
 - Pair it with the map: a `treeline` behind a fenced yard, `mountains` over a frozen lake, `city` beyond a rooftop. Fog's `sky_mix` hazes it along with the sky.
 
+The presets: `night`, `dusk`, `storm`, `day`, `overcast` and `blood` for the world as it is; `space` (black, dense stars, a galaxy band and coloured nebula, continuing below the horizon); `alien` (teal overhead, sulphur at the horizon, magenta cloud); `dream` (periwinkle to rose to peach, pale cloud).
+
+### Sky objects
+
+`sky_objects` paints planets and stranger things into the sky, placed like the sun and moon: by `azimuth` (camera compass) and `elevation` (degrees above the horizon; negative is below it, visible over a void floor), with `size` as an angular radius in degrees.
+
+```json
+"sky_objects": [
+  {"type": "ringed", "azimuth": 285, "elevation": 8, "size": 14, "color": [0.86, 0.66, 0.46], "lit_from": 205},
+  {"type": "moon", "azimuth": 300, "elevation": 26, "size": 2.4},
+  {"type": "eye", "azimuth": 322, "elevation": 15, "size": 6.5}
+]
+```
+
+| type | looks like | default size |
+|---|---|---|
+| `planet` | a banded gas giant with a storm spot, lit on one side | 9 |
+| `ringed` | the same with a tilted ring, its far side behind the planet and its near side in front | 7 |
+| `moon` | grey, cratered, lit on one side | 3.5 |
+| `sun` | a bright disc in a wide glow (it lights nothing: add a `sun` light for that) | 3 |
+| `eye` | a vast eye, looking at the viewer | 8 |
+
+Fields: `color` and `color2` (the main colour and the bands, ring or iris secondary), `lit_from` (the screen direction light falls from, in degrees: 0 right, 90 below, 180 left, 270 above; default 210, upper left), `phase` (0 lit face-on to 1 lit from the side, a crescent; default 0.75), `glow` (the halo), `tilt` and `angle` (the ring's openness and slant), `bands`, `craters` and `seed`.
+
+- Sky objects are part of the panorama: they never occlude anything in the map and cost nothing per frame. The skyline is drawn in front of them, so a planet can rise behind mountains.
+- They light nothing. Give a scene a point light near a viewport, or a `sun` light, in the planet's colour if its glow should fall on the floor.
+- Match `lit_from` to the scene's sun, so the planet and the shadows agree.
+- Any sky object replaces the `night` preset's decorative moon, just as a sun or moon light does.
+
 ## Sprites
 
 ```json
@@ -209,8 +256,15 @@ Drawing order: opaque sprites first (they write depth), then translucent/additiv
 
 **Contact shadows.** Every opaque prop or character standing on the floor gets a soft dark stamp under its feet, sized to its width, so nothing looks pasted onto the ground. `contact_shadows` sets the strength for the scene (0.55 by default, `0` for none) and a sprite's `shadow` overrides it. Sprites lifted off the floor (`z` > 0.05), standing on a block, translucent, additive or `fullbright` get none, and nor do fires, light fixtures, hanging and wall-mounted props, ladders, crystals and glowing mushrooms.
 
-Built-in props (60): armor, barrel, bed, bench, boulder, brazier, buoy, bush, campfire, candles, chest, column, console, crate, crystal, dead_tree, fern, flowers, fountain, glowshroom, grave_cross, gravestone, lamp_post, lantern, lectern, locker, log, mushrooms, palm, pew, pine, rowboat, signpost, snowman, snowy_pine, stalagmite, statue, stump, table, throne, tree, wheelchair, plus the wall-mounted and ground props listed below. `crystal` and `glowshroom` glow (pair them with a coloured light); `pew`, `table` and `bench` take `stretch` for length.
-Built-in characters (16x32 pixel art): cultist, scientist, guard, nurse, spiritualist, ghost (translucent with aura and wobble by default), hybrid, soldier, knight, child (about 0.42 tall), creature, robot, shopkeeper. The creature's eyes and the robot's eyes and chest lights glow in the dark.
+Built-in props (85): armor, barrel, bed, bench, boulder, brazier, buoy, bush, campfire, candles, chest, column, console, crate, crystal, dead_tree, fern, flowers, fountain, glowshroom, grave_cross, gravestone, lamp_post, lantern, lectern, locker, log, mushrooms, palm, pew, pine, rowboat, signpost, snowman, snowy_pine, stalagmite, statue, stump, table, throne, tree, wheelchair, plus the wall-mounted, ground, sci-fi, dream and study props listed below. `crystal` and `glowshroom` glow (pair them with a coloured light); `pew`, `table` and `bench` take `stretch` for length.
+
+- Sci-fi and alien: `stasis_pod` (lit glass, a sleeper inside; tint it dark for a dead one), `hologram` (a wireframe world over its emitter, with a soft glow), `sci_crate`, `drone` (float it with `z`), `lander` (a landing craft, 1.6 tall), `antenna`, `alien_plant` (glowing pods), `monolith`, `alien_egg`.
+- Dream and surreal: `orb` (a floating light with its own glow), `floating_rock` (an islet of earth adrift), `door_frame` (a door standing on its own), `sky_whale` (stars along its back; float it high), `koi`, `pocket_watch`, `balloon`, `chess_pawn` and `chess_king` (marble; tint them dark for the other side). Things meant to float carry no contact shadow, so set their `z` and they hang in the air. Over a void floor `z` is simply height above z=0.
+- A study: `telescope`, `globe`, `armchair`, `book_stack`, `open_book` (glowing pages; float a few for magic), `writing_desk` (with a lit candle), `orrery` (a glowing sun at its heart).
+
+Built-in characters (16x32 pixel art): cultist, scientist, guard, nurse, spiritualist, ghost (translucent with aura and wobble by default), hybrid, soldier, knight, child (about 0.42 tall), creature, robot, shopkeeper, astronaut, android, alien (about 0.7 tall), dreamer (in a nightgown, holding a candle), and claude. The creature's eyes, the robot's eyes and chest lights, the astronaut's suit lights, the android's visor and the alien's eyes glow in the dark.
+
+`claude` is Claude's own avatar: a small figure whose head is a paper lantern lit from inside, in a clay-coloured coat with a teal scarf, holding an open book. It carries its own warm light. `examples/claude_study.py` puts it in the reading room it chose, with ready-made shots for answering a question in a picture.
 
 Wall-mounted and hanging props (`sconce`, `painting`, `banner`, `wall_clock`, `pipe_valve`, `ceiling_lamp`, `chandelier`, `ivy_hang`, `chains`, `ladder`) are ordinary sprites: place them a little off the surface (about 0.2-0.3 from a wall face) and set `z`. Ground clutter (`rocks`, `rubble`, `bones`, `sack`, `bucket`, `broken_barrel`, `grass_tuft`, `reeds`) is sized to read at 320x200; scatter a handful rather than a carpet.
 
@@ -384,7 +438,7 @@ result is deterministic for a given seed.
 
 | field | meaning |
 |---|---|
-| `of` | a named set (`stones`, `rubble`, `forest`, `undergrowth`, `shore`, `litter`, `wreckage`, `cave`), a sprite name, or a list. Repeats inside a set act as weights |
+| `of` | a named set (`stones`, `rubble`, `forest`, `undergrowth`, `shore`, `litter`, `wreckage`, `cave`, `alien`, `derelict`), a sprite name, or a list. Repeats inside a set act as weights |
 | `on` | legend characters to scatter on, as a string or list. Omit for every open cell |
 | `density` | items per eligible cell. 0.3 is a light dusting, 1.5+ is a stony beach |
 | `sizes` | size classes to draw from: a list, or a dict of weights. Classes are `tiny`, `small`, `medium`, `large`, `huge`, multiplying the prop's default height |
@@ -459,4 +513,5 @@ Palettes: `gameboy`, `cga`, `cga_warm`, `ega`, `amber`, `phosphor`, `sepia`, `mo
 - Walls are whole grid cells; no thin walls, diagonal walls, arches or doors in the middle of a cell. A see-through cell (a fence, bars) is drawn as one flat grille at its near face.
 - Reflections are screen-space and on floors only: a puddle can't mirror something that is off-screen, and walls are never mirrors.
 - Sun and moon shadows come from walls only. Sprites cast no shadows beyond their contact shadow, and sunlight never enters a roofed cell.
+- Floating islands are slabs: flat on top, with a cliff of fixed depth (2.5 units) and a ragged edge underneath, not a tapering rock. Sky objects are painted on the sky, so they have no parallax and light nothing.
 - Sprites are static billboards that always face the camera (one view per character, no animation).
