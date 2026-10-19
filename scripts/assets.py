@@ -1830,23 +1830,6 @@ def spr_glowshroom():
     return _finish(im, em, w, h)
 
 
-def spr_snowy_pine():
-    w, h = 48, 112
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.rectangle([21 * S, 84 * S, 27 * S, 112 * S], fill='#3a2a1c')
-    for i in range(7):
-        half = 23 - 16 * (i / 6.0)
-        base = 96 - 13 * i
-        d.polygon([((24 - half) * S, base * S), ((24 + half) * S, base * S), (24 * S, (base - 26) * S)],
-                  fill=('#16301c', '#1e3c22', '#264828')[i % 3])
-        # snow along each tier's upper slopes
-        d.polygon([((24 - half * 0.75) * S, (base - 6) * S), (24 * S, (base - 26) * S),
-                   ((24 + half * 0.75) * S, (base - 6) * S), (24 * S, (base - 12) * S)], fill='#dce6ee')
-    d.polygon([(19 * S, 20 * S), (29 * S, 20 * S), (24 * S, 0)], fill='#e8eef4')
-    return _finish(im, em, w, h)
-
-
 def spr_snowman():
     w, h = 22, 34
     im, d, em, de = _canvas(w, h)
@@ -2334,7 +2317,7 @@ SPRITES = {
     'reeds': spr_reeds, 'ivy_hang': spr_ivy_hang,
     'throne': spr_throne, 'armor': spr_armor, 'chains': spr_chains, 'chest': spr_chest,
     'table': spr_table, 'pew': spr_pew, 'stalagmite': spr_stalagmite, 'crystal': spr_crystal,
-    'glowshroom': spr_glowshroom, 'snowy_pine': spr_snowy_pine, 'snowman': spr_snowman,
+    'glowshroom': spr_glowshroom, 'snowman': spr_snowman,
     'grave_cross': spr_grave_cross, 'ladder': spr_ladder, 'lectern': spr_lectern,
     'stasis_pod': spr_stasis_pod, 'hologram': spr_hologram, 'sci_crate': spr_sci_crate,
     'drone': spr_drone, 'lander': spr_lander, 'antenna': spr_antenna,
@@ -2361,7 +2344,7 @@ SPRITE_HEIGHT = {
     'bones': 0.22, 'sack': 0.42, 'bucket': 0.32, 'broken_barrel': 0.46,
     'reeds': 0.8, 'ivy_hang': 0.8,
     'throne': 0.95, 'armor': 0.66, 'chains': 0.6, 'chest': 0.3, 'table': 0.36, 'pew': 0.42,
-    'stalagmite': 0.8, 'crystal': 0.36, 'glowshroom': 0.16, 'snowy_pine': 3.4, 'snowman': 0.62,
+    'stalagmite': 0.8, 'crystal': 0.36, 'glowshroom': 0.16, 'snowman': 0.62,
     'grave_cross': 0.55, 'ladder': 1.0, 'lectern': 0.5,
     'stasis_pod': 1.0, 'hologram': 0.55, 'sci_crate': 0.35, 'drone': 0.22, 'lander': 1.6,
     'antenna': 2.4, 'alien_plant': 1.1, 'monolith': 2.2, 'orb': 0.2, 'alien_egg': 0.35,
@@ -2394,6 +2377,7 @@ SIZE_WEIGHTS = {'tiny': 5, 'small': 4, 'medium': 2.5, 'large': 1, 'huge': 0.3}
 # with the odd boulder, not an even mix.
 DEBRIS_SETS = {
     'stones': ['rocks', 'rocks', 'rocks', 'boulder'],
+    'snow': ['rocks', 'rocks', 'rocks', 'boulder_snow'],
     'rubble': ['rubble', 'rubble', 'rocks', 'broken_barrel'],
     'forest': ['rocks', 'rocks', 'log', 'stump', 'mushrooms', 'grass_tuft', 'grass_tuft',
                'fern', 'bush'],

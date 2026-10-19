@@ -23,6 +23,7 @@ BIRCH_MARK = ramp('#2a2622', dark=0.6, light=1.6)
 FOREST_SOIL = ramp('#4a3a2a', dark=0.35)
 FOREST_MOSS = ramp('#4e6e2c', dark=0.3)
 STONE = ramp('#7a786e', dark=0.35)
+SNOW = ramp('#e2eaf2', dark=0.5, light=1.07, warm=0.0, cool=0.25)
 
 
 def _along(pts, t):
@@ -38,11 +39,10 @@ def _along(pts, t):
 
 # ---------------------------------------------------------------- trees
 
-def spr_pine():
-    """A spruce: a straight trunk under tier on tier of drooping boughs. Each tier is a skirt of
-    needles with a ragged hem hanging over the tier below; lit from the upper left, so every
-    tier has a bright shoulder and a dark underside, and the heart of the tree is in shadow."""
+def _spruce(snow=False):
+    """The spruce, bare or under snow (see spr_pine and spr_snowy_pine)."""
     rng = np.random.default_rng(31)
+    srng = np.random.default_rng(37)        # the snow's own stream, so the bare tree never changes
     w, h = 72, 168
     cx = w / 2
     cv = Canvas(w, h, wrap=False, ground=-9)
@@ -73,7 +73,46 @@ def spr_pine():
             L = rng.uniform(3, 6)
             cv.stroke([(x, y), (x + np.cos(a) * L, y + np.sin(a) * L)], 1.4, z=z + 0.9, dome=0.5,
                       taper=(1.0, 0.5), mat=0, tone=rng.normal(0.02, 0.04))
-    return _prop(cv, [NEEDLE, PINE_BARK], relief=1.0, cavity=0.5, shadow=0.55, reach=6)
+        if snow:
+            _snow_tier(cv, srng, cx, hem, half, tall, skew, drop, z + 1.4, t)
+    if not snow:
+        return _prop(cv, [NEEDLE, PINE_BARK], relief=1.0, cavity=0.5, shadow=0.55, reach=6)
+    cv.ellipse(cx - 0.3, top + 5, 1.2, 1.8, z=3.4, dome=0.8, mat=2)      # a cap on the leader
+    return _prop(cv, [NEEDLE, PINE_BARK, SNOW], relief=1.0, cavity=0.5, shadow=0.55, reach=6)
+
+
+def _snow_tier(cv, rng, cx, hem, half, tall, skew, drop, z, t):
+    """Snow lying on one tier of a spruce: clumps along both shoulders, thickest a little way out
+    from the trunk where the boughs are flattest, thinning to nothing before the drooping tips,
+    and a soft drift across the middle where the tier above does not cover it."""
+    k = float(np.clip(half / 14.0, 0.35, 1.0))     # small tiers near the top carry small clumps
+    for side in (-1, 1):
+        reach = half * (1 + skew * side)
+        for f in np.linspace(0.18, rng.uniform(0.72, 0.9), 4 + int(6 * t)):
+            x = cx + side * reach * f
+            y = hem - tall + (tall + drop * f * f) * f - 1.2
+            fat = np.sin(np.pi * min(1.0, f * 1.15)) ** 0.7
+            cv.ellipse(x + rng.normal(0, 0.6), y + rng.normal(0, 0.4), (1.6 + 2.6 * fat * rng.uniform(0.8, 1.2)) * k,
+                       (0.9 + 1.2 * fat) * max(k, 0.6), z=z, dome=0.7, rough=0.25, rng=rng, mat=2,
+                       tone=0.03 * side * -1)
+        for _ in range(int(2 + 3 * t)):     # crumbs fallen onto the hem below the shoulder
+            f = rng.uniform(0.3, 0.8)
+            cv.ellipse(cx + side * reach * f, hem - 1 + rng.uniform(-1, 1.5), rng.uniform(0.8, 1.6),
+                       rng.uniform(0.6, 1.0), z=z, dome=0.5, mat=2, tone=-0.04)
+
+
+def spr_pine():
+    """A spruce: a straight trunk under tier on tier of drooping boughs. Each tier is a skirt of
+    needles with a ragged hem hanging over the tier below; lit from the upper left, so every
+    tier has a bright shoulder and a dark underside, and the heart of the tree is in shadow."""
+    return _spruce()
+
+
+def spr_snowy_pine():
+    """The spruce after a snowfall: snow lying in clumps along every tier's shoulders, thickest
+    near the trunk and gone before the drooping tips, crumbs of it on the hems, and a cap on the
+    leader. Dark needles show between the tiers, so it still reads as a spruce at a distance."""
+    return _spruce(snow=True)
 
 
 def spr_tree():
@@ -166,9 +205,8 @@ def _rings(cv, cx, cy, rx, ry, n):
         cv.stroke(list(zip(cx + np.cos(a) * rx * f, cy + np.sin(a) * ry * f)), 0.7, dome=0.25, mode='carve')
 
 
-def spr_boulder():
-    """A boulder settled into the ground: a rounded mass with a lesser lobe and a crack or two,
-    lit from the upper left, moss over its top and a few spots of lichen."""
+def _boulder(snow=False):
+    """The boulder, mossy or under snow (see spr_boulder and spr_boulder_snow)."""
     rng = np.random.default_rng(61)
     w, h = 48, 34
     cv = Canvas(w, h, wrap=False, ground=-9)
@@ -179,6 +217,8 @@ def spr_boulder():
     cv.noise(0.15, cells=8, rng=rng)
     solid = cv.id > 0
     moss = (smooth_noise(w, h, 5, rng, wrap=False) > 0.48) & solid & (np.arange(h)[:, None] < h * 0.48)
+    if snow:
+        return _snowcap(cv, rng, solid)
     cv.mat[moss] = 1
     cv.z[moss] += 0.2
     ys, xs = np.nonzero(solid & ~moss)
@@ -186,6 +226,36 @@ def spr_boulder():
         cv.ellipse(xs[i], ys[i], rng.uniform(0.8, 1.5), rng.uniform(0.6, 1.1), z=cv.z[ys[i], xs[i]] + 0.05, dome=0.1,
                    mat=2, rough=0.3, rng=rng)
     return _prop(cv, [STONE, FOREST_MOSS, LICHEN], relief=1.1, cavity=0.5, shadow=0.5)
+
+
+def _snowcap(cv, rng, solid):
+    """Snow over the top of a rock: in each column, a layer from the top of the rock down, deep
+    where the top is flat and thin where it falls away steeply, with a soft lumpy lower edge."""
+    h, w = solid.shape
+    rows = np.arange(h)[:, None]
+    has = solid.any(0)
+    top = np.where(has, solid.argmax(0), h).astype(np.float32)
+    slope = np.abs(np.gradient(np.where(has, top, np.nan)))
+    slope = np.nan_to_num(slope, nan=9.0)
+    lump = smooth_noise(w, 1, 7, rng, wrap=False)[0]
+    depth = np.clip(6.5 - 1.6 * slope, 0.0, 7.0) * (0.75 + 0.5 * lump)
+    cap = solid & (rows < top[None, :] + depth[None, :])
+    cv.mat[cap] = 3
+    cv.z[cap] += 0.45
+    cv.tone[cap] = 0.0
+    return _prop(cv, [STONE, FOREST_MOSS, LICHEN, SNOW], relief=1.1, cavity=0.5, shadow=0.5)
+
+
+def spr_boulder():
+    """A boulder settled into the ground: a rounded mass with a lesser lobe and a crack or two,
+    lit from the upper left, moss over its top and a few spots of lichen."""
+    return _boulder()
+
+
+def spr_boulder_snow():
+    """The boulder under snow: a cushion of it over the top, deep where the rock is flat and thin
+    down the steep sides, the grey rock showing below - for a winter shore instead of moss."""
+    return _boulder(snow=True)
 
 
 def spr_stump():
@@ -443,9 +513,10 @@ TEXTURES = {
 # how strongly the world-space surface noise varies each texture (see assets.TEXTURE_NOISE)
 TEXTURE_NOISE = {'forest_deep': 1.6}
 SPRITES = {'pine': spr_pine, 'tree': spr_tree, 'birch': spr_birch, 'bush': spr_bush, 'boulder': spr_boulder,
-           'stump': spr_stump, 'log': spr_log, 'dead_tree': spr_dead_tree}
+           'stump': spr_stump, 'log': spr_log, 'dead_tree': spr_dead_tree, 'snowy_pine': spr_snowy_pine,
+           'boulder_snow': spr_boulder_snow}
 SPRITES.update({f'forest_card_{k}': (lambda k=k: _forest_card(k)) for k in (1, 2, 3, 4)})
-SPRITE_HEIGHT = {'pine': 3.4, 'tree': 2.6, 'birch': 3.0, 'bush': 0.5,
+SPRITE_HEIGHT = {'pine': 3.4, 'tree': 2.6, 'birch': 3.0, 'bush': 0.5, 'snowy_pine': 3.4, 'boulder_snow': 0.55,
                  'forest_card_1': 1.2, 'forest_card_2': 3.0, 'forest_card_3': 4.0, 'forest_card_4': 4.8}
 # fringe sets: cards back to front, for a wall's `fringe`
 FRINGES = {'forest': ['forest_card_4', 'forest_card_3', 'forest_card_2', 'forest_card_1']}

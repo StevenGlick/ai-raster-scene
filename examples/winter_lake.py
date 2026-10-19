@@ -51,7 +51,7 @@ s = scene(
         {'id': 'child', 'x': 24.8, 'y': 31.4, 'type': 'child'},
         {'x': 14.0, 'y': 30.0, 'type': 'log'}, {'x': 25.5, 'y': 9.6, 'type': 'crate'},
     ],
-    scatter=[{'of': 'stones', 'on': 's', 'density': 0.06, 'sizes': ['tiny', 'small', 'medium'], 'seed': 7}],
+    scatter=[{'of': 'snow', 'on': 's', 'density': 0.06, 'sizes': ['tiny', 'small', 'medium'], 'seed': 7}],
     camera={'x': 20.0, 'y': 32.0, 'look_at': [20.0, 7.0, 0.7], 'fov': 70},
     shots=[
         {'x': 20.0, 'y': 32.0, 'look_at': [20.0, 7.0, 0.75], 'fov': 70,
