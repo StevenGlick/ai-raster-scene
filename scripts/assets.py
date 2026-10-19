@@ -2382,6 +2382,7 @@ DEBRIS_SETS = {
     'forest': ['rocks', 'rocks', 'log', 'stump', 'mushrooms', 'grass_tuft', 'grass_tuft',
                'fern', 'bush'],
     'undergrowth': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'fern', 'bush', 'mushrooms'],
+    'autumn': ['grass_tuft', 'grass_tuft', 'fern', 'bush_autumn', 'bush_autumn', 'mushrooms'],
     'shore': ['rocks', 'rocks', 'rocks', 'boulder', 'reeds', 'bones'],
     'litter': ['sack', 'bucket', 'crate', 'barrel', 'broken_barrel', 'bones'],
     'wreckage': ['rubble', 'rubble', 'broken_barrel', 'rocks', 'bones', 'sack', 'bucket'],
@@ -2877,6 +2878,14 @@ import basics  # noqa: E402
 
 TEXTURES.update(basics.TEXTURES)
 SPRITES.update(basics.SPRITES)
+
+# ---------------------------------------------------------------- the countryside
+# A scarecrow, pumpkins, hay bales and crows, drawn with the toolkit in village.py.
+import village  # noqa: E402
+
+SPRITES.update(village.SPRITES)
+SPRITE_HEIGHT.update(village.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(village.PROP_DEFAULTS)
 
 _dcache = {}
 

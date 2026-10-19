@@ -16,6 +16,7 @@ OAK_LEAF = ramp('#4e7a30')
 OAK_SHADE = ramp('#2e5432', dark=0.3)
 BIRCH_LEAF = ramp('#8eaa3e', dark=0.35, light=1.25)
 AUTUMN = [ramp('#b8622a'), ramp('#c89a34'), ramp('#8a3a22'), ramp('#3a2a1e', dark=0.4)]
+BIRCH_GOLD = ramp('#d2a83a', dark=0.35, light=1.22, warm=0.1)
 PINE_BARK = ramp('#6e4a34', dark=0.25)
 OAK_BARK = ramp('#665a4c', dark=0.25)
 BIRCH_BARK = ramp('#e6e2d4', dark=0.45, light=1.06, warm=0.04)
@@ -38,6 +39,20 @@ def _along(pts, t):
 
 
 # ---------------------------------------------------------------- trees
+
+def _turn(cv, rng, leaf, mats, weights, cells=4, mix=0.4):
+    """Turn a crown for autumn: its leaves (material `leaf`) take the materials in `mats` in
+    patches, by a smooth noise field, so sides of the tree turn together the way a real one does
+    - not a speckle of every colour - but with each leaf cluster nudged by a chance of its own
+    (`mix`), so the patches run into each other cluster by cluster instead of along a line."""
+    own = rng.random(cv.n + 1)[cv.id]
+    zone = smooth_noise(cv.w, cv.h, cells, rng, wrap=False) * (1 - mix) + own * mix
+    leaves = (cv.mat == leaf) & (cv.id > 0)
+    if not leaves.any():
+        return
+    q = np.quantile(zone[leaves], np.cumsum(weights)[:-1] / float(sum(weights)))
+    cv.mat = np.where(leaves, np.asarray(mats)[np.searchsorted(q, zone)], cv.mat).astype(np.int32)
+
 
 def _spruce(snow=False):
     """The spruce, bare or under snow (see spr_pine and spr_snowy_pine)."""
@@ -115,9 +130,8 @@ def spr_snowy_pine():
     return _spruce(snow=True)
 
 
-def spr_tree():
-    """An oak: a short, heavy trunk on a flared foot, limbs spreading into a broad crown of leaf
-    clusters in lobes, lit from above, with gaps where the limbs show through."""
+def _oak(autumn=False):
+    """The oak, green or turned (see spr_tree and spr_tree_autumn)."""
     rng = np.random.default_rng(23)
     w, h = 136, 128
     cx = w / 2
@@ -144,12 +158,27 @@ def spr_tree():
         _crown(cv, rng, lx, ly, rx, ry, k, size=(7, 11), leaf=4.0, z=1.0)
     leaves = (cv.mat == 0) & (cv.id > 0)    # lit from above: the top of the crown bright, its underside dark
     cv.tone += np.where(leaves, 0.1 - 0.24 * np.clip(np.arange(h)[:, None] / 80.0, 0, 1), 0).astype(np.float32)
-    return _prop(cv, [OAK_LEAF, ramp('#5a4e40', dark=0.25)], relief=1.0, cavity=0.45, shadow=0.55, reach=7)
+    if not autumn:
+        return _prop(cv, [OAK_LEAF, ramp('#5a4e40', dark=0.25)], relief=1.0, cavity=0.45, shadow=0.55, reach=7)
+    _turn(cv, np.random.default_rng(231), 0, [0, 2, 3], [0.45, 0.35, 0.2], cells=5)
+    return _prop(cv, [AUTUMN[0], ramp('#5a4e40', dark=0.25), AUTUMN[1], AUTUMN[2]], relief=1.0, cavity=0.45,
+                 shadow=0.55, reach=7)
 
 
-def spr_birch():
-    """A birch: a slender white trunk banded with black, a second stem leaning off it, and an
-    airy, drooping crown of small bright leaves with the sky showing through."""
+def spr_tree():
+    """An oak: a short, heavy trunk on a flared foot, limbs spreading into a broad crown of leaf
+    clusters in lobes, lit from above, with gaps where the limbs show through."""
+    return _oak()
+
+
+def spr_tree_autumn():
+    """The oak in autumn: the same tree with its crown turned in patches of orange, gold and rust,
+    a side going first, the way a real one turns."""
+    return _oak(autumn=True)
+
+
+def _birch(autumn=False):
+    """The birch, green or turned (see spr_birch and spr_birch_autumn)."""
     rng = np.random.default_rng(37)
     w, h = 72, 160
     cv = Canvas(w, h, wrap=False, ground=-9)
@@ -176,12 +205,25 @@ def spr_birch():
             b = np.radians(rng.uniform(55, 125))
             cv.leaf(px, py, px + np.cos(b) * 3.6, py + np.sin(b) * 3.6, 2.4, z=1.2 + (1 - r) * 0.5 + rng.random() * 0.2,
                     dome=0.5, rib=0.0, mat=0, tone=up + rng.normal(0, 0.05))
-    return _prop(cv, [BIRCH_LEAF, BIRCH_BARK, BIRCH_MARK], relief=1.0, cavity=0.35, shadow=0.45)
+    if not autumn:
+        return _prop(cv, [BIRCH_LEAF, BIRCH_BARK, BIRCH_MARK], relief=1.0, cavity=0.35, shadow=0.45)
+    _turn(cv, np.random.default_rng(371), 0, [0, 3], [0.8, 0.2])
+    return _prop(cv, [BIRCH_GOLD, BIRCH_BARK, BIRCH_MARK, AUTUMN[0]], relief=1.0, cavity=0.35, shadow=0.45)
 
 
-def spr_bush():
-    """A rounded shrub: twigs fanning out of the ground under a mound of small leaf clusters,
-    bright on top and dark underneath."""
+def spr_birch():
+    """A birch: a slender white trunk banded with black, a second stem leaning off it, and an
+    airy, drooping crown of small bright leaves with the sky showing through."""
+    return _birch()
+
+
+def spr_birch_autumn():
+    """The birch in autumn: its small leaves gone to gold, a few patches already orange."""
+    return _birch(autumn=True)
+
+
+def _bush(autumn=False):
+    """The shrub, green or turned (see spr_bush and spr_bush_autumn)."""
     rng = np.random.default_rng(13)
     w, h = 64, 44
     cv = Canvas(w, h, wrap=False, ground=-9)
@@ -189,7 +231,21 @@ def spr_bush():
         a = np.radians(-150 + k * 24)
         cv.stroke([(32, h), (32 + np.cos(a) * 18, h + np.sin(a) * 18)], 1.6, z=0.2, dome=0.6, taper=(1, 0.5), mat=1)
     _crown(cv, rng, 32, 24, 30, 19, 18, size=(6, 9), leaf=3.6, z=0.8)
-    return _prop(cv, [OAK_LEAF, OAK_BARK], relief=1.0, cavity=0.45, shadow=0.5)
+    if not autumn:
+        return _prop(cv, [OAK_LEAF, OAK_BARK], relief=1.0, cavity=0.45, shadow=0.5)
+    _turn(cv, np.random.default_rng(131), 0, [0, 2], [0.6, 0.4], cells=3)
+    return _prop(cv, [AUTUMN[2], OAK_BARK, AUTUMN[0]], relief=1.0, cavity=0.45, shadow=0.5)
+
+
+def spr_bush():
+    """A rounded shrub: twigs fanning out of the ground under a mound of small leaf clusters,
+    bright on top and dark underneath."""
+    return _bush()
+
+
+def spr_bush_autumn():
+    """The shrub in autumn: gone to rust red and orange, the colour of a hedge-bank in October."""
+    return _bush(autumn=True)
 
 
 CUT_WOOD = ramp('#c49a64', dark=0.4, light=1.15)
@@ -375,7 +431,7 @@ def _plates(cv, rng, rows, cols, fissure=1.4, bevel=2.6, stretch=1.0):
     cv.n += n
 
 
-def tex_forest_deep(name):
+def tex_forest_deep(name, autumn=False):
     """The inside of a wood seen from its edge: trunks at every depth in the dark, the farthest
     thinnest and darkest, low boughs and the odd clump of leaves catching a little light. Meant
     for the wall behind a `forest` fringe, so wherever the cards thin out it reads as more wood."""
@@ -400,8 +456,36 @@ def tex_forest_deep(name):
             a = np.radians(rng.uniform(0, 360))
             cv.leaf(px, py, px + np.cos(a) * 4.5, py + np.sin(a) * 4.5, 2.8, z=0.6 + rng.random() * 0.3, dome=0.5,
                     mat=0, tone=rng.normal(-0.2, 0.05), rib=0.2)
-    return _tile(cv, [OAK_SHADE, ramp('#3a3228', dark=0.4), ramp('#141a14', dark=0.6, light=1.4)],
+    leaf = ramp('#5c3218', dark=0.3) if autumn else OAK_SHADE      # `autumn`: the hanging leaves turned
+    return _tile(cv, [leaf, ramp('#3a3228', dark=0.4), ramp('#141a14', dark=0.6, light=1.4)],
                  cavity=0.4, shadow=0.5)
+
+
+def tex_leaves_fallen(name):
+    """The floor of a wood in autumn: fallen leaves lying thick and flat over dark earth, each its
+    own colour - orange, gold, rust, the brown of last week's - a few still green, and grass blades
+    poking through where they lie thin."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=0.0, mat=0)
+    cv.noise(0.4, cells=6, rng=rng)
+    thin = smooth_noise(T, T, 3, rng)
+    for i in range(240):
+        x, y = rng.random() * T, rng.random() * T
+        if thin[int(y) % T, int(x) % T] < 0.3 and rng.random() < 0.6:
+            continue                        # thin patches: earth and grass show
+        a = rng.random() * 2 * np.pi
+        L = rng.uniform(3.5, 6.5)
+        cv.leaf(x, y, x + np.cos(a) * L, y + np.sin(a) * L, L * rng.uniform(0.5, 0.75), z=0.2 + i * 0.002,
+                dome=0.25, bend=rng.uniform(-0.2, 0.2), mat=int(rng.choice([1, 1, 2, 2, 3, 4, 4, 5])),
+                tone=rng.normal(0, 0.06), rib=0.25)
+    for _ in range(60):                     # grass through the thin places
+        x, y = rng.random() * T, rng.random() * T
+        if thin[int(y) % T, int(x) % T] > 0.42:
+            continue
+        a = np.radians(rng.uniform(-120, -60))
+        cv.stroke([(x, y), (x + np.cos(a) * 3.5, y + np.sin(a) * 3.5)], 1.0, z=0.8, dome=0.4, taper=(1, 0.4), mat=6)
+    return _tile(cv, [FOREST_SOIL, AUTUMN[0], AUTUMN[1], AUTUMN[2], AUTUMN[3], ramp('#8a7a3a', dark=0.35),
+                      ramp('#4e6e2c', dark=0.3)], cavity=0.45, shadow=0.45, ambient=0.3, diffuse=0.65)
 
 
 def tex_bark(name, pine=False):
@@ -472,11 +556,18 @@ def tex_moss(name):
 
 # ---------------------------------------------------------------- the forest's edge
 
-def _forest_card(layer):
+AUTUMN_PLAN = {1: {'fern': 5, 'grass_tuft': 5, 'bush_autumn': 7},
+               2: {'pine': 1, 'birch_autumn': 3, 'bush_autumn': 7, 'fern': 3},
+               3: {'pine': 3, 'tree_autumn': 3, 'birch_autumn': 3, 'bush_autumn': 6},
+               4: {'pine': 8, 'tree_autumn': 9, 'birch_autumn': 3, 'bush_autumn': 12}}
+
+
+def _forest_card(layer, autumn=False):
     """One layer of a forest's edge, 1 (front) to 4 (back): ferns, grass and bushes; then young
-    trees behind them; then more and taller trees; then a dense wall of spruce and oak."""
+    trees behind them; then more and taller trees; then a dense wall of spruce and oak. `autumn`:
+    a mixed wood in October - oak, birch and bush turned, the spruce among them still green."""
     from assets import get_sprite                # assets imports this module, so not at the top
-    rng = np.random.default_rng(400 + layer)
+    rng = np.random.default_rng((500 if autumn else 400) + layer)
     height = {1: 1.2, 2: 3.0, 3: 4.0, 4: 4.8}[layer]
     H = int(height * CARD_PX)
     card = np.zeros((H, CARD_W, 4), np.float32)
@@ -484,8 +575,11 @@ def _forest_card(layer):
             2: {'pine': 2, 'birch': 2, 'bush': 7, 'fern': 4},
             3: {'pine': 5, 'tree': 2, 'birch': 2, 'bush': 6},
             4: {'pine': 17, 'tree': 3, 'bush': 12}}[layer]
+    if autumn:
+        plan = AUTUMN_PLAN[layer]
     tall = {'pine': (2.2, 4.6), 'tree': (2.4, 3.4), 'birch': (2.4, 3.6), 'bush': (0.4, 0.7), 'fern': (0.35, 0.6),
             'grass_tuft': (0.3, 0.45)}
+    tall.update({k + '_autumn': tall[k] for k in ('tree', 'birch', 'bush')})
     stamps = []
     for kind, k in plan.items():            # spread evenly along the card, each nudged at random
         lo, hi = tall[kind]
@@ -505,18 +599,25 @@ TEXTURES = {
     'foliage': lambda n: (tex_foliage(n), None),
     'foliage_autumn': lambda n: (tex_foliage(n, autumn=True), None),
     'forest_deep': lambda n: (tex_forest_deep(n), None),
+    'forest_deep_autumn': lambda n: (tex_forest_deep(n, autumn=True), None),
+    'leaves_fallen': lambda n: (tex_leaves_fallen(n), None),
     'bark': lambda n: (tex_bark(n), None),
     'bark_pine': lambda n: (tex_bark(n, pine=True), None),
     'pine_needles': lambda n: (tex_needles(n), None),
     'moss': lambda n: (tex_moss(n), None),
 }
 # how strongly the world-space surface noise varies each texture (see assets.TEXTURE_NOISE)
-TEXTURE_NOISE = {'forest_deep': 1.6}
+TEXTURE_NOISE = {'forest_deep': 1.6, 'forest_deep_autumn': 1.6, 'leaves_fallen': 2.2}
 SPRITES = {'pine': spr_pine, 'tree': spr_tree, 'birch': spr_birch, 'bush': spr_bush, 'boulder': spr_boulder,
            'stump': spr_stump, 'log': spr_log, 'dead_tree': spr_dead_tree, 'snowy_pine': spr_snowy_pine,
-           'boulder_snow': spr_boulder_snow}
+           'boulder_snow': spr_boulder_snow, 'tree_autumn': spr_tree_autumn, 'birch_autumn': spr_birch_autumn,
+           'bush_autumn': spr_bush_autumn}
 SPRITES.update({f'forest_card_{k}': (lambda k=k: _forest_card(k)) for k in (1, 2, 3, 4)})
+SPRITES.update({f'autumn_card_{k}': (lambda k=k: _forest_card(k, autumn=True)) for k in (1, 2, 3, 4)})
 SPRITE_HEIGHT = {'pine': 3.4, 'tree': 2.6, 'birch': 3.0, 'bush': 0.5, 'snowy_pine': 3.4, 'boulder_snow': 0.55,
-                 'forest_card_1': 1.2, 'forest_card_2': 3.0, 'forest_card_3': 4.0, 'forest_card_4': 4.8}
+                 'forest_card_1': 1.2, 'forest_card_2': 3.0, 'forest_card_3': 4.0, 'forest_card_4': 4.8,
+                 'tree_autumn': 2.6, 'birch_autumn': 3.0, 'bush_autumn': 0.5,
+                 'autumn_card_1': 1.2, 'autumn_card_2': 3.0, 'autumn_card_3': 4.0, 'autumn_card_4': 4.8}
 # fringe sets: cards back to front, for a wall's `fringe`
-FRINGES = {'forest': ['forest_card_4', 'forest_card_3', 'forest_card_2', 'forest_card_1']}
+FRINGES = {'forest': ['forest_card_4', 'forest_card_3', 'forest_card_2', 'forest_card_1'],
+           'forest_autumn': ['autumn_card_4', 'autumn_card_3', 'autumn_card_2', 'autumn_card_1']}

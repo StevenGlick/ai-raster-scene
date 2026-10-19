@@ -1,0 +1,514 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhh,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhh,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFhhhhhhhhhhhhhw,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF",
+  "FFFFFFFFFFFFFFFFFF,ppp,,FFFFFFFFFFFFFFFF"
+ ],
+ "legend": {
+  "F": {
+   "wall": "forest_deep_autumn",
+   "h": 2.4,
+   "fringe": "forest_autumn"
+  },
+  ",": {
+   "floor": "leaves_fallen"
+  },
+  "p": {
+   "floor": "dirt"
+  },
+  "h": {
+   "floor": "dry_grass"
+  },
+  "w": {
+   "wall": "moss_stone",
+   "h": 0.6,
+   "top": "moss"
+  }
+ },
+ "camera": {
+  "x": 20.0,
+  "y": 46.6,
+  "angle": 270,
+  "fov": 66,
+  "height": 0.5
+ },
+ "title": "Autumn lane - a lane through the wood in October",
+ "sky": "golden",
+ "ambient": [
+  0.3,
+  0.27,
+  0.27
+ ],
+ "fog": {
+  "color": [
+   0.34,
+   0.27,
+   0.2
+  ],
+  "density": 0.006,
+  "ground": 0.12,
+  "height": 0.5,
+  "noise": 0.6,
+  "shafts": 0.7,
+  "anisotropy": 0.2
+ },
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 268,
+   "elevation": 7,
+   "intensity": 1.0
+  }
+ ],
+ "sprites": [
+  {
+   "x": 22.9,
+   "y": 44.0,
+   "type": "tree_autumn",
+   "scale": 3.1
+  },
+  {
+   "x": 18.3,
+   "y": 41.2,
+   "type": "birch_autumn",
+   "flip": true
+  },
+  {
+   "x": 23.2,
+   "y": 38.6,
+   "type": "birch_autumn"
+  },
+  {
+   "x": 18.4,
+   "y": 35.0,
+   "type": "tree_autumn",
+   "flip": true
+  },
+  {
+   "x": 23.3,
+   "y": 32.4,
+   "type": "pine",
+   "flip": true
+  },
+  {
+   "x": 23.0,
+   "y": 26.0,
+   "type": "tree_autumn",
+   "scale": 3.3
+  },
+  {
+   "x": 23.2,
+   "y": 19.0,
+   "type": "birch_autumn",
+   "flip": true
+  },
+  {
+   "x": 23.1,
+   "y": 12.2,
+   "type": "tree_autumn"
+  },
+  {
+   "x": 18.3,
+   "y": 6.0,
+   "type": "birch_autumn"
+  },
+  {
+   "x": 18.2,
+   "y": 30.2,
+   "type": "bush_autumn"
+  },
+  {
+   "x": 22.7,
+   "y": 35.8,
+   "type": "bush_autumn",
+   "flip": true
+  },
+  {
+   "x": 18.4,
+   "y": 25.0,
+   "type": "bush_autumn",
+   "flip": true
+  },
+  {
+   "x": 22.6,
+   "y": 22.4,
+   "type": "fern"
+  },
+  {
+   "x": 22.5,
+   "y": 41.6,
+   "type": "mushrooms"
+  },
+  {
+   "x": 18.6,
+   "y": 44.8,
+   "type": "fern"
+  },
+  {
+   "x": 6.4,
+   "y": 25.4,
+   "type": "tree_autumn",
+   "scale": 3.8
+  },
+  {
+   "id": "scarecrow",
+   "x": 10.6,
+   "y": 17.2,
+   "type": "scarecrow"
+  },
+  {
+   "x": 8.6,
+   "y": 22.6,
+   "type": "hay_bale"
+  },
+  {
+   "x": 9.8,
+   "y": 23.1,
+   "type": "hay_bale",
+   "flip": true
+  },
+  {
+   "x": 9.2,
+   "y": 22.8,
+   "type": "hay_bale",
+   "z": 0.48
+  },
+  {
+   "x": 6.0,
+   "y": 15.4,
+   "type": "hay_bale"
+  },
+  {
+   "x": 13.0,
+   "y": 22.6,
+   "type": "pumpkin"
+  },
+  {
+   "x": 14.2,
+   "y": 21.4,
+   "type": "pumpkin",
+   "scale": 0.26
+  },
+  {
+   "x": 12.2,
+   "y": 20.8,
+   "type": "pumpkin",
+   "flip": true
+  },
+  {
+   "x": 14.8,
+   "y": 23.6,
+   "type": "pumpkin",
+   "scale": 0.4
+  },
+  {
+   "x": 13.6,
+   "y": 25.0,
+   "type": "pumpkin",
+   "scale": 0.29
+  },
+  {
+   "x": 11.4,
+   "y": 24.4,
+   "type": "pumpkin"
+  },
+  {
+   "x": 15.2,
+   "y": 13.6,
+   "type": "pumpkin",
+   "scale": 0.36
+  },
+  {
+   "x": 14.0,
+   "y": 12.4,
+   "type": "pumpkin"
+  },
+  {
+   "x": 11.9,
+   "y": 18.6,
+   "type": "crow"
+  },
+  {
+   "x": 9.2,
+   "y": 20.6,
+   "type": "crow",
+   "flip": true
+  },
+  {
+   "x": 17.5,
+   "y": 23.4,
+   "type": "crow"
+  },
+  {
+   "x": 17.5,
+   "y": 26.2,
+   "type": "crow",
+   "flip": true
+  },
+  {
+   "id": "walker",
+   "x": 20.5,
+   "y": 41.0,
+   "type": "child",
+   "facing": 270
+  }
+ ],
+ "scatter": [
+  {
+   "of": "autumn",
+   "on": ",",
+   "density": 0.3,
+   "clump": 1.4,
+   "seed": 3
+  }
+ ],
+ "shots": [
+  {
+   "x": 20.0,
+   "y": 46.6,
+   "angle": 270,
+   "post": [
+    {
+     "fx": "leaves",
+     "count": 70
+    }
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "The long way home",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 12.4,
+   "y": 15.2,
+   "look_at": [
+    6.8,
+    25.0,
+    1.4
+   ],
+   "fov": 64,
+   "height": 0.6
+  },
+  {
+   "x": 21.4,
+   "y": 23.6,
+   "look_at": [
+    17.6,
+    18.4,
+    0.55
+   ],
+   "fov": 62,
+   "height": 0.6,
+   "extra_sprites": [
+    {
+     "x": 17.5,
+     "y": 17.5,
+     "type": "jack_o_lantern"
+    },
+    {
+     "x": 17.5,
+     "y": 20.5,
+     "type": "jack_o_lantern"
+    },
+    {
+     "x": 18.35,
+     "y": 21.6,
+     "type": "jack_o_lantern"
+    },
+    {
+     "x": 18.3,
+     "y": 16.3,
+     "type": "jack_o_lantern"
+    },
+    {
+     "x": 16.2,
+     "y": 19.6,
+     "type": "jack_o_lantern"
+    }
+   ],
+   "post": [
+    {
+     "fx": "bloom",
+     "threshold": 0.5,
+     "strength": 0.8,
+     "radius": 5
+    },
+    {
+     "fx": "vignette",
+     "strength": 0.45
+    }
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "All Hallows' Eve",
+     "at": "top",
+     "box": true
+    }
+   ],
+   "overrides": {
+    "sky": "dusk",
+    "ambient": [
+     0.14,
+     0.13,
+     0.2
+    ],
+    "lights": [
+     {
+      "type": "sun",
+      "azimuth": 268,
+      "elevation": 2,
+      "intensity": 0.3
+     },
+     {
+      "x": 17.9,
+      "y": 17.5,
+      "z": 0.85,
+      "radius": 2.6,
+      "color": [
+       1.0,
+       0.58,
+       0.22
+      ],
+      "intensity": 1.2
+     },
+     {
+      "x": 17.9,
+      "y": 20.5,
+      "z": 0.85,
+      "radius": 2.6,
+      "color": [
+       1.0,
+       0.58,
+       0.22
+      ],
+      "intensity": 1.2
+     },
+     {
+      "x": 18.75,
+      "y": 21.6,
+      "z": 0.25,
+      "radius": 2.6,
+      "color": [
+       1.0,
+       0.58,
+       0.22
+      ],
+      "intensity": 1.2
+     },
+     {
+      "x": 18.7,
+      "y": 16.3,
+      "z": 0.25,
+      "radius": 2.6,
+      "color": [
+       1.0,
+       0.58,
+       0.22
+      ],
+      "intensity": 1.2
+     },
+     {
+      "x": 16.599999999999998,
+      "y": 19.6,
+      "z": 0.25,
+      "radius": 2.6,
+      "color": [
+       1.0,
+       0.58,
+       0.22
+      ],
+      "intensity": 1.2
+     }
+    ],
+    "fog": {
+     "color": [
+      0.16,
+      0.13,
+      0.2
+     ],
+     "density": 0.035,
+     "ground": 0.3,
+     "height": 0.4,
+     "noise": 0.6,
+     "glow": 0.6
+    }
+   }
+  },
+  {
+   "x": 20.1,
+   "y": 38.3,
+   "look_at": "walker",
+   "fov": 60,
+   "post": [
+    {
+     "fx": "leaves",
+     "count": 50
+    }
+   ],
+   "overlays": [
+    {
+     "type": "bubble",
+     "anchor": "walker",
+     "text": "Can we go the long way? Just this once?"
+    }
+   ]
+  }
+ ],
+ "contact_shadows": 0.5,
+ "supersample": 2
+}
