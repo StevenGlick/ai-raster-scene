@@ -1,0 +1,636 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "##############################",
+  "#######V###V##################",
+  "#G.............########V######",
+  "##.............G###qqqqqqqqq##",
+  "#R.............####qqqqqqqqq##",
+  "##.................qqqqqqqqqR#",
+  "#G..............D..qqqqqqqqq##",
+  "##.................qqqqqqqqq##",
+  "#R.............####qqqqqqqqq##",
+  "##.............R###qqqqqqqqqR#",
+  "##.............###Rqqqqqqqqq##",
+  "########....#######qqqqqqqqq##",
+  "########.D..##################",
+  "########....##################",
+  "#####qqqqqqqqqqq##############",
+  "#####qqqqqqqqqqq##############",
+  "#####qqqqqqqqqqqV#############",
+  "#####qqqqqqqqqqq##############",
+  "#####qqqqqqqqqqq##############",
+  "#####qqqqqqqqqqq##############",
+  "####V#######V#################",
+  "##############################"
+ ],
+ "legend": {
+  "#": {
+   "wall": "panel",
+   "h": 1
+  },
+  "G": {
+   "wall": "panel_green",
+   "h": 1
+  },
+  "R": {
+   "wall": "pipes",
+   "h": 1
+  },
+  "V": {
+   "wall": "rust",
+   "h": 1
+  },
+  "D": {
+   "wall": "iron_door",
+   "h": 1
+  },
+  ".": {
+   "floor": "tile_floor",
+   "ceil": "concrete"
+  },
+  "q": {
+   "floor": "grate",
+   "ceil": "concrete"
+  }
+ },
+ "camera": {
+  "x": 2.6,
+  "y": 6.0,
+  "angle": 0,
+  "fov": 70,
+  "height": 0.5
+ },
+ "title": "Bunker laboratory - consoles, grating and the red light",
+ "ceiling_height": 1.0,
+ "sky": null,
+ "ambient": [
+  0.06,
+  0.07,
+  0.08
+ ],
+ "fog": {
+  "color": [
+   0.02,
+   0.025,
+   0.03
+  ],
+  "density": 0.05
+ },
+ "lights": [
+  {
+   "x": 4.5,
+   "y": 3.5,
+   "z": 0.95,
+   "radius": 4.0,
+   "color": [
+    0.85,
+    0.92,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "x": 11.5,
+   "y": 8.0,
+   "z": 0.95,
+   "radius": 4.0,
+   "color": [
+    0.85,
+    0.92,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 16.5,
+   "y": 6.0,
+   "z": 0.95,
+   "radius": 3.5,
+   "color": [
+    1.0,
+    0.15,
+    0.1
+   ],
+   "intensity": 1.6
+  },
+  {
+   "x": 23.0,
+   "y": 6.0,
+   "z": 0.95,
+   "radius": 5.0,
+   "color": [
+    0.8,
+    0.88,
+    1.0
+   ],
+   "intensity": 0.8
+  },
+  {
+   "x": 3.2,
+   "y": 9.2,
+   "z": 0.5,
+   "radius": 3.0,
+   "color": [
+    0.35,
+    1.0,
+    0.6
+   ],
+   "intensity": 1.1
+  },
+  {
+   "x": 9.5,
+   "y": 17.0,
+   "z": 0.95,
+   "radius": 4.5,
+   "color": [
+    0.9,
+    0.9,
+    1.0
+   ],
+   "intensity": 0.7
+  }
+ ],
+ "sprites": [
+  {
+   "x": 3.2,
+   "y": 9.3,
+   "type": "console"
+  },
+  {
+   "x": 5.0,
+   "y": 9.3,
+   "type": "console"
+  },
+  {
+   "x": 13.6,
+   "y": 3.5,
+   "type": "console"
+  },
+  {
+   "x": 22.5,
+   "y": 3.0,
+   "type": "console"
+  },
+  {
+   "x": 10.5,
+   "y": 18.5,
+   "type": "console"
+  },
+  {
+   "x": 2.5,
+   "y": 1.6,
+   "type": "locker"
+  },
+  {
+   "x": 3.6,
+   "y": 1.6,
+   "type": "locker"
+  },
+  {
+   "x": 27.4,
+   "y": 11.4,
+   "type": "locker"
+  },
+  {
+   "x": 7.5,
+   "y": 6.5,
+   "type": "crate"
+  },
+  {
+   "x": 8.4,
+   "y": 5.6,
+   "type": "barrel"
+  },
+  {
+   "x": 20.5,
+   "y": 9.5,
+   "type": "barrel"
+  },
+  {
+   "x": 25.5,
+   "y": 8.5,
+   "type": "crate"
+  },
+  {
+   "x": 6.5,
+   "y": 15.5,
+   "type": "crate"
+  },
+  {
+   "x": 14.5,
+   "y": 18.5,
+   "type": "barrel"
+  },
+  {
+   "x": 11.5,
+   "y": 2.6,
+   "type": "bed"
+  },
+  {
+   "id": "doc",
+   "x": 10.5,
+   "y": 7.6,
+   "type": "scientist",
+   "light": {
+    "radius": 3.0,
+    "color": [
+     0.9,
+     0.95,
+     1.0
+    ],
+    "intensity": 1.0,
+    "z": 0.5
+   }
+  },
+  {
+   "x": 4.5,
+   "y": 3.5,
+   "type": "ceiling_lamp",
+   "z": 0.7
+  },
+  {
+   "x": 11.5,
+   "y": 8.0,
+   "type": "ceiling_lamp",
+   "z": 0.7
+  },
+  {
+   "x": 23.0,
+   "y": 6.0,
+   "type": "ceiling_lamp",
+   "z": 0.7
+  },
+  {
+   "x": 9.5,
+   "y": 17.0,
+   "type": "ceiling_lamp",
+   "z": 0.7
+  },
+  {
+   "x": 1.62,
+   "y": 4.5,
+   "type": "pipe_valve",
+   "z": 0.55
+  },
+  {
+   "x": 1.62,
+   "y": 8.5,
+   "type": "pipe_valve",
+   "z": 0.5
+  },
+  {
+   "x": 18.4,
+   "y": 10.5,
+   "type": "pipe_valve",
+   "z": 0.55
+  },
+  {
+   "x": 14.6,
+   "y": 2.4,
+   "type": "wall_clock",
+   "z": 0.7
+  },
+  {
+   "x": 6.4,
+   "y": 9.4,
+   "type": "rubble"
+  },
+  {
+   "x": 13.4,
+   "y": 9.6,
+   "type": "rubble"
+  },
+  {
+   "x": 21.5,
+   "y": 4.4,
+   "type": "rubble"
+  },
+  {
+   "x": 7.5,
+   "y": 17.6,
+   "type": "rubble"
+  },
+  {
+   "x": 4.6,
+   "y": 3.6,
+   "type": "broken_barrel"
+  },
+  {
+   "x": 24.4,
+   "y": 10.6,
+   "type": "broken_barrel"
+  },
+  {
+   "x": 12.6,
+   "y": 5.4,
+   "type": "sack"
+  },
+  {
+   "x": 3.4,
+   "y": 5.5,
+   "type": "bucket"
+  },
+  {
+   "x": 19.6,
+   "y": 7.5,
+   "type": "bucket"
+  },
+  {
+   "x": 13.5,
+   "y": 16.4,
+   "type": "bones"
+  },
+  {
+   "x": 8.5,
+   "y": 3.4,
+   "type": "rocks"
+  },
+  {
+   "x": 26.4,
+   "y": 5.5,
+   "type": "rocks"
+  }
+ ],
+ "ui": {
+  "theme": "terminal"
+ },
+ "decals": [
+  {
+   "tex": "puddle_dark",
+   "surface": "floor",
+   "x": 7.0,
+   "y": 6.5,
+   "size": 2.0
+  },
+  {
+   "tex": "puddle_dark",
+   "surface": "floor",
+   "x": 12.0,
+   "y": 8.0,
+   "size": 1.6
+  },
+  {
+   "tex": "puddle_dark",
+   "surface": "floor",
+   "x": 22.0,
+   "y": 8.0,
+   "size": 1.8
+  },
+  {
+   "tex": "drain",
+   "surface": "floor",
+   "x": 5.5,
+   "y": 8.5,
+   "size": 0.9
+  },
+  {
+   "tex": "scorch",
+   "surface": "floor",
+   "x": 10.0,
+   "y": 4.0,
+   "size": 2.0
+  },
+  {
+   "tex": "splatter_dark",
+   "surface": "floor",
+   "x": 13.0,
+   "y": 6.6,
+   "size": 1.3
+  },
+  {
+   "tex": "stain_rust",
+   "surface": "floor",
+   "x": 20.5,
+   "y": 5.0,
+   "size": 1.8,
+   "opacity": 0.7
+  },
+  {
+   "tex": "crack",
+   "surface": "floor",
+   "x": 8.5,
+   "y": 10.0,
+   "size": 2.4,
+   "opacity": 0.8
+  },
+  {
+   "tex": "leak",
+   "surface": "wall",
+   "cell": [
+    15,
+    4
+   ],
+   "face": "west",
+   "u": 0.5,
+   "z": 0.62,
+   "size": 0.7
+  },
+  {
+   "tex": "leak",
+   "surface": "wall",
+   "cell": [
+    1,
+    10
+   ],
+   "face": "east",
+   "u": 0.5,
+   "z": 0.62,
+   "size": 0.7
+  },
+  {
+   "tex": "stain_rust",
+   "surface": "wall",
+   "cell": [
+    1,
+    6
+   ],
+   "face": "east",
+   "u": 0.5,
+   "z": 0.45,
+   "size": 0.6
+  },
+  {
+   "tex": "scorch",
+   "surface": "wall",
+   "cell": [
+    15,
+    9
+   ],
+   "face": "west",
+   "u": 0.5,
+   "z": 0.45,
+   "size": 0.7
+  },
+  {
+   "tex": "splatter_dark",
+   "surface": "wall",
+   "cell": [
+    15,
+    3
+   ],
+   "face": "west",
+   "u": 0.5,
+   "z": 0.5,
+   "size": 0.6
+  },
+  {
+   "tex": "cobweb",
+   "surface": "wall",
+   "cell": [
+    1,
+    2
+   ],
+   "face": "east",
+   "u": 0.2,
+   "z": 0.82,
+   "size": 0.4
+  },
+  {
+   "tex": "stain_rust",
+   "surface": "ceiling",
+   "x": 7.5,
+   "y": 5.5,
+   "size": 2.0,
+   "opacity": 0.7
+  },
+  {
+   "tex": "stain",
+   "surface": "ceiling",
+   "x": 12.0,
+   "y": 9.0,
+   "size": 1.8,
+   "opacity": 0.7
+  }
+ ],
+ "grime": 0.35,
+ "scatter": [
+  {
+   "of": "wreckage",
+   "on": ".q",
+   "density": 0.35,
+   "clump": 1.7,
+   "sizes": {
+    "tiny": 5,
+    "small": 4,
+    "medium": 1.5
+   },
+   "seed": 1
+  }
+ ],
+ "shots": [
+  {
+   "x": 2.6,
+   "y": 6.0,
+   "angle": 0,
+   "overlays": [
+    {
+     "type": "viewmodel",
+     "item": "flashlight"
+    },
+    {
+     "type": "bars",
+     "items": [
+      {
+       "label": "HP",
+       "value": 0.72
+      },
+      {
+       "label": "PWR",
+       "value": 0.4,
+       "segments": 5
+      }
+     ]
+    },
+    {
+     "type": "counter",
+     "icon": "ammo",
+     "value": "7/24",
+     "label": "AMMO"
+    },
+    {
+     "type": "automap",
+     "title": "SUBLEVEL 2"
+    },
+    {
+     "type": "hotbar",
+     "slots": [
+      "revolver",
+      "flashlight",
+      "wrench",
+      "key",
+      null
+     ],
+     "selected": 1,
+     "numbers": true
+    },
+    {
+     "type": "crosshair"
+    }
+   ]
+  },
+  {
+   "x": 7.2,
+   "y": 9.6,
+   "angle": 331,
+   "fov": 68,
+   "overlays": [
+    {
+     "type": "dialog",
+     "portrait": "scientist",
+     "name": "Site Technician",
+     "text": "Reactor hall is sealed and the override is three floors down. Do not touch the red door."
+    }
+   ]
+  },
+  {
+   "x": 13.0,
+   "y": 6.0,
+   "angle": 0,
+   "fov": 72,
+   "post": [
+    "crt_green"
+   ],
+   "overlays": [
+    {
+     "type": "panel",
+     "title": "OBJECTIVES",
+     "lines": [
+      {
+       "text": "Restore main power",
+       "done": true
+      },
+      {
+       "text": "Find the override key",
+       "done": false
+      },
+      {
+       "text": "Seal sublevel 3",
+       "done": false
+      }
+     ],
+     "at": "top-left"
+    },
+    {
+     "type": "prompt",
+     "key": "E",
+     "text": "Open bulkhead"
+    }
+   ]
+  },
+  {
+   "x": 13.6,
+   "y": 8.2,
+   "angle": 187,
+   "fov": 72,
+   "post": [
+    "hurt"
+   ]
+  }
+ ],
+ "supersample": 2
+}

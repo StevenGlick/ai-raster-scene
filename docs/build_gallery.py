@@ -1,0 +1,154 @@
+"""Rebuild every image in docs/gallery from the example scenes.
+
+    python docs/build_gallery.py               # everything
+    python docs/build_gallery.py woods_fire    # just the named images
+    python docs/build_gallery.py --check       # list stale or unmanaged files, render nothing
+
+The gallery is generated, never hand-edited. Each image below names the example scene and shot
+it comes from, so after a change to the engine or an example the whole gallery is one command
+from current - and a caption or character name that changed in a scene cannot survive in an old
+picture. Files in docs/gallery that this script does not build are reported (or removed with
+--prune), because an image nobody regenerates is an image that silently goes stale.
+"""
+import argparse
+import os
+import sys
+
+from PIL import Image
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+import assets  # noqa: E402
+import render  # noqa: E402
+from characters import CHARACTERS  # noqa: E402
+
+OUT = os.path.join(ROOT, 'docs', 'gallery')
+EXAMPLES = os.path.join(ROOT, 'examples')
+
+# gallery image -> (example scene, shot number counted from 1)
+SHOTS = {
+    'garden_01': ('garden_encounter', 1),
+    'garden_02': ('garden_encounter', 2),
+    'corridor_03': ('ghost_corridor', 3),
+    'library_medium': ('library_medium', 1),
+    'tunnel_01': ('tunnel_encounter', 1),
+    'hospital_garden_01': ('hospital_garden', 1),
+    'waterway_01': ('underground_waterway', 1),
+    'woods_path': ('woodland_night', 1),
+    'woods_fire': ('woodland_night', 2),
+    'street_rain': ('rainy_street', 1),
+    'street_lightning': ('rainy_street', 3),
+    'coast_tower': ('coast_lighthouse', 1),
+    'coast_jetty': ('coast_lighthouse', 2),
+    'bunker_hud': ('bunker_lab', 1),
+    'bunker_crt': ('bunker_lab', 3),
+    'gui_hud': ('gui_hud', 1),
+    'gui_lantern': ('gui_lantern', 1),
+    'gui_menus_01': ('gui_menus', 1),
+    'gui_menus_02': ('gui_menus', 2),
+    'gui_trade_01': ('gui_trade', 1),
+    'gui_trade_02': ('gui_trade', 2),
+}
+# gallery image -> example whose every shot is tiled at half size, two to a row
+SHEETS = {'post_presets': 'post_presets', 'gui_themes': 'gui_themes'}
+# gallery image -> example whose --map layout check is shown
+MAPS = {'layout_map': 'garden_encounter'}
+SPECIAL = {'cast', 'catalog'}
+ALL = set(SHOTS) | set(SHEETS) | set(MAPS) | SPECIAL
+
+_scenes = {}
+
+
+def scene(name):
+    """Load an example once and keep its (World, Renderer) for every shot that reuses it."""
+    if name not in _scenes:
+        sc = render.load_scene(os.path.join(EXAMPLES, name + '.json'))
+        w = render.World(sc)
+        _scenes[name] = (sc, (w, render.Renderer(w, sc)))
+    return _scenes[name]
+
+
+def build_shot(out, example, shot):
+    sc, base = scene(example)
+    render.render_shot(sc, shot - 1, base).save(out)
+
+
+def build_sheet(out, example, gutter=4):
+    sc, base = scene(example)
+    n = len(sc.get('shots') or [sc['camera']])
+    # frames are 3x upscaled pixel art; a box filter halves them cleanly, nearest would not
+    frames = [render.render_shot(sc, i, base) for i in range(n)]
+    frames = [f.resize((f.width // 2, f.height // 2), Image.BOX) for f in frames]
+    w, h = frames[0].size
+    rows = (n + 1) // 2
+    sheet = Image.new('RGB', (w * 2 + gutter, h * rows + gutter * (rows - 1)), (0, 0, 0))
+    for k, f in enumerate(frames):
+        sheet.paste(f, ((k % 2) * (w + gutter), (k // 2) * (h + gutter)))
+    sheet.save(out)
+
+
+def build_map(out, example):
+    sc, (world, _) = scene(example)
+    cams = [{**sc.get('camera', {}), **c} for c in (sc.get('shots') or [sc['camera']])]
+    render.draw_map(world, sc, cams, out)
+
+
+def build_cast(out, zoom=6, slot=112, top=20, bg=(28, 26, 34)):
+    """The built-in characters side by side at 6x, in the order the docs list them."""
+    names = list(CHARACTERS)
+    sheet = Image.new('RGB', (slot * len(names), 32 * zoom + 2 * top), bg)
+    for i, n in enumerate(names):
+        rgba, _ = assets.get_sprite(n)
+        im = Image.fromarray((rgba.clip(0, 1) * 255).astype('uint8'), 'RGBA')
+        im = im.resize((im.width * zoom, im.height * zoom), Image.NEAREST)
+        sheet.paste(im, (i * slot + (slot - im.width) // 2, top + 32 * zoom - im.height), im)
+    sheet.save(out)
+
+
+def build(name):
+    out = os.path.join(OUT, name + '.png')
+    if name in SHOTS:
+        build_shot(out, *SHOTS[name])
+    elif name in SHEETS:
+        build_sheet(out, SHEETS[name])
+    elif name in MAPS:
+        build_map(out, MAPS[name])
+    elif name == 'cast':
+        build_cast(out)
+    elif name == 'catalog':
+        assets.catalog(out)
+    return out
+
+
+def unmanaged():
+    """Files in docs/gallery that no rule here builds."""
+    return sorted(f for f in os.listdir(OUT) if f.endswith('.png') and f[:-4] not in ALL)
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument('names', nargs='*', help='gallery images to rebuild (default: all)')
+    ap.add_argument('--check', action='store_true', help='report unmanaged files and exit')
+    ap.add_argument('--prune', action='store_true', help='delete files no rule builds')
+    args = ap.parse_args()
+
+    stray = unmanaged()
+    if args.check:
+        print('unmanaged:', ', '.join(stray) or 'none')
+        sys.exit(1 if stray else 0)
+    unknown = [n for n in args.names if n not in ALL]
+    if unknown:
+        ap.error(f"no rule builds {unknown}; known: {', '.join(sorted(ALL))}")
+    os.makedirs(OUT, exist_ok=True)
+    for name in args.names or sorted(ALL):
+        print(os.path.relpath(build(name), ROOT))
+    if stray and args.prune:
+        for f in stray:
+            os.remove(os.path.join(OUT, f))
+            print('removed', f)
+    elif stray:
+        print('not built by any rule (delete them, or add a rule):', ', '.join(stray), file=sys.stderr)
+
+
+if __name__ == '__main__':
+    main()

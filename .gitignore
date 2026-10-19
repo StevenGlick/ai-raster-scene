@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+/renders/
+/out*.png
+.DS_Store
+/dist/

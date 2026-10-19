@@ -1,0 +1,450 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "##################",
+  "##BBBBBBSSBBBBBB##",
+  "#B..............B#",
+  "#B..............B#",
+  "#B..P........P..W#",
+  "#B....rrrrrr....B#",
+  "#B....rrrrrr....B#",
+  "#C....rrrrrr....B#",
+  "#C....rrrrrr....B#",
+  "#B....rrrrrr....B#",
+  "#B....rrrrrr....W#",
+  "#B..P........P..B#",
+  "#B..............B#",
+  "#B..............B#",
+  "##BBBBBBBBBBBBBB##",
+  "##################"
+ ],
+ "legend": {
+  "#": {
+   "wall": "stone_dark",
+   "h": 1.4
+  },
+  "B": {
+   "wall": [
+    "bookshelf",
+    "wallpaper"
+   ],
+   "h": 1.4
+  },
+  "W": {
+   "wall": [
+    "wallpaper",
+    "window_dark"
+   ],
+   "h": 1.4
+  },
+  "C": {
+   "wall": "curtain",
+   "h": 1.4
+  },
+  "S": {
+   "wall": [
+    "runes",
+    "wallpaper"
+   ],
+   "h": 1.4
+  },
+  "P": {
+   "wall": "marble",
+   "h": 1.4
+  },
+  ".": {
+   "floor": "wood_floor",
+   "ceil": "ceiling_plaster"
+  },
+  "r": {
+   "floor": "carpet",
+   "ceil": "ceiling_plaster"
+  }
+ },
+ "camera": {
+  "x": 8.5,
+  "y": 12.8,
+  "angle": 270,
+  "fov": 72,
+  "height": 0.55
+ },
+ "ceiling_height": 1.4,
+ "sky": null,
+ "ambient": [
+  0.08,
+  0.07,
+  0.075
+ ],
+ "lights": [
+  {
+   "x": 8.0,
+   "y": 2.6,
+   "z": 0.6,
+   "radius": 5.0,
+   "color": [
+    1.0,
+    0.75,
+    0.4
+   ],
+   "intensity": 1.4
+  },
+  {
+   "x": 9.0,
+   "y": 7.5,
+   "z": 0.6,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.2,
+    0.1
+   ],
+   "intensity": 0.45
+  },
+  {
+   "x": 15.3,
+   "y": 4.0,
+   "z": 1.0,
+   "radius": 3.0,
+   "color": [
+    0.5,
+    0.6,
+    0.9
+   ],
+   "intensity": 0.6
+  },
+  {
+   "x": 15.3,
+   "y": 10.0,
+   "z": 1.0,
+   "radius": 3.0,
+   "color": [
+    0.5,
+    0.6,
+    0.9
+   ],
+   "intensity": 0.6
+  },
+  {
+   "x": 3.0,
+   "y": 12.5,
+   "z": 0.6,
+   "radius": 3.5,
+   "color": [
+    1.0,
+    0.75,
+    0.4
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 2.6,
+   "y": 5.0,
+   "z": 0.9,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.75,
+    0.4
+   ],
+   "intensity": 1.1
+  },
+  {
+   "x": 14.4,
+   "y": 7.5,
+   "z": 0.9,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.75,
+    0.4
+   ],
+   "intensity": 1.0
+  },
+  {
+   "x": 2.6,
+   "y": 10.0,
+   "z": 0.9,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.75,
+    0.4
+   ],
+   "intensity": 1.0
+  }
+ ],
+ "fog": {
+  "color": [
+   0.02,
+   0.015,
+   0.015
+  ],
+  "density": 0.045
+ },
+ "sprites": [
+  {
+   "x": 7.6,
+   "y": 2.4,
+   "type": "candles"
+  },
+  {
+   "x": 9.4,
+   "y": 2.4,
+   "type": "candles"
+  },
+  {
+   "x": 7.2,
+   "y": 6.4,
+   "type": "candles"
+  },
+  {
+   "x": 9.8,
+   "y": 8.6,
+   "type": "candles"
+  },
+  {
+   "x": 7.0,
+   "y": 8.8,
+   "type": "candles"
+  },
+  {
+   "x": 3.0,
+   "y": 12.6,
+   "type": "candles"
+  },
+  {
+   "x": 2.3,
+   "y": 5.0,
+   "type": "lantern",
+   "z": 0.75
+  },
+  {
+   "x": 14.7,
+   "y": 7.5,
+   "type": "lantern",
+   "z": 0.75
+  },
+  {
+   "x": 2.3,
+   "y": 10.0,
+   "type": "lantern",
+   "z": 0.75
+  },
+  {
+   "x": 3.2,
+   "y": 2.6,
+   "type": "crate"
+  },
+  {
+   "x": 14.2,
+   "y": 12.8,
+   "type": "barrel"
+  },
+  {
+   "id": "medium",
+   "x": 8.5,
+   "y": 8.4,
+   "type": "spiritualist",
+   "light": {
+    "radius": 2.6,
+    "color": [
+     1.0,
+     0.75,
+     0.4
+    ],
+    "intensity": 1.2
+   }
+  },
+  {
+   "x": 8.5,
+   "y": 7.4,
+   "type": "candles"
+  }
+ ],
+ "shots": [
+  {
+   "x": 8.5,
+   "y": 10.8,
+   "angle": 270,
+   "overrides": {
+    "ui": {
+     "theme": "classic"
+    }
+   },
+   "overlays": [
+    {
+     "type": "choice",
+     "at": "center",
+     "prompt": "Spend your idols?",
+     "options": [
+      {
+       "text": "Recharge dispel",
+       "hint": "1 idol"
+      },
+      {
+       "text": "Bind a 4th dispel",
+       "hint": "3 idols"
+      },
+      "Leave"
+     ],
+     "selected": 1
+    },
+    {
+     "type": "caption",
+     "text": "classic",
+     "box": true,
+     "at": "top-left"
+    }
+   ]
+  },
+  {
+   "x": 8.5,
+   "y": 10.8,
+   "angle": 270,
+   "overrides": {
+    "ui": {
+     "theme": "parchment"
+    }
+   },
+   "overlays": [
+    {
+     "type": "choice",
+     "at": "center",
+     "prompt": "Spend your idols?",
+     "options": [
+      {
+       "text": "Recharge dispel",
+       "hint": "1 idol"
+      },
+      {
+       "text": "Bind a 4th dispel",
+       "hint": "3 idols"
+      },
+      "Leave"
+     ],
+     "selected": 1
+    },
+    {
+     "type": "caption",
+     "text": "parchment",
+     "box": true,
+     "at": "top-left"
+    }
+   ]
+  },
+  {
+   "x": 8.5,
+   "y": 10.8,
+   "angle": 270,
+   "overrides": {
+    "ui": {
+     "theme": "terminal"
+    }
+   },
+   "overlays": [
+    {
+     "type": "choice",
+     "at": "center",
+     "prompt": "Spend your idols?",
+     "options": [
+      {
+       "text": "Recharge dispel",
+       "hint": "1 idol"
+      },
+      {
+       "text": "Bind a 4th dispel",
+       "hint": "3 idols"
+      },
+      "Leave"
+     ],
+     "selected": 1
+    },
+    {
+     "type": "caption",
+     "text": "terminal",
+     "box": true,
+     "at": "top-left"
+    }
+   ],
+   "post": [
+    "crt_green"
+   ]
+  },
+  {
+   "x": 8.5,
+   "y": 10.8,
+   "angle": 270,
+   "overrides": {
+    "ui": {
+     "theme": "blood"
+    }
+   },
+   "overlays": [
+    {
+     "type": "choice",
+     "at": "center",
+     "prompt": "Spend your idols?",
+     "options": [
+      {
+       "text": "Recharge dispel",
+       "hint": "1 idol"
+      },
+      {
+       "text": "Bind a 4th dispel",
+       "hint": "3 idols"
+      },
+      "Leave"
+     ],
+     "selected": 1
+    },
+    {
+     "type": "caption",
+     "text": "blood",
+     "box": true,
+     "at": "top-left"
+    }
+   ]
+  },
+  {
+   "x": 8.5,
+   "y": 10.8,
+   "angle": 270,
+   "overrides": {
+    "ui": {
+     "theme": "steel"
+    }
+   },
+   "overlays": [
+    {
+     "type": "choice",
+     "at": "center",
+     "prompt": "Spend your idols?",
+     "options": [
+      {
+       "text": "Recharge dispel",
+       "hint": "1 idol"
+      },
+      {
+       "text": "Bind a 4th dispel",
+       "hint": "3 idols"
+      },
+      "Leave"
+     ],
+     "selected": 1
+    },
+    {
+     "type": "caption",
+     "text": "steel",
+     "box": true,
+     "at": "top-left"
+    }
+   ]
+  }
+ ],
+ "title": "GUI themes",
+ "supersample": 2
+}

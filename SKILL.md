@@ -1,0 +1,82 @@
+---
+name: ai-raster-scene
+description: Make pictures as 90s-style first-person game frames (Doom/Wolfenstein/Build-engine look) by writing a small scene file and rendering it with a software raycaster - locations, pixel-art characters, ghosts, game GUI (dialog boxes, choice menus, HUDs, inventories, title cards) and post effects (CRT, VHS, Game Boy, night vision, rain, film looks). Use whenever someone wants an image, concept art, a mockup or "what would it look like" picture of a place, scene, room, building, street, forest, landscape, coast, dungeon, game level, game screen or UI, character encounter or cutscene - especially retro, pixel-art, horror or old-school game styles - or asks to render a scene or walk a camera through a layout.
+---
+
+# ai-raster-scene
+
+Your imagination, rendered: a Python software renderer that turns a small JSON scene (a character-grid map, textures, lights, sprites, GUI overlays, post effects, cameras) into a 320x200, palette-quantised first-person frame, upscaled to a PNG. You can open and look at the PNG yourself, so work like an artist: render, look, fix, re-render.
+
+It is not only for game levels. Any request for a picture that can be told as "a viewer standing somewhere, looking at something" works: a haunted library, a rainy street at night, a shop counter with a menu, a title screen, a character mid-conversation, a moment from a story. The GUI and post layers let the picture *be* a game screenshot, a VHS still, a Game Boy screen or a faded photo.
+
+Scripts live in this skill's `scripts/` folder: `render.py` (engine and CLI), `assets.py` (textures, props, skies, catalog), `characters.py` (pixel-art cast), `icons.py` (item icons and held items), `gui.py` + `pixelfont.py` (GUI toolkit), `post.py` (post-processing), `maptools.py` (map authoring). They need `numpy` and `Pillow`; pip install them if an import fails. Read `references/scene_format.md` before writing your first scene in a conversation: every key, the coordinate convention, the pixel-art and draw-op formats, all GUI widgets, effects and presets. `examples/` holds working scenes for every feature; copying the closest one is the fastest start.
+
+## Workflow
+
+1. **Pick the shots.** Decide where the viewer stands, what they look at, the focal point (a character, a lit doorway, a sigil), the light story (moonlight + warm lamps, emergency red, a lone lantern), and the frame's job: plain concept art, a game screenshot (GUI), or a stylised still (post). Two to four shots per location is plenty.
+2. **Lay out the map.** Build only what the camera sees plus a margin; maps under ~40x40 render in about a second. Beyond a simple room, write a short Python script with `maptools.Grid` (rect, box, room, line, disc, put); see `examples/mansion_library.py`.
+3. **Check the layout first** with `--map`: `<out>_map.png` is a top-down view with walls, lights and their radius, sprites, and each camera's view cone.
+4. **Render all shots** with `--sheet` for one contact sheet, and look at it. If the renderer prints `warning: unknown key`, fix that first: a misspelt key is ignored, so part of the scene is silently missing.
+5. **Critique and fix**, usually two or three passes:
+   - Is the foreground readable? A black lower half means no light reaches the cells near the camera: extend a light's radius over them or raise `ambient`.
+   - Is the focal point the brightest or most saturated thing in frame? Give characters a light (sprite `"light"`) unless a silhouette is the point.
+   - Is anything hiding the subject (props between camera and subject)? Check the map.
+   - Too close to a wall (giant texels)? Keep 1.5+ cells from the surface faced; characters read best 1.5-3 units away.
+   - Does fog swallow the background? Density 0.03-0.05 outdoors, 0.05-0.08 indoors.
+   - Does the GUI cover the subject? Move widgets with `at`; keep speakers in the lower two thirds so bubbles fit above them.
+   - Shimmer on floors or ceilings? `"supersample": 2`.
+6. **Deliver** the final PNGs themselves, shown to the user however this environment shares files or images, with one line per shot. Offer the scene file if they want to tweak it.
+
+## Commands
+
+```bash
+python scripts/render.py scene.json -o out.png              # one image, or out_01.png... for shots
+python scripts/render.py scene.json -o out.png --map --sheet # plus layout map and contact sheet
+python scripts/render.py scene.json -o out.png --shot 2     # re-render a single shot
+python scripts/assets.py catalog.png                        # every texture, prop, character, icon, held item
+```
+
+## Characters, ghosts and dialog
+
+- **Cast**: cultist, scientist, guard, nurse, spiritualist, ghost, hybrid. For anything else author a 16x32 text-grid sprite in `sprite_defs` (format in the reference; copy the style of `scripts/characters.py`): dark outline colour, 2-3 tones per material, two eye pixels and a mouth, feet on the last rows. Test it once in a simple lit room. `mirror: true` halves the typing for symmetric figures. Never recreate copyrighted characters; invent originals.
+- **Translucency**: `opacity` < 1 for ghosts and glass, `blend: "additive"` for spirits, flames and magic, `aura` for glow, `wobble` for drifting tails. Put translucent sprites against something darker or textured so they read.
+- **Dialog**: give the speaker an `id`; `bubble` floats over them, `dialog` is a bottom panel with a portrait (longer lines, off-screen speakers), `caption` for place names. One to three wrapped lines, in the character's voice.
+
+## GUI toolkit (game-screen pictures)
+
+Widgets: `choice` (menu with pointer, hints like costs, disabled options), `title` (big outlined text), `panel` (objectives/notes with checkboxes), `toast` (pickups), `prompt` (`[E] Open`), `bars`, `counter`, `hotbar`, `inventory`, `crosshair`, `compass`, `automap`, `image`, `viewmodel` (held revolver, lantern, flashlight, axe, crowbar, torch). Themes: classic, parchment, terminal, blood, steel. Custom icons and held items are a few draw ops with an automatic outline.
+
+- Compose like a real game screen: HUD hugs the edges (bars top-left, map top-right, hotbar bottom, counter bottom-right), menus sit where they don't cover the subject, and a held item anchors the first-person feel.
+- Don't overload: a title card wants only the title; a conversation wants a bubble or dialog plus at most a choice; a full HUD shot can carry 5-7 widgets.
+- Pair theme with tone: parchment for occult/fantasy, terminal for labs and computers (with `crt_green`), blood for horror menus, steel for retro-PC parody, classic otherwise.
+- A `fade` post effect (0.4-0.5) under an inventory or pause menu sells "the game is paused".
+
+## Post-processing (the final look)
+
+Stack effects or use presets in `"post"`: crt, crt_amber, crt_green, vhs, gameboy, cga, ega, nightvision, cinematic, horror, old_photo, dream, bloodmoon, storm, blizzard, hurt. Building blocks: grade, bloom, vignette, grain, rain, snow, lightning, letterbox, hurt, fade, pixelate, posterize, gradient_map, palette, crt, vhs, chromatic, scanlines.
+
+- Weather goes first, then grading, then lens effects (bloom, vignette), then a palette, then display effects (CRT/VHS). Presets already follow this order.
+- One strong look per image. A preset plus one or two tweaks beats a pile of effects.
+- `storm` + a `lightning` with `x` placed over the sky makes instant drama; `nightvision` and `vhs` turn any frame into found footage; `old_photo` for "historical record" pictures; `gameboy`/`ega`/`cga` for era jokes and palette studies.
+
+## Making it look good
+
+- **Light is the art direction.** Low ambient (0.05-0.13) and 3-6 coloured point lights. Warm sources against cool ambient reads as 90s horror instantly; one saturated accent (red sigil, teal windows) gives a focal point. Light faces from below with their own candle for menace.
+- **Facades**: stacked wall textures per storey with `window_lit` / `window_dark` mixed per cell and storey; tall background buildings (h 6-9) give scale and skyline.
+- **Exteriors**: open cells show the sky panorama; low walls (hedges 0.7, garden walls 0.9) frame paths without blocking the view. Night exteriors need `ambient` around 0.13 and a few wide cool lights (radius 6-8) spread along the route, or everything past the nearest prop goes black.
+- **Woodland**: fill the grid with `foliage` wall cells and carve the path out with `maptools.Grid.rect`; drop `bark` trunk cells into the thicket where the camera can see them, and stand `pine`, `dead_tree`, `bush`, `stump`, `log`, `boulder`, `fern` and `mushrooms` in the margins. Floors: `pine_needles`, `moss`, `mud`. See `examples/woodland_night.py`.
+- **Industrial and sci-fi**: `panel`, `panel_green`, `pipes`, `rust` walls over a `grate` or `tile_floor` floor, with `console` (emissive screen), `locker`, barrels and crates; pair with the `terminal` GUI theme and `crt_green`.
+- **Interiors**: wall height = `ceiling_height`; lights near walls give textures gradients; break long corridors with doorways and spilled light.
+- **Composition**: one-point perspective down a corridor or path is the classic; 20-40 degrees off-axis adds variety; a close character on one side with the scene behind makes strong encounter shots.
+- **Scatter debris rather than placing it.** `scatter` fills a floor with weighted, size-varied clutter from one line (`{"of": "stones", "on": "s", "density": 1.5}`); sets are `stones`, `rubble`, `forest`, `undergrowth`, `shore`, `litter`, `wreckage`. Density 0.3 is a dusting, 1.5+ is a stony beach. It avoids cameras and speaking characters by itself.
+- **Reach for `grime` when somewhere is neglected.** One 0-1 number raises surface variation, debris density and wall/floor wear together, which is usually what "this place is filthy" means.
+- **Dress the floor.** An empty floor is the clearest sign of an unfinished frame. Scatter a few ground props (`rocks`, `rubble`, `bones`, `grass_tuft`, `reeds`, `sack`, `bucket`, `broken_barrel`) and stamp `decals` (puddles, stains, cracks, scorch, moss) along the route the camera actually looks down. A handful placed in shot beats a carpet placed everywhere - check with `--map` that they fall inside the view cone.
+- **Decals over new textures.** Wet patches, blood, vines, soot, water damage and cracks are `decals`, not new wall textures: they cost nothing, stack, and can sit anywhere on a surface. Use `puddle_shine` wherever a light reaches and `puddle_dark` only in dim interiors - a dark puddle on a lit floor reads as a hole.
+- **Light the fixture, not the air.** Pair every light with a visible source: `sconce` and `brazier` on walls and floors, `ceiling_lamp` and `chandelier` hung at `z` just under `ceiling_height`, `lamp_post` outdoors.
+- **Water sits low.** Give water cells `"drop": 0.12-0.2` so the surface reads below its bank instead of painted onto the floor; sprites in those cells rest on the water.
+- **Surface variation is on by default.** `surface_noise` (0.10) mottles wall, floor and ceiling albedo in world space so textures stop reading as tiles. Each material scales it by its own appetite (plaster 0.7, cobble 3.0), so one number already suits a mixed scene. Raise it toward 0.16 for a grimy derelict place, drop it to ~0.05 for somewhere clean and new, set `0` for flat poster-like frames, and use `{"amount": 0.1, "by_texture": {"cobble": 0.3}}` to pin one material.
+- **Custom materials**: `{"base": name, "tint": [r,g,b]}` or a PNG path in any texture slot; new procedural textures, props or decals go in `assets.py`.
+
+## Limits to be honest about
+
+A 2.5D raycaster: one floor plane (apart from shallow `drop` cells for water), one ceiling height, grid-aligned block walls, camera-facing sprites with one view each, no stairs, slopes, reflections or animation. When a request needs something it cannot show (a cliffside staircase, a bridge over a gap, a round tower, a character from behind, a wide aerial view), approximate it and say so in a line, or suggest the closest shot that works. If the request is better served by a non-retro image, say that this tool makes 90s-game-style pictures.

@@ -1,0 +1,620 @@
+{
+ "title": "Post-processing presets on one frame",
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "MMM,,,,,,,,,,,,,,,,,,,,RRRR,,w",
+  "MMM,,,,,,,,,,,,,,,,,,,,RRRR,,w",
+  "MMM,HHHHHHHHHHHHHHHH,,,RRRR,,w",
+  "MMM,HHHHHHHHHHHHHHHH,,,RTRR,,w",
+  "MMM,HHHHHHHHHHHHHHHH,,,,,,,,,w",
+  "w,,,HHHHHHHHHHHHHHHH,,,,,,,,,w",
+  "w,,,HHHHHHHHHHHHHHHH,,,,,,,,,w",
+  "w,,,HHLHHLHEELHHLHLH,,,,,,,,,w",
+  "w,,,,,,,,,,cc,,,,,,,,,,,,,,,,w",
+  "w,,,,,,,h,,cc,,h,,,,,,,,,,,,,w",
+  "w,,,,,,,h,,cc,,h,,,,,,,,,,,,,w",
+  "w,,hhhhhh,,cc,,h,,,,,,,,,,,,,w",
+  "w,,,,,,,h,,cc,,h,,,,,,,,,,,,,w",
+  "w,,,,,,,,,,cc,,,,,,,,,,,,,,,,w",
+  "w,,,,,,,,,cccc,,,,,,,,,,,,,,,w",
+  "w,,,,,,,,cccccc,,,,,,,,,,,,,,w",
+  "w,,,,,,,,cccccc,,,,,,,,,,,,,,w",
+  "w,,,,,,,,cccccc,,,,,,,,,,,,,,w",
+  "w,,,,,,,,,cccc,,,,,,,,,,,,,,,w",
+  "w,,,,,,,,,,cc,,,,,,,,,,,,,,,,w",
+  "w,,,,,,,h,,cc,,h,,,,,,,,,,,,,w",
+  "w,,,,,,,h,,cc,,h,,,,,,,,,,,,,w",
+  "w,,,,,,,h,,cc,,hhhhhhh,,,,,,,w",
+  "w,,,,,,,h,,cc,,h,,,,,,,,,,,,,w",
+  "w,,,,,,,h,,cc,,h,,,,,,,,,,,,,w",
+  "w,,,,,,,,,,ccgggggggggggg,,,,w",
+  "w,,,,,,,,,,cc,,,,,,,,,,,,,,,,w",
+  "wwwwwwwwwwwwwwwwwwwwwwwwwwwwww"
+ ],
+ "legend": {
+  ",": {
+   "floor": "grass"
+  },
+  "c": {
+   "floor": "cobble"
+  },
+  "g": {
+   "floor": "gravel"
+  },
+  "h": {
+   "wall": "hedge",
+   "h": 0.7
+  },
+  "w": {
+   "wall": "stone_dark",
+   "h": 0.9
+  },
+  "H": {
+   "wall": [
+    "plaster_white",
+    "window_dark_plaster",
+    "window_dark_plaster",
+    "window_dark_plaster"
+   ],
+   "h": 4,
+   "top": "concrete"
+  },
+  "L": {
+   "wall": [
+    "plaster_white",
+    "window_dark_plaster",
+    "window_lit_plaster",
+    "window_dark_plaster"
+   ],
+   "h": 4
+  },
+  "E": {
+   "wall": [
+    "iron_door",
+    "window_lit_plaster",
+    "window_dark_plaster",
+    "window_dark_plaster"
+   ],
+   "h": 4
+  },
+  "R": {
+   "wall": "window_dark",
+   "h": 9
+  },
+  "T": {
+   "wall": [
+    "stone",
+    "window_teal",
+    "window_dark",
+    "window_dark",
+    "window_teal",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_teal"
+   ],
+   "h": 9
+  },
+  "M": {
+   "wall": [
+    "rock",
+    "rock",
+    "rock",
+    "rock",
+    "stone_pale",
+    "window_lit",
+    "window_dark"
+   ],
+   "h": 7
+  }
+ },
+ "sky": "night",
+ "ambient": [
+  0.13,
+  0.15,
+  0.22
+ ],
+ "lights": [
+  {
+   "x": 10.2,
+   "y": 10.0,
+   "z": 1.5,
+   "radius": 4.5,
+   "color": [
+    1.0,
+    0.82,
+    0.5
+   ],
+   "intensity": 1.1
+  },
+  {
+   "x": 13.8,
+   "y": 10.0,
+   "z": 1.5,
+   "radius": 4.5,
+   "color": [
+    1.0,
+    0.82,
+    0.5
+   ],
+   "intensity": 1.1
+  },
+  {
+   "x": 10.2,
+   "y": 21.0,
+   "z": 1.5,
+   "radius": 4.5,
+   "color": [
+    1.0,
+    0.82,
+    0.5
+   ],
+   "intensity": 1.1
+  },
+  {
+   "x": 13.8,
+   "y": 21.0,
+   "z": 1.5,
+   "radius": 4.5,
+   "color": [
+    1.0,
+    0.82,
+    0.5
+   ],
+   "intensity": 1.1
+  },
+  {
+   "x": 11.9,
+   "y": 8.2,
+   "z": 1.2,
+   "radius": 3.0,
+   "color": [
+    1.0,
+    0.85,
+    0.55
+   ],
+   "intensity": 0.8
+  }
+ ],
+ "fog": {
+  "color": [
+   0.08,
+   0.1,
+   0.16
+  ],
+  "density": 0.035,
+  "sky_mix": 0.2
+ },
+ "sprites": [
+  {
+   "x": 10.2,
+   "y": 10.0,
+   "type": "lamp_post"
+  },
+  {
+   "x": 13.8,
+   "y": 10.0,
+   "type": "lamp_post"
+  },
+  {
+   "x": 10.2,
+   "y": 21.0,
+   "type": "lamp_post"
+  },
+  {
+   "x": 13.8,
+   "y": 21.0,
+   "type": "lamp_post"
+  },
+  {
+   "x": 12.0,
+   "y": 16.0,
+   "type": "statue",
+   "scale": 1.9
+  },
+  {
+   "x": 9.4,
+   "y": 15.0,
+   "type": "bench"
+  },
+  {
+   "x": 14.6,
+   "y": 17.0,
+   "type": "bench"
+  },
+  {
+   "x": 4.5,
+   "y": 18.0,
+   "type": "tree"
+  },
+  {
+   "x": 20.0,
+   "y": 13.0,
+   "type": "tree"
+  },
+  {
+   "x": 24.0,
+   "y": 19.0,
+   "type": "palm"
+  },
+  {
+   "x": 3.0,
+   "y": 24.0,
+   "type": "palm"
+  },
+  {
+   "x": 26.0,
+   "y": 9.0,
+   "type": "palm"
+  },
+  {
+   "x": 6.0,
+   "y": 8.5,
+   "type": "tree"
+  },
+  {
+   "x": 9.6,
+   "y": 9.5,
+   "type": "flowers"
+  },
+  {
+   "x": 14.4,
+   "y": 9.5,
+   "type": "flowers"
+  },
+  {
+   "x": 9.6,
+   "y": 10.5,
+   "type": "flowers"
+  },
+  {
+   "x": 14.4,
+   "y": 10.5,
+   "type": "flowers"
+  },
+  {
+   "x": 9.6,
+   "y": 11.5,
+   "type": "flowers"
+  },
+  {
+   "x": 14.4,
+   "y": 11.5,
+   "type": "flowers"
+  },
+  {
+   "x": 9.6,
+   "y": 12.5,
+   "type": "flowers"
+  },
+  {
+   "x": 14.4,
+   "y": 12.5,
+   "type": "flowers"
+  },
+  {
+   "x": 9.6,
+   "y": 20.5,
+   "type": "flowers"
+  },
+  {
+   "x": 14.4,
+   "y": 20.5,
+   "type": "flowers"
+  },
+  {
+   "x": 9.6,
+   "y": 21.5,
+   "type": "flowers"
+  },
+  {
+   "x": 14.4,
+   "y": 21.5,
+   "type": "flowers"
+  },
+  {
+   "x": 9.6,
+   "y": 22.5,
+   "type": "flowers"
+  },
+  {
+   "x": 14.4,
+   "y": 22.5,
+   "type": "flowers"
+  },
+  {
+   "x": 9.6,
+   "y": 23.5,
+   "type": "flowers"
+  },
+  {
+   "x": 14.4,
+   "y": 23.5,
+   "type": "flowers"
+  },
+  {
+   "x": 9.6,
+   "y": 24.5,
+   "type": "flowers"
+  },
+  {
+   "x": 14.4,
+   "y": 24.5,
+   "type": "flowers"
+  },
+  {
+   "id": "guard",
+   "x": 11.3,
+   "y": 20.3,
+   "type": "guard"
+  },
+  {
+   "x": 13.0,
+   "y": 11.4,
+   "type": "cultist"
+  },
+  {
+   "x": 13.6,
+   "y": 11.9,
+   "type": "cultist",
+   "flip": true
+  },
+  {
+   "x": 13.3,
+   "y": 11.2,
+   "type": "lantern",
+   "z": 0.25,
+   "scale": 0.18,
+   "light": {
+    "radius": 3.0,
+    "color": [
+     1.0,
+     0.2,
+     0.1
+    ],
+    "intensity": 1.3
+   }
+  },
+  {
+   "id": "ghost",
+   "x": 11.3,
+   "y": 18.2,
+   "type": "ghost",
+   "opacity": 0.7
+  }
+ ],
+ "camera": {
+  "x": 11.9,
+  "y": 26.0,
+  "angle": 270,
+  "fov": 70,
+  "height": 0.5,
+  "pitch": 0.07
+ },
+ "shots": [
+  {
+   "x": 11.6,
+   "y": 22.6,
+   "angle": 272,
+   "pitch": 0.03,
+   "post": [],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "none",
+     "box": true,
+     "at": "top-right",
+     "margin": 10
+    }
+   ]
+  },
+  {
+   "x": 11.6,
+   "y": 22.6,
+   "angle": 272,
+   "pitch": 0.03,
+   "post": [
+    "crt"
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "crt",
+     "box": true,
+     "at": "top-right",
+     "margin": 10
+    }
+   ]
+  },
+  {
+   "x": 11.6,
+   "y": 22.6,
+   "angle": 272,
+   "pitch": 0.03,
+   "post": [
+    "vhs"
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "vhs",
+     "box": true,
+     "at": "top-right",
+     "margin": 10
+    }
+   ]
+  },
+  {
+   "x": 11.6,
+   "y": 22.6,
+   "angle": 272,
+   "pitch": 0.03,
+   "post": [
+    "gameboy"
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "gameboy",
+     "box": true,
+     "at": "top-right",
+     "margin": 10
+    }
+   ]
+  },
+  {
+   "x": 11.6,
+   "y": 22.6,
+   "angle": 272,
+   "pitch": 0.03,
+   "post": [
+    "nightvision"
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "nightvision",
+     "box": true,
+     "at": "top-right",
+     "margin": 10
+    }
+   ]
+  },
+  {
+   "x": 11.6,
+   "y": 22.6,
+   "angle": 272,
+   "pitch": 0.03,
+   "post": [
+    "old_photo"
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "old_photo",
+     "box": true,
+     "at": "top-right",
+     "margin": 10
+    }
+   ]
+  },
+  {
+   "x": 11.6,
+   "y": 22.6,
+   "angle": 272,
+   "pitch": 0.03,
+   "post": [
+    "storm",
+    {
+     "fx": "lightning",
+     "amount": 0.35,
+     "x": 0.72
+    }
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "storm",
+     "box": true,
+     "at": "top-right",
+     "margin": 10
+    }
+   ]
+  },
+  {
+   "x": 11.6,
+   "y": 22.6,
+   "angle": 272,
+   "pitch": 0.03,
+   "post": [
+    "ega"
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "ega",
+     "box": true,
+     "at": "top-right",
+     "margin": 10
+    }
+   ]
+  },
+  {
+   "x": 11.6,
+   "y": 22.6,
+   "angle": 272,
+   "pitch": 0.03,
+   "post": [
+    "cinematic"
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "cinematic",
+     "box": true,
+     "at": "top-right",
+     "margin": 10
+    }
+   ]
+  },
+  {
+   "x": 11.6,
+   "y": 22.6,
+   "angle": 272,
+   "pitch": 0.03,
+   "post": [
+    "horror"
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "horror",
+     "box": true,
+     "at": "top-right",
+     "margin": 10
+    }
+   ]
+  },
+  {
+   "x": 11.6,
+   "y": 22.6,
+   "angle": 272,
+   "pitch": 0.03,
+   "post": [
+    "dream"
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "dream",
+     "box": true,
+     "at": "top-right",
+     "margin": 10
+    }
+   ]
+  },
+  {
+   "x": 11.6,
+   "y": 22.6,
+   "angle": 272,
+   "pitch": 0.03,
+   "post": [
+    "bloodmoon"
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "bloodmoon",
+     "box": true,
+     "at": "top-right",
+     "margin": 10
+    }
+   ]
+  }
+ ],
+ "supersample": 2
+}

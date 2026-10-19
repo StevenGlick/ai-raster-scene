@@ -1,0 +1,253 @@
+{
+ "title": "GUI demo - survival horror HUD",
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "########################",
+  "#....#.....#.....#.....#",
+  "#....#.....#.....#.....#",
+  "#....#.....#.....#.....#",
+  "##.####D######.#####D###",
+  "#......................W",
+  "#......................W",
+  "####D#####.######D######",
+  "#........#.......#.....#",
+  "#........#.......#.....#",
+  "########################"
+ ],
+ "legend": {
+  "#": {
+   "wall": "hospital_wall",
+   "h": 1
+  },
+  "D": {
+   "wall": "iron_door",
+   "h": 1
+  },
+  "W": {
+   "wall": "window_dark_plaster",
+   "h": 1
+  },
+  ".": {
+   "floor": "linoleum",
+   "ceil": "acoustic"
+  }
+ },
+ "ceiling_height": 1.0,
+ "sky": null,
+ "ambient": [
+  0.07,
+  0.075,
+  0.09
+ ],
+ "lights": [
+  {
+   "x": 3.5,
+   "y": 6.0,
+   "z": 0.95,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.86,
+    0.6
+   ],
+   "intensity": 1.0
+  },
+  {
+   "x": 9.5,
+   "y": 6.0,
+   "z": 0.95,
+   "radius": 3.0,
+   "color": [
+    1.0,
+    0.86,
+    0.6
+   ],
+   "intensity": 0.7
+  },
+  {
+   "x": 14.5,
+   "y": 2.5,
+   "z": 0.95,
+   "radius": 3.5,
+   "color": [
+    0.55,
+    0.65,
+    0.9
+   ],
+   "intensity": 0.6
+  },
+  {
+   "x": 20.5,
+   "y": 6.0,
+   "z": 0.95,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.15,
+    0.1
+   ],
+   "intensity": 1.4
+  },
+  {
+   "x": 10.5,
+   "y": 8.5,
+   "z": 0.95,
+   "radius": 3.0,
+   "color": [
+    1.0,
+    0.86,
+    0.6
+   ],
+   "intensity": 0.5
+  }
+ ],
+ "fog": {
+  "color": [
+   0.02,
+   0.02,
+   0.03
+  ],
+  "density": 0.06
+ },
+ "sprites": [
+  {
+   "x": 7.5,
+   "y": 5.3,
+   "type": "wheelchair"
+  },
+  {
+   "x": 13.0,
+   "y": 6.6,
+   "type": "bed"
+  },
+  {
+   "x": 14.6,
+   "y": 1.6,
+   "type": "bed"
+  },
+  {
+   "x": 11.4,
+   "y": 8.6,
+   "type": "bed"
+  },
+  {
+   "id": "ghost",
+   "x": 10.5,
+   "y": 5.9,
+   "type": "ghost"
+  },
+  {
+   "id": "nurse",
+   "x": 4.2,
+   "y": 6.5,
+   "type": "nurse"
+  }
+ ],
+ "camera": {
+  "x": 1.6,
+  "y": 6.0,
+  "angle": 0,
+  "fov": 66,
+  "height": 0.5
+ },
+ "shots": [
+  {
+   "x": 5.2,
+   "y": 6.0,
+   "angle": 0,
+   "overlays": [
+    {
+     "type": "viewmodel",
+     "item": "revolver",
+     "brightness": 1.8
+    },
+    {
+     "type": "crosshair",
+     "style": "dot"
+    },
+    {
+     "type": "bars",
+     "items": [
+      {
+       "label": "HP",
+       "value": 0.62,
+       "color": [
+        196,
+        40,
+        36
+       ]
+      },
+      {
+       "label": "ST",
+       "value": 0.85,
+       "color": [
+        60,
+        150,
+        80
+       ],
+       "segments": 5
+      }
+     ]
+    },
+    {
+     "type": "counter",
+     "icon": "ammo",
+     "value": "5/18",
+     "at": "bottom-right",
+     "margin": 8
+    },
+    {
+     "type": "hotbar",
+     "slots": [
+      {
+       "icon": "revolver"
+      },
+      {
+       "icon": "bolt_cutters"
+      },
+      {
+       "icon": "crowbar"
+      },
+      {
+       "icon": "lantern"
+      },
+      {
+       "icon": "tonic",
+       "count": 2
+      },
+      {
+       "icon": "dispel",
+       "count": 3
+      }
+     ],
+     "selected": 0
+    },
+    {
+     "type": "compass"
+    },
+    {
+     "type": "automap",
+     "markers": [
+      {
+       "x": 10.5,
+       "y": 5.9
+      }
+     ],
+     "at": "top-right"
+    },
+    {
+     "type": "toast",
+     "icon": "bolt_cutters",
+     "text": "Found: Bolt Cutters",
+     "at": "top",
+     "y": 24
+    }
+   ]
+  }
+ ],
+ "supersample": 2
+}
