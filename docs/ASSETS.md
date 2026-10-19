@@ -21,15 +21,15 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 146 | 134 | 12 | 0 | 0 |
-| Props | 194 | 184 | 10 | 0 | 0 |
+| Textures | 147 | 135 | 12 | 0 | 0 |
+| Props | 202 | 192 | 10 | 0 | 0 |
 | Characters | 27 | 25 | 2 | 0 | 0 |
 | Decals | 24 | 19 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
 | Skylines | 6 | 5 | 1 | 0 | 0 |
 | Sky objects | 6 | 6 | 0 | 0 | 0 |
 | Scatter sets | 18 | 18 | 0 | 0 | 0 |
-| Fringe sets | 5 | 5 | 0 | 0 | 0 |
+| Fringe sets | 6 | 6 | 0 | 0 | 0 |
 | Facade styles | 6 | 5 | 1 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
 | Held items | 6 | 0 | 6 | 0 | 0 |
@@ -38,8 +38,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 16 | 16 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 44 | 37 | 7 | 0 | 0 |
-| **all** | **582** | **538** | **44** | **0** | **0** |
+| Example scenes | 45 | 38 | 7 | 0 | 0 |
+| **all** | **593** | **549** | **44** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -53,7 +53,7 @@ Weakest first, and in the order the new scenes need them.
 5. **Small things.** The hands on the held items, the `stain`, `stain_rust` and `moss_patch` decals, the `child` and `dreamer` characters, the `city` skyline, `alien_rock`, `alien_ground`, and the `glowshroom` and `alien_egg` props.
 6. **Second look.** Every asset marked good, checked again on the review sheets and in its scenes, with fresh eyes and the new techniques in hand.
 
-## Textures (146)
+## Textures (147)
 
 64x64 tiles, drawn in code. "glows" means the texture lights itself (windows, screens, runes), "see-through" that the map shows through its holes, "mirror" that floors made of it reflect.
 
@@ -87,7 +87,7 @@ Weakest first, and in the order the new scenes need them.
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
 | `wood_panel` | good |  | drowned_library | Redrawn with the toolkit in basics.py: stiles and rails framing two raised panels per unit, all one dark wood, the bevels catching the light, figure streaked along the grain. |
-| `planks` | good |  | bayou, ghost_town, kelp_forest |  |
+| `planks` | good |  | bayou, ghost_town, kelp_forest, winter_woods |  |
 | `boards` | good |  | bayou, coast_lighthouse, ghost_town, kelp_forest, rain_alley, tropical_beach |  |
 | `logs` | good |  | coast_lighthouse, winter_lake |  |
 | `door_wood` | good |  | bayou, dream_chess, dream_world, winter_lake |  |
@@ -131,6 +131,7 @@ Weakest first, and in the order the new scenes need them.
 | `foliage_autumn` | good |  | - | The same leaves in orange, gold and red over dark brown. |
 | `forest_deep` | good |  | woodland_night | Trunks at four depths in the dark, the farthest thinnest and darkest, boughs and a few leaves catching light; sways repeat with the tile. The wall behind a `forest` fringe: gaps between the cards read as more wood. |
 | `forest_deep_autumn` | good |  | autumn_lane | Drawn with the toolkit in forest.py: forest_deep with the leaves hanging in the dark turned a deep rust. |
+| `forest_deep_snow` | good |  | winter_woods | Drawn with the toolkit in forest.py: forest_deep with snow lying on the boughs between the dark trunks. |
 | `swamp_deep` | good |  | bayou | Drawn with the toolkit in swamp.py: grey trunks at four depths in the murk with curtains of Spanish moss between them. |
 | `hedge` | good |  | garden_encounter, gui_menus, hospital_garden, post_presets | Redrawn with the toolkit in basics.py: small leaves packed in three depths, the face kept flat by the shears, thin patches darker. |
 | `grass` | good |  | cathedral_ruin, chapel_graveyard, dream_world, garden_encounter, gui_menus, hospital_garden, misty_moor, post_presets, village_green | Redrawn with the toolkit in basics.py: blades stroked in clumps, dark at the roots and bright at the tips, yellow-green tufts, a daisy or two. |
@@ -140,8 +141,8 @@ Weakest first, and in the order the new scenes need them.
 | `dirt` | good |  | autumn_lane, castle_keep | Redrawn with the toolkit in basics.py: soil broken into clods, pebbles, a root or two, darker damp patches. |
 | `gravel` | good |  | chapel_graveyard, coast_lighthouse, garden_encounter, gui_menus, hospital_garden, post_presets | Redrawn with the toolkit in basics.py: rounded pebbles in three stone colours, each lit on top with a shadow under it. |
 | `sand` | good |  | coast_lighthouse | Redrawn with the toolkit in basics.py: wind ripples with a lit face and a shaded lee, wandering, a shell fragment or two, dark grains. |
-| `snow` | good |  | winter_lake |  |
-| `ice` | good | mirror 0.38 | winter_lake | Redrawn with the toolkit in basics.py: clear blue with gentle depth, straight fractures with a branch each and a dark side, strings of bubbles, frost. |
+| `snow` | good |  | winter_lake, winter_woods | Redrawn with the toolkit in basics.py: drifts sculpted by the wind, their lee sides in blue shadow, faint ripples, glitter. |
+| `ice` | good | mirror 0.38 | winter_lake, winter_woods | Redrawn with the toolkit in basics.py: clear blue with gentle depth, straight fractures with a branch each and a dark side, strings of bubbles, frost. |
 | `water` | good | mirror 0.5 | alien_world, coast_lighthouse, crystal_cave, drowned_library, gui_lantern, sewer_tunnels, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: a deep teal in slow swells and a broken net of light where the ripples gather it; kept dark, so reflections read. |
 | `swamp_water` | good | mirror 0.42 | bayou | Drawn with the toolkit in swamp.py: black-brown water with a skin of duckweed drifting in patches and a few floating leaves; mirror 0.42. |
 | `seabed` | good |  | kelp_forest | Drawn with the toolkit in sea.py: pale sand in gentle ripples, shell and pebble, and a broken net of caustic light over it. |
@@ -169,7 +170,7 @@ Weakest first, and in the order the new scenes need them.
 | `carpet_green` | good |  | - |  |
 | `flagstone` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, neon_street, rain_alley |  |
 | `obsidian` | good | mirror 0.45 | dream_world, space_station |  |
-| `concrete_floor` | good |  | 44 scenes |  |
+| `concrete_floor` | good |  | 45 scenes |  |
 | `rock_floor` | good |  | crystal_cave, gui_lantern, kelp_forest, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: flatter, smaller masses in brown with grit in the cracks. |
 
 ### Ceilings
@@ -263,7 +264,7 @@ Weakest first, and in the order the new scenes need them.
 | `bamboo` | polish |  | tropical_beach | The nodes still line up into a grid across the poles. |
 | `thatch` | polish |  | tropical_beach | The rows could be clearer, each with a shadow under its fringe. |
 
-## Props (194)
+## Props (202)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -309,7 +310,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `ceiling_lamp` | good | 0.3 tall, glows, no shadow | bunker_lab, sewer_tunnels |  |
 | `chandelier` | good | 0.45 tall, glows, no shadow | castle_keep, claude_study |  |
 | `lamp_post` | good | 1.6 tall, glows | garden_encounter, gui_menus, hospital_garden, post_presets, rain_alley, rainy_street | Thin at a distance. |
-| `lantern` | good | 0.3 tall, glows, no shadow | bayou, chapel_graveyard, coast_lighthouse, garden_encounter, ghost_town, gui_lantern, gui_menus, gui_themes, gui_trade, library_medium, mansion_library, post_presets, tunnel_encounter, underground_waterway, village_green, winter_lake, woodland_night |  |
+| `lantern` | good | 0.3 tall, glows, no shadow | bayou, chapel_graveyard, coast_lighthouse, garden_encounter, ghost_town, gui_lantern, gui_menus, gui_themes, gui_trade, library_medium, mansion_library, post_presets, tunnel_encounter, underground_waterway, village_green, winter_lake, winter_woods, woodland_night |  |
 | `sconce` | good | 0.32 tall, glows, no shadow | castle_keep, claude_study, rainy_street |  |
 
 ### Nature
@@ -319,29 +320,32 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `boulder` | good | 0.55 tall | chapel_graveyard, coast_lighthouse, kelp_forest, misty_moor, woodland_night | Redrawn with the toolkit in forest.py: a settled rock with a lesser lobe and cracks, moss over its top, lichen spots. |
 | `bush` | good | 0.5 tall | chapel_graveyard, coast_lighthouse, woodland_night | Redrawn with the toolkit in forest.py: leaf clusters on fanned twigs, lit on top, dark underneath. |
 | `bush_autumn` | good | 0.5 tall | autumn_lane | Drawn with the toolkit in forest.py: the bush in rust red and orange. |
+| `bush_snow` | good | 0.45 tall | winter_woods | Drawn with the toolkit in forest.py: a lumpy cushion of snow, blue in its hollows, twigs poking up through it. |
 | `birch` | good | 3 tall | village_green, woodland_night | White trunk and a second stem banded with black, an airy crown of small leaves in drooping clumps. |
 | `birch_autumn` | good | 3 tall | autumn_lane | Drawn with the toolkit in forest.py: the birch gone to gold, a few patches already orange. |
+| `birch_winter` | good | 3 tall | winter_woods | Drawn with the toolkit in forest.py: the white birch bare: branches reaching out with fine twigs weeping from them, snow on a few. |
 | `dead_tree` | good | 2.9 tall | chapel_graveyard, misty_moor, woodland_night | Redrawn with the toolkit in forest.py: a split trunk on a gnarled foot, bare limbs forking into twigs, grey peeling bark. |
 | `fern` | good | 0.42 tall | autumn_lane, chapel_graveyard, jungle_temple, misty_moor, tropical_beach, woodland_night | Redrawn: arching fronds from one crown. |
 | `flowers` | good | 0.35 tall | garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, village_green | Redrawn with the toolkit in basics.py: leaves and stems with blooms of four colours, five petals round a dark eye, at different heights. |
 | `grass_tuft` | good | 0.4 tall | autumn_lane, chapel_graveyard, coast_lighthouse, misty_moor, rainy_street, tropical_beach, village_green, woodland_night | Redrawn: thin arching blades. |
 | `ivy_hang` | good | 0.8 tall, no shadow | cathedral_ruin, rainy_street |  |
-| `log` | good | 0.28 tall | tropical_beach, winter_lake, woodland_night | Redrawn with the toolkit in forest.py: bark in long ridges, a branch stub, moss along the top, a pale ringed end. |
+| `log` | good | 0.28 tall | tropical_beach, winter_lake, winter_woods, woodland_night | Redrawn with the toolkit in forest.py: bark in long ridges, a branch stub, moss along the top, a pale ringed end. |
 | `mushrooms` | good | 0.12 tall | autumn_lane, chapel_graveyard, jungle_temple, woodland_night |  |
 | `palm` | good | 3.2 tall | garden_encounter, gui_menus, hospital_garden, post_presets, tropical_beach | Redrawn with the pixel-art toolkit: a ringed trunk, arching ragged fronds, coconuts. |
 | `pine` | good | 3.4 tall | autumn_lane, coast_lighthouse, woodland_night | Redrawn with the toolkit in forest.py: a spruce, tier on tier of drooping boughs with ragged hems over a straight trunk. |
-| `reeds` | good | 0.8 tall | coast_lighthouse |  |
+| `reeds` | good | 0.8 tall | coast_lighthouse, winter_woods |  |
 | `bald_cypress` | good | 4.2 tall | bayou | Drawn with the toolkit in swamp.py: a fluted, buttressed foot, limbs under flat sprays of feathery leaves, moss hanging from every limb, knees round it. |
 | `spanish_moss` | good | 1.4 tall, no shadow | bayou | Drawn with the toolkit in swamp.py: a curtain of grey-green strands from a stub of branch, to hang with `z`. |
 | `cypress_knees` | good | 0.3 tall | bayou | Drawn with the toolkit in swamp.py: knobbly cones of root standing out of the water. |
 | `cattails` | good | 1 tall | bayou | Drawn with the toolkit in swamp.py: long blades and stems with brown velvet heads. |
 | `kelp` | good | 5 tall | kelp_forest | Drawn with the toolkit in sea.py: a swaying stipe from its holdfast, long golden blades streaming off small floats, a tangle at the top. |
-| `rocks` | good | 0.22 tall | alien_world, ancient_ruins, bunker_lab, cathedral_ruin, chapel_graveyard, coast_lighthouse, crystal_cave, derelict_ship, ghost_town, kelp_forest, misty_moor, rainy_street, red_canyon, sewer_tunnels, tropical_beach, winter_lake, woodland_night | Redrawn: half-sunk stones with lit tops and the odd crack. |
-| `snowy_pine` | good | 3.4 tall | winter_lake | Drawn with the toolkit in forest.py: the new spruce with snow lying in clumps along every tier's shoulders, crumbs on the hems and a small cap on the leader; dark needles between, so it still reads at a distance. |
-| `boulder_snow` | good | 0.55 tall | winter_lake | Drawn with the toolkit in forest.py: the boulder under a cushion of snow, deep where the top is flat and thin down the steep sides; in the `snow` scatter set. |
+| `rocks` | good | 0.22 tall | alien_world, ancient_ruins, bunker_lab, cathedral_ruin, chapel_graveyard, coast_lighthouse, crystal_cave, derelict_ship, ghost_town, kelp_forest, misty_moor, rainy_street, red_canyon, sewer_tunnels, tropical_beach, winter_lake, winter_woods, woodland_night | Redrawn: half-sunk stones with lit tops and the odd crack. |
+| `snowy_pine` | good | 3.4 tall | winter_lake, winter_woods | Drawn with the toolkit in forest.py: the new spruce with snow lying in clumps along every tier's shoulders, crumbs on the hems and a small cap on the leader; dark needles between, so it still reads at a distance. |
+| `boulder_snow` | good | 0.55 tall | winter_lake, winter_woods | Drawn with the toolkit in forest.py: the boulder under a cushion of snow, deep where the top is flat and thin down the steep sides; in the `snow` scatter set. |
 | `stump` | good | 0.3 tall | tropical_beach, woodland_night | Redrawn with the toolkit in forest.py: a pale ringed cut face, furrowed sides, roots, a cushion of moss. |
 | `tree` | good | 2.6 tall | dream_world, garden_encounter, gui_menus, hospital_garden, post_presets, village_green, woodland_night | Redrawn with the toolkit in forest.py: an oak with a furrowed trunk on a flared foot, limbs showing between lobes of crown lit from above. |
 | `tree_autumn` | good | 2.6 tall | autumn_lane | Drawn with the toolkit in forest.py: the oak turned: orange and gold in patches cluster by cluster, a side going first, a little rust. |
+| `tree_winter` | good | 2.6 tall | winter_woods | Drawn with the toolkit in forest.py: a bare oak grown by recursive branching down to twigs, snow along every limb level enough to hold it. |
 | `glowshroom` | polish | 0.16 tall, glows, no shadow | alien_world, crystal_cave | Flat cut-outs; the caps want a gradient and a bright rim. |
 | `crystal` | good | 0.36 tall, glows, no shadow | alien_world, crystal_cave |  |
 | `stalagmite` | good | 0.8 tall | crystal_cave |  |
@@ -369,7 +373,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `anchor` | good | 0.75 tall | kelp_forest | Drawn with the toolkit in sea.py: an iron anchor: ring, stock, shank, curved arms and spade flukes, rusted and grown over. |
 | `wreck_mast` | good | 3.6 tall | kelp_forest | Drawn with the toolkit in sea.py: a snapped mast leaning, a yard askew, torn rigging, furred with weed. |
 | `buoy` | polish | 0.5 tall, glows | coast_lighthouse | Reads as a bottle. |
-| `snowman` | good | 0.62 tall | winter_lake |  |
+| `snowman` | good | 0.62 tall | winter_lake, winter_woods |  |
 | `scarecrow` | good | 1.9 tall | autumn_lane | Drawn with the toolkit in village.py: post and crossbar, a sack head with a stitched face, a battered hat, a patched coat with straw at the cuffs and hem, a crow on one arm. |
 | `pumpkin` | good | 0.32 tall | autumn_lane | Drawn with the toolkit in village.py: a squat gourd of deep ribs, a woody stem, a curl of vine and a leaf. |
 | `jack_o_lantern` | good | 0.34 tall, glows, aura | autumn_lane | Drawn with the toolkit in village.py: the pumpkin carved into a face that burns yellow (emissive), the rind darker round it; aura. |
@@ -490,6 +494,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `crab` | good | 0.08 tall | kelp_forest, tropical_beach |  |
 | `seagull` | good | 0.14 tall, no shadow | tropical_beach |  |
 | `heron` | good | 0.95 tall | bayou | Drawn with the toolkit in swamp.py: a grey heron: long legs, the neck in an S, a yellow dagger of a beak, the black crest. |
+| `deer` | good | 0.62 tall | winter_woods | Drawn with the toolkit in forest.py: a deer side on: russet coat, pale belly and throat, slim legs, big ears, an antlered head up, a white tail. |
 | `alligator` | good | 0.2 tall, glows, no shadow | bayou | Drawn with the toolkit in swamp.py: only the snout, the eyes (which catch the light) and the ridged back above the water. |
 | `fireflies` | good | 1.2 tall, glows, no shadow | bayou | Drawn with the toolkit in swamp.py: a loose swarm of tiny glowing lights with soft halos; additive. |
 | `fish_school` | good | 0.9 tall, no shadow | kelp_forest | Drawn with the toolkit in sea.py: thirty-odd silvery fish headed one way, dark backs, thicker in the middle of the shoal. |
@@ -512,6 +517,10 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `autumn_card_2` | good | 3 tall | autumn_lane | Young gold birch and a spruce with turned bushes in front. |
 | `autumn_card_3` | good | 4 tall | autumn_lane | Oak, birch and spruce with gaps between them. |
 | `autumn_card_4` | good | 4.8 tall | autumn_lane | The back: a dense wall of turned oak and green spruce over undergrowth. |
+| `winter_card_1` | good | 1.2 tall | winter_woods | The front of a winter fringe: bushes under snow and dry tufts. |
+| `winter_card_2` | good | 3 tall | winter_woods | Young snowy spruce and bare birch with snowy bushes in front. |
+| `winter_card_3` | good | 4 tall | winter_woods | Snowy spruce, bare oak and birch with gaps between them. |
+| `winter_card_4` | good | 4.8 tall | winter_woods | The back: a dense stand of snowy spruce with bare oaks. |
 | `swamp_card_1` | good | 1.4 tall | bayou | The front of a swamp fringe: cattails, reeds and cypress knees. |
 | `swamp_card_2` | good | 3.4 tall | bayou | Young cypresses and moss with cattails in front. |
 | `swamp_card_3` | good | 4.6 tall | bayou | The back: a dense stand of bald cypresses hung with moss. |
@@ -536,7 +545,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `hybrid` | good | gui_lantern, sewer_tunnels, tunnel_encounter |  |
 | `soldier` | good | castle_keep |  |
 | `knight` | good | castle_keep, misty_moor, village_green |  |
-| `child` | polish | autumn_lane, village_green, winter_lake | Head reads large and round; check the proportions. |
+| `child` | polish | autumn_lane, village_green, winter_lake, winter_woods | Head reads large and round; check the proportions. |
 | `creature` | good | castle_keep, crystal_cave |  |
 | `robot` | good | crystal_cave |  |
 | `shopkeeper` | good | ghost_town, neon_street, village_green |  |
@@ -576,7 +585,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `cobweb` | good | bunker_lab, castle_keep |  |
 | `rune_mark` | good | - |  |
 | `drain` | good | bunker_lab, neon_street, rainy_street, sewer_tunnels |  |
-| `contact_shadow` | good | 44 scenes |  |
+| `contact_shadow` | good | 45 scenes |  |
 | `pad_marking` | good | orbital_hangar | A painted landing ring with an H and a dashed outer ring, worn in patches. |
 | `hazard_stripe` | good | orbital_hangar | A band of yellow and black diagonal stripes, worn through in places. |
 
@@ -595,11 +604,11 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 
 | sky | status | used in | notes |
 |---|---|---|---|
-| `night` | good | ancient_ruins, bayou, chapel_graveyard, claude_study, garden_encounter, gui_menus, hospital_garden, kelp_forest, neon_street, post_presets, tropical_beach, village_green, winter_lake, woodland_night |  |
+| `night` | good | ancient_ruins, bayou, chapel_graveyard, claude_study, garden_encounter, gui_menus, hospital_garden, kelp_forest, neon_street, post_presets, tropical_beach, village_green, winter_lake, winter_woods, woodland_night |  |
 | `dusk` | good | autumn_lane, coast_lighthouse, misty_moor |  |
 | `storm` | good | coast_lighthouse, rain_alley, rainy_street | Could use darker cloud masses. |
-| `day` | good | cathedral_ruin, ghost_town, jungle_temple, kelp_forest, red_canyon, tropical_beach, village_green, winter_lake |  |
-| `overcast` | good | - |  |
+| `day` | good | cathedral_ruin, ghost_town, jungle_temple, kelp_forest, red_canyon, tropical_beach, village_green, winter_lake, winter_woods |  |
+| `overcast` | good | winter_woods |  |
 | `blood` | good | - |  |
 | `space` | good | orbital_hangar, space_station |  |
 | `alien` | good | alien_world |  |
@@ -636,7 +645,7 @@ Named mixes for `scatter`; repeats in the contents act as weights.
 | set | status | contents | used in | notes |
 |---|---|---|---|---|
 | `stones` | good | rocks x3, boulder | chapel_graveyard, coast_lighthouse, misty_moor |  |
-| `snow` | good | rocks x3, boulder_snow | winter_lake | The stones set for winter: its boulder is under snow, not moss. |
+| `snow` | good | rocks x3, boulder_snow | winter_lake, winter_woods | The stones set for winter: its boulder is under snow, not moss. |
 | `rubble` | good | rubble x2, rocks, broken_barrel | cathedral_ruin, rainy_street |  |
 | `forest` | good | rocks x2, log, stump, mushrooms, grass_tuft x2, fern, bush | woodland_night |  |
 | `undergrowth` | good | grass_tuft x3, fern, bush, mushrooms | chapel_graveyard, woodland_night |  |
@@ -654,7 +663,7 @@ Named mixes for `scatter`; repeats in the contents act as weights.
 | `swamp` | good | cattails x2, reeds, cypress_knees, rocks | - | Cattails and reeds with cypress knees and the odd rock. |
 | `seabed` | good | rocks x3, crab, boulder | kelp_forest | Rocks with the odd crab and boulder. |
 
-## Fringe sets (5)
+## Fringe sets (6)
 
 The cards a `fringe` wall stands in front of its open faces, back to front.
 
@@ -663,6 +672,7 @@ The cards a `fringe` wall stands in front of its open faces, back to front.
 | `jungle` | good | jungle_card_4, jungle_card_3, jungle_card_2, jungle_card_1 | jungle_temple | Four cards: bushes alone at the front, a dense wall of trees, crowns and bushes at the back. |
 | `forest` | good | forest_card_4, forest_card_3, forest_card_2, forest_card_1 | woodland_night | Four cards: bushes, ferns and grass at the front, a dense wall of spruce and oak at the back. Keep the wall behind lower (2-2.6) than the trees. |
 | `forest_autumn` | good | autumn_card_4, autumn_card_3, autumn_card_2, autumn_card_1 | autumn_lane | The forest fringe in October: oak, birch and bush turned, the spruce among them still green. |
+| `forest_snow` | good | winter_card_4, winter_card_3, winter_card_2, winter_card_1 | winter_woods | The forest fringe in winter: snowy spruce, bare oak and birch with snow on their limbs, bushes under snow. |
 | `swamp` | good | swamp_card_3, swamp_card_2, swamp_card_1 | bayou | Three cards: cattails and knees, then young cypresses and moss, then a dense stand. |
 | `kelp` | good | kelp_card_2, kelp_card_1 | kelp_forest | Two cards: a few stalks, then a dense stand. |
 
@@ -745,7 +755,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 
 | theme | status | used in | notes |
 |---|---|---|---|
-| `classic` | good | 38 scenes |  |
+| `classic` | good | 39 scenes |  |
 | `parchment` | good | gui_themes, gui_trade |  |
 | `terminal` | good | bunker_lab, gui_themes, orbital_hangar, space_station |  |
 | `blood` | good | gui_themes |  |
@@ -755,9 +765,9 @@ Named groups placed with one line (`scripts/prefabs.py`).
 
 | widget | status | used in | notes |
 |---|---|---|---|
-| `bubble` | good | alien_world, autumn_lane, castle_keep, claude_study, crystal_cave, garden_encounter, ghost_corridor, ghost_town, gui_menus, gui_trade, neon_street, rainy_street, tunnel_encounter, village_green, winter_lake, woodland_night |  |
+| `bubble` | good | alien_world, autumn_lane, castle_keep, claude_study, crystal_cave, garden_encounter, ghost_corridor, ghost_town, gui_menus, gui_trade, neon_street, rainy_street, tunnel_encounter, village_green, winter_lake, winter_woods, woodland_night |  |
 | `dialog` | good | bunker_lab, chapel_graveyard, claude_study, coast_lighthouse, ghost_corridor, library_medium, orbital_hangar, space_station |  |
-| `caption` | good | 31 scenes |  |
+| `caption` | good | 32 scenes |  |
 | `choice` | good | gui_menus, gui_themes, gui_trade |  |
 | `title` | good | gui_menus |  |
 | `panel` | good | bunker_lab, gui_lantern |  |
@@ -811,7 +821,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `mono` | good | - |  |
 | `bone` | good | - |  |
 
-## Example scenes (44)
+## Example scenes (45)
 
 The environments, judged on their gallery images and shots.
 
@@ -846,6 +856,7 @@ The environments, judged on their gallery images and shots.
 | `ghost_town` | good | 4 | western_noon, western_saloon, western_ghost, western_windpump | A frontier main street: a cowboy at high noon, the saloon and its barkeep, sundown with lanterns and a ghost, a windpump in the desert. |
 | `misty_moor` | polish | 3 | moor_dawn, moor_circle | The standing stones are plain blocks; weathered tops and lichen would help. |
 | `winter_lake` | polish | 4 | winter_night, winter_day | The ice is blotchy (see the ice texture). |
+| `winter_woods` | good | 4 | winter_lane, winter_deer, winter_lantern, winter_stream | A snowbound wood: the lane, a deer on a frozen stream in falling snow, a child by a lantern-lit footbridge, trees mirrored in the ice. |
 | `chapel_graveyard` | good | 4 | chapel_yard, chapel_nave | The yard is a little sparse. |
 
 ### Castles, ruins and caves
@@ -897,6 +908,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, winter woods.** forest.py: `tree_winter` (recursive bare branches with snow along them), `birch_winter`, `bush_snow`, `deer`, `forest_deep_snow` and a `forest_snow` fringe (the green and autumn wood unchanged, hashed); `snow` redrawn. `examples/winter_woods.py` with four gallery shots.
 - **2026-10-19, the ghost town.** A `western` facade style: clapboard false fronts with painted signs (drawn with the pixel font, shuffled along each street), batwing doors on the saloon, and a `porch` layer - posts and fascia out at the edge of a boardwalk whose `ceil` is the porch roof. desert.py: `windpump`, `water_trough`, `wagon_wheel`. `examples/ghost_town.py` with four gallery shots.
 - **2026-10-19, under the sea.** `scripts/sea.py`: `seabed`, `water_surface`; `kelp`, `fish_school`, `bubbles`, `anchor`, `wreck_mast`; a `kelp` fringe and a `seabed` scatter set; the `diver`. `examples/kelp_forest.py` with four gallery shots.
 - **2026-10-19, polish pass 2b.** Redrawn with the toolkit in `scripts/basics.py`: `rock`, `rock_wet`, `rock_floor`, `snow_rock`, `ice`, `sand`, `plaster`, `plaster_white`, `ivy`.

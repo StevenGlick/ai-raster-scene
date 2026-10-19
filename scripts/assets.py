@@ -449,17 +449,6 @@ def tex_mud(name, c='#4a3a28'):
     return grain(np.clip(img, 0, 1), rng, 0.04)
 
 
-def tex_snow(name, c='#d8dee8'):
-    """Fresh snow with blue shadow drifts."""
-    rng = _rng(name)
-    n = fbm(T, rng, 5, 4)
-    img = col(c)[None, None, :] * (0.82 + 0.25 * n[..., None])
-    sh = np.clip((0.45 - fbm(T, _rng(name + 's'), 8, 3)) * 3, 0, 1)
-    img = img * (1 - 0.3 * sh[..., None]) + col('#9aa8c0')[None, None, :] * 0.3 * sh[..., None]
-    img[rng.random((T, T)) > 0.985] = col('#ffffff')
-    return np.clip(img, 0, 1)
-
-
 def tex_asphalt(name, c='#3a3a3c'):
     """Cracked road surface."""
     rng = _rng(name)
@@ -1059,7 +1048,6 @@ TEXTURES = {
     'acoustic': _plain(tex_acoustic),
     'ceiling_plaster': _plain(tex_plaster, '#a8a08a', '#4a4030', 0.3),
     'mud': _plain(tex_mud),
-    'snow': _plain(tex_snow),
     'asphalt': _plain(tex_asphalt),
     'grate': _plain(tex_grate),
     'castle': _plain(tex_castle),

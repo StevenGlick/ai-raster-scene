@@ -1,6 +1,7 @@
 """The temperate forest, drawn with the pixel-art toolkit (scripts/pixelart.py): spruce, oak and
 birch, bushes, the forest floor, bark and leaves for walls, and the `forest` fringe - long cards
-of trees standing in front of a forest's edge, sparse at the front and dense at the back.
+of trees standing in front of a forest's edge, sparse at the front and dense at the back - and the
+same wood in autumn and in winter, and a deer.
 
 Like the jungle (biomes.py), every shape is stamped into a height field, lit from the upper left
 and snapped onto hue-shifted ramps, so the trees read as pixel art rather than noise.
@@ -17,6 +18,10 @@ OAK_SHADE = ramp('#2e5432', dark=0.3)
 BIRCH_LEAF = ramp('#8eaa3e', dark=0.35, light=1.25)
 AUTUMN = [ramp('#b8622a'), ramp('#c89a34'), ramp('#8a3a22'), ramp('#3a2a1e', dark=0.4)]
 BIRCH_GOLD = ramp('#d2a83a', dark=0.35, light=1.22, warm=0.1)
+WINTER_BARK = ramp('#4e4640', dark=0.3, light=1.4)
+DEER_COAT = ramp('#8a6444', dark=0.32, light=1.3)
+DEER_PALE = ramp('#d8ccb8', dark=0.5, light=1.06)
+ANTLER = ramp('#c8b898', dark=0.4, light=1.12)
 PINE_BARK = ramp('#6e4a34', dark=0.25)
 OAK_BARK = ramp('#665a4c', dark=0.25)
 BIRCH_BARK = ramp('#e6e2d4', dark=0.45, light=1.06, warm=0.04)
@@ -431,7 +436,7 @@ def _plates(cv, rng, rows, cols, fissure=1.4, bevel=2.6, stretch=1.0):
     cv.n += n
 
 
-def tex_forest_deep(name, autumn=False):
+def tex_forest_deep(name, autumn=False, snow=False):
     """The inside of a wood seen from its edge: trunks at every depth in the dark, the farthest
     thinnest and darkest, low boughs and the odd clump of leaves catching a little light. Meant
     for the wall behind a `forest` fringe, so wherever the cards thin out it reads as more wood."""
@@ -457,6 +462,8 @@ def tex_forest_deep(name, autumn=False):
             cv.leaf(px, py, px + np.cos(a) * 4.5, py + np.sin(a) * 4.5, 2.8, z=0.6 + rng.random() * 0.3, dome=0.5,
                     mat=0, tone=rng.normal(-0.2, 0.05), rib=0.2)
     leaf = ramp('#5c3218', dark=0.3) if autumn else OAK_SHADE      # `autumn`: the hanging leaves turned
+    if snow:                                                       # `snow`: snow lying on the boughs instead
+        leaf = ramp('#b8c4d4', dark=0.45, light=1.12, cool=0.2)
     return _tile(cv, [leaf, ramp('#3a3228', dark=0.4), ramp('#141a14', dark=0.6, light=1.4)],
                  cavity=0.4, shadow=0.5)
 
@@ -556,18 +563,158 @@ def tex_moss(name):
 
 # ---------------------------------------------------------------- the forest's edge
 
+def _bare(cv, rng, x, y, ang, length, width, depth, snow, z=0.4):
+    """A bare limb and its branches, forking down to twigs; with `snow`, a line of it lies along
+    the top of every limb that is not too steep to hold it."""
+    pts = [(x, y)]
+    for _ in range(4):
+        ang += rng.normal(0, 0.14)
+        x, y = x + np.cos(ang) * length / 4, y + np.sin(ang) * length / 4
+        pts.append((x, y))
+    cv.stroke(pts, width, z=z, dome=0.9, taper=(1.0, 0.65), mat=0)
+    if snow and width > 1.3:
+        flat = abs(np.cos(ang))                                    # how level the limb lies
+        if flat > 0.35:
+            top = [(px, py - width * 0.42) for px, py in pts]
+            cv.stroke(top, max(1.0, width * 0.55 * flat), z=z + 0.6, dome=0.5, taper=(1.0, 0.5), mat=2)
+    if depth > 0:
+        for side in (-1, 1):
+            if rng.random() < 0.9:
+                _bare(cv, rng, x, y, ang + side * rng.uniform(0.3, 0.7), length * rng.uniform(0.6, 0.78),
+                      width * 0.62, depth - 1, snow, z + 0.05)
+    elif width > 0.5:                                              # twigs at the ends
+        for _ in range(3):
+            a = ang + rng.normal(0, 0.6)
+            cv.stroke([(x, y), (x + np.cos(a) * 4, y + np.sin(a) * 4)], 0.6, z=z, dome=0.2, mat=0)
+
+
+def spr_tree_winter():
+    """An oak in winter: the broad, spreading frame of trunk and limbs bare against the sky, forking
+    down to a haze of twigs, snow lying along the top of every limb level enough to hold it."""
+    rng = np.random.default_rng(29)
+    w, h = 136, 128
+    cx = w / 2
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for dx, spread in ((-1, 14), (1, 15)):                                 # the root flare
+        cv.polygon([(cx + dx * 4, h - 20), (cx + dx * spread, h), (cx + dx * (spread - 7), h), (cx, h - 8)],
+                   z=0.2, top=0.7, bevel=2, mat=0, tone=-0.05)
+    cv.stroke([(cx, h), (cx - 2, h - 26), (cx + 1, h - 46)], 12, z=0.4, dome=1.2, taper=(1.25, 0.85), mat=0)
+    for ang, length, wd, depth in ((-np.pi / 2 - 0.85, 34, 6.0, 4), (-np.pi / 2 + 0.8, 36, 6.0, 4),
+                                   (-np.pi / 2 - 0.15, 30, 5.0, 4), (-np.pi / 2 + 0.35, 26, 4.0, 3),
+                                   (-np.pi / 2 - 1.3, 26, 3.6, 3), (-np.pi / 2 + 1.3, 28, 3.6, 3)):
+        _bare(cv, rng, cx + rng.normal(0, 1.5), h - 46, ang, length, wd, depth, True)
+    cv.ellipse(cx - 3, h - 46, 5, 1.6, z=1.6, dome=0.4, mat=2)              # snow in the crotch
+    for _ in range(5):                                                       # furrows up the trunk
+        fx = cx + rng.uniform(-4.5, 4.5)
+        cv.stroke([(fx, h), (fx + rng.normal(0, 1), h - 24), (fx + rng.normal(0, 1.5), h - 44)], 1.0, dome=0.5,
+                  mode='carve')
+    return _prop(cv, [WINTER_BARK, WINTER_BARK, ramp('#e8eef4', dark=0.55, light=1.06, cool=0.25)], relief=1.0,
+                 cavity=0.4, shadow=0.45)
+
+
+def spr_birch_winter():
+    """A birch in winter: the white trunk banded with black, a second stem off it, and a fine
+    purplish haze of drooping twigs, snow on the few level limbs."""
+    rng = np.random.default_rng(39)
+    w, h = 72, 160
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    stems = [([(34, h), (33, h - 60), (36, 34), (34, 12)], 5.0), ([(35, h), (41, h - 50), (48, h - 96), (52, 44)], 3.4)]
+    for pts, wd in stems:
+        cv.stroke(pts, wd, z=0.4, dome=1.0, taper=(1.15, 0.35), mat=1)
+    for pts, wd in stems:                                                  # the black marks
+        for _ in range(int(wd * 4)):
+            t = rng.uniform(0.02, 0.9)
+            x, y = _along(pts, t)
+            half = wd / 2 * (1.15 - 0.8 * t)
+            cv.stroke([(x - half * 0.9, y), (x + half * rng.uniform(0.1, 0.8), y + rng.uniform(-0.3, 0.6))],
+                      rng.uniform(0.9, 1.6), z=1.25, dome=0.2, mat=2)
+    for _ in range(16):                                                     # branches reaching out and up,
+        t = rng.uniform(0.2, 0.92)                                          # fine twigs weeping from them
+        pts, wd = stems[int(rng.random() < 0.35)]
+        x, y = _along(pts, t)
+        side = 1 if rng.random() < 0.5 else -1
+        L = rng.uniform(10, 24) * (1.1 - 0.5 * t)
+        ex, ey = x + side * L, y - L * rng.uniform(0.25, 0.6)
+        cv.stroke([(x, y), ((x + ex) / 2, (y + ey) / 2 - 1), (ex, ey)], 1.1, z=0.7, dome=0.4, taper=(1.0, 0.4), mat=0)
+        if rng.random() < 0.5:                                              # snow along it
+            cv.stroke([(x + side * 1, y - 1.2), (ex, ey - 1.0)], 0.9, z=1.3, dome=0.4, taper=(1.0, 0.4), mat=3)
+        for k in range(5):                                                  # the weeping twigs
+            f = (k + 1) / 6
+            tx, ty = x + (ex - x) * f, y + (ey - y) * f
+            Lt = rng.uniform(5, 11)
+            cv.stroke([(tx, ty), (tx + side * 1.5, ty + Lt * 0.5), (tx + side * 1, ty + Lt)], 0.4, z=0.5, dome=0.1,
+                      mat=0, tone=rng.normal(0.04, 0.05))
+    rgba, em = _prop(cv, [ramp('#6a5660', dark=0.35, light=1.3), BIRCH_BARK, BIRCH_MARK,
+                          ramp('#e8eef4', dark=0.55, light=1.06, cool=0.25)], outline=False, relief=1.0, cavity=0.35,
+                     shadow=0.4)
+    return rgba, em
+
+
+def spr_bush_snow():
+    """A bush under snow: a rounded cushion of it, blue in its hollows, with dark twigs poking out
+    of the sides and the top."""
+    rng = np.random.default_rng(17)
+    w, h = 64, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x, y, rx, ry in ((32, 30, 20, 9), (19, 32, 10, 7), (46, 32, 11, 7), (30, 25, 11, 6), (40, 27, 8, 5)):
+        cv.ellipse(x, y, rx, ry, z=0.8, dome=1.2, rough=0.22, rng=rng, mat=0, mode='max')
+    for _ in range(26):                                                      # twigs poking up through the snow
+        a = np.radians(rng.uniform(-160, -20))
+        x = 32 + rng.normal(0, 11)
+        y = 27 + rng.normal(0, 3)
+        L = rng.uniform(7, 15)
+        cv.stroke([(x, y), (x + np.cos(a) * L, y + np.sin(a) * L)], 0.8, z=2.4, dome=0.3, taper=(1, 0.4), mat=1)
+    return _prop(cv, [ramp('#e2e9f0', dark=0.55, light=1.06, cool=0.28), WINTER_BARK], relief=1.0, cavity=0.35,
+                 shadow=0.45)
+
+
+def spr_deer():
+    """A deer standing alert, side on, facing left: a russet coat, pale belly and throat, slim legs,
+    the head up with big ears and a branching rack of antlers, a white flag of a tail."""
+    w, h = 64, 60
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x0, x1, tn in ((22, 21, -0.06), (27, 28, 0.0), (42, 41, -0.06), (47, 48, 0.0)):   # legs, far ones darker
+        cv.stroke([(x0, 38), (x0 + 0.5, 50), (x1, h - 1)], 1.8, z=0.0 if tn else 0.4, dome=0.5, taper=(1.3, 0.8),
+                  mat=0, tone=tn)
+    cv.ellipse(35, 34, 15, 7.5, z=0.6, dome=1.1, mat=0)                       # the body
+    cv.ellipse(35, 38.5, 11, 3.0, z=1.3, dome=0.5, mat=1)                     # pale belly
+    cv.polygon([(49, 30), (54, 28), (53, 33)], z=1.0, top=0.4, bevel=0.8, mat=1)   # the tail, flagged
+    cv.stroke([(24, 32), (19, 22), (17, 15)], 5.5, z=1.0, dome=0.9, taper=(1.3, 0.9), mat=0)   # the neck
+    cv.stroke([(21, 29), (17, 20)], 2.2, z=1.6, dome=0.4, mat=1)              # the pale throat
+    cv.ellipse(15, 14, 4.2, 3.4, z=1.4, dome=1.0, angle=-15, mat=0)          # head
+    cv.ellipse(10, 16, 3.0, 2.0, z=1.5, dome=0.8, mat=0, tone=-0.03)         # muzzle
+    cv.ellipse(8, 16.5, 1.0, 0.9, z=2.0, dome=0.3, mat=3)                    # nose
+    cv.ellipse(14, 13.4, 0.8, 0.8, z=2.0, dome=0.3, mat=3)                   # eye
+    cv.leaf(18, 11, 23, 7.5, 2.6, z=1.2, dome=0.6, mat=0, rib=0.3)           # ears
+    cv.leaf(17, 11, 15, 6, 2.4, z=1.0, dome=0.6, mat=0, tone=-0.05, rib=0.3)
+    for side, sx in ((1, 18), (-1, 15)):                                      # antlers
+        base = (sx, 10)
+        beam = [base, (sx + side * 3, 4), (sx + side * 1, -1 + 2), (sx + side * 5, 0 + 1)]
+        cv.stroke(beam, 1.3, z=2.2 if side > 0 else 1.6, dome=0.5, taper=(1.0, 0.6), mat=2)
+        for k, (px, py) in enumerate(((sx + side * 2, 6), (sx + side * 2.5, 3))):
+            cv.stroke([(px, py), (px - side * 2.5, py - 3)], 0.9, z=2.2 if side > 0 else 1.6, dome=0.4, mat=2)
+    return _prop(cv, [DEER_COAT, DEER_PALE, ANTLER, ramp('#1a1412', dark=0.6, light=1.5)], relief=1.0, cavity=0.35,
+                 shadow=0.45)
+
+
+WINTER_PLAN = {1: {'bush_snow': 8, 'dry_tuft': 4},
+               2: {'snowy_pine': 3, 'birch_winter': 2, 'bush_snow': 6},
+               3: {'snowy_pine': 6, 'tree_winter': 2, 'birch_winter': 2, 'bush_snow': 5},
+               4: {'snowy_pine': 16, 'tree_winter': 3, 'bush_snow': 10}}
+
+
 AUTUMN_PLAN = {1: {'fern': 5, 'grass_tuft': 5, 'bush_autumn': 7},
                2: {'pine': 1, 'birch_autumn': 3, 'bush_autumn': 7, 'fern': 3},
                3: {'pine': 3, 'tree_autumn': 3, 'birch_autumn': 3, 'bush_autumn': 6},
                4: {'pine': 8, 'tree_autumn': 9, 'birch_autumn': 3, 'bush_autumn': 12}}
 
 
-def _forest_card(layer, autumn=False):
+def _forest_card(layer, autumn=False, winter=False):
     """One layer of a forest's edge, 1 (front) to 4 (back): ferns, grass and bushes; then young
     trees behind them; then more and taller trees; then a dense wall of spruce and oak. `autumn`:
     a mixed wood in October - oak, birch and bush turned, the spruce among them still green."""
     from assets import get_sprite                # assets imports this module, so not at the top
-    rng = np.random.default_rng((500 if autumn else 400) + layer)
+    rng = np.random.default_rng((800 if winter else 500 if autumn else 400) + layer)
     height = {1: 1.2, 2: 3.0, 3: 4.0, 4: 4.8}[layer]
     H = int(height * CARD_PX)
     card = np.zeros((H, CARD_W, 4), np.float32)
@@ -577,9 +724,13 @@ def _forest_card(layer, autumn=False):
             4: {'pine': 17, 'tree': 3, 'bush': 12}}[layer]
     if autumn:
         plan = AUTUMN_PLAN[layer]
+    if winter:
+        plan = WINTER_PLAN[layer]
     tall = {'pine': (2.2, 4.6), 'tree': (2.4, 3.4), 'birch': (2.4, 3.6), 'bush': (0.4, 0.7), 'fern': (0.35, 0.6),
             'grass_tuft': (0.3, 0.45)}
     tall.update({k + '_autumn': tall[k] for k in ('tree', 'birch', 'bush')})
+    tall.update({'snowy_pine': tall['pine'], 'tree_winter': tall['tree'], 'birch_winter': tall['birch'],
+                 'bush_snow': (0.35, 0.6), 'dry_tuft': (0.25, 0.4)})
     stamps = []
     for kind, k in plan.items():            # spread evenly along the card, each nudged at random
         lo, hi = tall[kind]
@@ -590,6 +741,8 @@ def _forest_card(layer, autumn=False):
     for x, kind, tl in sorted(stamps, key=lambda s: -s[2]):          # the tallest first, at the back
         _stamp(card, get_sprite(kind)[0], x, H, tl, flip=bool(rng.random() < 0.5))
     shade = {1: 1.0, 2: 0.92, 3: 0.82, 4: 0.7}[layer]     # deeper into the wood, deeper in shade
+    if winter:
+        shade = {1: 1.0, 2: 0.95, 3: 0.88, 4: 0.8}[layer]  # snow keeps the light deeper in
     card[..., :3] *= shade
     card[..., 3] = (card[..., 3] > 0.5).astype(np.float32)
     return card, np.zeros(card.shape[:2], np.float32)
@@ -600,6 +753,7 @@ TEXTURES = {
     'foliage_autumn': lambda n: (tex_foliage(n, autumn=True), None),
     'forest_deep': lambda n: (tex_forest_deep(n), None),
     'forest_deep_autumn': lambda n: (tex_forest_deep(n, autumn=True), None),
+    'forest_deep_snow': lambda n: (tex_forest_deep(n, snow=True), None),
     'leaves_fallen': lambda n: (tex_leaves_fallen(n), None),
     'bark': lambda n: (tex_bark(n), None),
     'bark_pine': lambda n: (tex_bark(n, pine=True), None),
@@ -607,17 +761,22 @@ TEXTURES = {
     'moss': lambda n: (tex_moss(n), None),
 }
 # how strongly the world-space surface noise varies each texture (see assets.TEXTURE_NOISE)
-TEXTURE_NOISE = {'forest_deep': 1.6, 'forest_deep_autumn': 1.6, 'leaves_fallen': 2.2}
+TEXTURE_NOISE = {'forest_deep': 1.6, 'forest_deep_autumn': 1.6, 'forest_deep_snow': 1.4, 'leaves_fallen': 2.2}
 SPRITES = {'pine': spr_pine, 'tree': spr_tree, 'birch': spr_birch, 'bush': spr_bush, 'boulder': spr_boulder,
            'stump': spr_stump, 'log': spr_log, 'dead_tree': spr_dead_tree, 'snowy_pine': spr_snowy_pine,
            'boulder_snow': spr_boulder_snow, 'tree_autumn': spr_tree_autumn, 'birch_autumn': spr_birch_autumn,
-           'bush_autumn': spr_bush_autumn}
+           'bush_autumn': spr_bush_autumn, 'tree_winter': spr_tree_winter, 'birch_winter': spr_birch_winter,
+           'bush_snow': spr_bush_snow, 'deer': spr_deer}
 SPRITES.update({f'forest_card_{k}': (lambda k=k: _forest_card(k)) for k in (1, 2, 3, 4)})
 SPRITES.update({f'autumn_card_{k}': (lambda k=k: _forest_card(k, autumn=True)) for k in (1, 2, 3, 4)})
+SPRITES.update({f'winter_card_{k}': (lambda k=k: _forest_card(k, winter=True)) for k in (1, 2, 3, 4)})
 SPRITE_HEIGHT = {'pine': 3.4, 'tree': 2.6, 'birch': 3.0, 'bush': 0.5, 'snowy_pine': 3.4, 'boulder_snow': 0.55,
                  'forest_card_1': 1.2, 'forest_card_2': 3.0, 'forest_card_3': 4.0, 'forest_card_4': 4.8,
                  'tree_autumn': 2.6, 'birch_autumn': 3.0, 'bush_autumn': 0.5,
-                 'autumn_card_1': 1.2, 'autumn_card_2': 3.0, 'autumn_card_3': 4.0, 'autumn_card_4': 4.8}
+                 'autumn_card_1': 1.2, 'autumn_card_2': 3.0, 'autumn_card_3': 4.0, 'autumn_card_4': 4.8,
+                 'tree_winter': 2.6, 'birch_winter': 3.0, 'bush_snow': 0.45, 'deer': 0.62,
+                 'winter_card_1': 1.2, 'winter_card_2': 3.0, 'winter_card_3': 4.0, 'winter_card_4': 4.8}
 # fringe sets: cards back to front, for a wall's `fringe`
 FRINGES = {'forest': ['forest_card_4', 'forest_card_3', 'forest_card_2', 'forest_card_1'],
-           'forest_autumn': ['autumn_card_4', 'autumn_card_3', 'autumn_card_2', 'autumn_card_1']}
+           'forest_autumn': ['autumn_card_4', 'autumn_card_3', 'autumn_card_2', 'autumn_card_1'],
+           'forest_snow': ['winter_card_4', 'winter_card_3', 'winter_card_2', 'winter_card_1']}

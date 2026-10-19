@@ -66,6 +66,15 @@ The wood turns: oak, birch and bush gone orange, gold and rust with the spruce s
 | ![A lane through an autumn wood, the low sun at its end, leaves falling, a child walking home](docs/gallery/autumn_lane.png) | ![A scarecrow in the stubble with a crow on its arm](docs/gallery/autumn_scarecrow.png) |
 | ![Jack-o'-lanterns on the gateposts at dusk](docs/gallery/autumn_dusk.png) | ![The child on the lane: can we go the long way?](docs/gallery/autumn_walk.png) |
 
+## Winter
+
+The wood under snow: snowy spruce and bare oaks and birches with snow along their limbs, a frozen stream mirroring them under a plank footbridge, a deer on the ice in falling snow, and the lantern on the bridge at night.
+
+| | |
+|---|---|
+| ![A lane through a snowbound wood](docs/gallery/winter_lane.png) | ![A deer on the frozen stream in falling snow](docs/gallery/winter_deer.png) |
+| ![A child in the snow at night, a lantern on the footbridge](docs/gallery/winter_lantern.png) | ![The frozen stream mirroring the snowy spruces](docs/gallery/winter_stream.png) |
+
 ## The desert
 
 A canyon of layered sandstone, ragged at the rim, saguaros on the floor of a dry wash, the ruins of a cliff dwelling with its T-shaped doors - and a slot canyon where the sun comes down through a gap in the rock in a single beam.
@@ -154,7 +163,7 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **Volumetric fog**: mist that lies low and drifts in banks, halos round every lamp, and beams of sun or moonlight through windows, doorways, standing stones and trees; sunlight finds its way into roofed rooms through their doorways, windows and skylights
 - **Reflections**: water, ice, wet streets and puddles mirror the lamps, windows and figures beyond them
 - **The 90s look**: 320x200 framebuffer, Bayer-dithered 256-colour palette, chunky nearest-neighbour upscale, optional scanlines and 2x supersampling
-- **Sprites**: 194 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 27-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
+- **Sprites**: 202 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 27-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
 - **Planar sprites**: a plant can stand as fixed planes in the world instead of a billboard - a cross of two, or a star of three that cuts the ground round it into sixths - so it has body as the camera moves; the low plants do by default, and a prefab can mix billboards and planes (a billboard palm trunk under a star of fronds)
 - **Layered forest edges**: give the walls of a jungle or a wood a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
@@ -173,7 +182,7 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **Post-processing**: colour grading, bloom, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
 - **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
 - **Pixel art drawn in code**: the jungle, ruins and beach are built from shapes - leaves, stones, planks, blades of grass, carved glyphs - stamped into a height field, lit from one direction, and snapped onto hue-shifted colour ramps with dark edges on their shadow sides (`scripts/pixelart.py`), so they read as pixel art rather than noise
-- **No assets to download**: all 146 textures, 194 props, 27 characters, 24 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
+- **No assets to download**: all 147 textures, 202 props, 27 characters, 24 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
 
 ![Character cast](docs/gallery/cast.png)
 

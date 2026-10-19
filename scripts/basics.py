@@ -319,6 +319,23 @@ def tex_snow_rock(name):
     return _tile(cv, ramps, relief=1.1, cavity=0.45, shadow=0.5)
 
 
+def tex_snow(name):
+    """Fresh snow: soft drifts sculpted by the wind, their lee sides in blue shadow, faint ripples
+    along them, and a glitter of ice crystals catching the light."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=0.0, mat=0)
+    drift = smooth_noise(T, T, 3, rng) * 0.7 + smooth_noise(T, T, 6, rng) * 0.3
+    cv.z += (5.0 * drift).astype(np.float32)
+    xs = np.arange(T)[None, :]
+    ys = np.arange(T)[:, None]
+    cv.z += (0.25 * np.sin(2 * np.pi * (5 * ys + 2 * xs) / T + 3 * drift)).astype(np.float32)
+    light = cv.light(sun=(-0.6, -0.5, 0.6), relief=1.6, cavity=0.3, shadow=0.45, ambient=0.42, diffuse=0.55)
+    rgb = cv.paint([ramp('#d0dae8', dark=0.62, light=1.1, warm=0.04, cool=0.3)], light, dither=0.35)
+    glint = rng.random((T, T)) < 0.012 * np.clip(light * 1.6 - 0.4, 0, 1)
+    rgb[glint] = (1.0, 1.0, 1.0)
+    return rgb
+
+
 def tex_ice(name):
     """A frozen lake from above: clear blue ice with depth in it - darker where it is thick and
     black - long straight fractures with white edges branching at sharp angles, air bubbles
@@ -667,6 +684,7 @@ TEXTURES = {
     'rock_floor': lambda n: (tex_rock(n, 'rock_floor'), None),
     'snow_rock': lambda n: (tex_snow_rock(n), None),
     'ice': lambda n: (tex_ice(n), None),
+    'snow': lambda n: (tex_snow(n), None),
     'sand': lambda n: (tex_sand(n), None),
     'plaster': lambda n: (tex_plaster(n), None),
     'plaster_white': lambda n: (tex_plaster(n, '#d8d4c4', '#6a6050', 0.45), None),
