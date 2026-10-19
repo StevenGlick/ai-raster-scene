@@ -2898,6 +2898,22 @@ SPRITES.update(desert.SPRITES)
 SPRITE_HEIGHT.update(desert.SPRITE_HEIGHT)
 DEBRIS_SETS.update(desert.DEBRIS_SETS)
 
+# ---------------------------------------------------------------- the swamp
+# Black water skinned with duckweed, bog, the murk between cypresses; bald cypresses hung with
+# Spanish moss, knees, cattails, a heron, an alligator and fireflies - drawn with the toolkit in
+# swamp.py, with a `swamp` fringe.
+import swamp  # noqa: E402
+
+TEXTURES.update(swamp.TEXTURES)
+TEXTURE_NOISE.update(swamp.TEXTURE_NOISE)
+TEXTURE_REFLECT.update(swamp.TEXTURE_REFLECT)
+SPRITES.update(swamp.SPRITES)
+SPRITE_HEIGHT.update(swamp.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(swamp.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= swamp.NO_CONTACT_SHADOW
+FRINGES.update(swamp.FRINGES)
+DEBRIS_SETS.update(swamp.DEBRIS_SETS)
+
 _dcache = {}
 
 
