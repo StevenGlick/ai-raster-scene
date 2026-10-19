@@ -36,6 +36,8 @@ SHOTS = {
     'waterway_01': ('underground_waterway', 1),
     'woods_path': ('woodland_night', 1),
     'woods_fire': ('woodland_night', 2),
+    'woods_dawn': ('woodland_night', 5),
+    'woods_moon': ('woodland_night', 6),
     'street_rain': ('rainy_street', 1),
     'street_lightning': ('rainy_street', 3),
     'coast_tower': ('coast_lighthouse', 1),

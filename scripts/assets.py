@@ -1463,49 +1463,6 @@ def spr_fountain():
     return _finish(im, em, w, h)
 
 
-def spr_dead_tree():
-    w, h = 64, 104
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    bark = '#3a3028'
-    d.polygon([(27 * S, 104 * S), (30 * S, 40 * S), (35 * S, 40 * S), (38 * S, 104 * S)], fill=bark)
-    for (x0, y0, x1, y1, wd) in ((32, 56, 12, 32, 5), (32, 50, 52, 26, 5), (32, 40, 24, 10, 4),
-                                 (32, 42, 44, 12, 4), (20, 40, 10, 22, 3), (44, 36, 56, 18, 3)):
-        d.line([(x0 * S, y0 * S), (x1 * S, y1 * S)], fill=bark, width=wd * S)
-    for (x0, y0, x1, y1) in ((12, 32, 6, 20), (52, 26, 58, 14), (24, 10, 18, 2), (44, 12, 50, 4),
-                             (16, 26, 10, 14), (48, 20, 54, 8)):
-        d.line([(x0 * S, y0 * S), (x1 * S, y1 * S)], fill='#2a241e', width=2 * S)
-    d.ellipse([24 * S, 98 * S, 42 * S, 104 * S], fill='#2a241e')
-    return _finish(im, em, w, h)
-
-
-def spr_stump():
-    w, h = 24, 16
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.rectangle([3 * S, 4 * S, 21 * S, 16 * S], fill='#4a3826')
-    for x in range(4, 21, 4):
-        d.line([(x * S, 6 * S), (x * S, 16 * S)], fill='#3a2a1c', width=S // 2)
-    d.ellipse([3 * S, 0, 21 * S, 8 * S], fill='#8a6a44')
-    d.ellipse([7 * S, 2 * S, 17 * S, 6 * S], fill='#6e5234')
-    d.ellipse([10 * S, 3 * S, 14 * S, 5 * S], fill='#543e26')
-    return _finish(im, em, w, h)
-
-
-def spr_log():
-    w, h = 48, 14
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.rectangle([2 * S, 2 * S, 46 * S, 13 * S], fill='#4a3826')
-    d.rectangle([2 * S, 2 * S, 46 * S, 5 * S], fill='#5e4830')
-    for x in range(4, 46, 5):
-        d.line([(x * S, 3 * S), ((x + 2) * S, 12 * S)], fill='#3a2a1c', width=S // 2)
-    d.ellipse([0, S, 6 * S, 13 * S], fill='#8a6a44')
-    d.ellipse([2 * S, 4 * S, 5 * S, 10 * S], fill='#6e5234')
-    d.ellipse([42 * S, S, 48 * S, 13 * S], fill='#7a5c3a')
-    return _finish(im, em, w, h)
-
-
 def spr_mushrooms():
     w, h = 20, 14
     im, d, em, de = _canvas(w, h)
@@ -1514,21 +1471,6 @@ def spr_mushrooms():
         d.rectangle([(x - 1) * S, y * S, (x + 1) * S, 14 * S], fill='#d8cdb4')
         d.ellipse([(x - r) * S, (y - r) * S, (x + r) * S, (y + r // 2) * S], fill=cap)
         d.ellipse([(x - r + 1) * S, (y - r + 1) * S, (x - r + 3) * S, (y - r + 3) * S], fill='#e0d0c0')
-    return _finish(im, em, w, h)
-
-
-def spr_boulder():
-    w, h = 32, 24
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.polygon([(2 * S, 24 * S), (4 * S, 10 * S), (12 * S, 3 * S), (22 * S, 4 * S), (30 * S, 14 * S),
-               (30 * S, 24 * S)], fill='#6a665e')
-    d.polygon([(4 * S, 12 * S), (12 * S, 4 * S), (20 * S, 5 * S), (14 * S, 14 * S)], fill='#8a857c')
-    d.polygon([(16 * S, 16 * S), (28 * S, 15 * S), (30 * S, 24 * S), (14 * S, 24 * S)], fill='#4a4740')
-    rng = np.random.default_rng(11)
-    for _ in range(10):
-        x, y = rng.random() * 22 + 5, rng.random() * 8 + 4
-        d.ellipse([x * S, y * S, (x + 3) * S, (y + 2) * S], fill='#2e4a2a')
     return _finish(im, em, w, h)
 
 
@@ -2514,8 +2456,7 @@ SPRITES = {
     'barrel': spr_barrel, 'crate': spr_crate, 'lantern': spr_lantern,
     'candles': spr_candles, 'bed': spr_bed, 'wheelchair': spr_wheelchair, 'bench': spr_bench,
     'rowboat': spr_rowboat, 'fountain': spr_fountain,
-    'dead_tree': spr_dead_tree, 'stump': spr_stump, 'log': spr_log,
-    'mushrooms': spr_mushrooms, 'boulder': spr_boulder, 'signpost': spr_signpost,
+    'mushrooms': spr_mushrooms, 'signpost': spr_signpost,
     'campfire': spr_campfire, 'locker': spr_locker, 'console': spr_console, 'buoy': spr_buoy,
     'gravestone': spr_gravestone,
     'sconce': spr_sconce, 'ceiling_lamp': spr_ceiling_lamp, 'chandelier': spr_chandelier,

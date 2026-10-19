@@ -43,6 +43,7 @@ Woodland, towns, coast, bunkers, castles, chapels, caves, sewers and snow - all 
 | | |
 |---|---|
 | ![A fire in the woods at night](docs/gallery/woods_fire.png) | ![Lantern on the forest road](docs/gallery/woods_path.png) |
+| ![First light: a low sun through a gap in the spruce, mist lying in the clearing](docs/gallery/woods_dawn.png) | ![Something standing on the moonlit road](docs/gallery/woods_moon.png) |
 | ![Rainy town street](docs/gallery/street_rain.png) | ![Lightning over the street](docs/gallery/street_lightning.png) |
 | ![The lighthouse at dusk](docs/gallery/coast_tower.png) | ![The keeper on the jetty](docs/gallery/coast_jetty.png) |
 | ![Bunker laboratory HUD](docs/gallery/bunker_hud.png) | ![Objectives on a green CRT](docs/gallery/bunker_crt.png) |
@@ -109,7 +110,7 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **Post-processing**: colour grading, bloom, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
 - **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
 - **Pixel art drawn in code**: the jungle, ruins and beach are built from shapes - leaves, stones, planks, blades of grass, carved glyphs - stamped into a height field, lit from one direction, and snapped onto hue-shifted colour ramps with dark edges on their shadow sides (`scripts/pixelart.py`), so they read as pixel art rather than noise
-- **No assets to download**: all 126 textures, 128 props, 21 characters, 22 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
+- **No assets to download**: all 127 textures, 128 props, 21 characters, 22 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
 
 ![Character cast](docs/gallery/cast.png)
 

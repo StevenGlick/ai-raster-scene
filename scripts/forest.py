@@ -8,7 +8,7 @@ and snapped onto hue-shifted ramps, so the trees read as pixel art rather than n
 import numpy as np
 
 from biomes import CARD_PX, CARD_W, T, _crown, _leaf_layers, _prop, _rng, _stamp, _tile
-from pixelart import Canvas, ramp
+from pixelart import Canvas, ramp, smooth_noise
 
 NEEDLE = ramp('#2e5a3a', dark=0.26, light=1.3, warm=0.08)       # spruce: a dark blue-green
 NEEDLE_DRY = ramp('#5e4630', dark=0.35, light=1.15)              # fallen needles, a dull rust brown
@@ -153,6 +153,113 @@ def spr_bush():
     return _prop(cv, [OAK_LEAF, OAK_BARK], relief=1.0, cavity=0.45, shadow=0.5)
 
 
+CUT_WOOD = ramp('#c49a64', dark=0.4, light=1.15)
+DEAD_WOOD = ramp('#7e766a', dark=0.28, light=1.25)
+LICHEN = ramp('#b8b070', dark=0.5)
+
+
+def _rings(cv, cx, cy, rx, ry, n):
+    """Growth rings carved into a cut face."""
+    for k in range(1, n + 1):
+        f = k / (n + 1)
+        a = np.linspace(0, 2 * np.pi, 40)
+        cv.stroke(list(zip(cx + np.cos(a) * rx * f, cy + np.sin(a) * ry * f)), 0.7, dome=0.25, mode='carve')
+
+
+def spr_boulder():
+    """A boulder settled into the ground: a rounded mass with a lesser lobe and a crack or two,
+    lit from the upper left, moss over its top and a few spots of lichen."""
+    rng = np.random.default_rng(61)
+    w, h = 48, 34
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.ellipse(25, 25, 22, 16, z=0.0, dome=2.4, rough=0.14, rng=rng, mat=0, power=0.6)
+    cv.ellipse(13, 19, 9, 7.5, z=0.5, dome=1.4, rough=0.2, rng=rng, mat=0, tone=0.04, mode='max')
+    cv.stroke([(29, 9), (27, 17), (30, 27)], 1.3, dome=0.8, mode='carve')
+    cv.stroke([(9, 23), (16, 26)], 1.0, dome=0.5, mode='carve')
+    cv.noise(0.15, cells=8, rng=rng)
+    solid = cv.id > 0
+    moss = (smooth_noise(w, h, 5, rng, wrap=False) > 0.48) & solid & (np.arange(h)[:, None] < h * 0.48)
+    cv.mat[moss] = 1
+    cv.z[moss] += 0.2
+    ys, xs = np.nonzero(solid & ~moss)
+    for i in rng.choice(len(ys), 6, replace=False):
+        cv.ellipse(xs[i], ys[i], rng.uniform(0.8, 1.5), rng.uniform(0.6, 1.1), z=cv.z[ys[i], xs[i]] + 0.05, dome=0.1,
+                   mat=2, rough=0.3, rng=rng)
+    return _prop(cv, [STONE, FOREST_MOSS, LICHEN], relief=1.1, cavity=0.5, shadow=0.5)
+
+
+def spr_stump():
+    """A sawn stump: a pale cut face ringed with growth rings, furrowed bark down its sides, roots
+    spreading into the ground and a cushion of moss on one shoulder."""
+    rng = np.random.default_rng(63)
+    w, h = 40, 30
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for dx, L in ((-1, 12), (1, 13), (-1, 7), (1, 6)):                     # the roots
+        cv.stroke([(20 + dx * 6, h - 8), (20 + dx * (6 + L * 0.6), h - 3), (20 + dx * (6 + L), h)], 4, z=0.2,
+                  dome=0.8, taper=(1.0, 0.4), mat=0)
+    cv.box(8, 9, 24, h - 11, z=0.5, top=1.4, bevel=6, mat=0)
+    for _ in range(6):                                                     # furrows in the bark
+        x = rng.uniform(10, 30)
+        cv.stroke([(x, 12), (x + rng.normal(0, 0.6), h - 3)], 0.9, dome=0.5, mode='carve')
+    cv.ellipse(20, 9.5, 12, 5, z=2.4, dome=0.25, mat=1, tone=0.04)
+    _rings(cv, 20, 9.5, 12, 5, 3)
+    cv.ellipse(28, 13, 4, 3, z=2.2, dome=0.6, rough=0.3, rng=rng, mat=2)    # moss
+    return _prop(cv, [OAK_BARK, CUT_WOOD, FOREST_MOSS], relief=1.0, cavity=0.45, shadow=0.45)
+
+
+def spr_log():
+    """A fallen trunk lying across the ground: bark in long ridges, the stub of a branch, moss along
+    its top and the pale, ringed end where it broke off."""
+    rng = np.random.default_rng(65)
+    w, h = 88, 22
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.stroke([(6, 13), (44, 12), (80, 13)], 15, z=0.0, dome=1.4, taper=(1.0, 0.92), mat=0)
+    for _ in range(10):                                                    # ridges along the bark
+        y, x0 = rng.uniform(7, 19), rng.uniform(4, 50)
+        cv.stroke([(x0, y), (x0 + rng.uniform(14, 30), y + rng.normal(0, 0.6))], 0.9, dome=0.5, mode='carve')
+    cv.stroke([(32, 7), (28, 1)], 4, z=1.3, dome=0.8, taper=(1.0, 0.6), mat=0)   # a branch stub
+    cv.ellipse(81, 13, 4.2, 7.2, z=1.6, dome=0.3, mat=1)
+    _rings(cv, 81, 13, 4.2, 7.2, 2)
+    moss = (smooth_noise(w, h, 7, rng, wrap=False) > 0.5) & (cv.mat == 0) & (cv.id > 0) & (np.arange(h)[:, None] < 10)
+    cv.mat[moss] = 2
+    cv.z[moss] += 0.15
+    return _prop(cv, [OAK_BARK, CUT_WOOD, FOREST_MOSS], relief=1.0, cavity=0.45, shadow=0.45)
+
+
+def spr_dead_tree():
+    """A dead tree: a split trunk on a gnarled foot, bare limbs forking into twigs, the bark gone
+    grey and peeling in strips."""
+    rng = np.random.default_rng(67)
+    w, h = 128, 128
+    cv = Canvas(w, h, wrap=False, ground=-9)
+
+    def limb(x, y, ang, length, width, depth):
+        pts = [(x, y)]
+        for _ in range(4):
+            ang += rng.normal(0, 0.16)
+            x, y = x + np.cos(ang) * length / 4, y + np.sin(ang) * length / 4
+            pts.append((x, y))
+        cv.stroke(pts, width, z=0.4 + 0.15 * (4 - depth), dome=0.9, taper=(1.0, 0.6), mat=0)
+        if depth > 1 and width > 1.0:
+            for side in (-1, 1):
+                if rng.random() < 0.85:
+                    limb(x, y, ang + side * rng.uniform(0.35, 0.75), length * rng.uniform(0.55, 0.75), width * 0.6,
+                         depth - 1)
+    cx = w / 2
+    for dx in (-1, 1):                                                     # the gnarled foot
+        cv.stroke([(cx + dx * 3, h - 14), (cx + dx * 10, h - 3), (cx + dx * 14, h)], 4, z=0.2, dome=0.8,
+                  taper=(1.0, 0.5), mat=0)
+    cv.stroke([(cx, h), (cx - 1, h - 40), (cx - 3, h - 62)], 9, z=0.3, dome=1.1, taper=(1.25, 0.8), mat=0)
+    limb(cx - 3, h - 62, -np.pi / 2 - 0.25, 31, 6.0, 4)
+    limb(cx - 2, h - 56, -np.pi / 2 + 0.6, 26, 4.5, 3)
+    limb(cx - 1, h - 44, -np.pi / 2 - 0.9, 21, 3.6, 3)
+    for _ in range(7):                                                     # peeling strips of bark
+        x = cx + rng.uniform(-3.5, 3.5)
+        y = rng.uniform(h - 56, h - 6)
+        cv.stroke([(x, y), (x + rng.normal(0, 0.5), y + rng.uniform(6, 14))], 0.9, dome=0.5, mode='carve')
+    return _prop(cv, [DEAD_WOOD], relief=1.0, cavity=0.4, shadow=0.45)
+
+
 # ---------------------------------------------------------------- textures
 
 def tex_foliage(name, autumn=False):
@@ -196,6 +303,35 @@ def _plates(cv, rng, rows, cols, fissure=1.4, bevel=2.6, stretch=1.0):
     cv.mat = np.where(inside, 0, cv.mat).astype(np.int32)
     cv.tone = np.where(inside, rng.normal(0, 0.06, n)[near], cv.tone).astype(np.float32)
     cv.n += n
+
+
+def tex_forest_deep(name):
+    """The inside of a wood seen from its edge: trunks at every depth in the dark, the farthest
+    thinnest and darkest, low boughs and the odd clump of leaves catching a little light. Meant
+    for the wall behind a `forest` fringe, so wherever the cards thin out it reads as more wood."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=-2.0, mat=2)
+    for depth in range(4):                  # back to front: more, thinner and darker trunks behind
+        for _ in range((5, 4, 3, 2)[depth]):
+            x = rng.random() * T
+            wd = (2.0, 3.0, 4.2, 6.0)[depth] * rng.uniform(0.8, 1.2)
+            ph, amp = rng.uniform(0, 2 * np.pi), rng.uniform(0.3, 1.0)     # a sway that repeats with the tile
+            cv.stroke([(x + amp * np.sin(2 * np.pi * y / T + ph), y) for y in range(-4, T + 5, 4)], wd,
+                      z=-1.6 + depth * 0.5, dome=0.6 + depth * 0.2, mat=1, tone=-0.42 + depth * 0.12)
+            if rng.random() < 0.5:          # a bough off it
+                y = rng.uniform(4, T - 4)
+                side = 1 if rng.random() < 0.5 else -1
+                cv.stroke([(x, y), (x + side * rng.uniform(6, 12), y - rng.uniform(2, 6))], wd * 0.35,
+                          z=-1.5 + depth * 0.5, dome=0.4, mat=1, tone=-0.42 + depth * 0.12)
+    for _ in range(14):                     # leaves hanging in front, catching a little light
+        x, y = rng.random() * T, rng.random() * T
+        for _ in range(9):
+            px, py = x + rng.normal(0, 3), y + rng.normal(0, 2.4)
+            a = np.radians(rng.uniform(0, 360))
+            cv.leaf(px, py, px + np.cos(a) * 4.5, py + np.sin(a) * 4.5, 2.8, z=0.6 + rng.random() * 0.3, dome=0.5,
+                    mat=0, tone=rng.normal(-0.2, 0.05), rib=0.2)
+    return _tile(cv, [OAK_SHADE, ramp('#3a3228', dark=0.4), ramp('#141a14', dark=0.6, light=1.4)],
+                 cavity=0.4, shadow=0.5)
 
 
 def tex_bark(name, pine=False):
@@ -298,12 +434,14 @@ def _forest_card(layer):
 TEXTURES = {
     'foliage': lambda n: (tex_foliage(n), None),
     'foliage_autumn': lambda n: (tex_foliage(n, autumn=True), None),
+    'forest_deep': lambda n: (tex_forest_deep(n), None),
     'bark': lambda n: (tex_bark(n), None),
     'bark_pine': lambda n: (tex_bark(n, pine=True), None),
     'pine_needles': lambda n: (tex_needles(n), None),
     'moss': lambda n: (tex_moss(n), None),
 }
-SPRITES = {'pine': spr_pine, 'tree': spr_tree, 'birch': spr_birch, 'bush': spr_bush}
+SPRITES = {'pine': spr_pine, 'tree': spr_tree, 'birch': spr_birch, 'bush': spr_bush, 'boulder': spr_boulder,
+           'stump': spr_stump, 'log': spr_log, 'dead_tree': spr_dead_tree}
 SPRITES.update({f'forest_card_{k}': (lambda k=k: _forest_card(k)) for k in (1, 2, 3, 4)})
 SPRITE_HEIGHT = {'pine': 3.4, 'tree': 2.6, 'birch': 3.0, 'bush': 0.5,
                  'forest_card_1': 1.2, 'forest_card_2': 3.0, 'forest_card_3': 4.0, 'forest_card_4': 4.8}
