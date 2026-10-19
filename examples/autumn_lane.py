@@ -54,6 +54,7 @@ def autumn_lane():
         {'id': 'walker', 'x': 20.5, 'y': 41.0, 'type': 'child', 'facing': 270},
     ]
     dusk_sprites = [{'x': x, 'y': y, 'type': 'jack_o_lantern'} for x, y in LANTERNS]   # those on the wall stand on it
+    dusk_sprites.append({'x': 17.6, 'y': 19.0, 'type': 'witch', 'facing': 30})            # someone in the gateway
     dusk_lights = [{'x': x + 0.4, 'y': y, 'z': 0.85 if x == 17.5 else 0.25, 'radius': 2.6,
                     'color': [1.0, 0.58, 0.22], 'intensity': 1.2} for x, y in LANTERNS]
     return scene(

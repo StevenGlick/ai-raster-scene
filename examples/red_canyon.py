@@ -65,6 +65,7 @@ def red_canyon():
         {'x': 17.2, 'y': 44.6, 'type': 'prickly_pear'}, {'x': 23.6, 'y': 30.6, 'type': 'prickly_pear'},
         {'x': 19.6, 'y': 49.2, 'type': 'tumbleweed'}, {'x': 21.8, 'y': 41.0, 'type': 'tumbleweed', 'flip': True},
         {'x': 18.0, 'y': 52.4, 'type': 'cow_skull'},
+        {'id': 'cowboy', 'x': 20.4, 'y': 51.2, 'type': 'cowboy', 'facing': 100},
         # the ruins: ladders up to the roofs, pots by the doors, a raven on the tower
         {'x': 13.45, 'y': 27.6, 'type': 'ladder', 'scale': 1.8}, {'x': 12.45, 'y': 30.9, 'type': 'ladder', 'scale': 1.5},
         {'x': 13.4, 'y': 25.8, 'type': 'clay_pot'}, {'x': 13.5, 'y': 26.4, 'type': 'clay_pot', 'scale': 0.26},

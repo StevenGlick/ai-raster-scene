@@ -267,6 +267,12 @@
    "type": "barrel"
   },
   {
+   "x": 19.45,
+   "y": 12.2,
+   "type": "pirate",
+   "facing": 100
+  },
+  {
    "id": "gator",
    "x": 18.2,
    "y": 23.5,

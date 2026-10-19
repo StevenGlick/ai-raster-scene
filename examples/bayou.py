@@ -48,6 +48,7 @@ def bayou():
         {'x': 20.3, 'y': 12.8, 'type': 'rowboat', 'angle': 90},
         {'x': 15.5, 'y': 9.08, 'type': 'spanish_moss', 'z': 1.0, 'scale': 0.9, 'planes': 1, 'angle': 0, 'length': 1.2},
         {'x': 14.4, 'y': 9.6, 'type': 'barrel'},
+        {'x': 19.45, 'y': 12.2, 'type': 'pirate', 'facing': 100},
         # the water: an alligator watching, near
         {'id': 'gator', 'x': 18.2, 'y': 23.5, 'type': 'alligator'},
     ]

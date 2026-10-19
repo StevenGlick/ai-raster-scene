@@ -23,7 +23,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 |---|---|---|---|---|---|
 | Textures | 144 | 120 | 24 | 0 | 0 |
 | Props | 184 | 170 | 14 | 0 | 0 |
-| Characters | 22 | 20 | 2 | 0 | 0 |
+| Characters | 26 | 24 | 2 | 0 | 0 |
 | Decals | 24 | 19 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
 | Skylines | 6 | 5 | 1 | 0 | 0 |
@@ -39,7 +39,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 42 | 35 | 7 | 0 | 0 |
-| **all** | **560** | **500** | **60** | **0** | **0** |
+| **all** | **564** | **504** | **60** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -509,7 +509,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `palm_crown` | good | 3.2 tall, no shadow | tropical_beach | The palm's crown alone, in the same frame as the trunk. |
 | `glass_pane` | good | 1 tall | orbital_hangar | A plain pane for the glass pass. |
 
-## Characters (22)
+## Characters (26)
 
 Pixel-art grids written as text in `scripts/characters.py`, each with a back view.
 
@@ -537,6 +537,10 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `hoplite` | good | ancient_ruins |  |
 | `castaway` | good | tropical_beach |  |
 | `runner` | good | neon_street | A cyberpunk: dark hair with a pink streak, a lit cyan visor, a black jacket striped in neon. |
+| `cowboy` | good | red_canyon | A wide-brimmed hat, moustache, red bandana, a vest over a tan shirt, a gun belt, jeans and boots; for the canyon. |
+| `witch` | good | autumn_lane | A crooked pointed hat banded in purple, green skin, glowing yellow eyes, a robe, a lit lantern at her side. |
+| `farmer` | good | village_green | A straw hat, plaid shirt and blue overalls, a pitchfork taller than him. |
+| `pirate` | good | bayou | A gold-edged tricorn, an eye patch and beard, a red coat with gold buttons, a cutlass. |
 
 ## Decals (24)
 
@@ -875,6 +879,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, four more characters.** `cowboy`, `witch`, `farmer`, `pirate` (16x32, with back views), put to work in the canyon, the autumn lane at dusk, the village green and the bayou.
 - **2026-10-19, the bayou.** `scripts/swamp.py`: `swamp_water` (mirrors), `bog`, `swamp_deep`; `bald_cypress`, `spanish_moss`, `cypress_knees`, `cattails`, `heron`, `alligator`, `fireflies`; a `swamp` fringe and scatter set. `examples/bayou.py` with four gallery shots.
 - **2026-10-19, the desert.** `scripts/desert.py`: `sandstone`, `sandstone_pale`, `slot_rock`, `desert_wash`, `pueblo_stone`, `pueblo_door`; `saguaro`, `prickly_pear`, `tumbleweed`, `cow_skull`, `clay_pot`; a `desert` scatter set. `examples/red_canyon.py` (a slot canyon lit through one gap in its roof) with four gallery shots.
 - **2026-10-19, the village.** A `timber` facade style (`scripts/buildings.py`): oak framing drawn over plaster to fit each building's windows, leaded casements, plank doors, and a new `roof` layer the renderer stands on each house - a gable end, or thatch or tiles set back behind the eave, chimneys - the other styles' images unchanged. village.py: `well`, `cart`, `market_stall`, `inn_sign`. `examples/village_green.py` with four gallery shots.

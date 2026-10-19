@@ -378,6 +378,12 @@
      "x": 16.2,
      "y": 19.6,
      "type": "jack_o_lantern"
+    },
+    {
+     "x": 17.6,
+     "y": 19.0,
+     "type": "witch",
+     "facing": 30
     }
    ],
    "post": [

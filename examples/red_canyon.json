@@ -248,6 +248,13 @@
    "type": "cow_skull"
   },
   {
+   "id": "cowboy",
+   "x": 20.4,
+   "y": 51.2,
+   "type": "cowboy",
+   "facing": 100
+  },
+  {
    "x": 13.45,
    "y": 27.6,
    "type": "ladder",
