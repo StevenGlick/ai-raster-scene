@@ -124,7 +124,7 @@ A city block drawn as walls is one flat face with windows painted on. Give the b
 | drape | further back | curtains, a roller blind, closed shutters, a net curtain or nothing - a different choice in every window |
 | room | furthest back | the rooms: lit (a lamp-lit glow, now and then a screen's blue) or dark, with a lamp, a picture, a shelf, a plant or a figure |
 
-So a window is set back in its wall, the glass sits in it, the curtains hang behind the glass and the room is further back, and as the camera moves they slide against each other.
+So a window is set back in its wall, the glass sits in it, the curtains hang behind the glass and the room is further back, and as the camera moves they slide against each other. The wall is drawn as thick as the frames are set back in it (a `reveal`, see Planar sprites), so from an angle each window and door shows its far side - the brick jamb, the underside of the lintel, the sill - and never a gap into the room.
 
 ```json
 "B": {"wall": "brick_dark", "h": 3.0,
@@ -356,6 +356,7 @@ Add any of the keys below and fog becomes **volumetric**. Each pixel marches thr
 | `angle` | from its position | for a planar sprite: the compass direction the (first) card runs along |
 | `length` | its image's width | for a single card: its length in world units; the image repeats along it |
 | `u0` | `0` | for a card: where along its image it starts, 0-1 |
+| `reveal` | none | for a card with see-through openings: how thick it is, in world units, so an opening seen at an angle shows its far side (see Planar sprites) |
 
 ### Planar sprites: crosses, stars and cards
 
@@ -368,6 +369,7 @@ A billboard turns to face the camera, so a bush is the same flat picture from ev
 ```
 - Each plane is depth-tested per pixel against everything else, its partners in a cross included, and lit by the lights and the sun at its own points, both faces alike.
 - `planes: 1` with a `length` is a card: a long strip of scenery, its image repeating along it. Fringes are made of these (see Fringe).
+- A card is as thin as paper: look through a hole in one at an angle and you see straight past its edge. Give it a `reveal` (a depth in world units) and it is drawn as a slab that thick instead: through each see-through opening, seen at an angle, the opening's far side shows - the jamb, the head above it, the sill below - in the colours of the card just past the opening's edge, darker the deeper it goes and lit by its own facing (a jamb turned to the sun is lit where the light gets in through the opening). The walls of a `facade` are drawn this way.
 - Without an `angle`, each takes one from its position, so a bed of ferns is not all aligned. In a prefab, `angle` turns with the prefab.
 - Trees that lean (`palm_lean`) and anything with a front (people, furniture) stay billboards: a leaning trunk crossed with itself leans three ways at once. Mix the two in a prefab instead: `palm_3d` is a billboard trunk under a star of `palm_crown` planes.
 

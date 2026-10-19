@@ -77,6 +77,7 @@ SHOTS = {
     'ruins_night': ('ancient_ruins', 4),
     'beach_sunset': ('tropical_beach', 1),
     'beach_pier': ('tropical_beach', 2),
+    'beach_day': ('tropical_beach', 3),
     'beach_night': ('tropical_beach', 4),
     'gui_hud': ('gui_hud', 1),
     'gui_lantern': ('gui_lantern', 1),

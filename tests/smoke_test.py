@@ -870,7 +870,29 @@ def check_glass_facades():
     pane, _ = buildings.layer_image(buildings.layer_name('glass', **params))
     holes = wall[..., 3] < 0.5
     assert holes.any() and (pane[..., 3][holes] > 0.5).mean() > 0.6, 'the glass must sit in the openings'
-    print('ok glass pass (tint, blur), facades (buildings, layers, corners, side walls)')
+
+    # 6. the wall is as thick as the frames are set back in it, and a card with `reveal` shows the
+    # far side of its openings from an angle - nearer than what was seen through them, from
+    # either side - while its own face is untouched
+    al = np.ones((6, 8))
+    al[2:4, 3:6] = 0
+    assert [int(r_[3, 4]) for r_ in R.hole_runs(al)] == [3, 6, 2, 4]
+    gap = max(order['wall']) - max(order['frame'])
+    assert all(gap <= sp['reveal'] < gap + 0.05 for sp in R.World(street).fringe_sprites if '"layer":"wall"' in sp['type'])
+    card = {'x': 4.5, 'y': 3.0, 'type': buildings.layer_name('wall', **params), 'planes': 1, 'angle': 0,
+            'length': 5.0, 'scale': 4.0}
+    yard = dict(room, map=['#' * 9] + ['#.......#'] * 8 + ['#' * 9])
+
+    def depth_of(scene, cam):
+        r = R.Renderer(R.World(scene), scene)
+        r.render(R.prepare_shot(scene, R.merge_camera(scene, cam)))
+        return r.depth.copy()
+    for cam in ({'x': 1.6, 'y': 7.4, 'angle': 312, 'fov': 70}, {'x': 7.4, 'y': 7.4, 'angle': 228, 'fov': 70}):
+        flat = depth_of(dict(yard, sprites=[card]), cam)
+        thick = depth_of(dict(yard, sprites=[dict(card, reveal=0.2)]), cam)
+        assert (thick < flat - 1e-4).sum() > 200, 'an opening seen at an angle must show its far side'
+        assert (thick <= flat + 1e-6).all(), 'the sides of an opening never push anything further away'
+    print('ok glass pass (tint, blur), facades (buildings, layers, corners, side walls, reveals)')
 
 
 def check_docs():

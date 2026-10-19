@@ -771,11 +771,12 @@ The environments, judged on their gallery images and shots.
 |---|---|---|---|---|
 | `jungle_temple` | good | 4 | jungle_path, jungle_temple, jungle_jaguar, jungle_canopy | The canopy from the pyramid top still shows hedge-like steps up close. |
 | `ancient_ruins` | good | 4 | ruins_way, ruins_head, ruins_night | The cella shot could use shafts of light through the columns. |
-| `tropical_beach` | good | 4 | beach_sunset, beach_pier, beach_night |  |
+| `tropical_beach` | good | 4 | beach_sunset, beach_pier, beach_day, beach_night |  |
 
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, reveals.** A card can have a `reveal` (a thickness): through its openings, seen at an angle, it draws their far sides - jamb, head, sill - folded from its own colours and lit by their own facing, with the wall's shadow in them. Facade walls use it, so a window or door seen from the pavement shows its brick sides instead of a sliver of the lit room behind.
 - **2026-10-19, glass and facades.** A glass pass: panes drawn after everything else, showing what is behind them through the frame shrunk to half size and blown back up (a cheap blur), tinted light blue, under a faint reflection. Building `facade`s: a block's fronts cut into separate buildings of varied height, brick and paint, each in five layers - wall, frames, glass, drapes, rooms - so windows have depth. Rain alley rebuilt as a wider street with a road, pavements and a T-junction.
 - **2026-10-19, planes, fringe and prefabs.** Sprites can stand as fixed planes in the world: one card, a cross of two or a star of three, and the low plants do so by default. A `fringe` wall stands layered foliage cards in front of its open faces (four jungle cards, sparse to dense). Prefabs place named groups - sprites, lights, decals, scatter, nested prefabs and patches of map - with one line; 13 built-ins. The jungle temple was rebuilt round the fringe; the beach and the ruins use prefabs.
 - **2026-10-19, jungle, ruins and beach.** A pixel-art toolkit (`scripts/pixelart.py`: shapes in a height field, one light, hue-shifted ramps, shadow-side outlines) and `scripts/biomes.py`, drawn with it: 23 textures, 31 props (5 of them hand-drawn animals), 6 decals, 3 characters, the `sunset` and `golden` skies, the `islands` and `jungle` skylines, three scatter sets and three scenes. `palm`, `column`, `fern`, `grass_tuft` and `rocks` were redrawn the same way.

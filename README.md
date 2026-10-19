@@ -2,23 +2,43 @@
 
 [![smoke](https://github.com/StevenGlick/ai-raster-scene/actions/workflows/smoke.yml/badge.svg)](https://github.com/StevenGlick/ai-raster-scene/actions/workflows/smoke.yml)
 
-**90s game pictures from a text file.** A tiny software raycaster in Python with a Doom/Wolfenstein/Build-engine look, plus everything that makes a frame read as a real game screen: pixel-art characters, translucent ghosts, a full retro GUI toolkit (dialog, choice menus, HUDs, inventories, title cards) and post-processing (CRT, VHS, Game Boy, night vision, rain, film looks).
+**90s game pictures from a text file.** A tiny software raycaster in Python with a Doom/Wolfenstein/Build-engine look, plus everything that makes a frame read as a real game screen: rain-soaked streets whose windows have depth behind glass, layered jungle, fog and sunbeams, reflections in wet stone and water, pixel-art characters and translucent ghosts, a full retro GUI toolkit (dialog, choice menus, HUDs, inventories, title cards) and post-processing (CRT, VHS, Game Boy, night vision, rain, film looks).
 
 It ships as a Claude skill and works as Claude's retro imagination: ask for a picture of a place, a moment or a game screen, and Claude builds the scene, renders it, looks at the result, iterates, then hands you the image. It also works as a plain command-line tool.
 
-![A security officer stops you in the garden](docs/gallery/garden_01.png)
-
-| | |
-|---|---|
-| ![Ghost in the ward corridor](docs/gallery/corridor_03.png) | ![The spiritualist's offer](docs/gallery/library_medium.png) |
-| ![Something in the flashlight](docs/gallery/tunnel_01.png) | ![Ghost, guard and cultists in the garden](docs/gallery/garden_02.png) |
-| ![Hospital garden skyline](docs/gallery/hospital_garden_01.png) | ![Underground waterway dock](docs/gallery/waterway_01.png) |
+![Sunset down the sacred way, between broken columns, to the temple on the headland](docs/gallery/ruins_way.png)
 
 *Every image on this page is rendered straight from a scene file in [`examples/`](examples/) - no hand-painted assets anywhere.*
 
-## Settings
+## City streets
 
-Interiors, streets, woodland, coast, castles, chapels, caves, sewers, snow, jungle temples, ancient ruins, tropical beaches, starships, alien worlds and dreams, all from the same renderer and the same built-in materials.
+Give a block of buildings a `facade` and its fronts become a row of separate buildings, each drawn in layers - brick with its openings, frames and glass, curtains and blinds, lit or dark rooms - so the windows have depth, and the wall has its thickness: from the pavement every window and door shows its sides and sill. The glass shows what is behind it, tinted and softly blurred.
+
+| | |
+|---|---|
+| ![A rain-soaked city street at night, running up to a T-junction, every building different](docs/gallery/alley_street.png) | ![An officer walking away up the street under the lamps](docs/gallery/alley_rain.png) |
+| ![Windows set back in their walls, curtains and rooms behind glass, a shop window blurred and tinted](docs/gallery/alley_glass.png) | ![Lightning over the junction, a lit shopfront across the street](docs/gallery/alley_storm.png) |
+
+## Jungle, ruins and the beach
+
+| | |
+|---|---|
+| ![A stepped pyramid mirrored in a long pool, giant trees standing over the canopy](docs/gallery/jungle_temple.png) | ![An explorer on the top of the pyramid, looking out over the canopy](docs/gallery/jungle_canopy.png) |
+| ![A jaguar guarding the stairs up to the shrine](docs/gallery/jungle_jaguar.png) | ![The path in, under the canopy, an explorer ahead in the mist](docs/gallery/jungle_path.png) |
+| ![Midday on the beach, a crab on the sand, palms and the hut along the shore](docs/gallery/beach_day.png) | ![A fallen marble head among the poppies, the colonnade behind](docs/gallery/ruins_head.png) |
+| ![The lagoon at sunset, a castaway at the water's edge](docs/gallery/beach_sunset.png) | ![The hut and the palms mirrored in the lagoon, from the end of the pier](docs/gallery/beach_pier.png) |
+| ![The temple by moonlight, a fire on the altar](docs/gallery/ruins_night.png) | ![Glowing surf on the beach at night, a fire on the sand](docs/gallery/beach_night.png) |
+
+## Fog, light and weather
+
+| | |
+|---|---|
+| ![A stone circle at dawn, mist lying low, a knight seen from behind](docs/gallery/moor_dawn.png) | ![The low sun through the stones](docs/gallery/moor_circle.png) |
+| ![A sunbeam through the fallen roof of a cathedral](docs/gallery/cathedral_beam.png) | ![A pilgrim standing in the light](docs/gallery/cathedral_pilgrim.png) |
+
+## More settings
+
+Woodland, towns, coast, bunkers, castles, chapels, caves, sewers and snow - all from the same renderer and the same built-in materials.
 
 | | |
 |---|---|
@@ -40,24 +60,17 @@ Interiors, streets, woodland, coast, castles, chapels, caves, sewers, snow, jung
 | ![A landing site under a gas giant](docs/gallery/alien_landing.png) | ![The monolith and the one who waits by it](docs/gallery/alien_monolith.png) |
 | ![A staircase to nowhere on an island in the sky](docs/gallery/dream_stair.png) | ![Koi over a mirror lake](docs/gallery/dream_mirror.png) |
 
-## Jungle, ruins and the beach
+## Encounters
+
+Ghosts, guards and things in the dark, with the GUI doing the talking.
+
+![A security officer stops you in the garden](docs/gallery/garden_01.png)
 
 | | |
 |---|---|
-| ![A stepped pyramid mirrored in a long pool, giant trees standing over the canopy](docs/gallery/jungle_temple.png) | ![An explorer on the top of the pyramid, looking out over the canopy](docs/gallery/jungle_canopy.png) |
-| ![A jaguar guarding the stairs up to the shrine](docs/gallery/jungle_jaguar.png) | ![The path in, under the canopy, an explorer ahead in the mist](docs/gallery/jungle_path.png) |
-| ![Sunset down the sacred way, between columns, to the temple on the headland](docs/gallery/ruins_way.png) | ![A fallen marble head among the poppies, the colonnade behind](docs/gallery/ruins_head.png) |
-| ![The lagoon at sunset, a castaway at the water's edge](docs/gallery/beach_sunset.png) | ![The hut and the palms mirrored in the lagoon, from the end of the pier](docs/gallery/beach_pier.png) |
-| ![The temple by moonlight, a fire on the altar](docs/gallery/ruins_night.png) | ![Glowing surf on the beach at night, a fire on the sand](docs/gallery/beach_night.png) |
-
-## Fog, light and weather
-
-| | |
-|---|---|
-| ![A stone circle at dawn, mist lying low, a knight seen from behind](docs/gallery/moor_dawn.png) | ![The low sun through the stones](docs/gallery/moor_circle.png) |
-| ![A sunbeam through the fallen roof of a cathedral](docs/gallery/cathedral_beam.png) | ![A pilgrim standing in the light](docs/gallery/cathedral_pilgrim.png) |
-| ![A rain-soaked city street at night, running up to a T-junction, every building different](docs/gallery/alley_street.png) | ![An officer walking away up the street under the lamps](docs/gallery/alley_rain.png) |
-| ![Windows set back in their walls, curtains and rooms behind glass, a shop window blurred and tinted](docs/gallery/alley_glass.png) | ![Lightning over the junction, a lit shopfront across the street](docs/gallery/alley_storm.png) |
+| ![Ghost in the ward corridor](docs/gallery/corridor_03.png) | ![The spiritualist's offer](docs/gallery/library_medium.png) |
+| ![Something in the flashlight](docs/gallery/tunnel_01.png) | ![Ghost, guard and cultists in the garden](docs/gallery/garden_02.png) |
+| ![Hospital garden skyline](docs/gallery/hospital_garden_01.png) | ![Underground waterway dock](docs/gallery/waterway_01.png) |
 
 ## Ask Claude
 
@@ -80,7 +93,7 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **Sprites**: 123 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 21-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
 - **Planar sprites**: a plant can stand as fixed planes in the world instead of a billboard - a cross of two, or a star of three that cuts the ground round it into sixths - so it has body as the camera moves; the low plants do by default, and a prefab can mix billboards and planes (a billboard palm trunk under a star of fronds)
 - **Layered forest edges**: give the walls of a jungle a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth
-- **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves
+- **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
 - **Glass**: a pass of its own after everything else, showing what is behind each pane tinted and softly blurred - the frame shrunk to half size and blown back up without smoothing - under a faint reflection
 - **Prefabs**: named groups placed with one line - a campsite with its light, a palm grove, a beach hut with its walls, door, window, roof and torches - turned, scaled and varied by seed; scenes can define their own
 - **Procedural scatter**: declare debris by set, density and size class and the loader expands it into hundreds of placed props, clumped by a noise field so it drifts and leaves bare patches instead of spreading evenly - and never piles up on a camera or in front of a speaker

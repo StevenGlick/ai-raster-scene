@@ -11,7 +11,9 @@ of a building's walls, each building on the street with its own images:
     room    the rooms behind: lit or dark, a lamp, a picture, a shelf, now and then a figure
 
 so a window has a reveal, the glass sits in it, the curtains hang behind the glass and the room
-is further back still, and as the camera moves the layers slide against each other.
+is further back still, and as the camera moves the layers slide against each other. The wall is
+drawn as thick as the frames are set back in it (the renderer's `reveal`), so from an angle an
+opening shows its brick jamb, the underside of its lintel and its sill, not a gap.
 
 Every building has two seeds. Its `look` - colour, height, frame paint, whether it keeps a
 shop - is shared by both faces of a corner building, so it turns the corner whole; its `seed`

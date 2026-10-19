@@ -455,6 +455,8 @@ class World:
                                   flip=d in 'ne')                 # read left to right from the street
                     if layer == 'glass':
                         fields['glass'] = spec.get('glass', True)
+                    if layer == 'wall':                   # as thick as the frames are set back in it
+                        fields['reveal'] = depth * (1.0 - dict(self.FACADE_LAYERS)['frame']) + 0.004
                     out.append(self._card(d, line, s0, s1, depth * frac, **fields))
             # a taller building shows its side wall above a lower neighbour
             for i in range(len(spans) - 1):
@@ -850,6 +852,22 @@ def glass_spec(g):
     return out
 
 
+def hole_runs(alpha):
+    """For every see-through texel of an image, the run of see-through texels it lies in: its
+    left and right ends along the row, and its top and bottom down the column (ends exclusive).
+    For a rectangular opening that is the opening, which is how a card with `reveal` finds the
+    sides of its windows."""
+    clear = alpha < 0.5
+    h, w = clear.shape
+    xs = np.broadcast_to(np.arange(w), (h, w))
+    ys = np.broadcast_to(np.arange(h)[:, None], (h, w))
+    left = np.maximum.accumulate(np.where(clear, -1, xs), axis=1) + 1
+    right = np.minimum.accumulate(np.where(clear, w, xs)[:, ::-1], axis=1)[:, ::-1]
+    top = np.maximum.accumulate(np.where(clear, -1, ys), axis=0) + 1
+    bottom = np.minimum.accumulate(np.where(clear, h, ys)[::-1], axis=0)[::-1]
+    return left, right, top, bottom
+
+
 def frost(img, k):
     """The frame shrunk by k - each k x k block averaged - and blown back up without smoothing:
     a blocky blur, the look of a scene through old window glass."""
@@ -980,6 +998,7 @@ class Renderer:
         self.discs = [s_['disc'] for s_ in self.suns if s_['disc']]
         self.sky_objects = list(scene.get('sky_objects') or [])
         self._skies = {}
+        self._runs = {}
         sn = scene.get('surface_noise', SURFACE_NOISE_DEFAULT)
         by_texture = {}
         if isinstance(sn, dict):
@@ -1958,7 +1977,12 @@ class Renderer:
                 alpha = (alpha > 0.5).astype(np.float32)
             dsub = depth[r0:r1, cols]
             mask = inside & (alpha > 0.02) & (t[None, :] < dsub)
-            if not mask.any():
+            rv = None
+            if sp.get('reveal') and glass is None and not is_trans:
+                rv = self._reveal(sp, rgba, (x0, y0, x1, y1, rep_), rows, cols, t, s_, v, vv, uu,
+                                  inside & (block[..., 3] < 0.5) & (t[None, :] < dsub), dsub,
+                                  horizon, proj, camz, flash, rays)
+            if not mask.any() and rv is None:
                 continue
             wx, wy = px + rdx[cols] * t, py + rdy[cols] * t
             dyn = sample_lm(self.lm, self.lres, wx, wy)
@@ -1985,12 +2009,94 @@ class Renderer:
             img[r0:r1, cols] = sub + colr * a if additive else sub * (1 - a) + colr * a
             if not is_trans:
                 depth[r0:r1, cols] = np.where(mask, t[None, :], dsub)
+            if rv is not None:
+                ri, ci, rcol, rt = rv
+                img[r0 + ri, cols[ci]] = rcol
+                depth[r0 + ri, cols[ci]] = rt
             if named:
                 seen[r0:r1, cols] |= mask & (alpha > 0.5)
         if named and seen.any():
             ys_, xs_ = np.nonzero(seen)
             y0_, y1_, x0_, x1_ = ys_.min(), ys_.max() + 1, xs_.min(), xs_.max() + 1
             self._named[sp['id']]['box'] = (y0_, y1_, x0_, x1_, seen[y0_:y1_, x0_:x1_])
+
+    def _reveal(self, sp, rgba, quad, rows, cols, t, s_, v, vv, uu, cand, dsub, horizon, proj, camz, flash, rays):
+        """The inner sides of a card's openings, for a card with `reveal` (a depth): the card is
+        drawn as a slab that thick, so through an opening seen at an angle its far side shows -
+        the jamb, the head over it, the sill under it - not whatever stands behind the wall.
+
+        A ray going in through a see-through texel runs on behind the card; if it leaves that
+        opening (the run of clear texels it is in, across and down) before it is `reveal` deep,
+        it stops on that side. The side takes its colour from the card just past the opening's
+        edge, read on round the corner as brickwork turns it, darker the deeper it goes, and its
+        light from its own facing: a jamb turned to the sun is lit where the light could come in
+        through the opening, and the head and the wall's edges shade the rest. Returns (rows,
+        columns, colours, depths) of the pixels it covers, or None.
+        """
+        ri, ci = np.nonzero(cand)
+        if ri.size == 0:
+            return None
+        x0, y0, x1, y1, rep_ = quad
+        rdx, rdy, rlen = rays
+        th, tw = rgba.shape[:2]
+        hs = float(sp.get('scale', 1.0))
+        deep = float(sp['reveal'])
+        if id(rgba) not in self._runs or self._runs[id(rgba)][0] is not rgba:
+            self._runs[id(rgba)] = (rgba, hole_runs(rgba[..., 3]))
+        lft, rgt, top, bot = (r_[vv[ri, ci], uu[ci]] for r_ in self._runs[id(rgba)][1])
+        lq = math.hypot(x1 - x0, y1 - y0) or 1.0
+        ax, ay = (x1 - x0) / lq, (y1 - y0) / lq           # along the card
+        nx, ny = -ay, ax                                   # across it
+        c = cols[ci]
+        rx, ry = rdx[c], rdy[c]
+        k = np.abs(rx * nx + ry * ny)                      # how fast the ray goes in, per unit of t
+        flip = -1.0 if sp.get('flip') else 1.0
+        tpu = tw * rep_ / lq                               # texels per unit along the card
+        du = (rx * ax + ry * ay) * tpu * flip              # texels across, per unit of t
+        su = float(sp.get('u0', 0.0)) + s_[ci] * rep_
+        uc = (su - np.floor(su)) * tw
+        if flip < 0:
+            uc = tw - uc
+        vc = v[ri, ci] * th
+        dv = -(horizon - (rows[ri] + 0.5)) / proj * th / hs   # texels down, per unit of t
+        with np.errstate(divide='ignore', invalid='ignore'):
+            d_u = np.where(du > 0, (rgt - uc) / du, np.where(du < 0, (lft - uc) / du, np.inf))
+            d_v = np.where(dv > 0, (bot - vc) / dv, np.where(dv < 0, (top - vc) / dv, np.inf))
+        d = np.maximum(np.minimum(d_u, d_v), 0.0)
+        tt = t[ci] + d
+        keep = np.nonzero((d * k < deep) & (tt < dsub[ri, ci]))[0]
+        if keep.size == 0:
+            return None
+        ri, ci, c, rx, ry, k, du, dv, d, tt = (a_[keep] for a_ in (ri, ci, c, rx, ry, k, du, dv, d, tt))
+        uc, vc, d_u, d_v, lft, rgt, top, bot = (a_[keep] for a_ in (uc, vc, d_u, d_v, lft, rgt, top, bot))
+        jamb = d_u <= d_v
+        e = d * k                                          # how deep in the side is met
+        uh, vh = uc + du * d, vc + dv * d
+        fold = np.floor(e * th / hs).astype(int)
+        tu = np.where(jamb, np.where(du > 0, rgt + fold, lft - 1 - fold), np.floor(uh).astype(int))
+        tv = np.where(jamb, np.floor(vh).astype(int), np.where(dv < 0, top - 1 - fold, bot + fold))
+        alb = rgba[tv.clip(0, th - 1), tu.clip(0, tw - 1), :3] * (1 - 0.4 * e / deep)[:, None]
+        wx, wy = self._px + rx * tt, self._py + ry * tt
+        Z = (horizon - (rows[ri] + 0.5)) * tt / proj + camz
+        ed = tt * rlen[c]
+        sun = 0.0
+        if self.suns:
+            go = np.sign(rx * ax + ry * ay)                # the way the ray runs along the card
+            cam = -np.sign(rx * nx + ry * ny)              # the side of the card the camera is on
+
+            def lam(s2):
+                # a jamb faces back the way the ray came, a sill up, a head down (no sun)
+                face = np.where(jamb, s2['cos'] * np.maximum(0.0, -go * (ax * s2['ux'] + ay * s2['uy'])),
+                                np.where(dv > 0, s2['sin'], 0.0))
+                # follow the light back out to the face of the card: did it come in by this opening?
+                out = s2['cos'] * cam * (nx * s2['ux'] + ny * s2['uy'])
+                back = e / np.maximum(out, 1e-6)
+                uw = uh + s2['cos'] * (ax * s2['ux'] + ay * s2['uy']) * tpu * flip * back
+                vw = vh - s2['sin'] * back * th / hs
+                return face * ((out > 1e-6) & (uw >= lft) & (uw <= rgt) & (vw >= top) & (vw <= bot))
+            sun = self.sun_at(wx, wy, Z, lam)
+        col = self.shade(alb, sample_lm(self.lm, self.lres, wx, wy), Z, ed, None, flash(rows[ri], c, ed), sun)
+        return ri, ci, col, tt
 
     def _aura(self, img, depth, alpha, cx0, cy0, ty, aura, pw):
         """Soft additive glow around a sprite's silhouette (ghosts, spirits, magic)."""
