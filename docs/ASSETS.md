@@ -21,13 +21,13 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 147 | 141 | 6 | 0 | 0 |
-| Props | 208 | 205 | 3 | 0 | 0 |
+| Textures | 148 | 142 | 6 | 0 | 0 |
+| Props | 212 | 209 | 3 | 0 | 0 |
 | Characters | 27 | 25 | 2 | 0 | 0 |
-| Decals | 24 | 19 | 5 | 0 | 0 |
+| Decals | 25 | 20 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
 | Skylines | 6 | 5 | 1 | 0 | 0 |
-| Sky objects | 6 | 6 | 0 | 0 | 0 |
+| Sky objects | 7 | 7 | 0 | 0 | 0 |
 | Scatter sets | 18 | 18 | 0 | 0 | 0 |
 | Fringe sets | 6 | 6 | 0 | 0 | 0 |
 | Facade styles | 6 | 5 | 1 | 0 | 0 |
@@ -38,8 +38,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 16 | 16 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 46 | 39 | 7 | 0 | 0 |
-| **all** | **600** | **569** | **31** | **0** | **0** |
+| Example scenes | 47 | 40 | 7 | 0 | 0 |
+| **all** | **608** | **577** | **31** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -53,7 +53,7 @@ Weakest first, and in the order the new scenes need them.
 5. **Small things.** The hands on the held items, the `stain`, `stain_rust` and `moss_patch` decals, the `child` and `dreamer` characters, the `city` skyline, `alien_rock`, `alien_ground`, and the `glowshroom` and `alien_egg` props.
 6. **Second look.** Every asset marked good, checked again on the review sheets and in its scenes, with fresh eyes and the new techniques in hand.
 
-## Textures (147)
+## Textures (148)
 
 64x64 tiles, drawn in code. "glows" means the texture lights itself (windows, screens, runes), "see-through" that the map shows through its holes, "mirror" that floors made of it reflect.
 
@@ -77,7 +77,7 @@ Weakest first, and in the order the new scenes need them.
 | `concrete` | good |  | bunker_lab, garden_encounter, gui_lantern, gui_menus, hospital_garden, post_presets, sewer_tunnels, tunnel_encounter, underground_waterway |  |
 | `marble` | good |  | cathedral_ruin, chapel_graveyard, dream_chess, dream_world, gui_themes, gui_trade, library_medium, mansion_library |  |
 | `marble_dark` | good |  | - | Redrawn with the toolkit in basics.py: dark slabs with long, thin, continuous veins of white and grey drifting across them. |
-| `rock` | good |  | castle_keep, coast_lighthouse, crystal_cave, garden_encounter, gui_lantern, gui_menus, hospital_garden, kelp_forest, post_presets, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: masses of every size, each a facet tilted to the light, split by crevices that wander, widen and close; finer cracks, grain. |
+| `rock` | good |  | castle_keep, coast_lighthouse, crystal_cave, garden_encounter, gui_lantern, gui_menus, hospital_garden, kelp_forest, moon_base, post_presets, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: masses of every size, each a facet tilted to the light, split by crevices that wander, widen and close; finer cracks, grain. |
 | `rock_wet` | good |  | crystal_cave, gui_lantern, kelp_forest, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: the same rock darker and blue-grey, with glints of water where the faces catch the light. |
 | `snow_rock` | good |  | winter_lake | Redrawn with the toolkit in basics.py: faceted rock with snow lying on the top of every mass, thick on the flats, and drifted in the crevices. |
 | `sky_wall` | good |  | dream_chess, dream_world |  |
@@ -150,6 +150,7 @@ Weakest first, and in the order the new scenes need them.
 | `pine_needles` | good |  | woodland_night | Redrawn with the toolkit in forest.py: criss-crossed needle litter over dark soil, a few green needles, cones and twigs. |
 | `leaves_fallen` | good |  | autumn_lane | Drawn with the toolkit in forest.py: leaves lying flat over dark earth, each its own colour - orange, gold, rust, brown, a few green - grass where they lie thin. |
 | `alien_ground` | polish |  | alien_world | Crystal flecks are uniform white specks; vary size and tint. |
+| `regolith` | good |  | moon_base | Drawn with the toolkit in moon.py: grey dust with craters - a rim lit toward the sun, a dark bowl - and thrown-out rocks. |
 | `alien_rock` | polish | glows | alien_world | Veins too thick and dense; the repeat shows when tiled. |
 | `organic` | good |  | derelict_ship |  |
 | `cloud_floor` | good |  | - |  |
@@ -170,7 +171,7 @@ Weakest first, and in the order the new scenes need them.
 | `carpet_green` | good |  | - |  |
 | `flagstone` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, haunted_house, neon_street, rain_alley |  |
 | `obsidian` | good | mirror 0.45 | dream_world, space_station |  |
-| `concrete_floor` | good |  | 46 scenes |  |
+| `concrete_floor` | good |  | 47 scenes |  |
 | `rock_floor` | good |  | crystal_cave, gui_lantern, kelp_forest, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: flatter, smaller masses in brown with grit in the cracks. |
 
 ### Ceilings
@@ -264,7 +265,7 @@ Weakest first, and in the order the new scenes need them.
 | `bamboo` | polish |  | tropical_beach | The nodes still line up into a grid across the poles. |
 | `thatch` | polish |  | tropical_beach | The rows could be clearer, each with a shadow under its fringe. |
 
-## Props (208)
+## Props (212)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -344,7 +345,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `cypress_knees` | good | 0.3 tall | bayou | Drawn with the toolkit in swamp.py: knobbly cones of root standing out of the water. |
 | `cattails` | good | 1 tall | bayou | Drawn with the toolkit in swamp.py: long blades and stems with brown velvet heads. |
 | `kelp` | good | 5 tall | kelp_forest | Drawn with the toolkit in sea.py: a swaying stipe from its holdfast, long golden blades streaming off small floats, a tangle at the top. |
-| `rocks` | good | 0.22 tall | alien_world, ancient_ruins, bunker_lab, cathedral_ruin, chapel_graveyard, coast_lighthouse, crystal_cave, derelict_ship, ghost_town, kelp_forest, misty_moor, rainy_street, red_canyon, sewer_tunnels, tropical_beach, winter_lake, winter_woods, woodland_night | Redrawn: half-sunk stones with lit tops and the odd crack. |
+| `rocks` | good | 0.22 tall | alien_world, ancient_ruins, bunker_lab, cathedral_ruin, chapel_graveyard, coast_lighthouse, crystal_cave, derelict_ship, ghost_town, kelp_forest, misty_moor, moon_base, rainy_street, red_canyon, sewer_tunnels, tropical_beach, winter_lake, winter_woods, woodland_night | Redrawn: half-sunk stones with lit tops and the odd crack. |
 | `snowy_pine` | good | 3.4 tall | winter_lake, winter_woods | Drawn with the toolkit in forest.py: the new spruce with snow lying in clumps along every tier's shoulders, crumbs on the hems and a small cap on the leader; dark needles between, so it still reads at a distance. |
 | `boulder_snow` | good | 0.55 tall | winter_lake, winter_woods | Drawn with the toolkit in forest.py: the boulder under a cushion of snow, deep where the top is flat and thin down the steep sides; in the `snow` scatter set. |
 | `stump` | good | 0.3 tall | tropical_beach, woodland_night | Redrawn with the toolkit in forest.py: a pale ringed cut face, furrowed sides, roots, a cushion of moss. |
@@ -393,11 +394,15 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
-| `antenna` | good | 2.4 tall, glows | alien_world |  |
+| `antenna` | good | 2.4 tall, glows | alien_world, moon_base |  |
 | `drone` | good | 0.22 tall, glows, no shadow | orbital_hangar, space_station |  |
 | `hologram` | good | 0.55 tall, glows, aura, no shadow | orbital_hangar, space_station |  |
-| `lander` | good | 1.6 tall, glows | alien_world |  |
-| `sci_crate` | good | 0.35 tall, glows | derelict_ship, neon_street, orbital_hangar, space_station |  |
+| `lander` | good | 1.6 tall, glows | alien_world, moon_base |  |
+| `dome` | good | 2.6 tall, glows, aura | moon_base | Drawn with the toolkit in moon.py: a geodesic frame of white struts over glass, rows of plants under pink grow lights, an airlock; glows. |
+| `hab_module` | good | 1.3 tall, glows | moon_base | Drawn with the toolkit in moon.py: a ribbed white cylinder on legs, lit portholes, an end hatch, a radiator fin. |
+| `solar_array` | good | 1.4 tall | moon_base | Drawn with the toolkit in moon.py: dark-blue cells in a silver frame tilted on a mast, a cable down. |
+| `rover` | good | 0.8 tall | moon_base | Drawn with the toolkit in moon.py: a white chassis on six wire-mesh wheels, two seats, a dish on a mast, a foil-wrapped box. |
+| `sci_crate` | good | 0.35 tall, glows | derelict_ship, moon_base, neon_street, orbital_hangar, space_station |  |
 | `stasis_pod` | good | 1 tall, glows | derelict_ship |  |
 | `shuttle` | good | 2.2 tall, glows | orbital_hangar | Drawn with the toolkit in scifi.py: nose-on wedge hull in white and orange, lit cockpit and engine pods, landing legs, panel lines and vents. |
 | `cargo_container` | good | 1.2 tall | orbital_hangar | Drawn with the toolkit in scifi.py: corrugated orange steel, corner castings, door rods, rust streaking down the ribs. Tint for other colours. |
@@ -555,7 +560,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `creature` | good | castle_keep, crystal_cave |  |
 | `robot` | good | crystal_cave |  |
 | `shopkeeper` | good | ghost_town, neon_street, village_green |  |
-| `astronaut` | good | alien_world, orbital_hangar, space_station |  |
+| `astronaut` | good | alien_world, moon_base, orbital_hangar, space_station |  |
 | `android` | good | neon_street, orbital_hangar, space_station |  |
 | `alien` | good | alien_world, derelict_ship | A familiar archetype; could be made stranger. |
 | `dreamer` | polish | dream_chess, dream_world, drowned_library | The face reads as open-eyed; a sleepwalker wants closed eyes. |
@@ -570,7 +575,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `farmer` | good | village_green | A straw hat, plaid shirt and blue overalls, a pitchfork taller than him. |
 | `pirate` | good | bayou | A gold-edged tricorn, an eye patch and beard, a red coat with gold buttons, a cutlass. |
 
-## Decals (24)
+## Decals (25)
 
 Stamps blended into floors, walls and ceilings. `grime` stamps some of them on its own, and `contact_shadow` goes under every prop that stands on the ground.
 
@@ -591,8 +596,9 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `cobweb` | good | bunker_lab, castle_keep |  |
 | `rune_mark` | good | - |  |
 | `drain` | good | bunker_lab, neon_street, rainy_street, sewer_tunnels |  |
-| `contact_shadow` | good | 46 scenes |  |
-| `pad_marking` | good | orbital_hangar | A painted landing ring with an H and a dashed outer ring, worn in patches. |
+| `contact_shadow` | good | 47 scenes |  |
+| `pad_marking` | good | moon_base, orbital_hangar | A painted landing ring with an H and a dashed outer ring, worn in patches. |
+| `rover_tracks` | good | moon_base | Drawn with the toolkit in moon.py: two tracks of chevron treads pressed into dust. |
 | `hazard_stripe` | good | orbital_hangar | A band of yellow and black diagonal stripes, worn through in places. |
 
 ### Shore and pool
@@ -616,7 +622,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `day` | good | cathedral_ruin, ghost_town, jungle_temple, kelp_forest, red_canyon, tropical_beach, village_green, winter_lake, winter_woods |  |
 | `overcast` | good | winter_woods |  |
 | `blood` | good | - |  |
-| `space` | good | orbital_hangar, space_station |  |
+| `space` | good | moon_base, orbital_hangar, space_station |  |
 | `alien` | good | alien_world |  |
 | `dream` | good | dream_chess, dream_world, drowned_library |  |
 | `sunset` | good | bayou, ghost_town, red_canyon, tropical_beach |  |
@@ -633,13 +639,14 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `islands` | polish | ancient_ruins, tropical_beach | In haze an island and its reflection can read as a saucer floating on the horizon. |
 | `jungle` | good | jungle_temple |  |
 
-## Sky objects (6)
+## Sky objects (7)
 
 | object | status | used in | notes |
 |---|---|---|---|
 | `planet` | good | - |  |
 | `ringed` | good | alien_world, orbital_hangar, space_station |  |
 | `moon` | good | alien_world, dream_chess, dream_world, drowned_library, orbital_hangar, space_station |  |
+| `earth` | good | moon_base | Oceans, green and desert continents and cloud from noise mapped onto the sphere, polar ice, a blue limb; the night side dark. |
 | `sun` | good | orbital_hangar, space_station |  |
 | `eye` | good | dream_world |  |
 | `clock` | good | dream_chess | A cream face in a dark rim, twelve ticks, two hands set by `time`, its bottom running like wax (`melt`). |
@@ -761,7 +768,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 
 | theme | status | used in | notes |
 |---|---|---|---|
-| `classic` | good | 40 scenes |  |
+| `classic` | good | 41 scenes |  |
 | `parchment` | good | gui_themes, gui_trade |  |
 | `terminal` | good | bunker_lab, gui_themes, orbital_hangar, space_station |  |
 | `blood` | good | gui_themes |  |
@@ -773,7 +780,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 |---|---|---|---|
 | `bubble` | good | alien_world, autumn_lane, castle_keep, claude_study, crystal_cave, garden_encounter, ghost_corridor, ghost_town, gui_menus, gui_trade, haunted_house, neon_street, rainy_street, tunnel_encounter, village_green, winter_lake, winter_woods, woodland_night |  |
 | `dialog` | good | bunker_lab, chapel_graveyard, claude_study, coast_lighthouse, ghost_corridor, library_medium, orbital_hangar, space_station |  |
-| `caption` | good | 33 scenes |  |
+| `caption` | good | 34 scenes |  |
 | `choice` | good | gui_menus, gui_themes, gui_trade |  |
 | `title` | good | gui_menus |  |
 | `panel` | good | bunker_lab, gui_lantern |  |
@@ -827,7 +834,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `mono` | good | - |  |
 | `bone` | good | - |  |
 
-## Example scenes (46)
+## Example scenes (47)
 
 The environments, judged on their gallery images and shots.
 
@@ -882,6 +889,7 @@ The environments, judged on their gallery images and shots.
 | `derelict_ship` | good | 3 | derelict_corridor, derelict_hive |  |
 | `orbital_hangar` | good | 4 | hangar_bay, hangar_control, hangar_reactor, hangar_pilot | A shuttle bay in orbit, its control room and the reactor: the scifi.py hardware, glass panes between mullions onto space and a ringed planet, a window onto the bay, cyan haze and red alarm light. |
 | `alien_world` | good | 3 | alien_landing, alien_monolith |  |
+| `moon_base` | good | 4 | moon_base, moon_rover, moon_night, moon_earth | Greenhouse domes and habitat modules on the grey plain under the Earth: day, the rover, the lunar night, Earthrise over the domes. |
 | `dream_world` | good | 3 | dream_stair, dream_mirror |  |
 | `dream_chess` | good | 4 | dream_plain, dream_door, dream_hole, dream_clock | A giant marble chess game on a floating plain of checker_marble under a melting sky clock: arches and stairs in the air, a stair up to a lone door, a hole onto the sky. |
 | `drowned_library` | good | 4 | library_hall, library_reader, library_beams, library_water | Bookshelves three storeys high in still water under tall windows and skylights: beams in dark fog, jellyfish, lanterns, flying books, koi and a whale. |
@@ -915,6 +923,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the Moon.** An `earth` sky object; `scripts/moon.py`: `regolith`, `rover_tracks`, `dome`, `hab_module`, `solar_array`, `rover`. `examples/moon_base.py` with four gallery shots.
 - **2026-10-19, the haunted house.** `scripts/haunted.py`: `cobweb`, `candelabra`, `portrait`, `grandfather_clock`, `balustrade`, `bats`. `examples/haunted_house.py`: a grand staircase from the `heights` layer up to a landing with a balustrade, four gallery shots.
 - **2026-10-19, polish pass 3b.** Redrawn with the toolkit in `scripts/basics.py`: `curtain`, `curtain_black`, `acoustic`, `ceiling_plaster`, `corrugated`, `marble_dark`.
 - **2026-10-19, polish pass 3.** Redrawn with the toolkit in `scripts/basics.py`: `bed`, `wheelchair`, `table`, `chest`, `glowshroom`, `buoy`, `alien_egg` (its veins glow, so a dark hive still reads as a field of eggs).

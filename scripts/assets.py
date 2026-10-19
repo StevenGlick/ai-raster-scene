@@ -2643,6 +2643,18 @@ SPRITE_HEIGHT.update(haunted.SPRITE_HEIGHT)
 PROP_DEFAULTS.update(haunted.PROP_DEFAULTS)
 NO_CONTACT_SHADOW |= haunted.NO_CONTACT_SHADOW
 
+# ---------------------------------------------------------------- the Moon
+# Regolith, rover tracks, a greenhouse dome, a rover, a solar array and a habitat module, drawn
+# with the toolkit in moon.py.
+import moon  # noqa: E402
+
+TEXTURES.update(moon.TEXTURES)
+TEXTURE_NOISE.update(moon.TEXTURE_NOISE)
+DECALS.update(moon.DECALS)
+SPRITES.update(moon.SPRITES)
+SPRITE_HEIGHT.update(moon.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(moon.PROP_DEFAULTS)
+
 _dcache = {}
 
 
@@ -2832,7 +2844,7 @@ def draw_disc(sky, az_deg, el_deg, proj, colour, radius_deg=2.2, glow=0.35, hrow
 # placed in degrees (azimuth on the camera compass, elevation above the horizon, size as an
 # angular radius), so they keep their size and place at any resolution or field of view.
 
-SKY_OBJECTS = ('planet', 'ringed', 'moon', 'sun', 'eye', 'clock')
+SKY_OBJECTS = ('planet', 'ringed', 'moon', 'sun', 'eye', 'clock', 'earth')
 
 
 def _sky_object_frame(sky, o, proj, hrow, default_size):
@@ -2866,13 +2878,14 @@ def draw_sky_object(sky, o, proj, hrow, seed=0):
     rng = np.random.default_rng(int(o.get('seed', seed)) * 97 + 13)
     defaults = {'planet': ('#c87a4a', '#e8b07a', 9), 'ringed': ('#d8b880', '#a8784a', 7),
                 'moon': ('#c8c4b8', '#8a867c', 3.5), 'sun': ('#fff0c0', '#ffb060', 3),
-                'eye': ('#5a9a6a', '#f2ece0', 8), 'clock': ('#f2e8d0', '#3a2e26', 7)}[kind]
+                'eye': ('#5a9a6a', '#f2ece0', 8), 'clock': ('#f2e8d0', '#3a2e26', 7),
+                'earth': ('#2e62a8', '#5e8a48', 6)}[kind]
     c1 = np.array(o['color'] if 'color' in o else col(defaults[0]), np.float32)
     c2 = np.array(o['color2'] if 'color2' in o else col(defaults[1]), np.float32)
     nx, ny, r = _sky_object_frame(sky, o, proj, hrow, defaults[2])
     d2 = nx * nx + ny * ny
     inside = d2 <= 1
-    glow = float(o.get('glow', {'sun': 0.9, 'eye': 0.15}.get(kind, 0.25)))
+    glow = float(o.get('glow', {'sun': 0.9, 'eye': 0.15, 'earth': 0.4}.get(kind, 0.25)))
     if glow > 0:   # a haze of the object's own colour round it (atmosphere, corona)
         halo = np.clip(1 - np.sqrt(d2) / (3.2 if kind == 'sun' else 1.6), 0, 1) ** 2 * glow
         sky += halo[..., None] * (c2 if kind == 'sun' else c1)[None, None, :]
@@ -2925,7 +2938,29 @@ def draw_sky_object(sky, o, proj, hrow, seed=0):
         return sky
 
     shade, nz = _lambert(nx, ny, o)
-    if kind == 'moon':
+    if kind == 'earth':
+        # a blue world: continents of green and desert gold over the ocean, white swirls of cloud,
+        # ice at the poles, the whole of it lit on one side with a thin blue limb
+        shp = np.broadcast(nx, ny).shape
+        nzb = np.broadcast_to(np.sqrt(np.clip(1 - nx * nx - ny * ny, 0, 1)), shp)
+        lon = np.arctan2(np.broadcast_to(nx, shp), np.maximum(nzb, 1e-3))          # -pi/2 .. pi/2 across the face
+        lat = np.broadcast_to(ny, shp)
+        N = 128
+        ui = np.clip(((lon / np.pi + 0.5) * (N - 1)).astype(int), 0, N - 1)
+        vi = np.clip(((lat * 0.5 + 0.5) * (N - 1)).astype(int), 0, N - 1)
+        land = fbm(N, rng, 3, 4)[vi, ui]
+        cloud = fbm(N, rng, 6, 4)[vi, ui]
+        is_land = land > 0.54
+        desert = is_land & (np.abs(lat) < 0.42) & (land < 0.62)
+        surface = np.empty(shp + (3,), np.float32)
+        surface[:] = c1 * (0.85 + 0.15 * np.clip(nzb, 0, 1))[..., None]
+        surface[is_land] = c2
+        surface[desert] = np.array([0.72, 0.6, 0.4], np.float32)
+        surface[cloud > 0.6] = np.array([0.95, 0.96, 0.98], np.float32)
+        thin = (cloud > 0.55) & (cloud <= 0.6)
+        surface[thin] = surface[thin] * 0.45 + 0.52
+        surface[np.broadcast_to(np.abs(ny) > 0.86, shp)] = np.array([0.93, 0.95, 0.98], np.float32)
+    elif kind == 'moon':
         tone = np.ones_like(d2)
         for _ in range(int(o.get('craters', 14))):
             ccx, ccy, cr = rng.uniform(-0.8, 0.8), rng.uniform(-0.8, 0.8), rng.uniform(0.06, 0.24)
