@@ -452,31 +452,6 @@ def tex_acoustic(name):
 
 # ------------------------------------------------- woodland, weather and industrial
 
-def tex_bark(name, c='#4a3a2a', deep='#241c14', hi='#6e5a42'):
-    """Vertical ridged bark: tree trunks, timber palisades."""
-    rng = _rng(name)
-    n = fbm(T, rng, 8, 4)
-    xx = np.arange(T)[None, :] + 5 * fbm(T, _rng(name + 'w'), 3, 2)
-    v = 0.5 + 0.5 * np.sin(xx * (2 * np.pi * 7 / T))
-    img = col(c)[None, None, :] * (0.6 + 0.6 * v[..., None]) * (0.8 + 0.4 * n[..., None])
-    img = np.where((v < 0.16)[..., None], col(deep)[None, None, :] * (0.7 + 0.5 * n[..., None]), img)
-    img = np.where((v > 0.92)[..., None], col(hi)[None, None, :] * (0.8 + 0.3 * n[..., None]), img)
-    img[rng.random((T, T)) > 0.995] = col(deep)
-    return grain(np.clip(img, 0, 1), rng, 0.04)
-
-
-def tex_foliage(name, c='#1e3a22', hi='#365a2e', deep='#0c1a10'):
-    """Dense leaf mass: tree canopies, thickets, overgrown walls."""
-    rng = _rng(name)
-    n = fbm(T, rng, 12, 4)
-    blob = fbm(T, _rng(name + 'b'), 5, 3)
-    img = col(c)[None, None, :] * (0.5 + 0.9 * n[..., None]) * (0.6 + 0.7 * blob[..., None])
-    s = rng.random((T, T))
-    img[s > 0.84] = col(hi)[None, :] * (0.8 + 0.4 * blob[s > 0.84])[:, None]
-    img[s < 0.12] = col(deep)
-    return np.clip(img, 0, 1)
-
-
 def tex_moss_stone(name):
     """Stone block wall swallowed by moss patches."""
     rng = _rng(name)
@@ -567,33 +542,6 @@ def tex_panel(name, c='#8a9098', seam='#4a5056'):
     img[np.hypot((xx % 32) - 6, (yy % 16) - 8) < 1.6] = np.clip(col(c) * 1.3, 0, 1)
     img *= np.linspace(1.05, 0.88, T)[:, None, None]
     return grain(np.clip(img, 0, 1), rng, 0.02)
-
-
-def tex_needles(name, c='#3a2e1e'):
-    """Pine-needle forest floor with patches of undergrowth."""
-    rng = _rng(name)
-    n = fbm(T, rng, 7, 4)
-    img = col(c)[None, None, :] * (0.6 + 0.8 * n[..., None])
-    s = rng.random((T, T))
-    img[s > 0.88] = col('#5a4628')
-    img[s < 0.1] = col('#1e1812')
-    img[rng.random((T, T)) > 0.985] = col('#6a5a34')
-    g = np.clip((fbm(T, _rng(name + 'g'), 4, 3) - 0.6) * 4, 0, 1)
-    img = img * (1 - g[..., None]) + col('#2c4424')[None, None, :] * g[..., None]
-    return np.clip(img, 0, 1)
-
-
-def tex_moss(name, c='#2a4424'):
-    """Soft moss ground with stone showing through."""
-    rng = _rng(name)
-    n = fbm(T, rng, 16, 4)
-    img = col(c)[None, None, :] * (0.5 + 0.9 * n[..., None])
-    s = rng.random((T, T))
-    img[s > 0.9] = col('#4a6e34')
-    img[s < 0.08] = col('#16261a')
-    stone = np.clip((fbm(T, _rng(name + 's'), 4, 3) - 0.64) * 5, 0, 1)
-    img = img * (1 - stone[..., None]) + col('#6a665e')[None, None, :] * stone[..., None]
-    return np.clip(img, 0, 1)
 
 
 def tex_mud(name, c='#4a3a28'):
@@ -1227,10 +1175,6 @@ TEXTURES = {
     'window_dark_plaster': _em(tex_window, '#c9bb98', lit=False, style='plaster'),
     'window_teal': _em(tex_window, '#7a7a74', glass_on='#8ad0c4'),
     'runes': _em(tex_runes),
-    'bark': _plain(tex_bark),
-    'bark_pine': _plain(tex_bark, '#5a3a28', '#2e1a12', '#8a5a38'),
-    'foliage': _plain(tex_foliage),
-    'foliage_autumn': _plain(tex_foliage, '#4a3418', '#6e5a24', '#281c0e'),
     'moss_stone': _plain(tex_moss_stone),
     'ivy': _plain(tex_ivy),
     'logs': _plain(tex_logs),
@@ -1259,8 +1203,6 @@ TEXTURES = {
     'beams': _plain(tex_beams),
     'acoustic': _plain(tex_acoustic),
     'ceiling_plaster': _plain(tex_plaster, '#a8a08a', '#4a4030', 0.3),
-    'pine_needles': _plain(tex_needles),
-    'moss': _plain(tex_moss),
     'mud': _plain(tex_mud),
     'snow': _plain(tex_snow),
     'asphalt': _plain(tex_asphalt),
@@ -1408,21 +1350,6 @@ def spr_flowers():
     return _finish(im, em, w, h)
 
 
-def spr_tree():
-    w, h = 64, 96
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.polygon([(28 * S, 96 * S), (30 * S, 50 * S), (34 * S, 50 * S), (37 * S, 96 * S)], fill='#3a2c20')
-    d.line([(32 * S, 60 * S), (18 * S, 44 * S)], fill='#3a2c20', width=2 * S)
-    d.line([(32 * S, 58 * S), (46 * S, 42 * S)], fill='#3a2c20', width=2 * S)
-    rng = np.random.default_rng(9)
-    for _ in range(40):
-        x, y, r = rng.random() * 44 + 10, rng.random() * 40 + 6, rng.random() * 6 + 6
-        c = ['#1e3424', '#24402a', '#2c4a2e', '#18281c'][int(rng.random() * 4)]
-        d.ellipse([(x - r) * S, (y - r) * S, (x + r) * S, (y + r) * S], fill=c)
-    return _finish(im, em, w, h)
-
-
 def spr_barrel():
     w, h = 20, 28
     im, d, em, de = _canvas(w, h)
@@ -1536,21 +1463,6 @@ def spr_fountain():
     return _finish(im, em, w, h)
 
 
-def spr_pine():
-    w, h = 48, 112
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.rectangle([21 * S, 84 * S, 27 * S, 112 * S], fill='#3a2a1c')
-    tones = ['#16301c', '#1e3c22', '#264828']
-    for i in range(7):
-        half = 23 - 16 * (i / 6.0)
-        base = 96 - 13 * i
-        d.polygon([((24 - half) * S, base * S), ((24 + half) * S, base * S), (24 * S, (base - 26) * S)],
-                  fill=tones[i % 3])
-    d.polygon([(19 * S, 20 * S), (29 * S, 20 * S), (24 * S, 0)], fill='#2c5230')
-    return _finish(im, em, w, h)
-
-
 def spr_dead_tree():
     w, h = 64, 104
     im, d, em, de = _canvas(w, h)
@@ -1591,19 +1503,6 @@ def spr_log():
     d.ellipse([0, S, 6 * S, 13 * S], fill='#8a6a44')
     d.ellipse([2 * S, 4 * S, 5 * S, 10 * S], fill='#6e5234')
     d.ellipse([42 * S, S, 48 * S, 13 * S], fill='#7a5c3a')
-    return _finish(im, em, w, h)
-
-
-def spr_bush():
-    w, h = 32, 24
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.rectangle([14 * S, 16 * S, 18 * S, 24 * S], fill='#3a2c20')
-    rng = np.random.default_rng(5)
-    tones = ['#1e3a22', '#264a28', '#2e5a30', '#14281a']
-    for _ in range(34):
-        x, y, r = rng.random() * 24 + 4, rng.random() * 15 + 5, rng.random() * 5 + 4
-        d.ellipse([(x - r) * S, (y - r) * S, (x + r) * S, (y + r) * S], fill=tones[int(rng.random() * 4)])
     return _finish(im, em, w, h)
 
 
@@ -2612,11 +2511,11 @@ def spr_orrery():
 
 SPRITES = {
     'lamp_post': spr_lamp_post, 'statue': spr_statue, 'flowers': spr_flowers,
-    'tree': spr_tree, 'barrel': spr_barrel, 'crate': spr_crate, 'lantern': spr_lantern,
+    'barrel': spr_barrel, 'crate': spr_crate, 'lantern': spr_lantern,
     'candles': spr_candles, 'bed': spr_bed, 'wheelchair': spr_wheelchair, 'bench': spr_bench,
     'rowboat': spr_rowboat, 'fountain': spr_fountain,
-    'pine': spr_pine, 'dead_tree': spr_dead_tree, 'stump': spr_stump, 'log': spr_log,
-    'bush': spr_bush, 'mushrooms': spr_mushrooms, 'boulder': spr_boulder, 'signpost': spr_signpost,
+    'dead_tree': spr_dead_tree, 'stump': spr_stump, 'log': spr_log,
+    'mushrooms': spr_mushrooms, 'boulder': spr_boulder, 'signpost': spr_signpost,
     'campfire': spr_campfire, 'locker': spr_locker, 'console': spr_console, 'buoy': spr_buoy,
     'gravestone': spr_gravestone,
     'sconce': spr_sconce, 'ceiling_lamp': spr_ceiling_lamp, 'chandelier': spr_chandelier,
@@ -3140,6 +3039,16 @@ NO_CONTACT_SHADOW |= biomes.NO_CONTACT_SHADOW
 DEBRIS_SETS.update(biomes.DEBRIS_SETS)
 DECALS.update(biomes.DECALS)
 FRINGES = dict(biomes.FRINGES)
+
+# ---------------------------------------------------------------- the temperate forest
+# Spruce, oak, birch, bushes, the forest floor, bark and leaf walls, and the `forest` fringe,
+# drawn with the same toolkit in scripts/forest.py; they replace the first, flat versions.
+import forest  # noqa: E402
+
+TEXTURES.update(forest.TEXTURES)
+SPRITES.update(forest.SPRITES)
+SPRITE_HEIGHT.update(forest.SPRITE_HEIGHT)
+FRINGES.update(forest.FRINGES)
 
 _dcache = {}
 

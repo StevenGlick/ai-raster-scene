@@ -94,20 +94,22 @@ Wall cell (solid block, `h` units tall):
 
 ### Fringe: layered edges
 
-A solid wall of `jungle_leaves` is a flat green face. Give the wall cells a `fringe` and every face of them that looks onto open ground gets a few long cards of plants standing in front of it - in the jungle set four, from a dense wall of trunks, crowns and bushes just off the wall to a scatter of bushes at the front - spread over the cell in front. The cards are planar sprites (see Planar sprites), so as the camera moves the layers slide past each other and the edge of the forest has depth.
+A solid wall of `jungle_leaves` or `foliage` is a flat green face. Give the wall cells a `fringe` and every face of them that looks onto open ground gets a few long cards of plants standing in front of it - four in each built-in set, from a dense wall of trees just off the wall to a scatter of bushes at the front - spread over the cell in front. The cards are planar sprites (see Planar sprites), so as the camera moves the layers slide past each other and the edge of the forest has depth.
 
 ```json
 "J": {"wall": "jungle_leaves", "h": 3.0, "top": "canopy_top", "fringe": "jungle"}
 "K": {"wall": "jungle_leaves", "h": 3.0, "fringe": {"set": "jungle", "depth": 1.5, "height": 1.2, "seed": 2}}
+"F": {"wall": "foliage", "h": 2.4, "fringe": "forest"}
 ```
 | field | default | meaning |
 |---|---|---|
-| `set` | - | a fringe set: `jungle` (cards `jungle_card_4` .. `jungle_card_1`, back to front) |
+| `set` | - | a fringe set: `jungle` (cards `jungle_card_4` .. `jungle_card_1`, back to front: rainforest trees, palms, tree ferns, bushes) or `forest` (`forest_card_4` .. `forest_card_1`: spruce, oak and birch, then young trees, then bushes, ferns and grass) |
 | `cards` | - | instead of a set: your own sprite names, back to front (a PNG or a `sprite_defs` card works) |
 | `depth` | `1.0` | how far out from the wall the layers spread, in cells |
 | `height` | `1.0` | a multiplier on the cards' heights |
 | `seed` | `0` | reshuffles where along its card each run starts |
 
+- The trees on the back cards rise to 4.6 units. Keep a `forest` wall lower than that (2-2.6) so the tops of the trees make the skyline, not the flat top of the wall.
 - Plan a ring of open ground a cell deep in front of the walls for the fringe to stand in: make the solid part of the forest a cell smaller than the forest should look. A path through a jungle wants to be two cells wider than it should look.
 - Each straight run of faces gets one card per layer; the layers wrap round outside corners and stop short in inside ones, so each follows the outline at its own distance. A card that would pass through a camera position is left out.
 - Cards are drawn at the sprite stage: walls behind them show through their gaps, a ceiling over them (a canopy over a path) hides what rises above it, and they cast no shadows.
@@ -390,12 +392,12 @@ Drawing order: opaque sprites first (they write depth), then translucent/additiv
 
 **Contact shadows.** Every opaque prop or character standing on the floor gets a soft dark stamp under its feet, sized to its width, so nothing looks pasted onto the ground. `contact_shadows` sets the strength for the scene (0.55 by default, `0` for none) and a sprite's `shadow` overrides it. Sprites lifted off the floor (`z` > 0.05), standing on a block, translucent, additive or `fullbright` get none, and nor do fires, light fixtures, hanging and wall-mounted props, ladders, crystals and glowing mushrooms.
 
-Built-in props (123): armor, barrel, bed, bench, boulder, brazier, buoy, bush, campfire, candles, chest, column, console, crate, crystal, dead_tree, fern, flowers, fountain, glowshroom, grave_cross, gravestone, lamp_post, lantern, lectern, locker, log, mushrooms, palm, pew, pine, rowboat, signpost, snowman, snowy_pine, stalagmite, statue, stump, table, throne, tree, wheelchair, plus the wall-mounted, ground, sci-fi, dream and study props listed below. `crystal` and `glowshroom` glow (pair them with a coloured light); `pew`, `table` and `bench` take `stretch` for length.
+Built-in props (128): armor, barrel, bed, bench, birch, boulder, brazier, buoy, bush, campfire, candles, chest, column, console, crate, crystal, dead_tree, fern, flowers, fountain, glowshroom, grave_cross, gravestone, lamp_post, lantern, lectern, locker, log, mushrooms, palm, pew, pine, rowboat, signpost, snowman, snowy_pine, stalagmite, statue, stump, table, throne, tree, wheelchair, plus the wall-mounted, ground, sci-fi, dream and study props listed below. `crystal` and `glowshroom` glow (pair them with a coloured light); `pew`, `table` and `bench` take `stretch` for length.
 
 - Sci-fi and alien: `stasis_pod` (lit glass, a sleeper inside; tint it dark for a dead one), `hologram` (a wireframe world over its emitter, with a soft glow), `sci_crate`, `drone` (float it with `z`), `lander` (a landing craft, 1.6 tall), `antenna`, `alien_plant` (glowing pods), `monolith`, `alien_egg`.
 - Dream and surreal: `orb` (a floating light with its own glow), `floating_rock` (an islet of earth adrift), `door_frame` (a door standing on its own), `sky_whale` (stars along its back; float it high), `koi`, `pocket_watch`, `balloon`, `chess_pawn` and `chess_king` (marble; tint them dark for the other side). Things meant to float carry no contact shadow, so set their `z` and they hang in the air. Over a void floor `z` is simply height above z=0.
 - A study: `telescope`, `globe`, `armchair`, `book_stack`, `open_book` (glowing pages; float a few for magic), `writing_desk` (with a lit candle), `orrery` (a glowing sun at its heart).
-- Cards and parts: `jungle_card_1`, `jungle_card_2`, `jungle_card_3` and `jungle_card_4`, the long strips of the jungle fringe (front to back), and `palm_trunk` and `palm_crown`, the palm in two pieces in one frame, which stack back into a palm (see the `palm_3d` prefab). `glass_pane` is a plain pane of glass (see Glass).
+- Cards and parts: `jungle_card_1`, `jungle_card_2`, `jungle_card_3` and `jungle_card_4`, the long strips of the jungle fringe (front to back), `forest_card_1`, `forest_card_2`, `forest_card_3` and `forest_card_4` likewise for the forest, and `palm_trunk` and `palm_crown`, the palm in two pieces in one frame, which stack back into a palm (see the `palm_3d` prefab). `glass_pane` is a plain pane of glass (see Glass).
 - Jungle: `banana_plant`, `monstera`, `tree_fern`, `heliconia`, `bromeliad`, `fern`, `liana` (hangs down from the canopy; no contact shadow), `kapok` (an emergent giant 7.5 tall: stand it in the jungle and its crown clears the canopy), `canopy_crown` (set it on top of a jungle wall with `z` a little under the wall's height, a few to a stretch, and the canopy edge becomes a line of rounded crowns against the sky), `stone_head` (a colossal carved head), `stela`, `jaguar` (its eyes glow), `macaw`.
 - Ruins: `column` (Doric, 1 tall by default: scale it to 2.5-3 for a temple), `broken_column`, `column_drum` (fallen, on its side), `marble_head` (colossal, broken off at the neck), `amphora`, `cypress`, `olive_tree`, `poppies`, `goat`, `dry_tuft`.
 - Beach: `palm` and `palm_lean` (leaning out over the water), `coconuts`, `canoe` (an outrigger), `tiki_torch` (a flame with its own glow), `hammock`, `driftwood`, `crab`, `seagull` (float it with `z`), and `surf` and `surf_glow`: a low line of foam, about 1 unit long, for a row along a waterline (a foam decal is seen edge-on from eye height; these stay visible), `surf_glow` being surf on a night of glowing plankton.
