@@ -2758,6 +2758,20 @@ NO_CONTACT_SHADOW |= swamp.NO_CONTACT_SHADOW
 FRINGES.update(swamp.FRINGES)
 DEBRIS_SETS.update(swamp.DEBRIS_SETS)
 
+# ---------------------------------------------------------------- under the sea
+# The floor of a kelp forest, kelp, a shoal of fish, bubbles, an anchor and a wreck's broken
+# mast - drawn with the toolkit in sea.py, with a `kelp` fringe.
+import sea  # noqa: E402
+
+TEXTURES.update(sea.TEXTURES)
+TEXTURE_NOISE.update(sea.TEXTURE_NOISE)
+SPRITES.update(sea.SPRITES)
+SPRITE_HEIGHT.update(sea.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(sea.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= sea.NO_CONTACT_SHADOW
+FRINGES.update(sea.FRINGES)
+DEBRIS_SETS.update(sea.DEBRIS_SETS)
+
 _dcache = {}
 
 
