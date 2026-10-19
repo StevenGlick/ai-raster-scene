@@ -2887,6 +2887,17 @@ SPRITES.update(village.SPRITES)
 SPRITE_HEIGHT.update(village.SPRITE_HEIGHT)
 PROP_DEFAULTS.update(village.PROP_DEFAULTS)
 
+# ---------------------------------------------------------------- the desert
+# Layered sandstone, slot-canyon rock, a dry wash and the stonework of a cliff dwelling; saguaro,
+# prickly pear, tumbleweed, a skull and a painted pot - drawn with the toolkit in desert.py.
+import desert  # noqa: E402
+
+TEXTURES.update(desert.TEXTURES)
+TEXTURE_NOISE.update(desert.TEXTURE_NOISE)
+SPRITES.update(desert.SPRITES)
+SPRITE_HEIGHT.update(desert.SPRITE_HEIGHT)
+DEBRIS_SETS.update(desert.DEBRIS_SETS)
+
 _dcache = {}
 
 
