@@ -235,16 +235,6 @@ def tex_corrugated(name, c='#6a6a62'):
     return grain(np.clip(img, 0, 1), rng, 0.05)
 
 
-def tex_hedge(name):
-    rng = _rng(name)
-    n = fbm(T, rng, 16, 3)
-    leaves = rng.random((T, T))
-    img = col('#2c4a26')[None, None, :] * (0.5 + 0.8 * n[..., None])
-    img[leaves > 0.8] = col('#4a6e36')
-    img[leaves < 0.1] = col('#16241a')
-    return img
-
-
 def tex_window(name, wall='#8a8578', lit=True, frame='#3a3028', glass_on='#f0c860', glass_off='#1c2228', style='stone'):
     """A facade texture: wall material with a 4-pane window. Returns (rgb, emissive)."""
     base = tex_stone(name + 'w', wall) if style == 'stone' else tex_plaster(name + 'w', wall, '#5a4a38', 0.4)
@@ -349,26 +339,6 @@ def tex_linoleum(name, c='#8a8a6e'):
     return grain(np.clip(img, 0, 1), rng, 0.03)
 
 
-def tex_grass(name):
-    rng = _rng(name)
-    n = fbm(T, rng, 8, 4)
-    blades = rng.random((T, T))
-    img = col('#2e4a24')[None, None, :] * (0.55 + 0.7 * n[..., None])
-    img[blades > 0.85] = col('#4a6a32')
-    img[blades < 0.06] = col('#1a2a16')
-    return img
-
-
-def tex_gravel(name, c='#8a8070'):
-    rng = _rng(name)
-    n = fbm(T, rng, 16, 3)
-    img = col(c)[None, None, :] * (0.6 + 0.6 * n[..., None])
-    s = rng.random((T, T))
-    img[s > 0.9] = col('#b0a890')
-    img[s < 0.08] = col('#4a4438')
-    return img
-
-
 def tex_cobble(name, c='#6a665e'):
     rng = _rng(name)
     img = np.zeros((T, T, 3))
@@ -391,18 +361,6 @@ def tex_cobble(name, c='#6a665e'):
     img = col(c)[None, None, :] * shades[idx][..., None] * (0.85 + 0.3 * n[..., None])
     img[edge] = col('#2a2824')
     return np.clip(img, 0, 1)
-
-
-def tex_water(name):
-    rng = _rng(name)
-    n = fbm(T, rng, 4, 4)
-    img = col('#0e2a32')[None, None, :] * (0.7 + 0.6 * n[..., None])
-    for y in range(T):
-        off = int(4 * np.sin(y * 0.4))
-        for x in range(0, T, 16):
-            if (y + x // 16 * 5) % 11 == 0:
-                img[y, (x + off) % T:(x + off) % T + 6] = col('#2a5a66')
-    return img
 
 
 def tex_carpet(name, c='#6a1e22', border='#b08a3a'):
@@ -1163,7 +1121,6 @@ TEXTURES = {
     'rock_wet': _plain(tex_rock, '#3e4446'),
     'iron_door': _plain(tex_metal_door),
     'corrugated': _plain(tex_corrugated),
-    'hedge': _plain(tex_hedge),
     'bookshelf': _plain(tex_bookshelf),
     'wallpaper': _plain(tex_wallpaper),
     'wallpaper_green': _plain(tex_wallpaper, '#26402e', '#4a6a40'),
@@ -1187,11 +1144,7 @@ TEXTURES = {
     'checker': _plain(tex_checker),
     'linoleum': _plain(tex_linoleum),
     'tile_floor': _plain(tex_tile, '#b8b4a8', '#5a5850', 16),
-    'grass': _plain(tex_grass),
-    'gravel': _plain(tex_gravel),
     'cobble': _plain(tex_cobble),
-    'dirt': _plain(tex_gravel, '#5a4a36'),
-    'water': _plain(tex_water),
     'carpet': _plain(tex_carpet),
     'carpet_green': _plain(tex_carpet, '#1e3a2a', '#9a8a4a'),
     'sand': _plain(tex_sand),
@@ -1350,32 +1303,6 @@ def spr_flowers():
     return _finish(im, em, w, h)
 
 
-def spr_barrel():
-    w, h = 20, 28
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.rectangle([2 * S, 1 * S, 18 * S, 28 * S], fill='#5a3a22')
-    for x in range(2, 18, 3):
-        d.line([(x * S, 1 * S), (x * S, 28 * S)], fill='#3a2614', width=S // 2)
-    for y in (4, 14, 24):
-        d.rectangle([2 * S, y * S, 18 * S, (y + 2) * S], fill='#2a2a2a')
-    d.ellipse([2 * S, 0, 18 * S, 3 * S], fill='#4a3018')
-    return _finish(im, em, w, h)
-
-
-def spr_crate():
-    w, h = 24, 24
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.rectangle([0, 0, 24 * S, 24 * S], fill='#7a5a36')
-    d.rectangle([0, 0, 24 * S - 1, 24 * S - 1], outline='#3a2814', width=2 * S)
-    d.line([(2 * S, 2 * S), (22 * S, 22 * S)], fill='#4a3420', width=2 * S)
-    for y in (8, 16):
-        d.line([(0, y * S), (24 * S, y * S)], fill='#5a4026', width=S // 2)
-    d.text((6 * S, 9 * S), 'TNT', fill='#2a1a10')
-    return _finish(im, em, w, h)
-
-
 def spr_lantern():
     w, h = 12, 20
     im, d, em, de = _canvas(w, h)
@@ -1448,18 +1375,6 @@ def spr_rowboat():
     for y in (8, 11):
         d.line([(4 * S, y * S), (44 * S, y * S)], fill='#4a3424', width=S // 2)
     d.line([(36 * S, 4 * S), (36 * S, 0)], fill='#3a2c22', width=S)
-    return _finish(im, em, w, h)
-
-
-def spr_fountain():
-    w, h = 48, 40
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.rectangle([0, 26 * S, 48 * S, 40 * S], fill='#8a857c')
-    d.rectangle([0, 26 * S, 48 * S, 28 * S], fill='#a8a294')
-    d.rectangle([20 * S, 8 * S, 28 * S, 26 * S], fill='#7a766e')
-    d.ellipse([12 * S, 4 * S, 36 * S, 12 * S], fill='#8a857c')
-    d.rectangle([22 * S, 0, 26 * S, 6 * S], fill='#7a766e')
     return _finish(im, em, w, h)
 
 
@@ -1740,19 +1655,6 @@ def spr_bucket():
     d.ellipse([2 * S, 2 * S, 14 * S, 6 * S], fill='#3a3e42')
     d.ellipse([4 * S, 3 * S, 12 * S, 5 * S], fill='#1a1e22')
     d.arc([3 * S, 0, 13 * S, 8 * S], 180, 360, fill='#3a3e42', width=S)
-    return _finish(im, em, w, h)
-
-
-def spr_broken_barrel():
-    w, h = 22, 20
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.polygon([(2 * S, 20 * S), (3 * S, 6 * S), (9 * S, 2 * S), (12 * S, 9 * S), (16 * S, 4 * S),
-               (19 * S, 20 * S)], fill='#5a3a22')
-    d.polygon([(4 * S, 19 * S), (5 * S, 8 * S), (9 * S, 5 * S), (11 * S, 10 * S)], fill='#6e4a2a')
-    for y in (12, 17):
-        d.rectangle([2 * S, y * S, 19 * S, (y + 1.6) * S], fill='#2a2a2a')
-    d.polygon([(13 * S, 20 * S), (20 * S, 14 * S), (22 * S, 20 * S)], fill='#3a2614')
     return _finish(im, em, w, h)
 
 
@@ -2419,16 +2321,16 @@ def spr_orrery():
 
 SPRITES = {
     'lamp_post': spr_lamp_post, 'statue': spr_statue, 'flowers': spr_flowers,
-    'barrel': spr_barrel, 'crate': spr_crate, 'lantern': spr_lantern,
+    'lantern': spr_lantern,
     'candles': spr_candles, 'bed': spr_bed, 'wheelchair': spr_wheelchair, 'bench': spr_bench,
-    'rowboat': spr_rowboat, 'fountain': spr_fountain,
+    'rowboat': spr_rowboat,
     'mushrooms': spr_mushrooms, 'signpost': spr_signpost,
     'campfire': spr_campfire, 'locker': spr_locker, 'console': spr_console, 'buoy': spr_buoy,
     'gravestone': spr_gravestone,
     'sconce': spr_sconce, 'ceiling_lamp': spr_ceiling_lamp, 'chandelier': spr_chandelier,
     'brazier': spr_brazier, 'painting': spr_painting, 'banner': spr_banner,
     'wall_clock': spr_wall_clock, 'pipe_valve': spr_pipe_valve, 'rubble': spr_rubble,
-    'bones': spr_bones, 'sack': spr_sack, 'bucket': spr_bucket, 'broken_barrel': spr_broken_barrel,
+    'bones': spr_bones, 'sack': spr_sack, 'bucket': spr_bucket,
     'reeds': spr_reeds, 'ivy_hang': spr_ivy_hang,
     'throne': spr_throne, 'armor': spr_armor, 'chains': spr_chains, 'chest': spr_chest,
     'table': spr_table, 'pew': spr_pew, 'stalagmite': spr_stalagmite, 'crystal': spr_crystal,
@@ -2983,6 +2885,14 @@ SPRITES.update(dream.SPRITES)
 SPRITE_HEIGHT.update(dream.SPRITE_HEIGHT)
 NO_CONTACT_SHADOW |= dream.NO_CONTACT_SHADOW
 PROP_DEFAULTS.update(dream.PROP_DEFAULTS)
+
+# ---------------------------------------------------------------- everyday things, redrawn
+# Grass, hedge, dirt, gravel, wood panelling and water, a barrel, a broken one, a crate and a
+# fountain, redrawn with the toolkit in basics.py; they replace the first versions above.
+import basics  # noqa: E402
+
+TEXTURES.update(basics.TEXTURES)
+SPRITES.update(basics.SPRITES)
 
 _dcache = {}
 

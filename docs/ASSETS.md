@@ -21,8 +21,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 133 | 103 | 27 | 3 | 0 |
-| Props | 152 | 134 | 16 | 2 | 0 |
+| Textures | 133 | 109 | 24 | 0 | 0 |
+| Props | 152 | 138 | 14 | 0 | 0 |
 | Characters | 22 | 20 | 2 | 0 | 0 |
 | Decals | 24 | 19 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
@@ -39,7 +39,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 38 | 31 | 7 | 0 | 0 |
-| **all** | **506** | **436** | **65** | **5** | **0** |
+| **all** | **506** | **446** | **60** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -86,7 +86,7 @@ Weakest first, and in the order the new scenes need them.
 
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
-| `wood_panel` | polish |  | drowned_library | Flat; needs panel frames and grain. |
+| `wood_panel` | good |  | drowned_library | Redrawn with the toolkit in basics.py: stiles and rails framing two raised panels per unit, all one dark wood, the bevels catching the light, figure streaked along the grain. |
 | `planks` | good |  | - |  |
 | `boards` | good |  | coast_lighthouse, rain_alley, tropical_beach |  |
 | `logs` | good |  | coast_lighthouse, winter_lake |  |
@@ -130,16 +130,16 @@ Weakest first, and in the order the new scenes need them.
 | `foliage` | good |  | - | Redrawn with the toolkit in forest.py: small leaves at three depths over a dark tangle of twigs. The wall behind a `forest` fringe. |
 | `foliage_autumn` | good |  | - | The same leaves in orange, gold and red over dark brown. |
 | `forest_deep` | good |  | woodland_night | Trunks at four depths in the dark, the farthest thinnest and darkest, boughs and a few leaves catching light; sways repeat with the tile. The wall behind a `forest` fringe: gaps between the cards read as more wood. |
-| `hedge` | rework |  | garden_encounter, gui_menus, hospital_garden, post_presets | Same as foliage, clipped: small leaves, flatter face. |
-| `grass` | rework |  | cathedral_ruin, chapel_graveyard, dream_world, garden_encounter, gui_menus, hospital_garden, misty_moor, post_presets | Noise; needs blade strokes and clumps seen from above. |
+| `hedge` | good |  | garden_encounter, gui_menus, hospital_garden, post_presets | Redrawn with the toolkit in basics.py: small leaves packed in three depths, the face kept flat by the shears, thin patches darker. |
+| `grass` | good |  | cathedral_ruin, chapel_graveyard, dream_world, garden_encounter, gui_menus, hospital_garden, misty_moor, post_presets | Redrawn with the toolkit in basics.py: blades stroked in clumps, dark at the roots and bright at the tips, yellow-green tufts, a daisy or two. |
 | `moss` | good |  | - | Redrawn with the toolkit in forest.py: crowded cushions with fine bobbles, a stone showing here and there. |
 | `mud` | good |  | woodland_night |  |
-| `dirt` | rework |  | castle_keep | Salt-and-pepper speckle; needs clods, pebbles and damp patches. |
-| `gravel` | polish |  | chapel_graveyard, coast_lighthouse, garden_encounter, gui_menus, hospital_garden, post_presets | Speckle; give it individual pebbles with a lit edge. |
+| `dirt` | good |  | castle_keep | Redrawn with the toolkit in basics.py: soil broken into clods, pebbles, a root or two, darker damp patches. |
+| `gravel` | good |  | chapel_graveyard, coast_lighthouse, garden_encounter, gui_menus, hospital_garden, post_presets | Redrawn with the toolkit in basics.py: rounded pebbles in three stone colours, each lit on top with a shadow under it. |
 | `sand` | polish |  | coast_lighthouse | Plain noise; wind ripples and the odd shell fragment. |
 | `snow` | good |  | winter_lake |  |
 | `ice` | polish | mirror 0.38 | winter_lake | Cracks look like scribbles; straighter fractures, depth in the blue. |
-| `water` | polish | mirror 0.5 | alien_world, coast_lighthouse, crystal_cave, drowned_library, gui_lantern, sewer_tunnels, tunnel_encounter, underground_waterway | Flat teal with white dashes; needs depth, caustics and a ripple pattern that tiles. |
+| `water` | good | mirror 0.5 | alien_world, coast_lighthouse, crystal_cave, drowned_library, gui_lantern, sewer_tunnels, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: a deep teal in slow swells and a broken net of light where the ripples gather it; kept dark, so reflections read. |
 | `pine_needles` | good |  | woodland_night | Redrawn with the toolkit in forest.py: criss-crossed needle litter over dark soil, a few green needles, cones and twigs. |
 | `alien_ground` | polish |  | alien_world | Crystal flecks are uniform white specks; vary size and tint. |
 | `alien_rock` | polish | glows | alien_world | Veins too thick and dense; the repeat shows when tiled. |
@@ -264,8 +264,8 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `book_stack` | good | 0.22 tall | claude_study, drowned_library |  |
 | `chest` | polish | 0.3 tall | castle_keep | Lid corners read as dark notches. |
 | `console` | good | 0.85 tall, glows | bunker_lab, orbital_hangar, space_station |  |
-| `crate` | polish | 0.4 tall | bunker_lab, coast_lighthouse, gui_lantern, gui_themes, gui_trade, hospital_corridor, library_medium, mansion_library, neon_street, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway, winter_lake, woodland_night | Just a cross brace; add plank seams. |
-| `barrel` | polish | 0.45 tall | bunker_lab, coast_lighthouse, gui_lantern, gui_themes, gui_trade, library_medium, mansion_library, neon_street, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway | Flat: needs a cylindrical highlight and stave lines. |
+| `crate` | good | 0.4 tall | bunker_lab, coast_lighthouse, gui_lantern, gui_themes, gui_trade, hospital_corridor, library_medium, mansion_library, neon_street, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway, winter_lake, woodland_night | Redrawn with the toolkit in basics.py: planks behind battens and a diagonal brace, nails at the corners, a stencilled arrow. |
+| `barrel` | good | 0.45 tall | bunker_lab, coast_lighthouse, gui_lantern, gui_themes, gui_trade, library_medium, mansion_library, neon_street, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: bulging staves turned on a lathe, three iron hoops, the lid showing at the top. |
 | `locker` | good | 1 tall | bunker_lab |  |
 | `lectern` | good | 0.5 tall | chapel_graveyard |  |
 | `open_book` | good | 0.12 tall, glows, no shadow | claude_study, drowned_library |  |
@@ -329,7 +329,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
 | `bones` | good | 0.22 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, crystal_cave, derelict_ship, neon_street, rain_alley, sewer_tunnels, woodland_night |  |
-| `broken_barrel` | rework | 0.46 tall | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, neon_street, rain_alley, rainy_street, sewer_tunnels, woodland_night | An unreadable brown heap. |
+| `broken_barrel` | good | 0.46 tall | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, neon_street, rain_alley, rainy_street, sewer_tunnels, woodland_night | Redrawn with the toolkit in basics.py: the hooped bottom half, its front staves splintered off at different heights over the dark inside, the back staves taller, loose staves and a fallen hoop. |
 | `rubble` | good | 0.34 tall | ancient_ruins, bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, rainy_street, sewer_tunnels, woodland_night |  |
 
 ### Monuments and outdoors
@@ -337,7 +337,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
 | `column` | good | 1 tall | ancient_ruins, cathedral_ruin | Redrawn: a fluted Doric column with capital and plinth. |
-| `fountain` | rework | 0.9 tall | - | Flat grey shapes; needs water, a basin rim and shading. |
+| `fountain` | good | 0.9 tall | - | Redrawn with the toolkit in basics.py: a moulded basin with water in it, a fluted pedestal and bowl, water spilling in arcs. |
 | `gravestone` | good | 0.6 tall | chapel_graveyard |  |
 | `grave_cross` | good | 0.55 tall | chapel_graveyard |  |
 | `signpost` | good | 1.3 tall | coast_lighthouse |  |
@@ -821,6 +821,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, everyday things.** The oldest textures and props, which turn up in a great many scenes, redrawn with the toolkit in `scripts/basics.py`: `grass`, `hedge`, `dirt`, `gravel`, `wood_panel`, `water`, `barrel`, `broken_barrel`, `crate`, `fountain`.
 - **2026-10-19, the drowned library.** Sunlight now comes down through skylights - holes in a roof with more roof beyond them, which the roof test used to treat as roofed (the cathedral's beam through its fallen roof got brighter and truer with it). dream.py: `tall_window`/`tall_window_top`, `jellyfish`, `sky_lantern`, `book_fly`. `examples/drowned_library.py` with four gallery shots.
 - **2026-10-19, the chequered plain.** `scripts/dream.py`: a marble chess set turned on a lathe (pawn and king redrawn, rook, knight, bishop and queen new), `melting_clock`, `hourglass`, `stone_arch`, `stair_float`, `paper_boat`, the `checker_marble` floor, and a `clock` sky object that melts. `examples/dream_chess.py`: a giant unfinished game on a floating plain, with four gallery shots.
 - **2026-10-19, the neon street.** A `neon` facade style (`scripts/buildings.py`): concrete, neon signs drawn into the wall layer, which now returns a glow, blade signs standing out over the street (a new `blade` layer, placed by the renderer), shutters and tinted rooms - the other styles' buildings unchanged. Street props in scifi.py (`vending_machine`, `noodle_stall`, `steam`, `holo_ad`, `wires_span`), the `runner`, and `examples/neon_street.py` with four gallery shots.
