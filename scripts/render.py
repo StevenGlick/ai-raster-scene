@@ -28,6 +28,8 @@ import assets  # noqa: E402
 import gui  # noqa: E402
 import icons  # noqa: E402
 import post  # noqa: E402
+import prefabs  # noqa: E402
+import buildings  # noqa: E402
 
 T = assets.T
 
@@ -35,7 +37,8 @@ T = assets.T
 # ------------------------------------------------------------------ cameras
 
 def find_sprite(scene, sid, cam=None):
-    """The sprite with this `id`, from the scene or the shot's extra_sprites."""
+    """The sprite with this `id`, from the scene (its prefabs included) or the shot's extra_sprites."""
+    scene = prefabs.expand(scene)
     for sp in list(scene.get('sprites', [])) + list((cam or {}).get('extra_sprites', [])):
         if sp.get('id') == sid:
             return sp
@@ -96,6 +99,7 @@ def _seg_dist(px, py, x0, y0, x1, y1):
 
 class World:
     def __init__(self, scene):
+        scene = prefabs.expand(scene)       # prefabs become ordinary cells, sprites, lights and decals
         self.scene = scene
         rows = scene['map']
         self.mh = len(rows)
@@ -120,6 +124,8 @@ class World:
         self.see = np.zeros((self.mh, self.mw), bool)  # walls with see-through texels: fences, bars
         inherit = []
         self.stacks = {}  # (y, x) -> texture ids per storey, bottom to top
+        self._fringes = {}  # (y, x) -> the fringe spec of a wall cell that has one
+        self._facades = {}  # (y, x) -> the facade spec of a wall cell that has one
 
         for y, row in enumerate(rows):
             row = row.ljust(self.mw)
@@ -134,6 +140,10 @@ class World:
                         self.side_tid[y, x] = self.tid(spec['side'])
                     if len(tids) > 1:
                         self.stacks[(y, x)] = tids
+                    if spec.get('fringe'):
+                        self._fringes[(y, x)] = spec['fringe']
+                    if spec.get('facade'):
+                        self._facades[(y, x)] = spec['facade']
                     if any(self.tex_alpha[t] is not None for t in tids):
                         # a fence or grille: the ground (and any roof) carries on underneath it
                         self.see[y, x] = True
@@ -176,6 +186,8 @@ class World:
         self.solid_h = np.where(self.see, 0.0, self.height).astype(np.float32)
 
         self.floor_decals, self.ceil_decals, self.wall_decals = [], [], {}
+        self.fringe_sprites = self._fringe(scene)
+        self.fringe_sprites += self._facade(scene)
         grime = self._expand_scatter(scene)
         # contact shadows go first, so puddles, stains and the author's own decals sit on top
         self._load_decals(scene, self._contact_shadows(scene) + list(scene.get('decals', [])) + grime)
@@ -279,6 +291,185 @@ class World:
         g = scene.get('grime', 0)
         g = float(g.get('amount', 0)) if isinstance(g, dict) else float(g)
         return max(0.0, min(1.0, g))
+
+    def _ground_open(self, x, y):
+        """Open ground for fringes and facades: inside the map, and no wall a person could not
+        step over (a kerb or a low step still counts as ground)."""
+        return (0 <= x < self.mw and 0 <= y < self.mh and self.height[y, x] < 0.5
+                and not self.void[y, x])
+
+    def _face_runs(self, cells):
+        """Straight runs of wall faces that look onto open ground, from cells {(y, x): spec}:
+        each (spec, d, line, a, b) with d the way out ('n', 's', 'w' or 'e'), `line` the row
+        (or column) of the walls and a..b the cells along it. Cells whose specs differ make
+        separate runs."""
+        groups = {}
+        for (y, x), spec in cells.items():
+            key = json.dumps({'set': spec} if isinstance(spec, str) else spec, sort_keys=True)
+            for d, ox, oy in (('n', 0, -1), ('s', 0, 1), ('w', -1, 0), ('e', 1, 0)):
+                if self._ground_open(x + ox, y + oy):
+                    groups.setdefault((key, d, y if d in 'ns' else x), []).append(x if d in 'ns' else y)
+        out = []
+        for (key, d, line), poss in sorted(groups.items()):
+            poss = sorted(set(poss))
+            start = poss[0]
+            for p, q in zip(poss, poss[1:] + [None]):
+                if q != p + 1:
+                    out.append((json.loads(key), d, line, start, p))
+                    start = q
+        return out
+
+    def _run_ends(self, d, line, a, b, off):
+        """Where a layer `off` out from a run of faces starts and ends along it, and what is at
+        each end: it wraps round an outside corner, stops short in an inside one, and carries on
+        off the edge of the map."""
+        o = 1 if d in 'se' else -1
+        lo, hi, kinds = float(a), float(b + 1), []
+        for end, step in ((a - 1, -1), (b + 1, 1)):
+            nx, ny = (end, line) if d in 'ns' else (line, end)
+            dx_, dy_ = (end, line + o) if d in 'ns' else (line + o, end)
+            if not (0 <= nx < self.mw and 0 <= ny < self.mh):
+                adj, kind = 0.0, 'edge'
+            elif self._ground_open(nx, ny):
+                adj, kind = off, 'convex'
+            elif not self._ground_open(dx_, dy_):
+                adj, kind = -off, 'concave'
+            else:
+                adj, kind = 0.0, 'straight'
+            if step < 0:
+                lo -= adj
+            else:
+                hi += adj
+            kinds.append(kind)
+        return lo, hi, kinds[0], kinds[1]
+
+    def _card(self, d, line, lo, hi, off, **fields):
+        """A planar sprite lying along a run of faces, `off` out from them, from lo to hi."""
+        o = 1 if d in 'se' else -1
+        face = line + (1 if o > 0 else 0)
+        mid, across = (lo + hi) / 2, face + o * off
+        sp = {'x': mid if d in 'ns' else across, 'y': across if d in 'ns' else mid,
+              'angle': 0.0 if d in 'ns' else 90.0, 'planes': 1, 'length': hi - lo, 'shadow': False}
+        sp.update(fields)
+        return sp
+
+    def _cam_spots(self, scene):
+        return [(cx, cy) for cx, cy, r in self._keep_clear(scene) if r == 1.0]
+
+    def _fringe(self, scene):
+        """Layered foliage cards standing in front of every face of a `fringe` wall that looks
+        onto open ground.
+
+        Each straight run of faces gets one long card per layer of its set, back to front: the
+        densest just off the wall, the sparsest at the front, spread over `depth` (a cell by
+        default). Each layer wraps round outside corners and is trimmed in inside ones, so it
+        follows the wall's outline at its own distance, and a card that would pass through a
+        camera is left out.
+        """
+        if not self._fringes:
+            return []
+        cams = self._cam_spots(scene)
+        out = []
+        for spec, d, line, a, b in self._face_runs(self._fringes):
+            name = spec.get('set')
+            if 'cards' in spec:
+                cards = list(spec['cards'])
+            elif name in assets.FRINGES:
+                cards = list(assets.FRINGES[name])
+            else:
+                raise KeyError(f"unknown fringe set {name!r}. Sets: {', '.join(sorted(assets.FRINGES))}, "
+                               f"or give \"cards\" (sprite names, back to front)")
+            depth, hk, seed = float(spec.get('depth', 1.0)), float(spec.get('height', 1.0)), int(spec.get('seed', 0))
+            for k, card in enumerate(cards):
+                off = depth * (k + 0.5) / len(cards)
+                lo, hi, _, _ = self._run_ends(d, line, a, b, off)
+                if hi - lo < 0.15:
+                    continue
+                rng = np.random.default_rng([seed, 'nswe'.index(d), line + 1000, a + 1000, k])
+                sp = self._card(d, line, lo, hi, off, type=card,
+                                scale=float(assets.SPRITE_HEIGHT.get(card, 1.0)) * hk,
+                                u0=float(rng.random()), flip=bool(rng.random() < 0.5))
+                q = Renderer.plane_quads(sp, np.zeros((1, 1, 4)))[0]
+                if any(_seg_dist(cx, cy, *q[:4]) < 0.35 for cx, cy in cams):
+                    continue
+                out.append(sp)
+        return out
+
+    # layers of a facade, back to front: how far out from the wall's face each stands, as a
+    # share of the facade's depth (the street line is 1.0)
+    FACADE_LAYERS = (('room', 0.45), ('drape', 0.83), ('frame', 0.93), ('glass', 0.93), ('wall', 1.0))
+
+    def _facade(self, scene):
+        """Building fronts in layers, for wall cells with a `facade` (see buildings.py).
+
+        Every straight run of faces onto open ground is cut into buildings of `widths` cells,
+        each `storeys` units tall, and each building stands its layers - rooms, curtains, frames
+        and glass, and the wall with its openings, the street line `depth` out from the walls -
+        all spanning the same stretch so its windows line up. A building on an outside corner
+        takes its look (colour, height, paint) from the corner, so both its faces match, and a
+        building taller than its neighbour shows a side wall above it.
+        """
+        if not self._facades:
+            return []
+        out = []
+        for spec, d, line, a, b in self._face_runs(self._facades):
+            spec = {'style': spec['set']} if 'set' in spec and len(spec) == 1 else dict(spec)
+            spec.setdefault('style', spec.pop('set', 'brick'))
+            for st in spec['style'] if isinstance(spec['style'], list) else [spec['style']]:
+                if st not in buildings.FACADE_STYLES:
+                    raise KeyError(f"unknown facade style {st!r}. Styles: {', '.join(buildings.FACADE_STYLES)}")
+            depth = float(spec.get('depth', 1.0))
+            wmin, wmax = (int(v) for v in spec.get('widths', [3, 6]))
+            hmin, hmax = (int(v) for v in spec.get('storeys', [3, 5]))
+            seed = int(spec.get('seed', 0))
+            lo, hi, kl, kh = self._run_ends(d, line, a, b, depth)
+            o = 1 if d in 'se' else -1
+            street = line + (1 if o > 0 else 0) + o * depth
+            rng = np.random.default_rng([seed, 'nswe'.index(d), line + 1000, a + 1000])
+            bounds, pos = [lo], lo
+            while hi - pos > wmax:
+                pos += int(rng.integers(wmin, wmax + 1))
+                bounds.append(pos)
+            if hi - pos < wmin and len(bounds) > 1:
+                bounds.pop()
+            bounds.append(hi)
+            spans = list(zip(bounds[:-1], bounds[1:]))
+            heights, looks = [], []
+            for i, (s0, s1) in enumerate(spans):
+                # a corner building takes its look from the corner, the same from either face
+                if (i == 0 and kl == 'convex') or (i == len(spans) - 1 and kh == 'convex'):
+                    at = s0 if i == 0 and kl == 'convex' else s1
+                    corner = (at, street) if d in 'ns' else (street, at)
+                    look = int(round(corner[0] * 4)) * 7919 + int(round(corner[1] * 4)) * 104729 + seed * 31
+                else:
+                    look = int(rng.integers(1, 2 ** 31))
+                storeys = int(np.random.default_rng(look % (2 ** 32)).integers(hmin, hmax + 1))
+                heights.append(storeys)
+                looks.append(look)
+                params = dict(style=spec['style'], w=round(s1 - s0, 3), h=storeys, look=look,
+                              seed=int(rng.integers(1, 2 ** 31)), lit=float(spec.get('lit', 0.35)))
+                if 'shops' in spec:
+                    params['shops'] = float(spec['shops'])
+                for layer, frac in self.FACADE_LAYERS:
+                    fields = dict(type=buildings.layer_name(layer, **params), scale=float(storeys),
+                                  flip=d in 'ne')                 # read left to right from the street
+                    if layer == 'glass':
+                        fields['glass'] = spec.get('glass', True)
+                    out.append(self._card(d, line, s0, s1, depth * frac, **fields))
+            # a taller building shows its side wall above a lower neighbour
+            for i in range(len(spans) - 1):
+                h0, h1 = heights[i], heights[i + 1]
+                if h0 == h1:
+                    continue
+                look = looks[i if h0 > h1 else i + 1]
+                at = spans[i][1]
+                mid = line + (1 if o > 0 else 0) + o * depth / 2
+                out.append({'type': buildings.layer_name('side', style=spec['style'], w=depth, h=abs(h0 - h1),
+                                                         look=look),
+                            'x': at if d in 'ns' else mid, 'y': mid if d in 'ns' else at,
+                            'angle': 90.0 if d in 'ns' else 0.0, 'planes': 1, 'length': depth,
+                            'scale': float(abs(h0 - h1)), 'z': float(min(h0, h1)), 'shadow': False})
+        return out
 
     def _open_cells(self, chars=None):
         """Open (non-wall) cells, optionally restricted to a set of legend characters."""
@@ -644,6 +835,33 @@ def _box4(a):
     return (out / 16.0).astype(np.float32)
 
 
+GLASS_DEFAULTS = {'tint': [0.82, 0.92, 1.0], 'opacity': 0.22, 'blur': 1}
+
+
+def glass_spec(g):
+    """A sprite's `glass` field filled out: `true` takes the defaults (a light blue tint, a
+    little reflection, the half-size blur), a dict overrides any of them."""
+    out = dict(GLASS_DEFAULTS)
+    if isinstance(g, dict):
+        out.update(g)
+    out['tint'] = np.array(out['tint'], np.float32)
+    out['opacity'] = min(1.0, max(0.0, float(out['opacity'])))
+    out['blur'] = max(0, min(3, int(out['blur'])))
+    return out
+
+
+def frost(img, k):
+    """The frame shrunk by k - each k x k block averaged - and blown back up without smoothing:
+    a blocky blur, the look of a scene through old window glass."""
+    H, W = img.shape[:2]
+    h, w = H // k, W // k
+    out = img.copy()
+    if h and w:
+        small = img[:h * k, :w * k].reshape(h, k, w, k, -1).mean(axis=(1, 3))
+        out[:h * k, :w * k] = np.repeat(np.repeat(small, k, 0), k, 1)
+    return out
+
+
 def sample_lm(lm, res, x, y):
     """Bilinear lightmap lookup for arrays of world coordinates."""
     H, W = lm.shape[:2]
@@ -712,6 +930,7 @@ def soft_swing(x, knee=0.5, limit=0.9):
 
 class Renderer:
     def __init__(self, world, scene):
+        scene = prefabs.expand(scene)
         self.w = world
         self.s = scene
         self.W, self.H = scene.get('resolution', [320, 200])
@@ -824,6 +1043,7 @@ class Renderer:
     def render(self, cam):
         """Render one camera: 3D pass (optionally supersampled), then UI overlays at native res."""
         ss = int(cam.get('supersample', self.s.get('supersample', 1)))
+        self._ss = ss
         bw, bh = self.W, self.H
         self.W, self.H = bw * ss, bh * ss
         try:
@@ -1474,20 +1694,35 @@ class Renderer:
         defs = self.s.get('sprite_defs', {})
         placed = []
         self.anchors = {}
-        for sp in (self.s.get('sprites', []) + self.w.scatter_sprites
+        for sp in (self.s.get('sprites', []) + self.w.scatter_sprites + self.w.fringe_sprites
                    + cam.get('extra_sprites', [])):
             sp = {**assets.sprite_defaults(sp['type'], defs), **sp}
+            if sp.get('glass') and int(sp.get('planes', 0)) <= 0:
+                sp['planes'] = 1                  # a pane of glass is flat: it stands as a card
             sx, sy = float(sp['x']) - px, float(sp['y']) - py
             tx = inv * (dy * sx - dx * sy)
             ty = inv * (-ply * sx + plx * sy)
-            if ty > 0.05:
+            if int(sp.get('planes', 0)) > 0:
+                # a card can reach into view with its centre behind the camera
+                reach = max(float(sp.get('length', 0.0)), float(sp.get('scale', 1.0)) * 2.0) / 2 + 0.5
+                if ty > -reach:
+                    placed.append((max(ty, 0.05), tx, sp))
+            elif ty > 0.05:
                 placed.append((ty, tx, sp))
         translucent = lambda sp: sp.get('blend', 'alpha') != 'alpha' or float(sp.get('opacity', 1)) < 1
+        glass = sorted([p for p in placed if p[2].get('glass')], key=lambda s: -s[0])
+        placed = [p for p in placed if not p[2].get('glass')]
         opaque = sorted([p for p in placed if not translucent(p[2])], key=lambda s: -s[0])
         trans = sorted([p for p in placed if translucent(p[2])], key=lambda s: -s[0])
         self._named = {}
+        rays = (rdx, rdy, rlen)
         for ty, tx, sp in opaque + trans:
-            self._draw_sprite(img, depth, ty, tx, sp, defs, horizon, proj, camz, pl, flash, translucent(sp))
+            if int(sp.get('planes', 0)) > 0:
+                self._draw_planes(img, depth, ty, tx, sp, defs, horizon, proj, camz, flash, translucent(sp), rays)
+            else:
+                self._draw_sprite(img, depth, ty, tx, sp, defs, horizon, proj, camz, pl, flash, translucent(sp))
+        if glass:
+            self._glass_pass(img, depth, glass, defs, horizon, proj, camz, flash, rays)
         self.sprite_stats = {}
         for sid, n in self._named.items():
             vis, lum = 0.0, 0.0
@@ -1628,6 +1863,135 @@ class Renderer:
         if aura:
             self._aura(img, depth, alpha * (ty < dsub), cx0, cy0, ty, aura, pw)
 
+    @staticmethod
+    def plane_quads(sp, rgba):
+        """The vertical quads a planar sprite stands as, each (x0, y0, x1, y1, repeats).
+
+        `planes` 1 is a single card across `angle`; 2 crosses two at right angles; 3 is a star of
+        three 60 degrees apart, dividing the ground round the sprite into sixths. Without an
+        `angle` each sprite takes one from its position, so a bed of ferns is not all aligned.
+        A card with a `length` repeats its image along it, every image-width.
+        """
+        th, tw = rgba.shape[:2]
+        x, y = float(sp['x']), float(sp['y'])
+        width = float(sp.get('scale', 1.0)) * tw / th * float(sp.get('stretch', 1.0))
+        n = max(1, min(3, int(sp.get('planes', 1))))
+        length = float(sp.get('length', width))
+        a0 = math.radians(float(sp['angle']) if 'angle' in sp else (x * 137.508 + y * 61.803) % 180.0)
+        out = []
+        for k in range(n):
+            a = a0 + k * math.pi / n
+            hx, hy = math.cos(a) * length / 2, math.sin(a) * length / 2
+            out.append((x - hx, y - hy, x + hx, y + hy, length / max(width, 1e-6)))
+        return out
+
+    def _glass_pass(self, img, depth, glass, defs, horizon, proj, camz, flash, rays):
+        """Glass, after all the geometry and sprites, far to near. Each pane shows what is behind
+        it - by default through the finished frame shrunk to half size and blown back up without
+        smoothing, a cheap blur - tinted, and mixed with the pane's own faint reflection."""
+        behind = {}
+        for ty, tx, sp in glass:
+            g = glass_spec(sp['glass'])
+            if g['blur'] not in behind:            # made once per blur, from the frame without glass
+                k = 2 ** g['blur'] * getattr(self, '_ss', 1)
+                behind[g['blur']] = frost(img, k) if g['blur'] > 0 else img.copy()
+            self._draw_planes(img, depth, ty, tx, sp, defs, horizon, proj, camz, flash, False, rays,
+                              glass=(g, behind[g['blur']]))
+
+    def _draw_planes(self, img, depth, ty, tx, sp, defs, horizon, proj, camz, flash, is_trans, rays, glass=None):
+        """A planar sprite: each of its quads is drawn like a thin wall at the sprite stage.
+
+        Every screen column intersects the quad on its own, so the image is foreshortened,
+        depth-tested per pixel against everything drawn so far (and the other quads of the same
+        cross), and lit by the light map and the sun at its own point along the card.
+        """
+        W, H = self.W, self.H
+        rdx, rdy, rlen = rays
+        px, py = self._px, self._py
+        rgba, em = assets.get_sprite(sp['type'], defs, self.sprite_view(sp))
+        th, tw = rgba.shape[:2]
+        zb = float(sp.get('z', 0.0)) + self.w.base_z(float(sp['x']), float(sp['y']))
+        hs = float(sp.get('scale', 1.0))
+        u0 = float(sp.get('u0', 0.0))
+        opacity = float(sp.get('opacity', 1.0))
+        tint = np.array(sp.get('tint', [1, 1, 1]), np.float32)
+        additive = sp.get('blend') == 'additive'
+        named = 'id' in sp
+        if named:
+            ph = hs * proj / ty
+            pw = ph * tw / th
+            scx = (tx / ty + 1) * W / 2
+            ytop = horizon - (zb + hs - camz) * proj / ty
+            self.anchors[sp['id']] = {'x': scx, 'top': ytop, 'w': pw, 'h': ph, 'depth': ty,
+                                      'visible': -pw < scx < W + pw and ytop + ph > 0 and ytop < H}
+            self._named[sp['id']] = {'ty': ty, 'h': ph, 'area': float((rgba[..., 3] > 0.5).mean()) * pw * ph,
+                                     'box': None}
+            seen = np.zeros((H, W), bool)
+        for x0, y0, x1, y1, rep_ in self.plane_quads(sp, rgba):
+            ex, ey = x1 - x0, y1 - y0
+            denom = rdx * ey - rdy * ex
+            wx0, wy0 = x0 - px, y0 - py
+            with np.errstate(divide='ignore', invalid='ignore'):
+                t = (wx0 * ey - wy0 * ex) / denom          # depth along each column's ray
+                s_ = (wx0 * rdy - wy0 * rdx) / denom       # where along the quad it lands, 0..1
+            hit = (np.abs(denom) > 1e-9) & (t > 0.05) & (s_ >= 0) & (s_ <= 1)
+            cols = np.nonzero(hit)[0]
+            if cols.size == 0:
+                continue
+            t, s_ = t[cols], s_[cols]
+            top = horizon - (zb + hs - camz) * proj / t
+            bot = horizon - (zb - camz) * proj / t
+            r0, r1 = max(0, int(math.floor(top.min()))), min(H, int(math.ceil(bot.max())))
+            if r1 <= r0:
+                continue
+            rows = np.arange(r0, r1)
+            v = (rows[:, None] + 0.5 - top[None, :]) / (bot - top)[None, :]
+            inside = (v >= 0) & (v < 1)
+            uu = u0 + s_ * rep_
+            uu = ((uu - np.floor(uu)) * tw).astype(int).clip(0, tw - 1)
+            if sp.get('flip'):
+                uu = tw - 1 - uu
+            vv = (v * th).astype(int).clip(0, th - 1)
+            block = rgba[vv, uu[None, :]]
+            alpha = block[..., 3] * opacity
+            if not is_trans:
+                alpha = (alpha > 0.5).astype(np.float32)
+            dsub = depth[r0:r1, cols]
+            mask = inside & (alpha > 0.02) & (t[None, :] < dsub)
+            if not mask.any():
+                continue
+            wx, wy = px + rdx[cols] * t, py + rdy[cols] * t
+            dyn = sample_lm(self.lm, self.lres, wx, wy)
+            Z = (horizon - (rows[:, None] + 0.5)) * t[None, :] / proj + camz
+            ed = np.broadcast_to((t * rlen[cols])[None, :], Z.shape)
+            rr, cc = np.meshgrid(rows, cols, indexing='ij')
+            emm = np.maximum(em[vv, uu[None, :]], 1.0 if sp.get('fullbright') else 0.0)
+            sun = 0.0
+            if self.suns:
+                n_ = math.hypot(ex, ey) or 1.0
+                nx, ny = -ey / n_, ex / n_
+                # foliage cards take light on either face: a leaf lets the sun through
+                sun = self.sun_at(np.broadcast_to(wx[None, :], Z.shape), np.broadcast_to(wy[None, :], Z.shape), Z,
+                                  lambda s2: s2['sin'] * 0.5 + s2['cos'] * 0.6 * max(0.25, abs(nx * s2['ux'] + ny * s2['uy'])))
+            colr = self.shade(block[..., :3] * tint, np.broadcast_to(dyn[None, :, :], block.shape[:2] + (3,)), Z,
+                              ed, emm, flash(rr, cc, ed), sun)
+            a = (alpha * mask)[..., None]
+            sub = img[r0:r1, cols]
+            if glass is not None:
+                # light through the pane, tinted, under the pane's own reflection
+                g, back = glass
+                through = back[r0:r1, cols] * g['tint']
+                colr = through * (1 - g['opacity']) + colr * g['opacity']
+            img[r0:r1, cols] = sub + colr * a if additive else sub * (1 - a) + colr * a
+            if not is_trans:
+                depth[r0:r1, cols] = np.where(mask, t[None, :], dsub)
+            if named:
+                seen[r0:r1, cols] |= mask & (alpha > 0.5)
+        if named and seen.any():
+            ys_, xs_ = np.nonzero(seen)
+            y0_, y1_, x0_, x1_ = ys_.min(), ys_.max() + 1, xs_.min(), xs_.max() + 1
+            self._named[sp['id']]['box'] = (y0_, y1_, x0_, x1_, seen[y0_:y1_, x0_:x1_])
+
     def _aura(self, img, depth, alpha, cx0, cy0, ty, aura, pw):
         """Soft additive glow around a sprite's silhouette (ghosts, spirits, magic)."""
         from PIL import ImageFilter
@@ -1711,6 +2075,7 @@ def render_shot(scene, i, base=None, report=None):
 def draw_map(world, scene, cams, path, cell=24):
     """Top-down layout check: walls by height, floors by texture tint, lights, decals, scattered
     props (small olive dots), placed sprites (green squares) and each camera's view cone."""
+    scene = world.scene                    # with its prefabs placed
     im = Image.new('RGB', (world.mw * cell, world.mh * cell), (10, 10, 14))
     d = ImageDraw.Draw(im)
     maxh = max(1.0, float(world.height.max()))
@@ -1738,11 +2103,24 @@ def draw_map(world, scene, cams, path, cell=24):
         hw, hh = dcl['size'] * cell / 2, dcl['size'] * dcl['dh'] / dcl['dw'] * cell / 2
         dx_, dy_ = dcl['x'] * cell, dcl['y'] * cell
         d.rectangle([dx_ - hw, dy_ - hh, dx_ + hw, dy_ + hh], outline=(150, 118, 84))
-    # scatter first, so the sprites an author placed by hand stay readable on top of it
+    # fringe and scatter first, so the sprites an author placed by hand stay readable on top
+    defs = scene.get('sprite_defs', {})
+
+    def planes(sp, colour):
+        sp = {**assets.sprite_defaults(sp['type'], defs), **sp}
+        if int(sp.get('planes', 0)) <= 0:
+            return False
+        for x0, y0, x1, y1, _ in Renderer.plane_quads(sp, assets.get_sprite(sp['type'], defs)[0]):
+            d.line([x0 * cell, y0 * cell, x1 * cell, y1 * cell], fill=colour)
+        return True
+    for sp in world.fringe_sprites:
+        planes(sp, (64, 110, 60))
     for sp in world.scatter_sprites:
-        sx, sy = sp['x'] * cell, sp['y'] * cell
-        d.rectangle([sx - 1, sy - 1, sx + 1, sy + 1], fill=(120, 132, 84))
+        if not planes(sp, (120, 132, 84)):
+            sx, sy = sp['x'] * cell, sp['y'] * cell
+            d.rectangle([sx - 1, sy - 1, sx + 1, sy + 1], fill=(120, 132, 84))
     for sp in scene.get('sprites', []):
+        planes(sp, (80, 200, 120))
         sx, sy = sp['x'] * cell, sp['y'] * cell
         d.rectangle([sx - 2, sy - 2, sx + 2, sy + 2], fill=(80, 200, 120))
     for i, c in enumerate(cams):
@@ -1769,11 +2147,12 @@ SCENE_KEYS = {
     'palette', 'auto_levels', 'dither', 'scanlines', 'overbright', 'lightmap_res', 'max_distance',
     'supersample', 'overlays', 'ui', 'post', 'icon_defs', 'viewmodel_defs', 'seed',
     'skyline', 'contact_shadows', 'heights', 'height_unit', 'reflections', 'sky_objects', 'wet',
+    'prefabs', 'prefab_defs',
     'title', 'description', 'notes',  # free-form metadata, never read
 }
 SHOT_KEYS = {'x', 'y', 'angle', 'look_at', 'fov', 'height', 'pitch', 'flashlight', 'overlays', 'overrides',
              'post', 'scanlines', 'seed', 'supersample', 'extra_sprites', 'title', 'description', 'notes'}
-CELL_KEYS = {'wall', 'h', 'top', 'floor', 'ceil', 'drop', 'reflect', 'side'}
+CELL_KEYS = {'wall', 'h', 'top', 'floor', 'ceil', 'drop', 'reflect', 'side', 'fringe', 'facade'}
 ASSET_EXTS = ('.png', '.ttf', '.otf')
 
 
@@ -1799,6 +2178,8 @@ def lint_scene(scene):
             check(shot.get('overrides'), SCENE_KEYS, f'shot {i + 1} overrides')
     for ch, spec in (scene.get('legend') or {}).items():
         check(spec, CELL_KEYS, f'legend {ch!r}')
+    for i, pl in enumerate(scene.get('prefabs') or []):
+        check(pl, prefabs.PLACEMENT_KEYS, f'prefab {i + 1}')
     return out
 
 

@@ -18,7 +18,7 @@ It ships as a Claude skill and works as Claude's retro imagination: ask for a pi
 
 ## Settings
 
-Interiors, streets, woodland, coast, castles, chapels, caves, sewers, snow, starships, alien worlds and dreams, all from the same renderer and the same built-in materials.
+Interiors, streets, woodland, coast, castles, chapels, caves, sewers, snow, jungle temples, ancient ruins, tropical beaches, starships, alien worlds and dreams, all from the same renderer and the same built-in materials.
 
 | | |
 |---|---|
@@ -40,13 +40,24 @@ Interiors, streets, woodland, coast, castles, chapels, caves, sewers, snow, star
 | ![A landing site under a gas giant](docs/gallery/alien_landing.png) | ![The monolith and the one who waits by it](docs/gallery/alien_monolith.png) |
 | ![A staircase to nowhere on an island in the sky](docs/gallery/dream_stair.png) | ![Koi over a mirror lake](docs/gallery/dream_mirror.png) |
 
+## Jungle, ruins and the beach
+
+| | |
+|---|---|
+| ![A stepped pyramid mirrored in a long pool, giant trees standing over the canopy](docs/gallery/jungle_temple.png) | ![An explorer on the top of the pyramid, looking out over the canopy](docs/gallery/jungle_canopy.png) |
+| ![A jaguar guarding the stairs up to the shrine](docs/gallery/jungle_jaguar.png) | ![The path in, under the canopy, an explorer ahead in the mist](docs/gallery/jungle_path.png) |
+| ![Sunset down the sacred way, between columns, to the temple on the headland](docs/gallery/ruins_way.png) | ![A fallen marble head among the poppies, the colonnade behind](docs/gallery/ruins_head.png) |
+| ![The lagoon at sunset, a castaway at the water's edge](docs/gallery/beach_sunset.png) | ![The hut and the palms mirrored in the lagoon, from the end of the pier](docs/gallery/beach_pier.png) |
+| ![The temple by moonlight, a fire on the altar](docs/gallery/ruins_night.png) | ![Glowing surf on the beach at night, a fire on the sand](docs/gallery/beach_night.png) |
+
 ## Fog, light and weather
 
 | | |
 |---|---|
 | ![A stone circle at dawn, mist lying low, a knight seen from behind](docs/gallery/moor_dawn.png) | ![The low sun through the stones](docs/gallery/moor_circle.png) |
 | ![A sunbeam through the fallen roof of a cathedral](docs/gallery/cathedral_beam.png) | ![A pilgrim standing in the light](docs/gallery/cathedral_pilgrim.png) |
-| ![An officer walking away down a wet alley in the rain](docs/gallery/alley_rain.png) | ![Lightning over the alley](docs/gallery/alley_storm.png) |
+| ![A rain-soaked city street at night, running up to a T-junction, every building different](docs/gallery/alley_street.png) | ![An officer walking away up the street under the lamps](docs/gallery/alley_rain.png) |
+| ![Windows set back in their walls, curtains and rooms behind glass, a shop window blurred and tinted](docs/gallery/alley_glass.png) | ![Lightning over the junction, a lit shopfront across the street](docs/gallery/alley_storm.png) |
 
 ## Ask Claude
 
@@ -59,18 +70,23 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 ## Features
 
 - **2.5D raycaster** with multi-hit rays: walls of any height, so towers rise over hedges; per-storey wall textures for building facades; low blocks with real tops for steps, daises and altars
-- **See-through walls**: iron fences, railings, picket fences, chain-link, jail bars, portcullises, lattices and smashed windows, with the scene showing through the gaps
-- **Floors, ceilings and open sky** per cell, with nine procedural sky panoramas (night, dusk, storm, day, overcast, blood, deep space, alien, dream), distant skylines (mountains, hills, treeline, city), and planets, ringed gas giants, moons and stranger things hung in the sky
+- **See-through walls**: iron fences, railings, picket fences, chain-link, jail bars, portcullises, lattices, smashed windows, Doric colonnades and a temple's roof comb, with the scene showing through the gaps
+- **Floors, ceilings and open sky** per cell, with eleven procedural sky panoramas (night, dusk, storm, day, overcast, blood, sunset, golden hour, deep space, alien, dream), distant skylines (mountains, hills, treeline, city, islands, rainforest), and planets, ringed gas giants, moons and stranger things hung in the sky
 - **Void floors**: no ground at all, just sky carrying on below the horizon, for space outside a station's viewport or islands adrift over a sea of cloud with ragged cliffs underneath
 - **Lighting**: coloured point lights baked into a shadowed lightmap, a sun or moon with long cast shadows and its disc in the sky, emissive texels (lit windows, stained glass, glowing runes), flashlight cone, Doom-style light banding, and a soft contact shadow under every prop
 - **Volumetric fog**: mist that lies low and drifts in banks, halos round every lamp, and beams of sun or moonlight through windows, doorways, standing stones and trees; sunlight finds its way into roofed rooms through their openings
 - **Reflections**: water, ice, wet streets and puddles mirror the lamps, windows and figures beyond them
 - **The 90s look**: 320x200 framebuffer, Bayer-dithered 256-colour palette, chunky nearest-neighbour upscale, optional scanlines and 2x supersampling
-- **Sprites**: 85 procedural props - scenery, light fixtures, wall decorations, castle furnishings, sci-fi gear, alien flora, dream objects, debris and vegetation - an 18-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
+- **Sprites**: 123 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 21-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
+- **Planar sprites**: a plant can stand as fixed planes in the world instead of a billboard - a cross of two, or a star of three that cuts the ground round it into sixths - so it has body as the camera moves; the low plants do by default, and a prefab can mix billboards and planes (a billboard palm trunk under a star of fronds)
+- **Layered forest edges**: give the walls of a jungle a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth
+- **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves
+- **Glass**: a pass of its own after everything else, showing what is behind each pane tinted and softly blurred - the frame shrunk to half size and blown back up without smoothing - under a faint reflection
+- **Prefabs**: named groups placed with one line - a campsite with its light, a palm grove, a beach hut with its walls, door, window, roof and torches - turned, scaled and varied by seed; scenes can define their own
 - **Procedural scatter**: declare debris by set, density and size class and the loader expands it into hundreds of placed props, clumped by a noise field so it drifts and leaves bare patches instead of spreading evenly - and never piles up on a camera or in front of a speaker
 - **One grime dial**: raises surface variation, debris density and wall/floor wear together
 - **Surface variation**: a world-space noise field breaks up texture tiling on walls, floors and ceilings - anchored to the world, so it stays put as the camera moves instead of crawling like film grain, and scaled per material so plaster stays subtle while cobble and rust vary hard
-- **Decals**: 16 stamps (puddles, stains, splatter, vines, moss, cracks, scorch, leaks, cobwebs, glowing runes, contact shadows) blended into any floor, wall or ceiling, so surfaces get dirty without new textures
+- **Decals**: 22 stamps (puddles, stains, splatter, vines, moss, cracks, scorch, leaks, cobwebs, glowing runes, surf foam, shells, starfish, lily pads, contact shadows) blended into any floor, wall or ceiling, so surfaces get dirty without new textures
 - **Sunken floors**: water cells sit below their banks, with the submerged edge shaded and sprites floating on the surface
 - **Translucency**: opacity, additive blending, soft auras and wobbling tails for ghosts, spirits and magic; translucent sprites render after opaque ones without writing depth
 - **GUI toolkit** in a hand-drawn pixel font: speech bubbles anchored over characters, dialog panels with portraits, choice menus with pointers and costs, title cards, objective panels, pickup toasts, interaction prompts, health bars, ammo counters, hotbars, inventories, crosshair, compass and a Doom-style automap traced from the level; five themes (classic, parchment, terminal, blood, steel)
@@ -79,7 +95,8 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **Weather**: rain, snow, splashes, ash, embers, autumn leaves, fireflies, glowing spores and blowing dust, placed in the world rather than painted over it - hidden behind walls, kept out from under roofs, shrinking and fading into the fog with distance - plus wet ground that mirrors the lamps
 - **Post-processing**: colour grading, bloom, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
 - **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
-- **No assets to download**: all 103 textures, 85 props, 18 characters, 16 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
+- **Pixel art drawn in code**: the jungle, ruins and beach are built from shapes - leaves, stones, planks, blades of grass, carved glyphs - stamped into a height field, lit from one direction, and snapped onto hue-shifted colour ramps with dark edges on their shadow sides (`scripts/pixelart.py`), so they read as pixel art rather than noise
+- **No assets to download**: all 126 textures, 123 props, 21 characters, 22 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
 
 ![Character cast](docs/gallery/cast.png)
 
@@ -126,14 +143,14 @@ git clone https://github.com/StevenGlick/ai-raster-scene
 cd ai-raster-scene
 python package_skill.py
 ```
-writes `dist/ai-raster-scene.zip` (about 200 KB) containing only what the skill needs at runtime - `SKILL.md`, `scripts/`, `references/`, `examples/` and `requirements.txt`. The README gallery, tests and CI config are deliberately left out; `docs/` alone is several megabytes of PNG and is no use inside a skill.
+writes `dist/ai-raster-scene.zip` (about 280 KB) containing only what the skill needs at runtime - `SKILL.md`, `scripts/`, `references/`, `examples/` and `requirements.txt`. The README gallery, tests and CI config are deliberately left out; `docs/` alone is several megabytes of PNG and is no use inside a skill.
 
 - Claude apps: upload that zip as a custom skill in Claude's settings.
 - Claude Code: clone straight into your skills folder, `git clone https://github.com/StevenGlick/ai-raster-scene ~/.claude/skills/ai-raster-scene` (or a project's `.claude/skills/`), or unzip the package there.
 
 Then just ask, for example: *"Show me a foggy pine forest at night with a campfire and someone sitting at it."*
 
-There are no asset files to install. Every texture, prop, character and the pixel font are generated procedurally in `scripts/assets.py`, `characters.py` and `pixelfont.py`, which is why the whole skill is a few hundred KB of Python and renders identically everywhere.
+There are no asset files to install. Every texture, prop, character and the pixel font are generated procedurally in `scripts/assets.py`, `biomes.py`, `buildings.py`, `characters.py` and `pixelfont.py`, which is why the whole skill is a few hundred KB of Python and renders identically everywhere.
 
 **As a CLI**
 ```bash
@@ -192,12 +209,17 @@ It is a 2.5D raycaster: one ground floor (plus shallow sunken cells for water, a
 ```bash
 python tests/smoke_test.py
 ```
-renders every example plus stress scenes that exercise every widget, theme, held item, effect, preset and palette, checks no frame comes out blank, runs regression checks for past bugs, and checks the docs still match the code (asset lists, counts, scene keys, gallery links). CI runs it on Python 3.9 and 3.13 on every push.
+renders every example plus stress scenes that exercise every widget, theme, held item, effect, preset and palette, checks no frame comes out blank, runs regression checks for past bugs, and checks the docs still match the code (asset lists, counts, scene keys, gallery links, the asset inventory). CI runs it on Python 3.9 and 3.13 on every push.
 
 ```bash
 python docs/build_gallery.py
 ```
 regenerates every image on this page from the example scenes. The gallery is never edited by hand: each picture is declared with the scene and shot it comes from, so after changing the engine or an example, one command brings the README up to date.
+
+```bash
+python docs/asset_review.py sheets
+```
+renders review sheets of every texture, prop, character, decal, sky and icon into `renders/sheets`. [docs/ASSETS.md](docs/ASSETS.md) is the working list for improving them: each asset's status, what is wrong with it, and which examples use it. `python docs/asset_review.py sync` keeps its rows and usage columns in step with the code.
 
 ## License
 

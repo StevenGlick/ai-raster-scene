@@ -1,8 +1,12 @@
-"""Rain alley: a downpour at night, wet street, lamps haloed in the drizzle-thick air.
+"""Rain alley: a downpour at night on a city street that runs up to a T-junction.
 
-Shows depth-aware rain and splashes (the `downpour` preset), `wet` ground mirroring the lamps
-and windows, volumetric fog with `glow` (every lamp gets a halo), lightning, and a figure
-walking away from the camera (`facing`).
+Shows building `facade`s: every front cut into separate buildings of different heights and
+brick, each with real depth - windows set back in the wall, glass (the glass pass: what is
+behind it, tinted and softly blurred), curtains and blinds behind the glass, and lit or dark
+rooms behind those - plus depth-aware rain and splashes (the `downpour` preset), `wet` ground
+mirroring the lamps and windows, a road sunk a kerb's height below the pavements, street-lamp
+prefabs, volumetric fog with `glow` (every lamp gets a halo), lightning, and a figure walking
+away from the camera (`facing`).
 Run:  python rain_alley.py  -> writes rain_alley.json
 """
 import os
@@ -11,44 +15,62 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scripts'))
 from maptools import Grid, scene  # noqa: E402
 
-g = Grid(20, 44, fill='B')
-g.rect(8, 2, 11, 41, '.')                             # the alley
-g.rect(4, 18, 7, 21, '.')                             # a side court
-for y in range(3, 41, 4):
-    g.put(7, y, 'b' if y % 8 else 'N')                # facades with their lit windows
-    g.put(12, y + 2, 'b' if (y + 2) % 8 else 'N')
-lamps = [(8.4, 36.0), (11.6, 28.0), (8.4, 20.0), (11.6, 12.0), (8.4, 5.0)]
+W, H = 44, 60
+g = Grid(W, H, fill='B')                              # buildings everywhere, then the streets
+# the cross street along the top, from one end of the map to the other
+g.rect(0, 7, W - 1, 7, 'f')                           # the building fronts' cell on its far side
+g.rect(0, 8, W - 1, 9, 's')                           # pavement
+g.rect(0, 10, W - 1, 13, '~')                         # the road
+g.rect(0, 14, W - 1, 15, 's')
+g.rect(0, 16, W - 1, 16, 'f')
+# the street up to it, toward the camera
+g.rect(17, 16, 17, H - 1, 'f')
+g.rect(18, 16, 19, H - 1, 's')
+g.rect(20, 14, 23, H - 1, '~')
+g.rect(24, 16, 25, H - 1, 's')
+g.rect(26, 16, 26, H - 1, 'f')
+g.rect(18, 16, 25, 16, 's')                           # the corners of the junction
+g.rect(20, 14, 23, 16, '~')
+for x in (0, W - 1):                                  # a building closes each end of the cross street
+    g.rect(x, 7, x, 16, 'B')
+
+lamps = [(18.55, 54.0), (25.45, 48.0), (18.55, 42.0), (25.45, 36.0), (18.55, 30.0), (25.45, 24.0),
+         (18.55, 18.0), (12.0, 8.55), (31.0, 8.55), (5.0, 15.45), (38.0, 15.45)]
+RAIN = [{'fx': 'rain', 'density': 0.8, 'length': 8, 'opacity': 0.3, 'angle': 14}, {'fx': 'splashes', 'density': 0.7},
+        {'fx': 'grade', 'saturation': 0.75, 'tint': [0.92, 0.97, 1.05]}]
 
 s = scene(
     g,
-    title='Rain alley - a downpour at night',
+    title='Rain alley - a downpour at night, up to the T-junction',
     legend={
-        'B': {'wall': ['brick_dark', 'window_dark', 'window_lit', 'window_dark', 'window_lit'], 'h': 5.0},
-        'b': {'wall': ['brick_dark', 'window_lit', 'window_dark', 'window_lit', 'window_dark'], 'h': 5.0},
-        'N': {'wall': ['brick_dark', 'window_teal', 'window_lit', 'window_teal', 'window_dark'], 'h': 5.0},
-        '.': {'floor': 'cobble'},
+        'B': {'wall': 'brick_dark', 'h': 3.0,
+              'facade': {'style': ['brick', 'brick', 'brick', 'sooty', 'sooty'], 'storeys': [3, 6], 'widths': [3, 6],
+                         'lit': 0.5, 'shops': 0.45, 'seed': 3}},
+        'f': {'floor': 'boards'},                     # inside the fronts: the floor seen through a shop door
+        's': {'floor': 'flagstone'},
+        '~': {'floor': 'asphalt', 'drop': 0.05},      # a kerb's height below the pavement
     },
     sky='storm',
-    ambient=[0.07, 0.075, 0.09],
-    wet=0.7,
-    fog={'color': [0.06, 0.07, 0.09], 'density': 0.035, 'ground': 0.05, 'height': 0.8, 'glow': 1.3},
-    lights=[{'x': x + (0.45 if x < 10 else -0.45), 'y': y, 'z': 1.5, 'radius': 4.5, 'color': [1.0, 0.82, 0.52],
-             'intensity': 1.3} for x, y in lamps] + [
-        {'x': 5.5, 'y': 19.5, 'z': 1.2, 'radius': 3.5, 'color': [0.45, 0.9, 1.0], 'intensity': 0.9},
+    ambient=[0.13, 0.13, 0.15],
+    wet=0.75,
+    fog={'color': [0.07, 0.08, 0.1], 'density': 0.016, 'ground': 0.05, 'height': 0.8, 'glow': 1.2},
+    prefabs=[{'type': 'street_lamp', 'x': x, 'y': y, 'seed': i} for i, (x, y) in enumerate(lamps)],
+    sprites=[
+        {'id': 'officer', 'x': 19.1, 'y': 31.0, 'type': 'guard', 'facing': 270},
+        {'x': 25.1, 'y': 38.6, 'type': 'barrel'}, {'x': 18.9, 'y': 45.4, 'type': 'crate'},
+        {'x': 19.3, 'y': 45.9, 'type': 'sack'}, {'x': 25.0, 'y': 22.4, 'type': 'barrel', 'flip': True},
     ],
-    sprites=[{'x': x, 'y': y, 'type': 'lamp_post'} for x, y in lamps] + [
-        {'id': 'officer', 'x': 9.7, 'y': 25.0, 'type': 'guard', 'facing': 270},
-        {'x': 10.9, 'y': 31.0, 'type': 'barrel'}, {'x': 8.6, 'y': 15.0, 'type': 'crate'},
-        {'x': 10.8, 'y': 15.4, 'type': 'sack'},
-    ],
-    decals=[{'tex': 'puddle_shine', 'surface': 'floor', 'x': 9.6, 'y': y, 'size': 1.6} for y in (33.0, 23.0, 9.0)],
-    scatter=[{'of': 'litter', 'on': '.', 'density': 0.08, 'sizes': ['tiny', 'small'], 'seed': 6}],
-    camera={'x': 9.8, 'y': 40.2, 'look_at': [9.8, 2.0, 0.8], 'fov': 66},
+    decals=[{'tex': 'puddle_shine', 'surface': 'floor', 'x': x, 'y': y, 'size': 1.6}
+            for x, y in ((21.2, 49.0), (22.6, 38.0), (21.0, 26.0), (22.2, 12.0), (12.0, 11.4), (33.0, 12.6))],
+    scatter=[{'of': 'litter', 'on': 's', 'density': 0.05, 'sizes': ['tiny', 'small'], 'seed': 6}],
+    camera={'x': 21.6, 'y': 58.0, 'look_at': [21.6, 8.0, 1.5], 'fov': 66},
     shots=[
-        {'x': 9.8, 'y': 40.2, 'look_at': [9.8, 2.0, 0.8], 'fov': 66, 'post': ['downpour'],
+        {'x': 21.6, 'y': 58.0, 'look_at': [21.6, 8.0, 1.5], 'fov': 66, 'post': RAIN,
          'overlays': [{'type': 'caption', 'text': 'Third night of rain', 'at': 'top', 'box': True}]},
-        {'x': 10.6, 'y': 31.4, 'look_at': [8.6, 21.0, 1.1], 'fov': 64, 'post': ['downpour']},
-        {'x': 9.4, 'y': 29.0, 'look_at': [9.8, 4.0, 2.6], 'fov': 72, 'post': ['storm', {'fx': 'lightning', 'x': 0.62}]},
+        {'x': 20.3, 'y': 36.2, 'look_at': 'officer', 'fov': 60, 'post': RAIN},
+        {'x': 24.7, 'y': 52.0, 'look_at': [26.4, 40.0, 1.3], 'fov': 62, 'post': RAIN},
+        {'x': 22.0, 'y': 18.5, 'look_at': [40.0, 11.0, 1.6], 'fov': 70,
+         'post': ['storm', {'fx': 'lightning', 'x': 0.66}]},
     ],
     contact_shadows=0.5,
     supersample=2,

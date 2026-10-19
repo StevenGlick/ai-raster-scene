@@ -1408,24 +1408,6 @@ def spr_flowers():
     return _finish(im, em, w, h)
 
 
-def spr_palm():
-    w, h = 48, 96
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    for i in range(70):
-        y = 96 - i
-        x = 24 + 4 * np.sin(i / 25)
-        d.rectangle([(x - 2) * S, y * S, (x + 2) * S, (y + 1) * S], fill='#5a4632' if (i // 4) % 2 else '#4a3a28')
-    cx, cy = 24 + 4 * np.sin(70 / 25), 26
-    for ang in np.linspace(0, 2 * np.pi, 9)[:-1]:
-        ex, ey = cx + 22 * np.cos(ang), cy + 10 * np.sin(ang) + 10 * abs(np.cos(ang))
-        d.line([(cx * S, cy * S), (ex * S, ey * S)], fill='#26442a', width=3 * S)
-        for t in np.linspace(0.3, 1, 6):
-            px, py = cx + (ex - cx) * t, cy + (ey - cy) * t
-            d.line([(px * S, py * S), ((px + 2) * S, (py + 4) * S)], fill='#1e3a22', width=S)
-    return _finish(im, em, w, h)
-
-
 def spr_tree():
     w, h = 64, 96
     im, d, em, de = _canvas(w, h)
@@ -1530,18 +1512,6 @@ def spr_bench():
     return _finish(im, em, w, h)
 
 
-def spr_column():
-    w, h = 16, 64
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.rectangle([3 * S, 4 * S, 13 * S, 60 * S], fill='#b0aa9a')
-    for x in (5, 8, 11):
-        d.line([(x * S, 5 * S), (x * S, 59 * S)], fill='#8a8476', width=S)
-    d.rectangle([0, 0, 16 * S, 4 * S], fill='#c0baa8')
-    d.rectangle([0, 60 * S, 16 * S, 64 * S], fill='#9a9484')
-    return _finish(im, em, w, h)
-
-
 def spr_rowboat():
     w, h = 48, 16
     im, d, em, de = _canvas(w, h)
@@ -1551,17 +1521,6 @@ def spr_rowboat():
     for y in (8, 11):
         d.line([(4 * S, y * S), (44 * S, y * S)], fill='#4a3424', width=S // 2)
     d.line([(36 * S, 4 * S), (36 * S, 0)], fill='#3a2c22', width=S)
-    return _finish(im, em, w, h)
-
-
-def spr_fern():
-    w, h = 24, 20
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    for ang in np.linspace(-1.2, 1.2, 9):
-        ex, ey = 12 + 11 * np.sin(ang), 20 - 18 * np.cos(ang)
-        d.line([(12 * S, 20 * S), (ex * S, ey * S)], fill='#2a4a2a', width=2 * S)
-        d.line([(12 * S, 20 * S), ((ex + 12) / 2 * S, (ey + 20) / 2 * S)], fill='#3a5e32', width=S)
     return _finish(im, em, w, h)
 
 
@@ -1956,20 +1915,6 @@ def spr_broken_barrel():
     return _finish(im, em, w, h)
 
 
-def spr_grass_tuft():
-    w, h = 20, 14
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    rng = np.random.default_rng(47)
-    for _ in range(16):
-        x = rng.random() * 16 + 2
-        ln = rng.random() * 8 + 5
-        lean = (rng.random() - 0.5) * 5
-        c = ['#39442c', '#4a5a38', '#272e1f'][int(rng.random() * 3)]
-        d.line([(x * S, 14 * S), ((x + lean) * S, (14 - ln) * S)], fill=c, width=S)
-    return _finish(im, em, w, h)
-
-
 def spr_reeds():
     w, h = 24, 34
     im, d, em, de = _canvas(w, h)
@@ -2004,19 +1949,6 @@ def spr_ivy_hang():
                 s = 1.6 + rng.random() * 1.4
                 sx = x + (1.2 if y % 6 == 1 else -s)
                 d.ellipse([sx * S, (y - 0.5) * S, (sx + s) * S, (y + 1.5) * S], fill='#2e5a2a')
-    return _finish(im, em, w, h)
-
-
-def spr_rocks():
-    w, h = 24, 10
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    rng = np.random.default_rng(61)
-    for _ in range(9):
-        x, y = rng.random() * 20 + 2, rng.random() * 4 + 4
-        s = rng.random() * 2.6 + 1.6
-        c = ['#6a665e', '#8a857c', '#4a4740'][int(rng.random() * 3)]
-        d.ellipse([(x - s) * S, (y - s * 0.7) * S, (x + s) * S, (y + s * 0.7) * S], fill=c)
     return _finish(im, em, w, h)
 
 
@@ -2679,10 +2611,10 @@ def spr_orrery():
 
 
 SPRITES = {
-    'lamp_post': spr_lamp_post, 'statue': spr_statue, 'flowers': spr_flowers, 'palm': spr_palm,
+    'lamp_post': spr_lamp_post, 'statue': spr_statue, 'flowers': spr_flowers,
     'tree': spr_tree, 'barrel': spr_barrel, 'crate': spr_crate, 'lantern': spr_lantern,
     'candles': spr_candles, 'bed': spr_bed, 'wheelchair': spr_wheelchair, 'bench': spr_bench,
-    'column': spr_column, 'rowboat': spr_rowboat, 'fern': spr_fern, 'fountain': spr_fountain,
+    'rowboat': spr_rowboat, 'fountain': spr_fountain,
     'pine': spr_pine, 'dead_tree': spr_dead_tree, 'stump': spr_stump, 'log': spr_log,
     'bush': spr_bush, 'mushrooms': spr_mushrooms, 'boulder': spr_boulder, 'signpost': spr_signpost,
     'campfire': spr_campfire, 'locker': spr_locker, 'console': spr_console, 'buoy': spr_buoy,
@@ -2691,7 +2623,7 @@ SPRITES = {
     'brazier': spr_brazier, 'painting': spr_painting, 'banner': spr_banner,
     'wall_clock': spr_wall_clock, 'pipe_valve': spr_pipe_valve, 'rubble': spr_rubble,
     'bones': spr_bones, 'sack': spr_sack, 'bucket': spr_bucket, 'broken_barrel': spr_broken_barrel,
-    'grass_tuft': spr_grass_tuft, 'reeds': spr_reeds, 'ivy_hang': spr_ivy_hang, 'rocks': spr_rocks,
+    'reeds': spr_reeds, 'ivy_hang': spr_ivy_hang,
     'throne': spr_throne, 'armor': spr_armor, 'chains': spr_chains, 'chest': spr_chest,
     'table': spr_table, 'pew': spr_pew, 'stalagmite': spr_stalagmite, 'crystal': spr_crystal,
     'glowshroom': spr_glowshroom, 'snowy_pine': spr_snowy_pine, 'snowman': spr_snowman,
@@ -2710,16 +2642,16 @@ SPRITES = {
 
 # default world size (height in map units) for each sprite
 SPRITE_HEIGHT = {
-    'lamp_post': 1.6, 'statue': 1.5, 'flowers': 0.35, 'palm': 3.0, 'tree': 2.6, 'barrel': 0.45,
+    'lamp_post': 1.6, 'statue': 1.5, 'flowers': 0.35, 'tree': 2.6, 'barrel': 0.45,
     'crate': 0.4, 'lantern': 0.3, 'candles': 0.2, 'bed': 0.4, 'wheelchair': 0.45, 'bench': 0.35,
-    'column': 1.0, 'rowboat': 0.3, 'fern': 0.4, 'fountain': 0.9,
+    'rowboat': 0.3, 'fountain': 0.9,
     'pine': 3.4, 'dead_tree': 2.9, 'stump': 0.3, 'log': 0.28, 'bush': 0.5, 'mushrooms': 0.12,
     'boulder': 0.55, 'signpost': 1.3, 'campfire': 0.4, 'locker': 1.0, 'console': 0.85, 'buoy': 0.5,
     'gravestone': 0.6,
     'sconce': 0.32, 'ceiling_lamp': 0.3, 'chandelier': 0.45, 'brazier': 0.85,
     'painting': 0.45, 'banner': 0.95, 'wall_clock': 0.28, 'pipe_valve': 0.32, 'rubble': 0.34,
-    'bones': 0.22, 'sack': 0.42, 'bucket': 0.32, 'broken_barrel': 0.46, 'grass_tuft': 0.40,
-    'reeds': 0.8, 'ivy_hang': 0.8, 'rocks': 0.22,
+    'bones': 0.22, 'sack': 0.42, 'bucket': 0.32, 'broken_barrel': 0.46,
+    'reeds': 0.8, 'ivy_hang': 0.8,
     'throne': 0.95, 'armor': 0.66, 'chains': 0.6, 'chest': 0.3, 'table': 0.36, 'pew': 0.42,
     'stalagmite': 0.8, 'crystal': 0.36, 'glowshroom': 0.16, 'snowy_pine': 3.4, 'snowman': 0.62,
     'grave_cross': 0.55, 'ladder': 1.0, 'lectern': 0.5,
@@ -2735,6 +2667,8 @@ SPRITE_HEIGHT = {
 PROP_DEFAULTS = {
     'orb': {'aura': {'color': [0.72, 0.6, 1.0], 'strength': 0.6, 'radius': 0.3}},
     'hologram': {'aura': {'color': [0.4, 0.9, 1.0], 'strength': 0.35, 'radius': 0.18}},
+    # low plants stand as crossed planes (see biomes.py for the jungle's)
+    'bush': {'planes': 3}, 'reeds': {'planes': 3}, 'flowers': {'planes': 2},
 }
 
 # ---------------------------------------------------------------- debris and scatter
@@ -2866,6 +2800,10 @@ def get_sprite(spec, defs=None, view='front'):
             _scache[key] = sprite_from_pixels(defs[spec])
         return _scache[key]
     if spec in _scache:
+        return _scache[spec]
+    if isinstance(spec, str) and spec.startswith('facade:'):
+        import buildings                  # one layer of one building's front (see buildings.py)
+        _scache[spec] = buildings.layer_image(spec)
         return _scache[spec]
     if spec in CHARACTERS:
         out = sprite_from_pixels(CHARACTERS[spec])
@@ -3187,6 +3125,22 @@ NO_CONTACT_SHADOW = {'campfire', 'brazier', 'candles', 'lantern', 'ceiling_lamp'
                      'chains', 'ladder', 'crystal', 'glowshroom', 'hologram', 'drone', 'orb',
                      'floating_rock', 'sky_whale', 'koi', 'pocket_watch', 'balloon', 'open_book'}
 
+# ---------------------------------------------------------------- jungle, ruins and beach
+# Drawn with the pixel-art toolkit (scripts/pixelart.py) in scripts/biomes.py, which adds its
+# textures, props, scatter sets and decals to the tables here.
+import biomes  # noqa: E402
+
+TEXTURES.update(biomes.TEXTURES)
+TEXTURE_REFLECT.update(biomes.TEXTURE_REFLECT)
+TEXTURE_NOISE.update(biomes.TEXTURE_NOISE)
+SPRITES.update(biomes.SPRITES)
+SPRITE_HEIGHT.update(biomes.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(biomes.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= biomes.NO_CONTACT_SHADOW
+DEBRIS_SETS.update(biomes.DEBRIS_SETS)
+DECALS.update(biomes.DECALS)
+FRINGES = dict(biomes.FRINGES)
+
 _dcache = {}
 
 
@@ -3214,7 +3168,7 @@ def get_decal(spec, defs=None):
 
 # ---------------------------------------------------------------- skies
 
-SKYLINES = ('mountains', 'hills', 'treeline', 'city')
+SKYLINES = ('mountains', 'hills', 'treeline', 'city', 'islands', 'jungle')
 
 
 def _harmonics(w, rng, terms, ridged=False):
@@ -3233,11 +3187,14 @@ def _wrapdist(w, centre):
     return np.minimum(d, w - d)
 
 
-def _silhouette(sky, elev_deg, proj, colour, rng, texture=0.08):
-    """Paint a ground silhouette whose top edge is `elev_deg` (per column) above the horizon."""
+def _silhouette(sky, elev_deg, proj, colour, rng, texture=0.08, gaps=False):
+    """Paint a ground silhouette whose top edge is `elev_deg` (per column) above the horizon.
+    With `gaps`, columns at zero stay open sky right down to the horizon (islands at sea)."""
     h, w = sky.shape[:2]
     top = h - 1 - proj * np.tan(np.radians(np.clip(elev_deg, 0, 60)))
     mask = np.arange(h)[:, None] >= top[None, :]
+    if gaps:
+        mask &= (np.asarray(elev_deg) > 0)[None, :]
     shade = 1 - texture + texture * 2 * rng.random((h, w))
     sky[mask] = (colour[None, None, :] * shade[..., None])[mask]
     return mask
@@ -3287,6 +3244,40 @@ def draw_skyline(sky, spec, proj, seed=0):
                 elev = np.maximum(elev, np.where(d < half, top - (top - base) * (d / half), 0))
             ink = (0.02, 0.045, 0.03)
             _silhouette(sky, elev * k, proj, custom if custom is not None else tone(0.86, ink), rng, 0.05)
+        elif kind == 'islands':
+            # a few low islands far out at sea, the bigger ones crowned with a palm or two
+            px_deg = w / 360.0
+            elev = np.zeros(w)
+            for _ in range(int(s.get('count', 7))):
+                cx = rng.random() * w
+                half = (1.5 + 4.5 * rng.random()) * px_deg
+                top = (0.5 + 1.6 * rng.random()) * k
+                d = _wrapdist(w, cx)
+                elev = np.maximum(elev, top * np.clip(1 - (d / half) ** 2, 0, 1) ** 0.6)
+                for _ in range(int(rng.integers(1, 4)) if top > 0.8 * k else 0):
+                    px = cx + (rng.random() - 0.5) * half
+                    ph = top + (0.5 + 0.6 * rng.random()) * k
+                    dd = _wrapdist(w, px)
+                    elev = np.maximum(elev, np.where(dd < 0.1 * px_deg, ph, 0))                     # trunk
+                    elev = np.maximum(elev, np.where(dd < 0.55 * px_deg, ph - dd / px_deg * 0.6 * k, 0))   # crown
+            _silhouette(sky, elev, proj, custom if custom is not None else tone(0.45), rng, 0.04, gaps=True)
+        elif kind == 'jungle':
+            # rolling rainforest: round crowns packed shoulder to shoulder, the odd emergent giant
+            px_deg = w / 360.0
+            for depth, layer in ((0.5, 0.0), (0.8, 0.6)):
+                base = 1.2 + 1.4 * layer + 1.4 * _harmonics(w, rng, [(5, 1), (9, .6), (17, .3)])
+                elev = base.copy()
+                for _ in range(int(360 * 0.8)):
+                    cx = rng.random() * w
+                    half = (0.5 + 1.3 * rng.random()) * px_deg * (1.8 if rng.random() < 0.05 else 1)
+                    top = base[int(cx) % w] + (0.5 + 1.2 * rng.random() ** 2) * (2.2 if half > 2 * px_deg else 1)
+                    hc = half / px_deg * 0.5
+                    d = _wrapdist(w, cx)
+                    crown = top - hc * (1 - np.sqrt(np.clip(1 - (d / half) ** 2, 0, 1)))
+                    elev = np.maximum(elev, np.where(d < half, crown, 0))
+                ink = (0.03, 0.06, 0.04)
+                _silhouette(sky, elev * k, proj, custom * (1 - 0.3 * layer) if custom is not None else tone(depth, ink),
+                            rng, 0.05)
         elif kind == 'city':
             px_deg = w / 360.0
             h = sky.shape[0]
@@ -3461,16 +3452,20 @@ SKY_PRESETS = {
     'space': ('#010104', '#020208', '#05050e'),
     'alien': ('#06262a', '#1c6458', '#d0b868'),
     'dream': ('#6a86d6', '#d6a2cc', '#ffdcae'),
+    'sunset': ('#2a2c5a', '#c8607a', '#ffb860'),
+    'golden': ('#3a6aa8', '#a0bcd2', '#f2d8a0'),
 }
 _CLOUD_COVER = {'night': 0.62, 'dusk': 0.55, 'storm': 0.42, 'day': 0.6, 'overcast': 0.3, 'blood': 0.55,
-                'alien': 0.5, 'dream': 0.5}
+                'alien': 0.5, 'dream': 0.5, 'sunset': 0.56, 'golden': 0.64}
 _CLOUD_COLOUR = {'night': '#2a3245', 'dusk': '#5a3a4a', 'storm': '#1c2028', 'day': '#e8eef4',
-                 'overcast': '#6a7078', 'blood': '#2a0a0c', 'alien': '#7a3a6a', 'dream': '#fff2f6'}
+                 'overcast': '#6a7078', 'blood': '#2a0a0c', 'alien': '#7a3a6a', 'dream': '#fff2f6',
+                 'sunset': '#e8806a', 'golden': '#fff0d8'}
 # the sea of cloud seen from above, under a void floor: sunlit tops, shadowed hollows
 _CLOUD_SEA = {'night': ('#4a5672', '#121828'), 'dusk': ('#d89880', '#3a2c48'),
               'storm': ('#3e4652', '#141820'), 'day': ('#f2f5fa', '#9aaccc'),
               'overcast': ('#a0a6ae', '#5a6068'), 'blood': ('#7a2a1e', '#1e0608'),
-              'alien': ('#9ae0c0', '#2a3a5a'), 'dream': ('#fff6fa', '#c0a0d8')}
+              'alien': ('#9ae0c0', '#2a3a5a'), 'dream': ('#fff6fa', '#c0a0d8'),
+              'sunset': ('#ffc890', '#5a3a6a'), 'golden': ('#fff0d8', '#a89aa8')}
 
 
 def _wrapnoise(w, h, cx, cy, rng):

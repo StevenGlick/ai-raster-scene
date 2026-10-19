@@ -40,6 +40,8 @@ A scene is one JSON file, read as UTF-8. Only `map`, `legend` and `camera` are r
 | `flashlight` | none | `true` or `{intensity:1.2, radius:0.35, range:5, color}`; per-shot override allowed |
 | `light_levels` | `24` | brightness quantisation steps (Doom-style banding). `0` = smooth |
 | `scatter` | `[]` | procedural debris: specs expanded into real sprites at load (see Scatter) |
+| `prefabs` | `[]` | named groups placed with one line each - sprites, lights, decals, scatter and patches of map (see Prefabs) |
+| `prefab_defs` | `{}` | the scene's own prefabs, in the same form as the built-ins |
 | `grime` | `0` | 0-1 dial for neglect: raises surface noise, scatter density and wear decals |
 | `grime_debris`, `grime_decals` | `true` | set either to `false` to keep that part out of `grime` |
 | `decals` | `[]` | stamps blended into floors, walls and ceilings (see Decals) |
@@ -86,6 +88,64 @@ Wall cell (solid block, `h` units tall):
 - `top` is the texture on the block's upper surface. A block lower than the eye shows it as a real surface you look down onto: a step, a dais, an altar, a table-high ledge (see Heights).
 - A wall cell can also take `ceil`: under a roof, a block lower than the ceiling leaves the ceiling above it in view. Without one it borrows the roof of the room around it, so this is rarely needed.
 - Rays continue past walls, so a tall building behind a low hedge is drawn correctly. A wall stops the ray only when it fills the screen top to bottom.
+
+- `fringe` on a wall cell stands layered foliage cards in front of every face of it that looks onto open ground (see Fringe below).
+- `facade` on a wall cell turns every face of it onto open ground into a street of separate buildings, each in layers with real windows (see Facades below).
+
+### Fringe: layered edges
+
+A solid wall of `jungle_leaves` is a flat green face. Give the wall cells a `fringe` and every face of them that looks onto open ground gets a few long cards of plants standing in front of it - in the jungle set four, from a dense wall of trunks, crowns and bushes just off the wall to a scatter of bushes at the front - spread over the cell in front. The cards are planar sprites (see Planar sprites), so as the camera moves the layers slide past each other and the edge of the forest has depth.
+
+```json
+"J": {"wall": "jungle_leaves", "h": 3.0, "top": "canopy_top", "fringe": "jungle"}
+"K": {"wall": "jungle_leaves", "h": 3.0, "fringe": {"set": "jungle", "depth": 1.5, "height": 1.2, "seed": 2}}
+```
+| field | default | meaning |
+|---|---|---|
+| `set` | - | a fringe set: `jungle` (cards `jungle_card_4` .. `jungle_card_1`, back to front) |
+| `cards` | - | instead of a set: your own sprite names, back to front (a PNG or a `sprite_defs` card works) |
+| `depth` | `1.0` | how far out from the wall the layers spread, in cells |
+| `height` | `1.0` | a multiplier on the cards' heights |
+| `seed` | `0` | reshuffles where along its card each run starts |
+
+- Plan a ring of open ground a cell deep in front of the walls for the fringe to stand in: make the solid part of the forest a cell smaller than the forest should look. A path through a jungle wants to be two cells wider than it should look.
+- Each straight run of faces gets one card per layer; the layers wrap round outside corners and stop short in inside ones, so each follows the outline at its own distance. A card that would pass through a camera position is left out.
+- Cards are drawn at the sprite stage: walls behind them show through their gaps, a ceiling over them (a canopy over a path) hides what rises above it, and they cast no shadows.
+
+### Facades: buildings in layers
+
+A city block drawn as walls is one flat face with windows painted on. Give the block's cells a `facade` and every straight run of its faces onto open ground is cut into separate buildings - different widths, heights, brick, paint and windows - and each building is drawn as layers of planes, one behind another in the cell in front of the block:
+
+| layer | stands | holds |
+|---|---|---|
+| wall | on the street line | brick (or plaster) with openings for the windows and the door, sills, lintels, string courses, a cornice, soot |
+| frame | a little back | window frames and glazing bars, the door |
+| glass | with the frames | the panes, drawn by the glass pass (see Glass): what is behind, tinted and softly blurred |
+| drape | further back | curtains, a roller blind, closed shutters, a net curtain or nothing - a different choice in every window |
+| room | furthest back | the rooms: lit (a lamp-lit glow, now and then a screen's blue) or dark, with a lamp, a picture, a shelf, a plant or a figure |
+
+So a window is set back in its wall, the glass sits in it, the curtains hang behind the glass and the room is further back, and as the camera moves they slide against each other.
+
+```json
+"B": {"wall": "brick_dark", "h": 3.0,
+      "facade": {"style": ["brick", "brick", "sooty"], "storeys": [3, 6], "widths": [3, 6], "lit": 0.5, "shops": 0.4, "seed": 3}}
+"P": {"wall": "plaster", "h": 3.0, "facade": "plaster"}
+```
+| field | default | meaning |
+|---|---|---|
+| `style` | `brick` | `brick` (red and brown, painted sash windows), `sooty` (soot-blackened tenements, dark frames), `plaster` (washed colours), or a list to mix them building by building |
+| `storeys` | `[3, 5]` | the range of heights, a unit (a storey) each |
+| `widths` | `[3, 6]` | the range of building widths along the street, in cells |
+| `lit` | `0.35` | the share of windows with a light on |
+| `shops` | per style | the chance a building keeps a shop: a big window and its door on the ground floor |
+| `depth` | `1.0` | how deep the fronts are, in cells: the street line is that far out from the block |
+| `glass` | `true` | the glass for its windows: `true`, or tint, opacity and blur (see Glass) |
+| `seed` | `0` | shuffles the buildings |
+
+- Plan the map like a fringe: the block's cells stand a cell back from where the fronts should be, with a cell of open ground in front of them for the layers (give it a floor: it is what a shop door looks onto). Pavement and road come after that.
+- A building on an outside corner turns it: both its faces share its look and height. A building taller than its neighbour shows a plain side wall above it.
+- The block itself can be low (its height only matters for shadows from a sun or moon); the buildings take their heights from `storeys`.
+- Seen from straight down the street a front is flat, as everything in the raycaster is; the layers show best from the pavement, looking along the buildings.
 
 ### See-through walls
 
@@ -138,11 +198,17 @@ Any texture slot accepts:
 - a PNG path (resized to 64x64, nearest). Relative paths are looked up beside the scene file first, then in the working directory - the same goes for PNG sprites, decals and TTF fonts,
 - `{"base": "brick", "tint": [0.8, 0.9, 1.1], "brightness": 0.7}` for a recoloured variant.
 
-Built-ins with emissive texels (glow regardless of lighting): `window_lit`, `window_lit_plaster`, `window_teal`, `runes`, `stained_glass`, `hull_lit` and `hull_red` (a light strip at eye height), `tech_panel` (readouts), `server` (status lights), `blast_door` (a warning light), `grid_floor` (glowing grid lines), `alien_rock` (glowing veins), `fireplace` (the fire), `star_chart` (the stars). Their dark counterparts are `window_dark`, `window_dark_plaster`.
+Built-ins with emissive texels (glow regardless of lighting): `window_lit`, `window_lit_plaster`, `window_teal`, `runes`, `stained_glass`, `hull_lit` and `hull_red` (a light strip at eye height), `tech_panel` (readouts), `server` (status lights), `blast_door` (a warning light), `grid_floor` (glowing grid lines), `alien_rock` (glowing veins), `fireplace` (the fire), `star_chart` (the stars), `canopy` (light through the leaves, and sky in the gaps), `temple_door` (something burning inside). Their dark counterparts are `window_dark`, `window_dark_plaster`.
 
-See-through built-ins (see See-through walls): `bars`, `fence_iron`, `chainlink`, `railing`, `picket`, `portcullis`, `window_broken`, `lattice`, and `viewport` (an observation window from just above the floor to just under the top: stack two for a glass wall two storeys tall). A PNG with transparent pixels behaves the same way.
+See-through built-ins (see See-through walls): `bars`, `fence_iron`, `chainlink`, `railing`, `picket`, `portcullis`, `window_broken`, `lattice`, `viewport` (an observation window from just above the floor to just under the top: stack two for a glass wall two storeys tall), `roof_comb` (a temple's stone lattice crest), and the Doric colonnade: `colonnade` (one fluted column to a cell), `colonnade_top` (capital, architrave, triglyph frieze and cornice) and `colonnade_broken` (shafts snapped off at different heights). Stack them per storey: `["colonnade", "colonnade", "colonnade_top"]` with `h` 3 is an intact colonnade, `["colonnade", "colonnade_broken"]` a ruined one. Seen square-on a colonnade is convincing; seen along its length the columns are flat and thin, so for a row you look down, use `column` props instead. A PNG with transparent pixels behaves the same way.
 
 The built-ins also include castle and dungeon stone (`castle`, `flagstone`, `slime_brick`, `door_wood`), winter ground (`snow`, `ice`, `snow_rock`), starships (`hull`, `hull_dark`, `hazard`, `deck`, `hex_panel`, plus the lit ones above), alien and dream worlds (`alien_ground`, `organic` living walls, `sky_wall` painted with sky and clouds, `cloud_floor`, polished `obsidian`), and a study's `fireplace` and `star_chart`. `python scripts/assets.py catalog.png` draws them all, with see-through textures over a checkerboard.
+
+**Jungle, ruins and beach.** These are drawn a newer way (shapes lit from one direction and snapped onto colour ramps; see `scripts/pixelart.py`), so leaves and stones read as themselves even small on screen:
+
+- Jungle: `jungle_leaves` (a wall of rainforest), `canopy` (the leaf ceiling seen from below), `canopy_top` (the canopy seen from above: use it as the `top` of jungle walls), `jungle_floor` (leaf litter and roots), `jungle_bark` (a giant trunk netted with strangler-fig roots), `temple_stone` (big chipped blocks with moss in the joints), `temple_cornice` (the top course of a temple tier: make it the last storey of each tier's wall stack, so a stepped pyramid reads as steps), `glyphs` (carved cartouches), `temple_roots` (blocks with roots poured over them), `temple_door` (a corbelled doorway into the dark), `roof_comb`.
+- Ruins: `limestone` (sun-bleached ashlar), `ruin_paving` (worn slabs with grass in the joints), `dry_grass`, and the colonnade above.
+- Beach: `beach_sand` (pale, wind-rippled), `wet_sand`, `shallows` (clear turquoise over a caustic-lit bed), `sea` (open water with whitecaps), `bamboo`, `thatch`. `wet_sand`, `shallows` and `sea` reflect by default. Leave the water at ground level on a beach: a `drop` draws a bank along the waterline, which looks like the edge of a pool.
 
 ## Lights
 
@@ -197,12 +263,14 @@ Open cells (no `ceil`) show a 360-degree sky panorama: `sky` picks the preset. `
 | `hills` | rolling downs in two layers |
 | `treeline` | a dark wall of overlapping conifers: woods, churchyards, lakesides |
 | `city` | blocky towers with a scatter of lit windows (`lights`, default 0.22, is the share that are lit) |
+| `islands` | a few low islands far out at sea, the bigger ones crowned with palms (`count`, default 7); open sky between them down to the horizon |
+| `jungle` | rolling rainforest crowns in two layers, the odd emergent giant standing clear |
 
 - A dict takes `type`, `height` (a multiplier, default 1), `color` (RGB; by default each layer is tinted toward the sky's own horizon colour, so it sits in the haze) and `seed`. A list draws back to front, first entry farthest.
 - Heights are in degrees above the horizon, so the silhouette keeps its proportions at any resolution or field of view. It is painted into the sky, so it never occludes anything in the map and costs nothing per frame.
 - Pair it with the map: a `treeline` behind a fenced yard, `mountains` over a frozen lake, `city` beyond a rooftop. Fog's `sky_mix` hazes it along with the sky.
 
-The presets: `night`, `dusk`, `storm`, `day`, `overcast` and `blood` for the world as it is; `space` (black, dense stars, a galaxy band and coloured nebula, continuing below the horizon); `alien` (teal overhead, sulphur at the horizon, magenta cloud); `dream` (periwinkle to rose to peach, pale cloud).
+The presets: `night`, `dusk`, `storm`, `day`, `overcast` and `blood` for the world as it is; `space` (black, dense stars, a galaxy band and coloured nebula, continuing below the horizon); `alien` (teal overhead, sulphur at the horizon, magenta cloud); `dream` (periwinkle to rose to peach, pale cloud); `sunset` (indigo overhead, rose, a gold horizon, coral cloud: put a low sun in it over the sea); `golden` (late-afternoon blue over a warm horizon: golden hour).
 
 ### Sky objects
 
@@ -284,22 +352,57 @@ Add any of the keys below and fog becomes **volumetric**. Each pixel marches thr
 | `shadow` | this sprite's contact shadow: a strength, or `false` for none (default: the scene's `contact_shadows`) |
 | `facing` | the compass direction a character faces (camera degrees). With the camera behind it, you see its back |
 | `view` | `"front"` or `"back"`: force a view whatever the camera does |
+| `planes` | `0` | `0` a billboard turning to face the camera; `1` a single card standing fixed in the world, `2` a cross of two, `3` a star of three (see Planar sprites). The low plants default to 2 or 3 |
+| `angle` | from its position | for a planar sprite: the compass direction the (first) card runs along |
+| `length` | its image's width | for a single card: its length in world units; the image repeats along it |
+| `u0` | `0` | for a card: where along its image it starts, 0-1 |
+
+### Planar sprites: crosses, stars and cards
+
+A billboard turns to face the camera, so a bush is the same flat picture from every side. A sprite with `planes` stands as fixed vertical planes instead, each drawn with the sprite's image like a thin wall: `2` crosses two at right angles, `3` makes a star of three 60 degrees apart (cutting the ground round it into sixths). Seen from any side at least one plane is turned toward you, and as the camera moves they shift against each other, so plants have body. The low plants - ferns, tufts of grass, bromeliads, banana plants, tree ferns, monstera, heliconia, poppies, bushes, reeds and flowers - stand this way by default; `"planes": 0` makes one a billboard again.
+
+```json
+{"x": 7.0, "y": 15.5, "type": "fern"}                                    // a star, by default
+{"x": 8.5, "y": 14.6, "type": "monstera", "planes": 3, "angle": 20}
+{"x": 4.0, "y": 9.5, "type": "jungle_card_2", "planes": 1, "angle": 90, "length": 6.0}
+```
+- Each plane is depth-tested per pixel against everything else, its partners in a cross included, and lit by the lights and the sun at its own points, both faces alike.
+- `planes: 1` with a `length` is a card: a long strip of scenery, its image repeating along it. Fringes are made of these (see Fringe).
+- Without an `angle`, each takes one from its position, so a bed of ferns is not all aligned. In a prefab, `angle` turns with the prefab.
+- Trees that lean (`palm_lean`) and anything with a front (people, furniture) stay billboards: a leaning trunk crossed with itself leans three ways at once. Mix the two in a prefab instead: `palm_3d` is a billboard trunk under a star of `palm_crown` planes.
+
+### Glass
+
+Glass is drawn in a pass of its own, after all the geometry and sprites: each pane looks at what is already behind it and shows that, tinted, under a faint reflection of its own. By default what it shows is softened the cheap way - the finished frame shrunk to half size and blown back up without smoothing, so each 2x2 block of pixels is averaged - which reads as old window glass.
+
+```json
+{"x": 6.0, "y": 4.5, "type": "glass_pane", "angle": 0, "length": 3.0, "scale": 1.2}
+{"x": 9.0, "y": 4.5, "type": "glass_pane", "glass": {"tint": [0.9, 1.0, 0.92], "opacity": 0.1, "blur": 0}}
+```
+- Any sprite with `"glass": true` (or a dict) is glass, drawn as a card (`planes` 1 unless it says otherwise). Its image's alpha says where the glass is and its colours are what the glass reflects; `glass_pane` is a plain one, a unit square, glass by default.
+- `tint` multiplies what shows through (default `[0.82, 0.92, 1.0]`, a light blue), `opacity` mixes in the reflection (default `0.22`: mostly see-through), and `blur` is `1` (half size, the default), `2` (quarter size: frosted), or `0` (clear).
+- Glass writes depth, so fog and rain treat it as a surface, and it shows in reflections on the floor. A pane behind another pane is not seen through it.
+- The windows of a `facade` are glass (see Facades).
 
 Drawing order: opaque sprites first (they write depth), then translucent/additive ones back to front without writing depth, so ghosts show what is behind them. Built-in lamps, lanterns and candles have emissive flames; place sprites at least ~0.2 from wall faces.
 
 **Contact shadows.** Every opaque prop or character standing on the floor gets a soft dark stamp under its feet, sized to its width, so nothing looks pasted onto the ground. `contact_shadows` sets the strength for the scene (0.55 by default, `0` for none) and a sprite's `shadow` overrides it. Sprites lifted off the floor (`z` > 0.05), standing on a block, translucent, additive or `fullbright` get none, and nor do fires, light fixtures, hanging and wall-mounted props, ladders, crystals and glowing mushrooms.
 
-Built-in props (85): armor, barrel, bed, bench, boulder, brazier, buoy, bush, campfire, candles, chest, column, console, crate, crystal, dead_tree, fern, flowers, fountain, glowshroom, grave_cross, gravestone, lamp_post, lantern, lectern, locker, log, mushrooms, palm, pew, pine, rowboat, signpost, snowman, snowy_pine, stalagmite, statue, stump, table, throne, tree, wheelchair, plus the wall-mounted, ground, sci-fi, dream and study props listed below. `crystal` and `glowshroom` glow (pair them with a coloured light); `pew`, `table` and `bench` take `stretch` for length.
+Built-in props (123): armor, barrel, bed, bench, boulder, brazier, buoy, bush, campfire, candles, chest, column, console, crate, crystal, dead_tree, fern, flowers, fountain, glowshroom, grave_cross, gravestone, lamp_post, lantern, lectern, locker, log, mushrooms, palm, pew, pine, rowboat, signpost, snowman, snowy_pine, stalagmite, statue, stump, table, throne, tree, wheelchair, plus the wall-mounted, ground, sci-fi, dream and study props listed below. `crystal` and `glowshroom` glow (pair them with a coloured light); `pew`, `table` and `bench` take `stretch` for length.
 
 - Sci-fi and alien: `stasis_pod` (lit glass, a sleeper inside; tint it dark for a dead one), `hologram` (a wireframe world over its emitter, with a soft glow), `sci_crate`, `drone` (float it with `z`), `lander` (a landing craft, 1.6 tall), `antenna`, `alien_plant` (glowing pods), `monolith`, `alien_egg`.
 - Dream and surreal: `orb` (a floating light with its own glow), `floating_rock` (an islet of earth adrift), `door_frame` (a door standing on its own), `sky_whale` (stars along its back; float it high), `koi`, `pocket_watch`, `balloon`, `chess_pawn` and `chess_king` (marble; tint them dark for the other side). Things meant to float carry no contact shadow, so set their `z` and they hang in the air. Over a void floor `z` is simply height above z=0.
 - A study: `telescope`, `globe`, `armchair`, `book_stack`, `open_book` (glowing pages; float a few for magic), `writing_desk` (with a lit candle), `orrery` (a glowing sun at its heart).
+- Cards and parts: `jungle_card_1`, `jungle_card_2`, `jungle_card_3` and `jungle_card_4`, the long strips of the jungle fringe (front to back), and `palm_trunk` and `palm_crown`, the palm in two pieces in one frame, which stack back into a palm (see the `palm_3d` prefab). `glass_pane` is a plain pane of glass (see Glass).
+- Jungle: `banana_plant`, `monstera`, `tree_fern`, `heliconia`, `bromeliad`, `fern`, `liana` (hangs down from the canopy; no contact shadow), `kapok` (an emergent giant 7.5 tall: stand it in the jungle and its crown clears the canopy), `canopy_crown` (set it on top of a jungle wall with `z` a little under the wall's height, a few to a stretch, and the canopy edge becomes a line of rounded crowns against the sky), `stone_head` (a colossal carved head), `stela`, `jaguar` (its eyes glow), `macaw`.
+- Ruins: `column` (Doric, 1 tall by default: scale it to 2.5-3 for a temple), `broken_column`, `column_drum` (fallen, on its side), `marble_head` (colossal, broken off at the neck), `amphora`, `cypress`, `olive_tree`, `poppies`, `goat`, `dry_tuft`.
+- Beach: `palm` and `palm_lean` (leaning out over the water), `coconuts`, `canoe` (an outrigger), `tiki_torch` (a flame with its own glow), `hammock`, `driftwood`, `crab`, `seagull` (float it with `z`), and `surf` and `surf_glow`: a low line of foam, about 1 unit long, for a row along a waterline (a foam decal is seen edge-on from eye height; these stay visible), `surf_glow` being surf on a night of glowing plankton.
 
-Built-in characters (16x32 pixel art): cultist, scientist, guard, nurse, spiritualist, ghost (translucent with aura and wobble by default), hybrid, soldier, knight, child (about 0.42 tall), creature, robot, shopkeeper, astronaut, android, alien (about 0.7 tall), dreamer (in a nightgown, holding a candle), and claude. The creature's eyes, the robot's eyes and chest lights, the astronaut's suit lights, the android's visor and the alien's eyes glow in the dark.
+Built-in characters (16x32 pixel art): cultist, scientist, guard, nurse, spiritualist, ghost (translucent with aura and wobble by default), hybrid, soldier, knight, child (about 0.42 tall), creature, robot, shopkeeper, astronaut, android, alien (about 0.7 tall), dreamer (in a nightgown, holding a candle), explorer (pith helmet and khaki), hoplite (crested bronze helmet, round shield and spear), castaway (straw hat, ragged shirt, barefoot), and claude. The creature's eyes, the robot's eyes and chest lights, the astronaut's suit lights, the android's visor and the alien's eyes glow in the dark.
 
 `claude` is Claude's own avatar: a small figure whose head is a paper lantern lit from inside, in a clay-coloured coat with a teal scarf, holding an open book. It carries its own warm light. `examples/claude_study.py` puts it in the reading room it chose, with ready-made shots for answering a question in a picture.
 
-Wall-mounted and hanging props (`sconce`, `painting`, `banner`, `wall_clock`, `pipe_valve`, `ceiling_lamp`, `chandelier`, `ivy_hang`, `chains`, `ladder`) are ordinary sprites: place them a little off the surface (about 0.2-0.3 from a wall face) and set `z`. Ground clutter (`rocks`, `rubble`, `bones`, `sack`, `bucket`, `broken_barrel`, `grass_tuft`, `reeds`) is sized to read at 320x200; scatter a handful rather than a carpet.
+Wall-mounted and hanging props (`sconce`, `painting`, `banner`, `wall_clock`, `pipe_valve`, `ceiling_lamp`, `chandelier`, `ivy_hang`, `chains`, `ladder`) are ordinary sprites: place them a little off the surface (about 0.2-0.3 from a wall face) and set `z`. Ground clutter (`rocks`, `rubble`, `bones`, `sack`, `bucket`, `broken_barrel`, `grass_tuft`, `dry_tuft`, `reeds`) is sized to read at 320x200; scatter a handful rather than a carpet.
 
 ## Decals
 
@@ -326,7 +429,7 @@ Decals are stamps blended into a surface's albedo at render time - puddles, stai
 | `tint`, `flip` | RGB multiplier; mirror horizontally |
 | `reflect` | 0-1, floor decals only: how mirror-like the decal makes the floor where it covers it (see Reflections) |
 
-Built-in decals: puddle, puddle_dark, puddle_shine, stain, stain_rust, splatter, splatter_dark, vines, moss_patch, crack, scorch, leak, cobweb, rune_mark, drain, contact_shadow. `rune_mark` is emissive, so it glows regardless of lighting. `contact_shadow` is the soft disc used for contact shadows, which you can also stamp by hand (under a prop hanging low over the floor, say). The puddles reflect by default (`puddle_shine` 0.55, `puddle` 0.35, `puddle_dark` 0.25), so a lamp post shows in the wet patch at its foot.
+Built-in decals: puddle, puddle_dark, puddle_shine, stain, stain_rust, splatter, splatter_dark, vines, moss_patch, crack, scorch, leak, cobweb, rune_mark, drain, contact_shadow, and for the shore and the jungle pool: foam, foam_glow, starfish, shells, seaweed, lily_pads. `rune_mark` and `foam_glow` are emissive, so they glow regardless of lighting. Seen from eye height a floor decal is foreshortened almost to a line, so `foam` reads from a raised camera or close up; for surf seen from a standing height use the `surf` props. `contact_shadow` is the soft disc used for contact shadows, which you can also stamp by hand (under a prop hanging low over the floor, say). The puddles reflect by default (`puddle_shine` 0.55, `puddle` 0.35, `puddle_dark` 0.25), so a lamp post shows in the wet patch at its foot.
 
 - A floor decal is drawn on the plane of the cell it sits in, so a puddle inside a cell with a `drop` lands on the sunken surface, not the bank above it.
 - Dark puddles read as holes punched in a lit floor. Use `puddle_shine` on anything a lamp reaches (wet asphalt, sand, boards) and keep `puddle_dark` for dim interiors.
@@ -456,6 +559,47 @@ each one looks best.
   effect, which is screen-space and deliberately crawls - the two stack fine.
 - Sprites are not affected: they are small, already hand-varied, and look wrong when mottled.
 
+## Prefabs
+
+A prefab is a named group of things placed with one line: sprites (billboards or planes), point lights, decals, scatter, other prefabs, and even a patch of map with its own legend. Put them in `prefabs`; the loader turns each into ordinary parts before anything else reads the scene, so they light, occlude and scatter like parts placed by hand.
+
+```json
+"prefabs": [
+  {"type": "campsite", "x": 12.5, "y": 20.5, "seed": 2},
+  {"type": "beach_hut", "x": 31.5, "y": 14.5, "angle": 180},
+  {"type": "palm_grove", "x": 36.0, "y": 22.0, "angle": 40, "scale": 1.1, "seed": 4, "id": "grove"}
+]
+```
+| field | meaning |
+|---|---|
+| `type` | a built-in prefab or a name from `prefab_defs` |
+| `x`, `y` | where its origin goes |
+| `angle` | turn, in compass degrees: at 0 a part's `dx` points east, at 90 south. A prefab with a map turns in quarter turns |
+| `scale` | grow or shrink the whole group (not a prefab with a map) |
+| `seed` | picks its variations: the same seed gives the same group |
+| `id` | prefixes the ids of its parts (`grove.tall`), so two copies can both be aimed at |
+
+Built-in prefabs: `campsite` (a fire, logs, stones and its light), `palm_grove`, `palm_3d` (a billboard trunk under a star of crown planes), `jungle_clump`, `jungle_bush` (planes and billboards mixed), `fern_bed`, `ruined_columns`, `altar_fire` (a stone block of map with a brazier on it), `beach_hut` (bamboo and thatch walls, door, lattice window, roofed floor, its torches and lights; the door faces east at angle 0), `tiki_torches`, `street_lamp`, `graves`, `shrine`.
+
+Defining one (in `prefab_defs`, or the same form in `scripts/prefabs.py` for a built-in):
+```json
+"prefab_defs": {
+  "well": {
+    "map": ["W"], "legend": {"W": {"wall": "stone_dark", "h": 0.6, "top": "water"}},
+    "sprites": [{"type": "bucket", "dx": 0.7, "dy": 0.2},
+                {"type": "grass_tuft", "dx": -0.6, "dy": 0.5, "jitter": 0.3, "chance": 0.7, "scale": [0.3, 0.45]}],
+    "lights": [{"dx": 0, "dy": 0.8, "z": 0.9, "radius": 2.5}],
+    "decals": [{"tex": "puddle", "dx": 0.5, "dy": 0.7, "size": 0.8},
+               {"tex": "moss_patch", "surface": "wall", "cell": [0, 0], "face": "south", "z": 0.3}]
+  }
+}
+```
+- Parts sit at `dx`, `dy` from the origin (world units, before the turn). `lights` are point lights; put suns and moons in the scene.
+- A `map` is laid with its `anchor` cell (`[column, row]`, the middle one by default) on the cell holding the origin, and the origin moves to that cell's centre so the parts line up with the walls. Its legend's characters get fresh ones, so they never clash with the scene's; any other character is written as it is and means whatever the scene's legend says; a space leaves the scene's cell alone. Wall decals name a `cell` of the prefab's map and turn with it.
+- Variation: `jitter` (move by up to that much), `chance` (keep only that often), a `[low, high]` pair for `scale`, `z` or `angle`, `"flip": "random"`, and a prefab-level `scale` pair for the whole group.
+- `scatter` entries keep working inside a prefab: an `on` naming the prefab's own legend characters scatters over its cells alone. `prefabs` nest, turning and scaling with their parent.
+- A shot's `overrides` can change `prefabs` (a campfire only at night): give the whole list, it replaces the scene's.
+
 ## Scatter
 
 Hand-placing forty rocks is tedious and tends to look placed. `scatter` declares *what* goes
@@ -472,7 +616,7 @@ result is deterministic for a given seed.
 
 | field | meaning |
 |---|---|
-| `of` | a named set (`stones`, `rubble`, `forest`, `undergrowth`, `shore`, `litter`, `wreckage`, `cave`, `alien`, `derelict`), a sprite name, or a list. Repeats inside a set act as weights |
+| `of` | a named set (`stones`, `rubble`, `forest`, `undergrowth`, `shore`, `litter`, `wreckage`, `cave`, `alien`, `derelict`, `jungle`, `beach`, `ruins`), a sprite name, or a list. Repeats inside a set act as weights |
 | `on` | legend characters to scatter on, as a string or list. Omit for every open cell |
 | `density` | items per eligible cell. 0.3 is a light dusting, 1.5+ is a stony beach |
 | `sizes` | size classes to draw from: a list, or a dict of weights. Classes are `tiny`, `small`, `medium`, `large`, `huge`, multiplying the prop's default height |

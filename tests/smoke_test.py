@@ -638,6 +638,241 @@ def check_atmosphere():
     print('ok fog, light through openings, weather, wet ground, back views, render report')
 
 
+def check_pixel_art():
+    """The pixel-art toolkit and what it drew: textures tile, ramps shift hue the way an artist
+    would, cut-out holes show what is behind them, and the beach's surf is visible from eye height."""
+    sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+    import assets
+    import biomes
+    import pixelart as px
+    import render as R
+
+    # 1. a shape stamped across the edge of a tiling canvas comes round the other side
+    cv = px.Canvas(32)
+    cv.ellipse(1.0, 16.0, 4.0, 3.0)
+    assert cv.id[16, 31] and cv.id[16, 0], 'stamps must wrap round a tiling canvas'
+    sprite = px.Canvas(32, wrap=False)
+    sprite.ellipse(1.0, 16.0, 4.0, 3.0)
+    assert not sprite.id[16, 31], 'a sprite canvas must not wrap'
+
+    # 2. every texture drawn with the toolkit tiles: the step across its edge, row against row (or
+    # column against column), is no bigger than the biggest step inside it - a mortar joint may
+    # fall on the edge, a seam would stand out from every joint. Only solid pixels count, and a
+    # single storey (a cornice, a doorway, a crest) only has to tile sideways.
+    storey = {'colonnade_top', 'colonnade_broken', 'temple_cornice', 'temple_door', 'roof_comb'}
+    for name in biomes.TEXTURES:
+        rgb, _ = assets.get_texture(name)
+        alpha = assets.get_alpha(name)
+        solid = np.ones(rgb.shape[:2], bool) if alpha is None else alpha > 0.5
+        for axis in (1,) if name in storey else (1, 0):
+            step = np.abs(np.roll(rgb, -1, axis) - rgb).mean(axis=2)          # pixel to its next neighbour
+            pairs = solid & np.roll(solid, -1, axis)
+            lines = [np.take(step, i, axis)[np.take(pairs, i, axis)] for i in range(rgb.shape[axis])]
+            means = [ln.mean() if ln.size else 0.0 for ln in lines]
+            wrap, inside = means[-1], max(means[:-1])
+            assert wrap <= inside * 1.1 + 0.01, f'{name} shows a seam when tiled ({wrap:.3f} vs {inside:.3f})'
+
+    # 3. ramps run dark to light, shadows cooler (bluer) and highlights warmer than the base
+    rp = px.ramp('#5a8a3a')
+    lum = rp @ np.array([0.3, 0.59, 0.11])
+    assert (np.diff(lum) > 0).all(), 'a ramp must climb from shadow to highlight'
+    warmth = (rp[:, 0] - rp[:, 2]) / (rp.sum(1) + 1e-6)
+    assert warmth[0] < warmth[-1], 'shadows must be cooler than highlights'
+
+    # 4. a cut punches a hole through a pasted layer and shows what was drawn before
+    cv = px.Canvas(24, wrap=False)
+    cv.box(2, 2, 20, 20, mat=1)
+    top, cut = cv.layer(), cv.layer()
+    top.box(4, 4, 16, 16, z=2.0, mat=0)
+    cut.ellipse(12, 12, 3, 3)
+    cv.paste(top, cut)
+    assert cv.mat[12, 12] == 1 and cv.mat[6, 6] == 0, 'a cut must show the layer underneath'
+
+    # 5. surf on the waterline reads from a standing eye height (a foam decal would be edge-on)
+    beach = {'map': ['ssssss......'] * 12, 'legend': {'.': {'floor': 'beach_sand'}, 's': {'floor': 'shallows'}},
+             'sky': 'day', 'ambient': [0.5, 0.5, 0.5], 'surface_noise': 0,
+             'camera': {'x': 10.5, 'y': 9.5, 'look_at': [4.0, 5.0, 0.2], 'fov': 70}}
+
+    def frame(scene):
+        w = R.World(scene)
+        return R.Renderer(w, scene).render(R.prepare_shot(scene, R.merge_camera(scene, scene['camera'])))
+    surf = dict(beach, sprites=[{'x': 5.6, 'y': y + 0.5, 'type': 'surf'} for y in range(12)])
+    changed = (np.abs(frame(surf) - frame(beach)).max(axis=2) > 0.1).sum()
+    assert changed > 40, f'the surf line must show from eye height ({changed} pixels changed)'
+
+    # 6. islands leave open sky down to the horizon between them
+    plain = assets.make_sky('sunset', 720, 90)
+    isles = assets.make_sky('sunset', 720, 90, skyline='islands')
+    same = np.abs(plain[-1] - isles[-1]).max(axis=1) < 1e-6
+    assert same.mean() > 0.5 and not same.all(), 'islands must sit apart on an open horizon'
+    print('ok pixel-art toolkit, tiling, ramps, cut-outs, surf, islands')
+
+
+def check_planes_prefabs():
+    """Planar sprites, fringes and prefabs do what the reference says: crosses stand at the
+    right angles, a card faces one way, layers follow a wall's outline, and a prefab lands
+    turned, remapped and identical for the same seed."""
+    sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+    import assets
+    import prefabs
+    import render as R
+
+    # 1. a star is three planes 60 degrees apart, a cross two at right angles, a card repeats
+    fern, _ = assets.get_sprite('fern')
+    for n, want in ((2, [0, 90]), (3, [0, 60, 120])):
+        quads = R.Renderer.plane_quads({'x': 5.0, 'y': 5.0, 'type': 'fern', 'planes': n, 'angle': 0}, fern)
+        got = sorted(round(math.degrees(math.atan2(q[3] - q[1], q[2] - q[0])) % 180) for q in quads)
+        assert got == want, (n, got)
+    card = R.Renderer.plane_quads({'x': 0, 'y': 0, 'planes': 1, 'angle': 0, 'length': 6.0, 'scale': 1.0}, fern)
+    assert abs(card[0][4] - 6.0 / (fern.shape[1] / fern.shape[0])) < 1e-6, 'a card repeats its image along its length'
+
+    # 2. a card is drawn face-on and all but vanishes edge-on, and a wall in front hides it
+    field = {'map': ['.' * 12] * 12, 'legend': {'.': {'floor': 'grass'}, '#': {'wall': 'stone', 'h': 2}},
+             'sky': None, 'ambient': [0.6, 0.6, 0.6], 'surface_noise': 0, 'light_levels': 0,
+             'camera': {'x': 6.0, 'y': 10.5, 'angle': 270}}
+
+    def frame(scene):
+        w = R.World(scene)
+        return R.Renderer(w, scene).render(R.prepare_shot(scene, R.merge_camera(scene, scene['camera'])))
+
+    def covered(scene, base):
+        return int((np.abs(frame(scene) - base).max(axis=2) > 0.05).sum())
+    base = frame(field)
+    wide = {'x': 6.0, 'y': 6.0, 'type': 'jungle_card_4', 'planes': 1, 'length': 4.0}
+    face_on = covered(dict(field, sprites=[dict(wide, angle=0)]), base)
+    edge_on = covered(dict(field, sprites=[dict(wide, angle=90)]), base)
+    assert face_on > 20 * max(edge_on, 1), f'a card must face its own way ({face_on} face-on, {edge_on} edge-on)'
+    walled = dict(field, map=['.' * 12] * 8 + ['....####....'] + ['.' * 12] * 3, sprites=[dict(wide, angle=0)])
+    hidden = covered(walled, frame(dict(walled, sprites=[])))
+    assert hidden < face_on * 0.2, 'a wall in front of a card must hide it'
+
+    # 3. a fringe lays one card per layer along a wall's open face, inside the cell in front,
+    # and wraps all the way round a lone block; a camera standing in it keeps its spot clear
+    row = dict(field, map=['#' * 12] + ['.' * 12] * 11,
+               legend={'.': {'floor': 'grass'}, '#': {'wall': 'jungle_leaves', 'h': 3, 'fringe': 'jungle'}})
+    w = R.World(row)
+    layers = sorted(sp['y'] for sp in w.fringe_sprites)
+    assert len(layers) == 4 and all(1.0 < y < 2.0 for y in layers), layers
+    assert all(sp['angle'] == 0 and abs(sp['length'] - 12) < 1e-6 for sp in w.fringe_sprites)
+    lone = dict(row, map=['.' * 12] * 5 + ['.....#......'] + ['.' * 12] * 6)
+    cards = R.World(lone).fringe_sprites
+    assert len(cards) == 16, 'four faces, four layers each'
+    back = [sp for sp in cards if abs(sp['length'] - (1 + 2 * 0.125)) < 1e-6]
+    assert len(back) == 4, 'the innermost layer wraps the outside corners'
+    near = dict(row, camera={'x': 6.0, 'y': 1.6, 'angle': 90})
+    assert len(R.World(near).fringe_sprites) < 4, 'a card through a camera position is left out'
+
+    # 4. a prefab with a map turns in quarter turns and gets fresh legend characters
+    sc = {'map': ['.' * 11] * 11, 'legend': {'.': {'floor': 'beach_sand'}}, 'camera': {'x': 1.5, 'y': 1.5, 'angle': 0},
+          'prefabs': [{'type': 'beach_hut', 'x': 5.5, 'y': 5.5, 'angle': 90}]}
+    ex = prefabs.expand(sc)
+    hut = prefabs.PREFABS['beach_hut']['legend']
+    floors = {k for k, v in ex['legend'].items() if v == hut['d']}
+    walls = {k for k, v in ex['legend'].items() if v == hut['h']}
+    assert floors and walls and not (floors | walls) & set(sc['legend']), 'prefab characters must not clash'
+    assert ex['map'][7][5] in floors and ex['map'][7][4] in walls and ex['map'][7][6] in walls, \
+        'at 90 degrees the door, east at 0, faces south'
+    torches = [sp for sp in ex['sprites'] if sp['type'] == 'tiki_torch']
+    assert all(abs(sp['y'] - 8.5) < 1e-6 for sp in torches), 'its torches turn with it'
+    assert prefabs.expand(ex) is ex and prefabs.expand({'map': ['.']}) is not None
+
+    # 5. the same seed gives the same group, nested prefabs and wall decals turn with their parent
+    grove = lambda seed: prefabs.expand(dict(sc, prefabs=[{'type': 'palm_grove', 'x': 5, 'y': 5, 'seed': seed}]))  # noqa: E731
+    assert grove(3)['sprites'] == grove(3)['sprites'] and grove(3)['sprites'] != grove(4)['sprites']
+    defs = {'nook': {'map': ['W'], 'legend': {'W': {'wall': 'stone', 'h': 1}},
+                     'decals': [{'tex': 'moss_patch', 'surface': 'wall', 'cell': [0, 0], 'face': 'south'}],
+                     'sprites': [{'type': 'lantern', 'dx': 0, 'dy': 1.0, 'id': 'lamp'}]},
+            'pair': {'prefabs': [{'type': 'nook', 'dx': 2.0, 'dy': 0}]}}
+    ex = prefabs.expand(dict(sc, prefab_defs=defs, prefabs=[{'type': 'pair', 'x': 5.5, 'y': 5.5, 'angle': 90, 'id': 'p'}]))
+    assert ex['map'][7][5] != '.', 'a nested prefab lands where its turned parent puts it'
+    assert ex['decals'][0]['face'] == 'west' and ex['decals'][0]['cell'] == [5, 7]
+    lamp = [sp for sp in ex['sprites'] if sp['type'] == 'lantern'][0]
+    assert abs(lamp['x'] - 4.5) < 1e-6 and abs(lamp['y'] - 7.5) < 1e-6, (lamp['x'], lamp['y'])
+
+    # 6. look_at finds an id inside a prefab, and the lint catches a misspelt placement key
+    shot = R.merge_camera(dict(sc, prefabs=[{'type': 'street_lamp', 'x': 8.5, 'y': 1.5, 'id': 'lamp'}],
+                               prefab_defs={'street_lamp': dict(prefabs.PREFABS['street_lamp'],
+                                                                sprites=[{'type': 'lamp_post', 'id': 'post'}])}),
+                          {'x': 1.5, 'y': 1.5, 'look_at': 'lamp.post'})
+    assert abs(shot['angle']) < 1e-6
+    assert R.lint_scene(dict(sc, prefabs=[{'type': 'campsite', 'x': 1, 'y': 1, 'angel': 30}]))
+    print('ok planar sprites, fringe layers, prefabs (turns, remaps, seeds, nesting, ids)')
+
+
+def check_glass_facades():
+    """The glass pass shows what is behind a pane, tinted and blurred as asked, and a facade cuts
+    a street front into buildings whose layers line up and stand in the right order."""
+    sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+    import buildings
+    import render as R
+
+    # 1. frost shrinks by k (each block averaged) and blows back up without smoothing
+    a = np.arange(16, dtype=np.float32).reshape(4, 4, 1)
+    f = R.frost(a, 2)
+    assert f[0, 0, 0] == f[1, 1, 0] == (0 + 1 + 4 + 5) / 4 and f[2, 2, 0] == (10 + 11 + 14 + 15) / 4
+    g = R.glass_spec(True)
+    assert g['blur'] == 1 and 0 < g['opacity'] < 0.5 and g['tint'][2] >= g['tint'][0]
+
+    # 2. through clear glass with no reflection, the wall behind shows exactly, times the tint;
+    # through the default blur a striped wall comes out smoother
+    room = {'map': ['######', '......', '......', '......'], 'sky': None, 'ambient': [0.8, 0.8, 0.8],
+            'legend': {'#': {'wall': 'brick', 'h': 1.0}, '.': {'floor': 'concrete_floor'}},
+            'surface_noise': 0, 'light_levels': 0, 'camera': {'x': 3.0, 'y': 3.5, 'angle': 270, 'fov': 60}}
+
+    def frame(scene):
+        w = R.World(scene)
+        return R.Renderer(w, scene).render(R.prepare_shot(scene, R.merge_camera(scene, scene['camera'])))
+    pane = {'x': 3.0, 'y': 2.0, 'type': 'glass_pane', 'angle': 0, 'length': 4.0, 'scale': 1.0}
+    bare = frame(room)
+    tinted = frame(dict(room, sprites=[dict(pane, glass={'opacity': 0.0, 'blur': 0, 'tint': [0.5, 1.0, 1.0]})]))
+    win = (slice(70, 120), slice(120, 200))
+    assert np.allclose(tinted[win][..., 0], bare[win][..., 0] * 0.5, atol=0.02), 'glass must tint what is behind'
+    assert np.allclose(tinted[win][..., 1:], bare[win][..., 1:], atol=0.02)
+    sharp = frame(dict(room, sprites=[dict(pane, glass={'opacity': 0.0, 'blur': 0, 'tint': [1, 1, 1]})]))
+    soft = frame(dict(room, sprites=[dict(pane, glass={'opacity': 0.0, 'blur': 1, 'tint': [1, 1, 1]})]))
+    rough = lambda im: np.abs(np.diff(im[win], axis=1)).mean()   # noqa: E731
+    assert rough(soft) < rough(sharp) * 0.8, 'the default glass must blur what is behind it'
+
+    # 3. a facade cuts a straight front into buildings, five layers each, back to front
+    street = {'map': ['B' * 20] * 3 + ['.' * 20] * 6, 'sky': None, 'ambient': [0.5, 0.5, 0.5],
+              'legend': {'B': {'wall': 'brick_dark', 'h': 3, 'facade': {'style': 'brick', 'widths': [3, 5],
+                                                                             'storeys': [3, 6], 'seed': 4}},
+                         '.': {'floor': 'flagstone'}},
+              'camera': {'x': 10.0, 'y': 8.5, 'angle': 270}}
+    sprites = R.World(street).fringe_sprites
+    fronts = [sp for sp in sprites if '"layer":"wall"' in sp['type']]
+    widths = sorted(round(sp['length'], 3) for sp in fronts)
+    assert abs(sum(widths) - 20) < 1e-6 and all(3 <= w_ <= 5 or w_ == widths[-1] for w_ in widths), widths
+    order = {}
+    for sp in sprites:
+        if sp['type'].startswith('facade:') and '"layer":"side"' not in sp['type']:
+            order.setdefault(json.loads(sp['type'][7:])['layer'], set()).add(round(sp['y'], 4))
+    assert max(order['room']) < min(order['drape']) < min(order['frame']) <= min(order['wall']), order
+    assert order['glass'] == order['frame'] and all(sp.get('glass') for sp in sprites if '"layer":"glass"' in sp['type'])
+    heights = [sp['scale'] for sp in fronts]
+    sides = [sp for sp in sprites if '"layer":"side"' in sp['type']]
+    steps = sum(1 for h0, h1 in zip(heights, heights[1:]) if h0 != h1)
+    assert len(sides) == steps and all(sp['z'] >= 3 for sp in sides), 'a taller building shows a side wall'
+
+    # 4. a corner building has one look on both its faces; a north face is read the right way round
+    block = dict(street, map=['....'.ljust(12, '.')] * 2 + ['....BBBBBBBB'] * 6 + ['.' * 12] * 4,
+                 camera={'x': 1.5, 'y': 11.5, 'angle': 300})
+    fronts = [sp for sp in R.World(block).fringe_sprites if '"layer":"wall"' in sp['type']]
+    corner = [json.loads(sp['type'][7:]) for sp in fronts
+              if abs(sp['x'] - sp['length'] / 2 - 3.0) < 1e-6 or abs(sp['y'] - sp['length'] / 2 - 1.0) < 1e-6]
+    looks = {c['look'] for c in corner}
+    assert len(corner) >= 2 and len(looks) < len(corner), 'the building at the corner must turn it whole'
+    assert all(sp['flip'] for sp in fronts if abs(sp['y'] - 1.0) < 1e-6), 'a north face reads left to right'
+
+    # 5. every window is an opening in the wall, and glass in the glass layer
+    params = dict(style='brick', w=5, h=4, look=7, seed=9, lit=0.5)
+    wall, _ = buildings.layer_image(buildings.layer_name('wall', **params))
+    pane, _ = buildings.layer_image(buildings.layer_name('glass', **params))
+    holes = wall[..., 3] < 0.5
+    assert holes.any() and (pane[..., 3][holes] > 0.5).mean() > 0.6, 'the glass must sit in the openings'
+    print('ok glass pass (tint, blur), facades (buildings, layers, corners, side walls)')
+
+
 def check_docs():
     """The docs name assets, keys and counts by hand: fail as soon as they and the code disagree."""
     sys.path.insert(0, os.path.join(ROOT, 'scripts'))
@@ -646,7 +881,9 @@ def check_docs():
     import build_gallery
     import gui
     import icons
+    import buildings
     import post
+    import prefabs
     import render as R
     from characters import CHARACTERS
 
@@ -683,6 +920,10 @@ def check_docs():
     need('SKILL.md (cast)', skill, CHARACTERS)
     need('reference (skylines)', ref, assets.SKYLINES)
     need('reference (sky presets and objects)', ref, list(assets.SKY_PRESETS) + list(assets.SKY_OBJECTS))
+    need('reference/Prefabs', section(ref, '## Prefabs'), prefabs.PREFABS)
+    need('SKILL.md (prefabs)', skill, prefabs.PREFABS)
+    need('reference (fringe sets)', ref, assets.FRINGES)
+    need('reference (facade styles)', section(ref, '## Cell specs'), buildings.FACADE_STYLES)
     need('reference/Textures (see-through and emissive)', section(ref, '## Textures'),
          [t for t in assets.TEXTURES if assets.get_alpha(t) is not None or assets.get_texture(t)[1] is not None])
 
@@ -706,8 +947,16 @@ def check_docs():
         sc = R.load_scene(os.path.join(ROOT, 'examples', ex + '.json'))
         if not 1 <= shot <= len(sc.get('shots') or [sc.get('camera')]):
             problems.append(f'gallery {name}: {ex} has no shot {shot}')
+
+    # the asset inventory: its rows, usage columns and counts are kept in step by asset_review.py
+    import asset_review
+    inventory = read('docs', 'ASSETS.md')
+    synced, changes = asset_review.sync_text(inventory)
+    if synced != inventory or changes:
+        problems += [f'docs/ASSETS.md: {c}' for c in changes] or ['docs/ASSETS.md is out of date']
+        problems.append('(run  python docs/asset_review.py sync)')
     assert not problems, 'docs and code disagree:\n  ' + '\n  '.join(problems)
-    print('ok docs match the code (asset lists, counts, scene keys, gallery)')
+    print('ok docs match the code (asset lists, counts, scene keys, gallery, asset inventory)')
 
 
 def main():
@@ -732,6 +981,9 @@ def main():
         check_regressions(tmp)
         check_new_features()
         check_atmosphere()
+        check_pixel_art()
+        check_planes_prefabs()
+        check_glass_facades()
         check_docs()
         gs = os.path.join(tmp, 'gui_post.json')
         with open(gs, 'w') as f:
