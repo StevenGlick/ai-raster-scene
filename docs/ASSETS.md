@@ -21,10 +21,10 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 127 | 97 | 27 | 3 | 0 |
-| Props | 128 | 110 | 16 | 2 | 0 |
+| Textures | 130 | 100 | 27 | 3 | 0 |
+| Props | 135 | 117 | 16 | 2 | 0 |
 | Characters | 21 | 19 | 2 | 0 | 0 |
-| Decals | 22 | 17 | 5 | 0 | 0 |
+| Decals | 24 | 19 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
 | Skylines | 6 | 5 | 1 | 0 | 0 |
 | Sky objects | 5 | 5 | 0 | 0 | 0 |
@@ -39,7 +39,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 34 | 27 | 7 | 0 | 0 |
-| **all** | **467** | **397** | **65** | **5** | **0** |
+| **all** | **479** | **409** | **65** | **5** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -53,7 +53,7 @@ Weakest first, and in the order the new scenes need them.
 5. **Small things.** The hands on the held items, the `stain`, `stain_rust` and `moss_patch` decals, the `child` and `dreamer` characters, the `city` skyline, `alien_rock`, `alien_ground`, and the `glowshroom` and `alien_egg` props.
 6. **Second look.** Every asset marked good, checked again on the review sheets and in its scenes, with fresh eyes and the new techniques in hand.
 
-## Textures (127)
+## Textures (130)
 
 64x64 tiles, drawn in code. "glows" means the texture lights itself (windows, screens, runes), "see-through" that the map shows through its holes, "mirror" that floors made of it reflect.
 
@@ -119,6 +119,9 @@ Weakest first, and in the order the new scenes need them.
 | `grate` | good |  | bunker_lab, derelict_ship |  |
 | `grid_floor` | good | glows, mirror 0.3 | - |  |
 | `hex_panel` | good |  | alien_world |  |
+| `hangar_floor` | good |  | - | Drawn with the toolkit in scifi.py: heavy plates four to a unit, corner bolts, tread, a tie-down ring at each crossing, wear and oil. |
+| `conduit` | good | glows | - | Drawn with the toolkit in scifi.py: cable bundles in four colours and pipes up the wall, steel clamps, a junction box with lit LEDs. |
+| `screen_wall` | good | glows | - | Drawn with the toolkit in scifi.py: monitors four to a unit, each with a trace, readouts, a radar or a wireframe, in cyan, green or amber; glows. |
 
 ### Nature
 
@@ -244,7 +247,7 @@ Weakest first, and in the order the new scenes need them.
 | `bamboo` | polish |  | tropical_beach | The nodes still line up into a grid across the poles. |
 | `thatch` | polish |  | tropical_beach | The rows could be clearer, each with a shadow under its fringe. |
 
-## Props (128)
+## Props (135)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -352,6 +355,13 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `lander` | good | 1.6 tall, glows | alien_world |  |
 | `sci_crate` | good | 0.35 tall, glows | derelict_ship, space_station |  |
 | `stasis_pod` | good | 1 tall, glows | derelict_ship |  |
+| `shuttle` | good | 2.2 tall, glows | - | Drawn with the toolkit in scifi.py: nose-on wedge hull in white and orange, lit cockpit and engine pods, landing legs, panel lines and vents. |
+| `cargo_container` | good | 1.2 tall | - | Drawn with the toolkit in scifi.py: corrugated orange steel, corner castings, door rods, rust streaking down the ribs. Tint for other colours. |
+| `power_loader` | good | 2 tall, glows | - | Drawn with the toolkit in scifi.py: roll cage, hydraulic arms with forks, hazard stripes on the hip block, a lit work light. |
+| `beacon` | good | 0.3 tall, glows, aura | - | Drawn with the toolkit in scifi.py: an amber dome in a wire cage on a squat base; glows, with an aura. |
+| `reactor_core` | good | 2.8 tall, glows, aura | - | Drawn with the toolkit in scifi.py: a glowing column in steel collars with coolant pipes; glows, with an aura. |
+| `robot_arm` | good | 1.8 tall, glows | - | Drawn with the toolkit in scifi.py: three orange segments, dark joints, a turntable base, a welding spark. |
+| `cables_hang` | good | 1.4 tall, no shadow | - | Drawn with the toolkit in scifi.py: slack loops of cable and a few dangling ends; hangs from a ceiling, no contact shadow. |
 
 ### Alien and dream
 
@@ -464,7 +474,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `hoplite` | good | ancient_ruins |  |
 | `castaway` | good | tropical_beach |  |
 
-## Decals (22)
+## Decals (24)
 
 Stamps blended into floors, walls and ceilings. `grime` stamps some of them on its own, and `contact_shadow` goes under every prop that stands on the ground.
 
@@ -486,6 +496,8 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `rune_mark` | good | - |  |
 | `drain` | good | bunker_lab, rainy_street, sewer_tunnels |  |
 | `contact_shadow` | good | 34 scenes |  |
+| `pad_marking` | good | - | A painted landing ring with an H and a dashed outer ring, worn in patches. |
+| `hazard_stripe` | good | - | A band of yellow and black diagonal stripes, worn through in places. |
 
 ### Shore and pool
 
@@ -782,6 +794,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, sci-fi hardware.** `scripts/scifi.py`: `hangar_floor`, `conduit` and `screen_wall` textures, `pad_marking` and `hazard_stripe` decals, and a `shuttle`, `cargo_container`, `power_loader`, `beacon`, `reactor_core`, `robot_arm` and `cables_hang`, all drawn with the toolkit, lights and screens writing an emissive mask.
 - **2026-10-19, the forest, part 2.** The original woodland rebuilt: the `forest` fringe in front of low `forest_deep` walls (a new texture: trunks receding into the dark), trees standing free along the road, a real moon in volumetric fog instead of blue point lights, and two new shots, first light through a gap in the trees and a ghost on the moonlit road (`woods_dawn`, `woods_moon`). `boulder`, `stump`, `log` and `dead_tree` redrawn with the toolkit.
 - **2026-10-19, the forest, part 1.** `scripts/forest.py` draws the temperate forest with the toolkit: a spruce (`pine`), an oak (`tree`), a new `birch`, the `bush`, and the `foliage`, `foliage_autumn`, `bark`, `bark_pine`, `pine_needles` and `moss` textures, replacing the flat first versions. A `forest` fringe set (`forest_card_1`-`4`) stands layered spruce, oak, birch and undergrowth in front of a wood's walls, so its skyline is tree tops.
 - **2026-10-19, reveals.** A card can have a `reveal` (a thickness): through its openings, seen at an angle, it draws their far sides - jamb, head, sill - folded from its own colours and lit by their own facing, with the wall's shadow in them. Facade walls use it, so a window or door seen from the pavement shows its brick sides instead of a sliver of the lit room behind.

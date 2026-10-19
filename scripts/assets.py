@@ -2992,6 +2992,19 @@ SPRITES.update(forest.SPRITES)
 SPRITE_HEIGHT.update(forest.SPRITE_HEIGHT)
 FRINGES.update(forest.FRINGES)
 
+# ---------------------------------------------------------------- sci-fi hardware
+# Hangar decks, conduits, screen walls, pad markings, a shuttle, containers, a power loader, a
+# beacon, a reactor core, a robot arm and hanging cables, drawn with the toolkit in scifi.py.
+import scifi  # noqa: E402
+
+TEXTURES.update(scifi.TEXTURES)
+TEXTURE_NOISE.update(scifi.TEXTURE_NOISE)
+SPRITES.update(scifi.SPRITES)
+SPRITE_HEIGHT.update(scifi.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(scifi.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= scifi.NO_CONTACT_SHADOW
+DECALS.update(scifi.DECALS)
+
 _dcache = {}
 
 
