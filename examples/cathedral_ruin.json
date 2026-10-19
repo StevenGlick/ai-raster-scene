@@ -309,6 +309,123 @@
    "y": 8.0,
    "type": "ivy_hang",
    "z": 2.6
+  },
+  {
+   "x": 15.0,
+   "y": 15.1,
+   "type": "log",
+   "planes": 1,
+   "angle": 0,
+   "length": 5.6,
+   "scale": 0.3,
+   "z": 3.68,
+   "shadow": false,
+   "tint": [
+    0.55,
+    0.45,
+    0.38
+   ]
+  },
+  {
+   "x": 15.0,
+   "y": 16.9,
+   "type": "log",
+   "planes": 1,
+   "angle": 0,
+   "length": 5.6,
+   "scale": 0.3,
+   "z": 3.68,
+   "shadow": false,
+   "tint": [
+    0.55,
+    0.45,
+    0.38
+   ]
+  },
+  {
+   "x": 14.2,
+   "y": 16.0,
+   "type": "log",
+   "planes": 1,
+   "angle": 90,
+   "length": 3.4,
+   "scale": 0.26,
+   "z": 3.72,
+   "shadow": false,
+   "tint": [
+    0.5,
+    0.42,
+    0.36
+   ]
+  },
+  {
+   "x": 13.4,
+   "y": 14.1,
+   "type": "ivy_hang",
+   "z": 3.0,
+   "scale": 1.0,
+   "flip": false
+  },
+  {
+   "x": 16.4,
+   "y": 14.1,
+   "type": "ivy_hang",
+   "z": 3.0,
+   "scale": 1.0,
+   "flip": true
+  },
+  {
+   "x": 17.9,
+   "y": 16.0,
+   "type": "ivy_hang",
+   "z": 3.0,
+   "scale": 1.0,
+   "flip": false
+  },
+  {
+   "x": 14.6,
+   "y": 18.9,
+   "type": "ivy_hang",
+   "z": 3.0,
+   "scale": 1.0,
+   "flip": true
+  },
+  {
+   "x": 13.1,
+   "y": 17.5,
+   "type": "ivy_hang",
+   "z": 3.0,
+   "scale": 1.0,
+   "flip": false
+  },
+  {
+   "x": 14.4,
+   "y": 16.4,
+   "type": "column_drum"
+  },
+  {
+   "x": 16.3,
+   "y": 15.2,
+   "type": "column_drum",
+   "flip": true
+  },
+  {
+   "x": 15.6,
+   "y": 17.6,
+   "type": "broken_column",
+   "scale": 1.1
+  },
+  {
+   "x": 13.6,
+   "y": 15.0,
+   "type": "rubble",
+   "scale": 0.5
+  },
+  {
+   "x": 17.0,
+   "y": 17.8,
+   "type": "rubble",
+   "scale": 0.4
   }
  ],
  "scatter": [
@@ -322,6 +439,13 @@
     "medium"
    ],
    "seed": 4
+  },
+  {
+   "of": "undergrowth",
+   "on": "o",
+   "density": 0.9,
+   "clump": 1.2,
+   "seed": 7
   }
  ],
  "grime": 0.3,
@@ -345,12 +469,12 @@
    ]
   },
   {
-   "x": 9.0,
+   "x": 11.2,
    "y": 24.0,
    "look_at": [
     17.0,
     9.0,
-    1.6
+    1.7
    ],
    "fov": 70
   },

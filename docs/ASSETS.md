@@ -38,8 +38,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 16 | 16 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 47 | 42 | 5 | 0 | 0 |
-| **all** | **611** | **586** | **25** | **0** | **0** |
+| Example scenes | 47 | 43 | 4 | 0 | 0 |
+| **all** | **611** | **587** | **24** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -326,19 +326,19 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
 | `boulder` | good | 0.55 tall | chapel_graveyard, coast_lighthouse, kelp_forest, misty_moor, woodland_night | Redrawn with the toolkit in forest.py: a settled rock with a lesser lobe and cracks, moss over its top, lichen spots. |
-| `bush` | good | 0.5 tall | chapel_graveyard, coast_lighthouse, woodland_night | Redrawn with the toolkit in forest.py: leaf clusters on fanned twigs, lit on top, dark underneath. |
+| `bush` | good | 0.5 tall | cathedral_ruin, chapel_graveyard, coast_lighthouse, woodland_night | Redrawn with the toolkit in forest.py: leaf clusters on fanned twigs, lit on top, dark underneath. |
 | `bush_autumn` | good | 0.5 tall | autumn_lane | Drawn with the toolkit in forest.py: the bush in rust red and orange. |
 | `bush_snow` | good | 0.45 tall | winter_woods | Drawn with the toolkit in forest.py: a lumpy cushion of snow, blue in its hollows, twigs poking up through it. |
 | `birch` | good | 3 tall | village_green, woodland_night | White trunk and a second stem banded with black, an airy crown of small leaves in drooping clumps. |
 | `birch_autumn` | good | 3 tall | autumn_lane | Drawn with the toolkit in forest.py: the birch gone to gold, a few patches already orange. |
 | `birch_winter` | good | 3 tall | winter_woods | Drawn with the toolkit in forest.py: the white birch bare: branches reaching out with fine twigs weeping from them, snow on a few. |
 | `dead_tree` | good | 2.9 tall | chapel_graveyard, haunted_house, misty_moor, woodland_night | Redrawn with the toolkit in forest.py: a split trunk on a gnarled foot, bare limbs forking into twigs, grey peeling bark. |
-| `fern` | good | 0.42 tall | autumn_lane, chapel_graveyard, jungle_temple, misty_moor, tropical_beach, woodland_night | Redrawn: arching fronds from one crown. |
+| `fern` | good | 0.42 tall | autumn_lane, cathedral_ruin, chapel_graveyard, jungle_temple, misty_moor, tropical_beach, woodland_night | Redrawn: arching fronds from one crown. |
 | `flowers` | good | 0.35 tall | garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, village_green | Redrawn with the toolkit in basics.py: leaves and stems with blooms of four colours, five petals round a dark eye, at different heights. |
-| `grass_tuft` | good | 0.4 tall | autumn_lane, chapel_graveyard, coast_lighthouse, misty_moor, rainy_street, tropical_beach, village_green, woodland_night | Redrawn: thin arching blades. |
+| `grass_tuft` | good | 0.4 tall | autumn_lane, cathedral_ruin, chapel_graveyard, coast_lighthouse, misty_moor, rainy_street, tropical_beach, village_green, woodland_night | Redrawn: thin arching blades. |
 | `ivy_hang` | good | 0.8 tall, no shadow | cathedral_ruin, rainy_street |  |
-| `log` | good | 0.28 tall | tropical_beach, winter_lake, winter_woods, woodland_night | Redrawn with the toolkit in forest.py: bark in long ridges, a branch stub, moss along the top, a pale ringed end. |
-| `mushrooms` | good | 0.12 tall | autumn_lane, chapel_graveyard, jungle_temple, woodland_night |  |
+| `log` | good | 0.28 tall | cathedral_ruin, tropical_beach, winter_lake, winter_woods, woodland_night | Redrawn with the toolkit in forest.py: bark in long ridges, a branch stub, moss along the top, a pale ringed end. |
+| `mushrooms` | good | 0.12 tall | autumn_lane, cathedral_ruin, chapel_graveyard, jungle_temple, woodland_night |  |
 | `palm` | good | 3.2 tall | garden_encounter, gui_menus, hospital_garden, post_presets, tropical_beach | Redrawn with the pixel-art toolkit: a ringed trunk, arching ragged fronds, coconuts. |
 | `pine` | good | 3.4 tall | autumn_lane, coast_lighthouse, woodland_night | Redrawn with the toolkit in forest.py: a spruce, tier on tier of drooping boughs with ragged hems over a straight trunk. |
 | `reeds` | good | 0.8 tall | coast_lighthouse, winter_woods |  |
@@ -467,8 +467,8 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
-| `broken_column` | good | 1 tall | ancient_ruins |  |
-| `column_drum` | polish | 0.42 tall | ancient_ruins | The fluted end face could stand out more from the body. |
+| `broken_column` | good | 1 tall | ancient_ruins, cathedral_ruin |  |
+| `column_drum` | polish | 0.42 tall | ancient_ruins, cathedral_ruin | The fluted end face could stand out more from the body. |
 | `marble_head` | good | 1.1 tall | ancient_ruins |  |
 | `amphora` | good | 0.36 tall | ancient_ruins |  |
 | `cow_skull` | good | 0.2 tall | ghost_town, red_canyon | Drawn with the toolkit in desert.py: a bleached longhorn skull: dark sockets and nose, horns curving out and up. |
@@ -664,7 +664,7 @@ Named mixes for `scatter`; repeats in the contents act as weights.
 | `snow` | good | rocks x3, boulder_snow | winter_lake, winter_woods | The stones set for winter: its boulder is under snow, not moss. |
 | `rubble` | good | rubble x2, rocks, broken_barrel | cathedral_ruin, rainy_street |  |
 | `forest` | good | rocks x2, log, stump, mushrooms, grass_tuft x2, fern, bush | woodland_night |  |
-| `undergrowth` | good | grass_tuft x3, fern, bush, mushrooms | chapel_graveyard, woodland_night |  |
+| `undergrowth` | good | grass_tuft x3, fern, bush, mushrooms | cathedral_ruin, chapel_graveyard, woodland_night |  |
 | `autumn` | good | grass_tuft x2, fern, bush_autumn x2, mushrooms | autumn_lane | The undergrowth set for the fall: its bush turned. |
 | `shore` | good | rocks x3, boulder, reeds, bones | coast_lighthouse |  |
 | `litter` | good | sack, bucket, crate, barrel, broken_barrel, bones | neon_street, rain_alley |  |
@@ -881,7 +881,7 @@ The environments, judged on their gallery images and shots.
 | scene | status | shots | gallery | notes |
 |---|---|---|---|---|
 | `castle_keep` | good | 5 | castle_throne, castle_gate | The throne hall closer: a great stained-glass window, banners and candelabras behind a larger throne, guards at the steps, the knight to one side. |
-| `cathedral_ruin` | polish | 3 | cathedral_beam, cathedral_pilgrim | The hole in the roof reads as a flat white quad; the nave is bare. |
+| `cathedral_ruin` | good | 3 | cathedral_beam, cathedral_pilgrim | The beam through the fallen roof, rafters still spanning the hole with ivy hanging from it, column drums and rubble in the light; shot from the aisle. |
 | `crystal_cave` | good | 3 | cave_beast |  |
 
 ### Space, alien and dream
@@ -926,6 +926,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the fallen roof.** cathedral_ruin: rafters across the hole in the roof (`log` cards at the ceiling) with ivy hanging from its edges, column drums, a broken column and rubble under it, grass in the light, and the beam shot moved out of the pews into the aisle.
 - **2026-10-19, the throne hall.** castle_keep: the camera closer, a larger throne under a great stained-glass window, banners and candelabras on the dais, guards at the foot of the steps, the knight to one side.
 - **2026-10-19, the stone circle.** `menhir`, `menhir_top` and a `stone_cap` prop: the misty moor's stones get varied heights, weathered faces and slanted, chipped tops instead of flat-topped blocks.
 - **2026-10-19, polish pass 4.** `alien_rock` (faceted, glowing in its crevices), `alien_ground`, `dry_grass` (fewer, larger clumps), and the `jaguar` redrawn prowling side on in rosettes.
