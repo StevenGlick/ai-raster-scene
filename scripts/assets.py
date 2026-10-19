@@ -350,12 +350,6 @@ def tex_carpet(name, c='#6a1e22', border='#b08a3a'):
     return grain(img, rng, 0.08)
 
 
-def tex_sand(name):
-    rng = _rng(name)
-    n = fbm(T, rng, 4, 5)
-    return grain(col('#c2b088')[None, None, :] * (0.8 + 0.3 * n[..., None]), rng, 0.1)
-
-
 def tex_marble(name, c='#d8d4cc'):
     rng = _rng(name)
     n = fbm(T, rng, 4, 5)
@@ -385,16 +379,6 @@ def tex_moss_stone(name):
     m = np.clip((fbm(T, rng, 5, 4) - 0.46) * 3.2, 0, 1)
     moss = col('#2e4a2a')[None, None, :] * (0.55 + 0.8 * fbm(T, _rng(name + 'm'), 14, 3)[..., None])
     return np.clip(img * (1 - m[..., None]) + moss * m[..., None], 0, 1)
-
-
-def tex_ivy(name):
-    """Brick under climbing ivy."""
-    rng = _rng(name)
-    img = tex_brick(name + 'b')
-    v = np.clip((fbm(T, rng, 4, 4) - 0.40) * 2.6, 0, 1)
-    ivy = col('#24401f')[None, None, :] * (0.5 + 0.9 * fbm(T, _rng(name + 'l'), 16, 3)[..., None])
-    ivy[rng.random((T, T)) > 0.87] = col('#3e6a30')
-    return np.clip(img * (1 - v[..., None]) + ivy * v[..., None], 0, 1)
 
 
 def tex_logs(name, c='#6a5134', chink='#3a3028'):
@@ -694,29 +678,6 @@ def tex_stained_glass(name, wall='#8a857c'):
     img[win & lead] = col('#1a1814')
     em[glass] = 1.0
     return np.clip(img, 0, 1), em
-
-
-def tex_ice(name, c='#b6d0dc'):
-    """Frozen water: pale, glassy, cracked. Reflective by default."""
-    rng = _rng(name)
-    n = fbm(T, rng, 5, 4)
-    img = col(c)[None, None, :] * (0.78 + 0.3 * n[..., None])
-    deep = np.clip((0.45 - fbm(T, _rng(name + 'd'), 6, 3)) * 3, 0, 1)
-    img = img * (1 - 0.35 * deep[..., None]) + col('#4a7088')[None, None, :] * 0.35 * deep[..., None]
-    crack = np.abs(fbm(T, _rng(name + 'c'), 3, 4) - 0.5) < 0.014
-    img[crack] = col('#eef6fa')
-    img[rng.random((T, T)) > 0.993] = col('#ffffff')       # trapped bubbles
-    return np.clip(img, 0, 1)
-
-
-def tex_snow_rock(name):
-    """Rock with snow lying on its ledges: mountainsides, cliffs, winter walls."""
-    rng = _rng(name)
-    img = tex_rock(name + 'r', '#5a5650')
-    yy = np.mgrid[0:T, 0:T][0]
-    lie = np.clip((fbm(T, rng, 6, 4) - 0.5 + (1 - yy / T) * 0.35) * 4, 0, 1)
-    snow = col('#dce4ee')[None, None, :] * (0.85 + 0.2 * fbm(T, _rng(name + 's'), 12, 3)[..., None])
-    return np.clip(img * (1 - lie[..., None]) + snow * lie[..., None], 0, 1)
 
 
 def tex_slime_brick(name):
@@ -1059,8 +1020,6 @@ TEXTURES = {
     'stone': _plain(tex_stone),
     'stone_dark': _plain(tex_stone, '#5a5650', '#2e2c28'),
     'stone_pale': _plain(tex_stone, '#b0a890', '#6a6250'),
-    'plaster': _plain(tex_plaster),
-    'plaster_white': _plain(tex_plaster, '#d8d4c4', '#6a6050', 0.45),
     'hospital_wall': _plain(tex_hospital),
     'tile_white': _plain(tex_tile),
     'tile_green': _plain(tex_tile, '#6a9a80', '#3a5a48'),
@@ -1068,8 +1027,6 @@ TEXTURES = {
     'planks': _plain(tex_planks),
     'boards': _plain(tex_planks, '#5a4430', False),
     'concrete': _plain(tex_concrete),
-    'rock': _plain(tex_rock),
-    'rock_wet': _plain(tex_rock, '#3e4446'),
     'iron_door': _plain(tex_metal_door),
     'corrugated': _plain(tex_corrugated),
     'bookshelf': _plain(tex_bookshelf),
@@ -1084,7 +1041,6 @@ TEXTURES = {
     'window_teal': _em(tex_window, '#7a7a74', glass_on='#8ad0c4'),
     'runes': _em(tex_runes),
     'moss_stone': _plain(tex_moss_stone),
-    'ivy': _plain(tex_ivy),
     'logs': _plain(tex_logs),
     'rust': _plain(tex_rust),
     'pipes': _plain(tex_pipes),
@@ -1096,12 +1052,10 @@ TEXTURES = {
     'tile_floor': _plain(tex_tile, '#b8b4a8', '#5a5850', 16),
     'carpet': _plain(tex_carpet),
     'carpet_green': _plain(tex_carpet, '#1e3a2a', '#9a8a4a'),
-    'sand': _plain(tex_sand),
     'marble': _plain(tex_marble),
     'marble_dark': _plain(tex_marble, '#4a4844'),
     'wood_floor': _plain(tex_planks, '#5a3e26'),
     'concrete_floor': _plain(tex_concrete, '#6e6e68'),
-    'rock_floor': _plain(tex_rock, '#4a4440'),
     'acoustic': _plain(tex_acoustic),
     'ceiling_plaster': _plain(tex_plaster, '#a8a08a', '#4a4030', 0.3),
     'mud': _plain(tex_mud),
@@ -1111,8 +1065,6 @@ TEXTURES = {
     'castle': _plain(tex_castle),
     'flagstone': _plain(tex_flagstone),
     'stained_glass': _em(tex_stained_glass),
-    'ice': _plain(tex_ice),
-    'snow_rock': _plain(tex_snow_rock),
     'slime_brick': _plain(tex_slime_brick),
     'door_wood': _plain(tex_door_wood),
     # sci-fi

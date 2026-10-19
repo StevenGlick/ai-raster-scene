@@ -21,7 +21,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 144 | 123 | 21 | 0 | 0 |
+| Textures | 144 | 132 | 12 | 0 | 0 |
 | Props | 184 | 174 | 10 | 0 | 0 |
 | Characters | 26 | 24 | 2 | 0 | 0 |
 | Decals | 24 | 19 | 5 | 0 | 0 |
@@ -39,7 +39,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 42 | 35 | 7 | 0 | 0 |
-| **all** | **564** | **511** | **53** | **0** | **0** |
+| **all** | **564** | **520** | **44** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -70,16 +70,16 @@ Weakest first, and in the order the new scenes need them.
 | `castle` | good |  | castle_keep | Mortar grid is very regular; chip a few corners. |
 | `moss_stone` | good |  | autumn_lane, coast_lighthouse, misty_moor |  |
 | `slime_brick` | good |  | sewer_tunnels |  |
-| `plaster` | polish |  | rainy_street, village_green | The vertical stains read as stripes in a 2x2 tiling; the dado band is hard-edged. |
-| `plaster_white` | polish |  | garden_encounter, gui_menus, hospital_garden, post_presets | Same as plaster. |
+| `plaster` | good |  | rainy_street, village_green | Redrawn with the toolkit in basics.py: smooth render mottled where patched, a hairline crack, faint streaks; no band, so it stacks storey on storey. |
+| `plaster_white` | good |  | garden_encounter, gui_menus, hospital_garden, post_presets | Redrawn with the toolkit in basics.py: the same render in white. |
 | `hospital_wall` | good |  | ghost_corridor, gui_hud, hospital_corridor |  |
-| `ivy` | polish |  | rainy_street | Ivy is soft blotches; give it leaf shapes and stems. |
+| `ivy` | good |  | rainy_street | Redrawn with the toolkit in basics.py: red brick with woody stems climbing and branching and clusters of dark leaves, the newest brighter. |
 | `concrete` | good |  | bunker_lab, garden_encounter, gui_lantern, gui_menus, hospital_garden, post_presets, sewer_tunnels, tunnel_encounter, underground_waterway |  |
 | `marble` | good |  | cathedral_ruin, chapel_graveyard, dream_chess, dream_world, gui_themes, gui_trade, library_medium, mansion_library |  |
 | `marble_dark` | polish |  | - | Veins read as dotted lines; make them continuous and softer. |
-| `rock` | polish |  | castle_keep, coast_lighthouse, crystal_cave, garden_encounter, gui_lantern, gui_menus, hospital_garden, post_presets, tunnel_encounter, underground_waterway | Crack network looks like jigsaw pieces; add strata and lit edges. |
-| `rock_wet` | polish |  | crystal_cave, gui_lantern, tunnel_encounter, underground_waterway | Same as rock; wet sheen highlights would sell it. |
-| `snow_rock` | polish |  | winter_lake | Snow is blotchy; it should lie on ledges and in cracks. |
+| `rock` | good |  | castle_keep, coast_lighthouse, crystal_cave, garden_encounter, gui_lantern, gui_menus, hospital_garden, post_presets, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: masses of every size, each a facet tilted to the light, split by crevices that wander, widen and close; finer cracks, grain. |
+| `rock_wet` | good |  | crystal_cave, gui_lantern, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: the same rock darker and blue-grey, with glints of water where the faces catch the light. |
+| `snow_rock` | good |  | winter_lake | Redrawn with the toolkit in basics.py: faceted rock with snow lying on the top of every mass, thick on the flats, and drifted in the crevices. |
 | `sky_wall` | good |  | dream_chess, dream_world |  |
 
 ### Wood
@@ -139,9 +139,9 @@ Weakest first, and in the order the new scenes need them.
 | `bog` | good |  | bayou | Drawn with the toolkit in swamp.py: black peat with cushions of sphagnum in green and rust, standing puddles. |
 | `dirt` | good |  | autumn_lane, castle_keep | Redrawn with the toolkit in basics.py: soil broken into clods, pebbles, a root or two, darker damp patches. |
 | `gravel` | good |  | chapel_graveyard, coast_lighthouse, garden_encounter, gui_menus, hospital_garden, post_presets | Redrawn with the toolkit in basics.py: rounded pebbles in three stone colours, each lit on top with a shadow under it. |
-| `sand` | polish |  | coast_lighthouse | Plain noise; wind ripples and the odd shell fragment. |
+| `sand` | good |  | coast_lighthouse | Redrawn with the toolkit in basics.py: wind ripples with a lit face and a shaded lee, wandering, a shell fragment or two, dark grains. |
 | `snow` | good |  | winter_lake |  |
-| `ice` | polish | mirror 0.38 | winter_lake | Cracks look like scribbles; straighter fractures, depth in the blue. |
+| `ice` | good | mirror 0.38 | winter_lake | Redrawn with the toolkit in basics.py: clear blue with gentle depth, straight fractures with a branch each and a dark side, strings of bubbles, frost. |
 | `water` | good | mirror 0.5 | alien_world, coast_lighthouse, crystal_cave, drowned_library, gui_lantern, sewer_tunnels, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: a deep teal in slow swells and a broken net of light where the ripples gather it; kept dark, so reflections read. |
 | `swamp_water` | good | mirror 0.42 | bayou | Drawn with the toolkit in swamp.py: black-brown water with a skin of duckweed drifting in patches and a few floating leaves; mirror 0.42. |
 | `pine_needles` | good |  | woodland_night | Redrawn with the toolkit in forest.py: criss-crossed needle litter over dark soil, a few green needles, cones and twigs. |
@@ -168,7 +168,7 @@ Weakest first, and in the order the new scenes need them.
 | `flagstone` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, neon_street, rain_alley |  |
 | `obsidian` | good | mirror 0.45 | dream_world, space_station |  |
 | `concrete_floor` | good |  | 42 scenes |  |
-| `rock_floor` | polish |  | crystal_cave, gui_lantern, tunnel_encounter, underground_waterway | Same as rock. |
+| `rock_floor` | good |  | crystal_cave, gui_lantern, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: flatter, smaller masses in brown with grit in the cracks. |
 
 ### Ceilings
 
@@ -879,6 +879,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, polish pass 2b.** Redrawn with the toolkit in `scripts/basics.py`: `rock`, `rock_wet`, `rock_floor`, `snow_rock`, `ice`, `sand`, `plaster`, `plaster_white`, `ivy`.
 - **2026-10-19, polish pass 2.** Redrawn with the toolkit in `scripts/basics.py`: `shingle`, `cobble`, `beams`, `rowboat`, `bench`, `flowers`, `statue` - all of them in many scenes.
 - **2026-10-19, four more characters.** `cowboy`, `witch`, `farmer`, `pirate` (16x32, with back views), put to work in the canyon, the autumn lane at dusk, the village green and the bayou.
 - **2026-10-19, the bayou.** `scripts/swamp.py`: `swamp_water` (mirrors), `bog`, `swamp_deep`; `bald_cypress`, `spanish_moss`, `cypress_knees`, `cattails`, `heron`, `alligator`, `fireflies`; a `swamp` fringe and scatter set. `examples/bayou.py` with four gallery shots.

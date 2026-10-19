@@ -1,5 +1,6 @@
 """Everyday materials and props redrawn with the pixel-art toolkit (scripts/pixelart.py): grass,
-a clipped hedge, dirt, gravel, wood panelling, water, slates, cobbles and ceiling beams; a barrel,
+a clipped hedge, dirt, gravel, wood panelling, water, slates, cobbles, ceiling beams, raw rock (dry,
+wet, a floor of it, under snow), ice, sand, plaster and ivy on brick; a barrel,
 a broken one, a crate, a fountain, a rowboat, a bench, flowers and a statue. These are the oldest
 things in the set - the first versions were noise and flat shapes - and they turn up in a great
 many scenes.
@@ -9,7 +10,7 @@ and snapped onto hue-shifted ramps; every texture tiles without a seam.
 """
 import numpy as np
 
-from biomes import T, _leaf_layers, _prop, _rng, _tile
+from biomes import T, _blocks, _leaf_layers, _prop, _rng, _tile
 from dream import _lathe
 from forest import _plates
 from pixelart import Canvas, ramp, smooth_noise
@@ -221,6 +222,223 @@ def tex_beams(name):
         cv.tone[y0 + 11:y0 + 15] -= np.linspace(0.12, 0.28, 4)[:, None].astype(np.float32)   # the side in shadow
         cv.tone[y0 + 15:y0 + 21] -= np.linspace(0.22, 0.02, 6)[:, None].astype(np.float32)   # its shadow on the plaster
     return _tile(cv, [BEAM, LIME], cavity=0.45, shadow=0.55, ambient=0.26, diffuse=0.6)
+
+
+# ---------------------------------------------------------------- rock, ice, sand, plaster, ivy
+
+ROCK = {'rock': [ramp('#6a645a', dark=0.32, light=1.3), ramp('#5e5a54', dark=0.32, light=1.32),
+                 ramp('#74695a', dark=0.32, light=1.28)],
+        'rock_wet': [ramp('#46504e', dark=0.3, light=1.6, cool=0.2), ramp('#3e4648', dark=0.3, light=1.65, cool=0.2),
+                     ramp('#4a4e4a', dark=0.3, light=1.6)],
+        'rock_floor': [ramp('#5e564c', dark=0.32, light=1.3), ramp('#544e48', dark=0.32, light=1.32),
+                       ramp('#665a4a', dark=0.32, light=1.28)]}
+CREVICE = ramp('#1e1c1a', dark=0.6, light=1.6)
+SNOW = ramp('#dfe7ef', dark=0.55, light=1.07, warm=0.0, cool=0.22)
+
+
+def _facets(cv, rng, rows, cols, fissure, bevel, tilt):
+    """A mosaic of rock masses: every pixel belongs to its nearest seed; each mass domed, tilted
+    hard one way or another so it catches the light as a facet, with a crevice between masses."""
+    n = rows * cols
+    sx = (np.arange(n) % cols + rng.uniform(0.1, 0.9, n) + (np.arange(n) // cols % 2) * 0.5) * cv.w / cols
+    sy = (np.arange(n) // cols + rng.uniform(0.1, 0.9, n)) * cv.h / rows
+    yy, xx = np.mgrid[0:cv.h, 0:cv.w].astype(np.float32) + 0.5
+    dx = np.abs(xx[..., None] - sx % cv.w)
+    dy = np.abs(yy[..., None] - sy % cv.h)
+    d = np.hypot(np.minimum(dx, cv.w - dx), np.minimum(dy, cv.h - dy))
+    order = np.argsort(d, axis=-1)
+    d1 = np.take_along_axis(d, order[..., :1], -1)[..., 0]
+    d2 = np.take_along_axis(d, order[..., 1:2], -1)[..., 0]
+    warp = smooth_noise(cv.w, cv.h, 6, rng)                  # crevices wander, widen and narrow,
+    edge = d2 - d1 + 3.0 * (warp - 0.5)                      # and close up here and there
+    near = order[..., 0]
+    tl = rng.normal(0, tilt, (n, 2))
+    ox = (xx - sx[near] + cv.w / 2) % cv.w - cv.w / 2
+    oy = (yy - sy[near] + cv.h / 2) % cv.h - cv.h / 2
+    width = fissure * (0.3 + 1.4 * smooth_noise(cv.w, cv.h, 4, rng))
+    inside = edge > width
+    prof = np.clip((edge - width) / bevel, 0, 1) ** 0.55
+    cv.z = np.where(inside, prof * 1.4 + tl[near, 0] * ox + tl[near, 1] * oy, cv.z).astype(np.float32)
+    cv.id = np.where(inside, near + 1 + cv.n, cv.id).astype(np.int32)
+    cv.mat = np.where(inside, rng.integers(0, 3, n)[near], cv.mat).astype(np.int32)
+    cv.tone = np.where(inside, rng.normal(0, 0.05, n)[near], cv.tone).astype(np.float32)
+    cv.n += n
+    return near, inside
+
+
+def tex_rock(name, kind='rock'):
+    """Raw rock: masses of every size split by deep, dark crevices, each a facet tilted to the
+    light, scored with finer cracks and grained. `rock_wet` is darker and blue-grey with glints
+    of water on the faces that catch the light; `rock_floor` flatter and browner, grit in the
+    cracks."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=-1.6, mat=3)
+    floor = kind == 'rock_floor'
+    _facets(cv, rng, 4 if floor else 3, 4 if floor else 3, 1.1, 5.0 if not floor else 3.5, 0.045 if not floor else 0.025)
+    for _ in range(9):                                       # finer cracks across the masses
+        x, y = rng.random() * T, rng.random() * T
+        a = rng.uniform(0, 2 * np.pi)
+        pts = [(x, y)]
+        for _ in range(3):
+            a += rng.normal(0, 0.5)
+            pts.append((pts[-1][0] + np.cos(a) * 5, pts[-1][1] + np.sin(a) * 5))
+        cv.stroke(pts, 0.8, dome=0.5, mode='carve')
+    cv.noise(0.22, cells=10, rng=rng, octaves=3)
+    if floor:
+        for _ in range(30):                                  # grit in the cracks
+            x, y = rng.random() * T, rng.random() * T
+            if cv.mat[int(y) % T, int(x) % T] == 3:
+                cv.ellipse(x, y, 0.8, 0.7, z=-0.9, dome=0.4, mat=int(rng.integers(0, 3)))
+    light = cv.light(relief=1.2, cavity=0.5, shadow=0.55, ambient=0.2, diffuse=0.52)
+    if kind == 'rock_wet':                                   # glints of water where the light catches
+        glint = (light > np.percentile(light, 90)) & (rng.random((T, T)) < 0.35) & (cv.mat != 3)
+        cv.tone[glint] += 0.3
+    return cv.paint(ROCK[kind] + [CREVICE], light, dither=0.3)
+
+
+def tex_snow_rock(name):
+    """Rock under snow: the same faceted masses, snow lying on the top of every one - thick on the
+    flatter tops, thin down the faces - and filling the crevices, the rock dark between."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=-1.6, mat=3)
+    _facets(cv, rng, 3, 3, 1.1, 5.0, 0.04)
+    cv.noise(0.2, cells=10, rng=rng, octaves=2)
+    run = np.zeros((T, T), np.float32)                       # how far below its mass's top each pixel is
+    ids = cv.id
+    for y in range(1, 2 * T):                                # twice round, so the wrap is right
+        yy = y % T
+        same = (ids[yy] == ids[(yy - 1) % T]) & (ids[yy] > 0)
+        run[yy] = np.where(same, run[(yy - 1) % T] + 1, 0)
+    lump = smooth_noise(T, T, 8, rng)
+    snow = (run < 3 + 6 * lump) & (ids > 0)
+    snow |= (ids == 0) & (lump > 0.45)                        # drifts in the crevices
+    cv.mat[snow] = 4
+    cv.z[snow] += 0.35
+    cv.tone[snow] = 0.0
+    ramps = ROCK['rock'] + [CREVICE, SNOW]
+    return _tile(cv, ramps, relief=1.1, cavity=0.45, shadow=0.5)
+
+
+def tex_ice(name):
+    """A frozen lake from above: clear blue ice with depth in it - darker where it is thick and
+    black - long straight fractures with white edges branching at sharp angles, air bubbles
+    trapped in strings, and frost dusted over it."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=0.0, mat=0)
+    deep = smooth_noise(T, T, 3, rng) * 0.6 + smooth_noise(T, T, 7, rng) * 0.4
+    cv.tone += (0.16 * (deep - 0.5)).astype(np.float32)
+    frac = np.zeros((T, T), bool)
+    for _ in range(4):                                       # fractures: straight runs, a branch off each
+        x, y = rng.random() * T, rng.random() * T
+        a = rng.uniform(0, np.pi)
+        for seg in range(3):
+            L = rng.uniform(10, 26)
+            nx, ny = x + np.cos(a) * L, y + np.sin(a) * L
+            n = int(L * 2)
+            xs = np.round(np.linspace(x, nx, n)).astype(int) % T
+            ys = np.round(np.linspace(y, ny, n)).astype(int) % T
+            frac[ys, xs] = True
+            if rng.random() < 0.6:                           # a branch
+                b = a + rng.choice([-1, 1]) * rng.uniform(0.6, 1.1)
+                bl = rng.uniform(5, 12)
+                m = int(bl * 2)
+                bx = np.round(np.linspace(nx, nx + np.cos(b) * bl, m)).astype(int) % T
+                by = np.round(np.linspace(ny, ny + np.sin(b) * bl, m)).astype(int) % T
+                frac[by, bx] = True
+            x, y = nx, ny
+            a += rng.normal(0, 0.35)
+    cv.mat[frac] = 1
+    halo = np.zeros_like(frac)
+    for dy, dx in ((0, 1), (1, 0)):
+        halo |= np.roll(frac, (dy, dx), (0, 1))
+    cv.tone[halo & ~frac] -= 0.12                            # the dark side of each crack
+    for _ in range(5):                                       # strings of bubbles
+        x, y = rng.random() * T, rng.random() * T
+        a = rng.uniform(0, 2 * np.pi)
+        for k in range(rng.integers(4, 9)):
+            px, py = x + np.cos(a) * k * 1.8 + rng.normal(0, 0.4), y + np.sin(a) * k * 1.8 + rng.normal(0, 0.4)
+            cv.mat[int(py) % T, int(px) % T] = 1
+    frost = rng.random((T, T)) < 0.04 * smooth_noise(T, T, 5, rng)
+    cv.tone[frost] += 0.15
+    return _tile(cv, [ramp('#8ab4c8', dark=0.35, light=1.3, cool=0.25), ramp('#eef6fa', dark=0.7, light=1.04)],
+                 dither=0.35, cavity=0.0, shadow=0.0, ambient=0.34, diffuse=0.62)
+
+
+def tex_sand(name):
+    """Sand: ripples drawn by the wind, each with a lit face and a shaded lee, wandering a little,
+    a shell fragment or two and a few dark grains."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=0.0, mat=0)
+    xs = np.arange(T)[None, :]
+    ys = np.arange(T)[:, None]
+    warp = smooth_noise(T, T, 3, rng)
+    phase = 2 * np.pi * (4 * ys + 1 * xs) / T + 3.0 * warp
+    cv.z += (0.35 * np.sin(phase) + 0.12 * np.sin(2 * phase)).astype(np.float32)
+    cv.noise(0.08, cells=16, rng=rng)
+    for _ in range(4):                                       # shell fragments
+        x, y = rng.random() * T, rng.random() * T
+        cv.ellipse(x, y, rng.uniform(0.8, 1.4), rng.uniform(0.6, 1.0), z=0.6, dome=0.5, angle=rng.uniform(0, 180),
+                   mat=1)
+    dark = rng.random((T, T)) < 0.015
+    cv.mat[dark] = 2
+    return _tile(cv, [ramp('#c4aa7c', dark=0.38, light=1.16), ramp('#ece2d0', dark=0.6, light=1.05),
+                      ramp('#6e5e4a', dark=0.4)], dither=0.3, relief=1.4, cavity=0.2, shadow=0.3,
+                 ambient=0.34, diffuse=0.62)
+
+
+def tex_plaster(name, base='#c9bb98', stain='#6b5a40', amount=0.5):
+    """Old plaster: a smooth render, mottled where it was patched, a hairline crack or two, a few
+    faint water stains run down from wherever the water got in - not in stripes, and no band,
+    so a wall stacked storey on storey has no seams."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=0.0, mat=0)
+    cv.noise(0.26, cells=5, rng=rng, octaves=3)
+    patch = smooth_noise(T, T, 4, rng)
+    cv.tone += (0.12 * (patch - 0.5)).astype(np.float32)
+    for _ in range(int(rng.integers(1, 3))):                 # hairline cracks
+        x, y = rng.random() * T, rng.random() * T
+        a = rng.uniform(0, 2 * np.pi)
+        pts = [(x, y)]
+        for _ in range(4):
+            a += rng.normal(0, 0.6)
+            pts.append((pts[-1][0] + np.cos(a) * 4, pts[-1][1] + np.sin(a) * 4))
+        cv.stroke(pts, 0.55, dome=0.35, mode='carve')
+    for _ in range(int(rng.integers(1, 4))):                 # water stains, faint, irregular
+        x, y = rng.random() * T, rng.random() * T
+        L, wd = rng.uniform(14, 34), rng.uniform(1.0, 2.2)
+        yy = (np.arange(int(y), int(y + L)) % T)
+        for k, row in enumerate(yy):
+            sx = x + 1.2 * np.sin(k * 0.25)
+            cols = np.arange(int(sx - wd), int(sx + wd) + 1) % T
+            cv.tone[row, cols] -= amount * 0.12 * min(1.0, k / 4.0) * (1 - k / L)
+    return _tile(cv, [ramp(base, dark=0.42, light=1.12)], dither=0.2, relief=0.8, cavity=0.3, shadow=0.2,
+                 ambient=0.32, diffuse=0.7)
+
+
+def tex_ivy(name):
+    """A brick wall overgrown with ivy: brick in red courses, and over it the ivy - woody stems
+    climbing and branching, clusters of dark three-pointed leaves, the newest a brighter green."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=-0.6, mat=1)
+    _blocks(cv, rng, list(range(0, T + 1, 8)), (14, 18), rough=0.3, chip=1, bevel=1.2, gap=0.8, tone=0.06)
+    for _ in range(3):                                       # stems
+        x, y = rng.random() * T, T + 2
+        pts = [(x, y)]
+        for _ in range(9):
+            pts.append((pts[-1][0] + rng.normal(0, 3), pts[-1][1] - rng.uniform(5, 9)))
+        cv.stroke(pts, 1.2, z=0.9, dome=0.5, mat=2)
+    cover = smooth_noise(T, T, 3, rng)
+    for _ in range(170):                                     # leaves
+        x, y = rng.random() * T, rng.random() * T
+        if cover[int(y) % T, int(x) % T] < 0.42:
+            continue
+        a = np.radians(rng.uniform(200, 340))
+        L = rng.uniform(3.5, 5.5)
+        m = 3 if rng.random() < 0.8 else 4
+        cv.leaf(x, y, x + np.cos(a) * L, y + np.sin(a) * L, L * 0.85, z=1.2 + rng.random() * 0.5, dome=0.6,
+                shape=0.5, base=0.5, mat=m, tone=rng.normal(0, 0.05), rib=0.35)
+    return _tile(cv, [ramp('#8a3e2c', dark=0.32), ramp('#5a5048', dark=0.4), ramp('#5a4a34', dark=0.35),
+                      ramp('#2e5a2a', dark=0.3, light=1.3), ramp('#5a8a34', dark=0.3)], cavity=0.45, shadow=0.55)
 
 
 # ---------------------------------------------------------------- props
@@ -444,6 +662,15 @@ TEXTURES = {
     'shingle': lambda n: (tex_shingle(n), None),
     'cobble': lambda n: (tex_cobble(n), None),
     'beams': lambda n: (tex_beams(n), None),
+    'rock': lambda n: (tex_rock(n), None),
+    'rock_wet': lambda n: (tex_rock(n, 'rock_wet'), None),
+    'rock_floor': lambda n: (tex_rock(n, 'rock_floor'), None),
+    'snow_rock': lambda n: (tex_snow_rock(n), None),
+    'ice': lambda n: (tex_ice(n), None),
+    'sand': lambda n: (tex_sand(n), None),
+    'plaster': lambda n: (tex_plaster(n), None),
+    'plaster_white': lambda n: (tex_plaster(n, '#d8d4c4', '#6a6050', 0.45), None),
+    'ivy': lambda n: (tex_ivy(n), None),
 }
 SPRITES = {'barrel': spr_barrel, 'broken_barrel': spr_broken_barrel, 'crate': spr_crate, 'fountain': spr_fountain,
            'rowboat': spr_rowboat, 'bench': spr_bench, 'flowers': spr_flowers, 'statue': spr_statue}
