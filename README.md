@@ -58,6 +58,8 @@ Woodland, towns, coast, bunkers, castles, chapels, caves, sewers and snow - all 
 |---|---|
 | ![A ringed planet through the observation deck's glass, mirrored in the floor](docs/gallery/station_deck.png) | ![A light-strip corridor leading to the deck](docs/gallery/station_corridor.png) |
 | ![A derelict ship on emergency power](docs/gallery/derelict_corridor.png) | ![Found footage from the hive](docs/gallery/derelict_hive.png) |
+| ![A shuttle on its pad in an orbital hangar, robot arms at work, a ringed planet beyond the glass](docs/gallery/hangar_bay.png) | ![The pilot by the shuttle: fuel her up, we drop through the rings](docs/gallery/hangar_pilot.png) |
+| ![The control room looking down the bay through its window](docs/gallery/hangar_control.png) | ![The reactor core glowing through cyan haze under red alarm lights](docs/gallery/hangar_reactor.png) |
 | ![A landing site under a gas giant](docs/gallery/alien_landing.png) | ![The monolith and the one who waits by it](docs/gallery/alien_monolith.png) |
 | ![A staircase to nowhere on an island in the sky](docs/gallery/dream_stair.png) | ![Koi over a mirror lake](docs/gallery/dream_mirror.png) |
 

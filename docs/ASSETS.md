@@ -38,8 +38,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 16 | 16 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 34 | 27 | 7 | 0 | 0 |
-| **all** | **479** | **409** | **65** | **5** | **0** |
+| Example scenes | 35 | 28 | 7 | 0 | 0 |
+| **all** | **480** | **410** | **65** | **5** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -105,23 +105,23 @@ Weakest first, and in the order the new scenes need them.
 | `corrugated` | polish |  | rainy_street | Rust blotches repeat visibly. |
 | `rust` | good |  | bunker_lab, rainy_street |  |
 | `pipes` | good |  | bunker_lab, sewer_tunnels |  |
-| `panel` | good |  | bunker_lab, derelict_ship, space_station |  |
+| `panel` | good |  | bunker_lab, derelict_ship, orbital_hangar, space_station |  |
 | `panel_green` | good |  | bunker_lab |  |
-| `hull` | good |  | space_station |  |
-| `hull_dark` | good |  | derelict_ship, space_station |  |
+| `hull` | good |  | orbital_hangar, space_station |  |
+| `hull_dark` | good |  | derelict_ship, orbital_hangar, space_station |  |
 | `hull_lit` | good | glows | space_station |  |
 | `hull_red` | good | glows | derelict_ship |  |
 | `tech_panel` | good | glows | space_station |  |
 | `server` | good | glows | space_station |  |
 | `blast_door` | good | glows | derelict_ship, space_station |  |
 | `hazard` | good |  | - |  |
-| `deck` | good |  | derelict_ship, space_station |  |
-| `grate` | good |  | bunker_lab, derelict_ship |  |
+| `deck` | good |  | derelict_ship, orbital_hangar, space_station |  |
+| `grate` | good |  | bunker_lab, derelict_ship, orbital_hangar |  |
 | `grid_floor` | good | glows, mirror 0.3 | - |  |
 | `hex_panel` | good |  | alien_world |  |
-| `hangar_floor` | good |  | - | Drawn with the toolkit in scifi.py: heavy plates four to a unit, corner bolts, tread, a tie-down ring at each crossing, wear and oil. |
-| `conduit` | good | glows | - | Drawn with the toolkit in scifi.py: cable bundles in four colours and pipes up the wall, steel clamps, a junction box with lit LEDs. |
-| `screen_wall` | good | glows | - | Drawn with the toolkit in scifi.py: monitors four to a unit, each with a trace, readouts, a radar or a wireframe, in cyan, green or amber; glows. |
+| `hangar_floor` | good |  | orbital_hangar | Drawn with the toolkit in scifi.py: heavy plates four to a unit, corner bolts, tread, a tie-down ring at each crossing, wear and oil. |
+| `conduit` | good | glows | orbital_hangar | Drawn with the toolkit in scifi.py: cable bundles in four colours and pipes up the wall, steel clamps, a junction box with lit LEDs. |
+| `screen_wall` | good | glows | orbital_hangar | Drawn with the toolkit in scifi.py: monitors four to a unit, each with a trace, readouts, a radar or a wireframe, in cyan, green or amber; glows. |
 
 ### Nature
 
@@ -161,7 +161,7 @@ Weakest first, and in the order the new scenes need them.
 | `carpet_green` | good |  | - |  |
 | `flagstone` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, rain_alley |  |
 | `obsidian` | good | mirror 0.45 | dream_world, space_station |  |
-| `concrete_floor` | good |  | 34 scenes |  |
+| `concrete_floor` | good |  | 35 scenes |  |
 | `rock_floor` | polish |  | crystal_cave, gui_lantern, tunnel_encounter, underground_waterway | Same as rock. |
 
 ### Ceilings
@@ -260,7 +260,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `bench` | polish | 0.35 tall | coast_lighthouse, garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street | Plain slats; add a backrest variant. |
 | `book_stack` | good | 0.22 tall | claude_study |  |
 | `chest` | polish | 0.3 tall | castle_keep | Lid corners read as dark notches. |
-| `console` | good | 0.85 tall, glows | bunker_lab, space_station |  |
+| `console` | good | 0.85 tall, glows | bunker_lab, orbital_hangar, space_station |  |
 | `crate` | polish | 0.4 tall | bunker_lab, coast_lighthouse, gui_lantern, gui_themes, gui_trade, hospital_corridor, library_medium, mansion_library, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway, winter_lake, woodland_night | Just a cross brace; add plank seams. |
 | `barrel` | polish | 0.45 tall | bunker_lab, coast_lighthouse, gui_lantern, gui_themes, gui_trade, library_medium, mansion_library, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway | Flat: needs a cylindrical highlight and stave lines. |
 | `locker` | good | 1 tall | bunker_lab |  |
@@ -350,18 +350,18 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
 | `antenna` | good | 2.4 tall, glows | alien_world |  |
-| `drone` | good | 0.22 tall, glows, no shadow | space_station |  |
-| `hologram` | good | 0.55 tall, glows, aura, no shadow | space_station |  |
+| `drone` | good | 0.22 tall, glows, no shadow | orbital_hangar, space_station |  |
+| `hologram` | good | 0.55 tall, glows, aura, no shadow | orbital_hangar, space_station |  |
 | `lander` | good | 1.6 tall, glows | alien_world |  |
-| `sci_crate` | good | 0.35 tall, glows | derelict_ship, space_station |  |
+| `sci_crate` | good | 0.35 tall, glows | derelict_ship, orbital_hangar, space_station |  |
 | `stasis_pod` | good | 1 tall, glows | derelict_ship |  |
-| `shuttle` | good | 2.2 tall, glows | - | Drawn with the toolkit in scifi.py: nose-on wedge hull in white and orange, lit cockpit and engine pods, landing legs, panel lines and vents. |
-| `cargo_container` | good | 1.2 tall | - | Drawn with the toolkit in scifi.py: corrugated orange steel, corner castings, door rods, rust streaking down the ribs. Tint for other colours. |
-| `power_loader` | good | 2 tall, glows | - | Drawn with the toolkit in scifi.py: roll cage, hydraulic arms with forks, hazard stripes on the hip block, a lit work light. |
-| `beacon` | good | 0.3 tall, glows, aura | - | Drawn with the toolkit in scifi.py: an amber dome in a wire cage on a squat base; glows, with an aura. |
-| `reactor_core` | good | 2.8 tall, glows, aura | - | Drawn with the toolkit in scifi.py: a glowing column in steel collars with coolant pipes; glows, with an aura. |
-| `robot_arm` | good | 1.8 tall, glows | - | Drawn with the toolkit in scifi.py: three orange segments, dark joints, a turntable base, a welding spark. |
-| `cables_hang` | good | 1.4 tall, no shadow | - | Drawn with the toolkit in scifi.py: slack loops of cable and a few dangling ends; hangs from a ceiling, no contact shadow. |
+| `shuttle` | good | 2.2 tall, glows | orbital_hangar | Drawn with the toolkit in scifi.py: nose-on wedge hull in white and orange, lit cockpit and engine pods, landing legs, panel lines and vents. |
+| `cargo_container` | good | 1.2 tall | orbital_hangar | Drawn with the toolkit in scifi.py: corrugated orange steel, corner castings, door rods, rust streaking down the ribs. Tint for other colours. |
+| `power_loader` | good | 2 tall, glows | orbital_hangar | Drawn with the toolkit in scifi.py: roll cage, hydraulic arms with forks, hazard stripes on the hip block, a lit work light. |
+| `beacon` | good | 0.3 tall, glows, aura | orbital_hangar | Drawn with the toolkit in scifi.py: an amber dome in a wire cage on a squat base; glows, with an aura. |
+| `reactor_core` | good | 2.8 tall, glows, aura | orbital_hangar | Drawn with the toolkit in scifi.py: a glowing column in steel collars with coolant pipes; glows, with an aura. |
+| `robot_arm` | good | 1.8 tall, glows | orbital_hangar | Drawn with the toolkit in scifi.py: three orange segments, dark joints, a turntable base, a welding spark. |
+| `cables_hang` | good | 1.4 tall, no shadow | orbital_hangar | Drawn with the toolkit in scifi.py: slack loops of cable and a few dangling ends; hangs from a ceiling, no contact shadow. |
 
 ### Alien and dream
 
@@ -444,7 +444,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `forest_card_4` | good | 4.8 tall | woodland_night | The back: a dense wall of spruce and oak over undergrowth, darkest. Repeats every 8 units. |
 | `palm_trunk` | good | 3.2 tall | tropical_beach | The palm without its crown, for palm_3d. |
 | `palm_crown` | good | 3.2 tall, no shadow | tropical_beach | The palm's crown alone, in the same frame as the trunk. |
-| `glass_pane` | good | 1 tall | - | A plain pane for the glass pass. |
+| `glass_pane` | good | 1 tall | orbital_hangar | A plain pane for the glass pass. |
 
 ## Characters (21)
 
@@ -453,7 +453,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | character | status | used in | notes |
 |---|---|---|---|
 | `cultist` | good | garden_encounter, gui_lantern, gui_menus, post_presets, tunnel_encounter, woodland_night |  |
-| `scientist` | good | bunker_lab, coast_lighthouse, gui_lantern, tunnel_encounter |  |
+| `scientist` | good | bunker_lab, coast_lighthouse, gui_lantern, orbital_hangar, tunnel_encounter |  |
 | `guard` | good | garden_encounter, gui_menus, post_presets, rain_alley, rainy_street |  |
 | `nurse` | good | ghost_corridor, gui_hud |  |
 | `spiritualist` | good | cathedral_ruin, chapel_graveyard, gui_themes, gui_trade, library_medium |  |
@@ -465,8 +465,8 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `creature` | good | castle_keep, crystal_cave |  |
 | `robot` | good | crystal_cave |  |
 | `shopkeeper` | good | - |  |
-| `astronaut` | good | alien_world, space_station |  |
-| `android` | good | space_station |  |
+| `astronaut` | good | alien_world, orbital_hangar, space_station |  |
+| `android` | good | orbital_hangar, space_station |  |
 | `alien` | good | alien_world, derelict_ship | A familiar archetype; could be made stranger. |
 | `dreamer` | polish | dream_world | The face reads as open-eyed; a sleepwalker wants closed eyes. |
 | `claude` | good | claude_study | Claude's own avatar. |
@@ -484,7 +484,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `puddle_dark` | good | bunker_lab, castle_keep, cathedral_ruin, derelict_ship, sewer_tunnels, woodland_night |  |
 | `puddle_shine` | good | coast_lighthouse, rain_alley, rainy_street, sewer_tunnels |  |
 | `stain` | polish | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, sewer_tunnels, woodland_night | A plain blob; uneven edge, drip marks. |
-| `stain_rust` | polish | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, rainy_street, sewer_tunnels | Same as stain. |
+| `stain_rust` | polish | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, orbital_hangar, rainy_street, sewer_tunnels | Same as stain. |
 | `splatter` | good | - |  |
 | `splatter_dark` | good | bunker_lab, castle_keep, cathedral_ruin, derelict_ship, sewer_tunnels |  |
 | `vines` | good | jungle_temple, rainy_street |  |
@@ -495,9 +495,9 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `cobweb` | good | bunker_lab, castle_keep |  |
 | `rune_mark` | good | - |  |
 | `drain` | good | bunker_lab, rainy_street, sewer_tunnels |  |
-| `contact_shadow` | good | 34 scenes |  |
-| `pad_marking` | good | - | A painted landing ring with an H and a dashed outer ring, worn in patches. |
-| `hazard_stripe` | good | - | A band of yellow and black diagonal stripes, worn through in places. |
+| `contact_shadow` | good | 35 scenes |  |
+| `pad_marking` | good | orbital_hangar | A painted landing ring with an H and a dashed outer ring, worn in patches. |
+| `hazard_stripe` | good | orbital_hangar | A band of yellow and black diagonal stripes, worn through in places. |
 
 ### Shore and pool
 
@@ -520,7 +520,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `day` | good | cathedral_ruin, jungle_temple, tropical_beach, winter_lake |  |
 | `overcast` | good | - |  |
 | `blood` | good | - |  |
-| `space` | good | space_station |  |
+| `space` | good | orbital_hangar, space_station |  |
 | `alien` | good | alien_world |  |
 | `dream` | good | dream_world |  |
 | `sunset` | good | tropical_beach |  |
@@ -542,9 +542,9 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | object | status | used in | notes |
 |---|---|---|---|
 | `planet` | good | - |  |
-| `ringed` | good | alien_world, space_station |  |
-| `moon` | good | alien_world, dream_world, space_station |  |
-| `sun` | good | space_station |  |
+| `ringed` | good | alien_world, orbital_hangar, space_station |  |
+| `moon` | good | alien_world, dream_world, orbital_hangar, space_station |  |
+| `sun` | good | orbital_hangar, space_station |  |
 | `eye` | good | dream_world |  |
 
 ## Scatter sets (13)
@@ -652,9 +652,9 @@ Named groups placed with one line (`scripts/prefabs.py`).
 
 | theme | status | used in | notes |
 |---|---|---|---|
-| `classic` | good | 28 scenes |  |
+| `classic` | good | 29 scenes |  |
 | `parchment` | good | gui_themes, gui_trade |  |
-| `terminal` | good | bunker_lab, gui_themes, space_station |  |
+| `terminal` | good | bunker_lab, gui_themes, orbital_hangar, space_station |  |
 | `blood` | good | gui_themes |  |
 | `steel` | good | gui_themes |  |
 
@@ -663,8 +663,8 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | widget | status | used in | notes |
 |---|---|---|---|
 | `bubble` | good | alien_world, castle_keep, claude_study, crystal_cave, garden_encounter, ghost_corridor, gui_menus, gui_trade, rainy_street, tunnel_encounter, winter_lake, woodland_night |  |
-| `dialog` | good | bunker_lab, chapel_graveyard, claude_study, coast_lighthouse, ghost_corridor, library_medium, space_station |  |
-| `caption` | good | 21 scenes |  |
+| `dialog` | good | bunker_lab, chapel_graveyard, claude_study, coast_lighthouse, ghost_corridor, library_medium, orbital_hangar, space_station |  |
+| `caption` | good | 22 scenes |  |
 | `choice` | good | gui_menus, gui_themes, gui_trade |  |
 | `title` | good | gui_menus |  |
 | `panel` | good | bunker_lab, gui_lantern |  |
@@ -718,7 +718,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `mono` | good | - |  |
 | `bone` | good | - |  |
 
-## Example scenes (34)
+## Example scenes (35)
 
 The environments, judged on their gallery images and shots.
 
@@ -763,6 +763,7 @@ The environments, judged on their gallery images and shots.
 |---|---|---|---|---|
 | `space_station` | good | 3 | station_deck, station_corridor |  |
 | `derelict_ship` | good | 3 | derelict_corridor, derelict_hive |  |
+| `orbital_hangar` | good | 4 | hangar_bay, hangar_control, hangar_reactor, hangar_pilot | A shuttle bay in orbit, its control room and the reactor: the scifi.py hardware, glass panes between mullions onto space and a ringed planet, a window onto the bay, cyan haze and red alarm light. |
 | `alien_world` | good | 3 | alien_landing, alien_monolith |  |
 | `dream_world` | good | 3 | dream_stair, dream_mirror |  |
 
@@ -794,6 +795,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the orbital hangar.** `examples/orbital_hangar.py`, a scene of several rooms built from the sci-fi hardware: the bay with its shuttle, loader and robot arms behind real glass onto a ringed planet, a control room looking down the bay, and a reactor room in cyan haze under red alarms. Gallery: `hangar_bay`, `hangar_pilot`, `hangar_control`, `hangar_reactor`.
 - **2026-10-19, sci-fi hardware.** `scripts/scifi.py`: `hangar_floor`, `conduit` and `screen_wall` textures, `pad_marking` and `hazard_stripe` decals, and a `shuttle`, `cargo_container`, `power_loader`, `beacon`, `reactor_core`, `robot_arm` and `cables_hang`, all drawn with the toolkit, lights and screens writing an emissive mask.
 - **2026-10-19, the forest, part 2.** The original woodland rebuilt: the `forest` fringe in front of low `forest_deep` walls (a new texture: trunks receding into the dark), trees standing free along the road, a real moon in volumetric fog instead of blue point lights, and two new shots, first light through a gap in the trees and a ghost on the moonlit road (`woods_dawn`, `woods_moon`). `boulder`, `stump`, `log` and `dead_tree` redrawn with the toolkit.
 - **2026-10-19, the forest, part 1.** `scripts/forest.py` draws the temperate forest with the toolkit: a spruce (`pine`), an oak (`tree`), a new `birch`, the `bush`, and the `foliage`, `foliage_autumn`, `bark`, `bark_pine`, `pine_needles` and `moss` textures, replacing the flat first versions. A `forest` fringe set (`forest_card_1`-`4`) stands layered spruce, oak, birch and undergrowth in front of a wood's walls, so its skyline is tree tops.

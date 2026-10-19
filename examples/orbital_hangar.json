@@ -1,0 +1,816 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "                                        ",
+  "                                        ",
+  "                                        ",
+  "   MggggMggggMggggMggggMggggM           ",
+  "###hhhhhhhhhhhhhhhhhhhhhhhhhh###########",
+  "###hhhhhhhhhhhhhhhhhhhhhhhhhh#TTTTTTTT##",
+  "###hhhhhhhhhhhhhhhhhhhhhhhhhh#kkkkkkkkS#",
+  "###hhhhhhhhhhhhhhhhhhhhhhhhhhwkkkkkkkkS#",
+  "###hhhhhhhhhhhhhhhhhhhhhhhhhhwkkkkkkkkS#",
+  "###hhhhhhhhhhhhhhhhhhhhhhhhhhwkkkkkkkkS#",
+  "###hhhhhhhhhhhhhhhhhhhhhhhhhhwkkkkkkkkS#",
+  "###hhhhhhhhhhhhhhhhhhhhhhhhhhwkkkkkkkkS#",
+  "###hhhhhhhhhhhhhhhhhhhhhhhhhh#kkkkkkkkS#",
+  "###hhhhhhhhhhhhhhhhhhhhhhhhhh###########",
+  "###hhhhhhhhhhhhhhhhhhhhhhhhhh###########",
+  "###hhhhhhhhhhhhhhhhhhhhhhhhhh###########",
+  "###hhhhhhhhhhhhhhhhhhhhhhhhhh###########",
+  "###hhhhhhhhhhhhhhhhhhhhhhhhhh###########",
+  "###hhhhhhhhhhhhhhhhhhhhhhhhhh###########",
+  "###################ccc########CCCCCCCC##",
+  "###################ccc#######CrrrrrrrrC#",
+  "###################ccc#######CrrrrrrrrC#",
+  "###################ccc#######CrrrrrrrrC#",
+  "###################ccc#######CrrrrrrrrC#",
+  "###################ccc#######CrrrrrrrrC#",
+  "###################cccccccccccrrrrrrrrC#",
+  "###################cccccccccccrrrrrrrrC#",
+  "###################cccccccccccrrrrrrrrC#",
+  "#############################CrrrrrrrrC#",
+  "#############################CrrrrrrrrC#",
+  "##############################CCCCCCCC##",
+  "########################################"
+ ],
+ "legend": {
+  " ": {
+   "floor": "void"
+  },
+  "#": {
+   "wall": "hull_dark",
+   "h": 3.6
+  },
+  "M": {
+   "wall": "hull",
+   "h": 3.6
+  },
+  "g": {
+   "floor": "void"
+  },
+  "h": {
+   "floor": "hangar_floor",
+   "ceil": "panel"
+  },
+  "k": {
+   "floor": "deck",
+   "ceil": "panel"
+  },
+  "w": {
+   "floor": "deck",
+   "ceil": "panel"
+  },
+  "T": {
+   "wall": [
+    "screen_wall",
+    "hull_dark"
+   ],
+   "h": 3.6
+  },
+  "S": {
+   "wall": [
+    "screen_wall",
+    "hull_dark"
+   ],
+   "h": 3.6
+  },
+  "c": {
+   "floor": "grate",
+   "ceil": "panel"
+  },
+  "r": {
+   "floor": "grate",
+   "ceil": "panel"
+  },
+  "C": {
+   "wall": [
+    "conduit",
+    "conduit",
+    "hull_dark"
+   ],
+   "h": 3.6
+  }
+ },
+ "camera": {
+  "x": 22.6,
+  "y": 16.4,
+  "look_at": [
+   13.0,
+   5.6,
+   1.6
+  ],
+  "fov": 72
+ },
+ "title": "Orbital hangar - bay 3, its control room and the reactor",
+ "ceiling_height": 3.6,
+ "sky": "space",
+ "sky_objects": [
+  {
+   "type": "ringed",
+   "azimuth": 268,
+   "elevation": 6,
+   "size": 16,
+   "color": [
+    0.62,
+    0.74,
+    0.92
+   ],
+   "color2": [
+    0.86,
+    0.8,
+    0.7
+   ],
+   "lit_from": 200,
+   "phase": 0.65,
+   "tilt": 0.2,
+   "angle": 10
+  },
+  {
+   "type": "moon",
+   "azimuth": 300,
+   "elevation": 22,
+   "size": 2.0,
+   "lit_from": 200
+  },
+  {
+   "type": "sun",
+   "azimuth": 215,
+   "elevation": 14,
+   "size": 0.9
+  }
+ ],
+ "ambient": [
+  0.12,
+  0.13,
+  0.17
+ ],
+ "fog": {
+  "color": [
+   0.05,
+   0.06,
+   0.08
+  ],
+  "density": 0.012,
+  "glow": 0.8
+ },
+ "lights": [
+  {
+   "x": 8,
+   "y": 8,
+   "z": 3.3,
+   "radius": 7.0,
+   "color": [
+    0.78,
+    0.88,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 16,
+   "y": 8,
+   "z": 3.3,
+   "radius": 7.0,
+   "color": [
+    0.78,
+    0.88,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 24,
+   "y": 8,
+   "z": 3.3,
+   "radius": 7.0,
+   "color": [
+    0.78,
+    0.88,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 8,
+   "y": 15,
+   "z": 3.3,
+   "radius": 7.0,
+   "color": [
+    0.78,
+    0.88,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 16,
+   "y": 15,
+   "z": 3.3,
+   "radius": 7.0,
+   "color": [
+    0.78,
+    0.88,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 24,
+   "y": 15,
+   "z": 3.3,
+   "radius": 7.0,
+   "color": [
+    0.78,
+    0.88,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 8,
+   "y": 4.4,
+   "z": 1.6,
+   "radius": 6.0,
+   "color": [
+    1.0,
+    0.8,
+    0.6
+   ],
+   "intensity": 0.6
+  },
+  {
+   "x": 16,
+   "y": 4.4,
+   "z": 1.6,
+   "radius": 6.0,
+   "color": [
+    1.0,
+    0.8,
+    0.6
+   ],
+   "intensity": 0.6
+  },
+  {
+   "x": 24,
+   "y": 4.4,
+   "z": 1.6,
+   "radius": 6.0,
+   "color": [
+    1.0,
+    0.8,
+    0.6
+   ],
+   "intensity": 0.6
+  },
+  {
+   "x": 12.6,
+   "y": 7.8,
+   "z": 0.4,
+   "radius": 3.0,
+   "color": [
+    1.0,
+    0.62,
+    0.22
+   ],
+   "intensity": 1.2
+  },
+  {
+   "x": 18.4,
+   "y": 7.8,
+   "z": 0.4,
+   "radius": 3.0,
+   "color": [
+    1.0,
+    0.62,
+    0.22
+   ],
+   "intensity": 1.2
+  },
+  {
+   "x": 12.6,
+   "y": 13.2,
+   "z": 0.4,
+   "radius": 3.0,
+   "color": [
+    1.0,
+    0.62,
+    0.22
+   ],
+   "intensity": 1.2
+  },
+  {
+   "x": 18.4,
+   "y": 13.2,
+   "z": 0.4,
+   "radius": 3.0,
+   "color": [
+    1.0,
+    0.62,
+    0.22
+   ],
+   "intensity": 1.2
+  },
+  {
+   "x": 34,
+   "y": 9,
+   "z": 1.4,
+   "radius": 6.0,
+   "color": [
+    0.35,
+    0.9,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 36.6,
+   "y": 9.5,
+   "z": 1.2,
+   "radius": 4.0,
+   "color": [
+    0.5,
+    0.95,
+    0.8
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 31.2,
+   "y": 7.4,
+   "z": 0.9,
+   "radius": 2.5,
+   "color": [
+    1.0,
+    0.8,
+    0.5
+   ],
+   "intensity": 0.8
+  },
+  {
+   "x": 33.5,
+   "y": 24.5,
+   "z": 1.4,
+   "radius": 8.0,
+   "color": [
+    0.35,
+    0.9,
+    1.0
+   ],
+   "intensity": 1.8
+  },
+  {
+   "x": 30.6,
+   "y": 21.0,
+   "z": 3.0,
+   "radius": 5.0,
+   "color": [
+    1.0,
+    0.22,
+    0.16
+   ],
+   "intensity": 1.1
+  },
+  {
+   "x": 36.4,
+   "y": 28.0,
+   "z": 3.0,
+   "radius": 5.0,
+   "color": [
+    1.0,
+    0.22,
+    0.16
+   ],
+   "intensity": 1.1
+  },
+  {
+   "x": 20.0,
+   "y": 23.0,
+   "z": 3.0,
+   "radius": 4.0,
+   "color": [
+    0.78,
+    0.88,
+    1.0
+   ],
+   "intensity": 0.6
+  }
+ ],
+ "sprites": [
+  {
+   "x": 6.0,
+   "y": 3.5,
+   "type": "glass_pane",
+   "angle": 0,
+   "length": 4.0,
+   "scale": 3.2,
+   "glass": {
+    "opacity": 0.14,
+    "blur": 1
+   }
+  },
+  {
+   "x": 11.0,
+   "y": 3.5,
+   "type": "glass_pane",
+   "angle": 0,
+   "length": 4.0,
+   "scale": 3.2,
+   "glass": {
+    "opacity": 0.14,
+    "blur": 1
+   }
+  },
+  {
+   "x": 16.0,
+   "y": 3.5,
+   "type": "glass_pane",
+   "angle": 0,
+   "length": 4.0,
+   "scale": 3.2,
+   "glass": {
+    "opacity": 0.14,
+    "blur": 1
+   }
+  },
+  {
+   "x": 21.0,
+   "y": 3.5,
+   "type": "glass_pane",
+   "angle": 0,
+   "length": 4.0,
+   "scale": 3.2,
+   "glass": {
+    "opacity": 0.14,
+    "blur": 1
+   }
+  },
+  {
+   "x": 26.0,
+   "y": 3.5,
+   "type": "glass_pane",
+   "angle": 0,
+   "length": 4.0,
+   "scale": 3.2,
+   "glass": {
+    "opacity": 0.14,
+    "blur": 1
+   }
+  },
+  {
+   "x": 29.5,
+   "y": 9.5,
+   "type": "glass_pane",
+   "angle": 90,
+   "length": 5.0,
+   "scale": 1.6,
+   "z": 0.5,
+   "glass": {
+    "opacity": 0.2,
+    "blur": 1
+   }
+  },
+  {
+   "x": 15.5,
+   "y": 10.5,
+   "type": "shuttle"
+  },
+  {
+   "x": 4.8,
+   "y": 6.0,
+   "type": "cargo_container"
+  },
+  {
+   "x": 4.8,
+   "y": 6.0,
+   "type": "cargo_container",
+   "z": 1.2,
+   "tint": [
+    0.45,
+    0.7,
+    1.0
+   ]
+  },
+  {
+   "x": 4.8,
+   "y": 9.2,
+   "type": "cargo_container",
+   "tint": [
+    0.5,
+    0.85,
+    0.55
+   ]
+  },
+  {
+   "x": 4.8,
+   "y": 14.5,
+   "type": "cargo_container"
+  },
+  {
+   "x": 4.8,
+   "y": 14.5,
+   "type": "cargo_container",
+   "z": 1.2,
+   "tint": [
+    0.85,
+    0.85,
+    0.9
+   ]
+  },
+  {
+   "x": 8.6,
+   "y": 12.0,
+   "type": "power_loader"
+  },
+  {
+   "x": 19.6,
+   "y": 8.6,
+   "type": "robot_arm",
+   "flip": true
+  },
+  {
+   "x": 19.8,
+   "y": 12.6,
+   "type": "robot_arm",
+   "flip": true
+  },
+  {
+   "x": 9.0,
+   "y": 5.2,
+   "type": "cables_hang",
+   "z": 2.2
+  },
+  {
+   "x": 23.0,
+   "y": 5.4,
+   "type": "cables_hang",
+   "z": 2.2
+  },
+  {
+   "x": 26.5,
+   "y": 16.5,
+   "type": "cables_hang",
+   "z": 2.2,
+   "flip": true
+  },
+  {
+   "x": 25.8,
+   "y": 15.0,
+   "type": "sci_crate"
+  },
+  {
+   "x": 26.6,
+   "y": 15.4,
+   "type": "sci_crate",
+   "scale": 0.28
+  },
+  {
+   "x": 26.8,
+   "y": 11.0,
+   "type": "cargo_container",
+   "tint": [
+    0.55,
+    0.6,
+    0.66
+   ]
+  },
+  {
+   "x": 26.8,
+   "y": 7.2,
+   "type": "cargo_container",
+   "tint": [
+    0.9,
+    0.55,
+    0.45
+   ],
+   "flip": true
+  },
+  {
+   "x": 26.8,
+   "y": 7.2,
+   "type": "cargo_container",
+   "z": 1.2,
+   "tint": [
+    0.6,
+    0.8,
+    0.95
+   ]
+  },
+  {
+   "x": 7.4,
+   "y": 16.8,
+   "type": "sci_crate"
+  },
+  {
+   "x": 8.2,
+   "y": 17.1,
+   "type": "sci_crate",
+   "scale": 0.3
+  },
+  {
+   "x": 26.0,
+   "y": 6.0,
+   "type": "drone",
+   "z": 1.4
+  },
+  {
+   "id": "pilot",
+   "x": 13.2,
+   "y": 13.8,
+   "type": "astronaut",
+   "facing": 120
+  },
+  {
+   "id": "mechanic",
+   "x": 10.0,
+   "y": 13.0,
+   "type": "android",
+   "facing": 30
+  },
+  {
+   "x": 12.6,
+   "y": 7.8,
+   "type": "beacon"
+  },
+  {
+   "x": 18.4,
+   "y": 7.8,
+   "type": "beacon"
+  },
+  {
+   "x": 12.6,
+   "y": 13.2,
+   "type": "beacon"
+  },
+  {
+   "x": 18.4,
+   "y": 13.2,
+   "type": "beacon"
+  },
+  {
+   "x": 31.0,
+   "y": 7.0,
+   "type": "console"
+  },
+  {
+   "x": 36.8,
+   "y": 7.0,
+   "type": "console",
+   "flip": true
+  },
+  {
+   "x": 33.6,
+   "y": 11.4,
+   "type": "hologram",
+   "scale": 0.75
+  },
+  {
+   "id": "controller",
+   "x": 31.8,
+   "y": 9.6,
+   "type": "scientist",
+   "facing": 180
+  },
+  {
+   "x": 33.5,
+   "y": 24.5,
+   "type": "reactor_core"
+  },
+  {
+   "x": 30.8,
+   "y": 21.2,
+   "type": "beacon",
+   "z": 2.6,
+   "tint": [
+    1.0,
+    0.35,
+    0.3
+   ]
+  },
+  {
+   "x": 36.2,
+   "y": 27.8,
+   "type": "beacon",
+   "z": 2.6,
+   "tint": [
+    1.0,
+    0.35,
+    0.3
+   ]
+  },
+  {
+   "x": 31.2,
+   "y": 28.4,
+   "type": "sci_crate"
+  },
+  {
+   "x": 36.6,
+   "y": 21.2,
+   "type": "cables_hang",
+   "z": 2.2
+  },
+  {
+   "id": "tech",
+   "x": 32.2,
+   "y": 27.0,
+   "type": "android",
+   "facing": 300
+  }
+ ],
+ "decals": [
+  {
+   "tex": "pad_marking",
+   "surface": "floor",
+   "x": 15.5,
+   "y": 10.5,
+   "size": 6.0
+  },
+  {
+   "tex": "hazard_stripe",
+   "surface": "floor",
+   "x": 15.5,
+   "y": 4.6,
+   "size": 8.0
+  },
+  {
+   "tex": "hazard_stripe",
+   "surface": "floor",
+   "x": 20.0,
+   "y": 18.4,
+   "size": 3.0
+  },
+  {
+   "tex": "stain_rust",
+   "surface": "floor",
+   "x": 9.0,
+   "y": 15.5,
+   "size": 1.6,
+   "opacity": 0.6
+  }
+ ],
+ "shots": [
+  {
+   "x": 22.6,
+   "y": 16.4,
+   "look_at": [
+    13.0,
+    5.6,
+    1.6
+   ],
+   "fov": 72,
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Bay 3, high orbit",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 35.0,
+   "y": 10.4,
+   "look_at": [
+    24.0,
+    8.6,
+    1.1
+   ],
+   "fov": 66
+  },
+  {
+   "x": 30.6,
+   "y": 28.8,
+   "look_at": [
+    33.5,
+    24.5,
+    1.4
+   ],
+   "fov": 72
+  },
+  {
+   "x": 11.2,
+   "y": 16.8,
+   "look_at": "pilot",
+   "fov": 62,
+   "overrides": {
+    "ui": {
+     "theme": "terminal"
+    }
+   },
+   "overlays": [
+    {
+     "type": "dialog",
+     "portrait": "astronaut",
+     "name": "Pilot",
+     "text": "Fuel her up. We drop through the rings at the next crossing."
+    }
+   ]
+  }
+ ],
+ "contact_shadows": 0.5,
+ "supersample": 2
+}
