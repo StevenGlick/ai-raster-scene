@@ -333,6 +333,137 @@ def spr_cables_hang():
     return _prop(cv, CABLES, relief=1.0, cavity=0.3, shadow=0.4)
 
 
+# ---------------------------------------------------------------- the neon street
+
+def spr_vending_machine():
+    """A street vending machine: a tall steel box whose whole front is a lit window of cans in rows,
+    a glowing strip across the top, a coin slot and a dark hatch at the bottom."""
+    w, h = 40, 72
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(2, 2, 36, 70, z=0.0, top=1.2, bevel=2.5, mat=0)
+    cv.box(6, 8, 22, 42, z=1.2, top=0.2, bevel=0.8, mat=1)              # the lit window
+    for row in range(4):                                                # cans in rows
+        for col in range(4):
+            cv.ellipse(9 + col * 5.2, 13 + row * 10, 1.9, 3.4, z=1.5, dome=0.6, mat=2 + (row + col) % 3)
+    cv.box(4, 3, 32, 4, z=1.3, top=0.3, bevel=0.6, mat=5)               # the glowing strip
+    cv.box(30, 14, 5, 10, z=1.3, top=0.4, bevel=0.8, mat=0)             # coin slot and buttons
+    cv.ellipse(32.5, 28, 1.3, 1.3, z=1.6, dome=0.3, mat=6)
+    cv.box(8, 54, 22, 10, z=1.0, top=0.3, bevel=1.0, mat=7)             # the hatch
+    em = (np.isin(cv.mat, (1, 2, 3, 4)) * 0.8 + np.isin(cv.mat, (5, 6)) * 1.0) * (cv.id > 0)
+    return _prop(cv, [ramp('#c43a5a', dark=0.35), ramp('#c8f0ff', dark=0.6, light=1.05), ramp('#ff6a4a'),
+                      ramp('#4ad0ff'), ramp('#ffe25a'), ramp('#fff0f8', dark=0.6, light=1.02), GLOW_CYAN, RUBBER],
+                 em=em, relief=1.0, cavity=0.4, shadow=0.45)
+
+
+def spr_noodle_stall():
+    """A street food stall: a counter under a striped awning, red paper lanterns lit along its edge,
+    a neon sign on the roof, pots steaming on the counter."""
+    rng = np.random.default_rng(81)
+    w, h = 112, 96
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (10, w - 12):                                              # the posts
+        cv.stroke([(x, 30), (x, h)], 3.2, z=0.0, dome=0.8, mat=0)
+    cv.box(6, 60, w - 12, h - 60, z=0.4, top=1.2, bevel=2.5, mat=1)     # the counter
+    cv.box(4, 58, w - 8, 5, z=1.4, top=0.6, bevel=1.0, mat=0)
+    for x in range(14, w - 14, 16):                                     # pots and bowls
+        cv.ellipse(x + 4, 56, 6, 3.6, z=1.8, dome=1.0, mat=2)
+    for k, x in enumerate(range(2, w - 2, 12)):                         # the awning, striped
+        cv.polygon([(x, 22), (x + 12, 22), (x + 14, 34), (x + 2, 34)], z=1.0, top=0.8, bevel=1.5,
+                   mat=3 if k % 2 == 0 else 4)
+    for x in range(10, w - 6, 18):                                      # paper lanterns
+        cv.stroke([(x, 34), (x, 38)], 0.8, z=1.4, dome=0.2, mat=0)
+        cv.ellipse(x, 43, 4.2, 5.5, z=1.6, dome=1.0, mat=5)
+    cv.box(28, 4, 56, 14, z=1.2, top=0.4, bevel=1.0, mat=6)             # the sign board on the roof
+    sign = np.zeros((h, w), bool)
+    for k in range(5):                                                   # neon pseudo-letters on it
+        x = 33 + k * 10
+        for _ in range(3):
+            a, b = rng.uniform(0, 7, 2)
+            pts = [(x + a, 7), (x + b, 15)] if rng.random() < 0.5 else [(x, 7 + a), (x + 7, 7 + b)]
+            n = 12
+            xs = np.clip(np.round(np.linspace(pts[0][0], pts[1][0], n)).astype(int), 0, w - 1)
+            ys = np.clip(np.round(np.linspace(pts[0][1], pts[1][1], n)).astype(int), 0, h - 1)
+            sign[ys, xs] = True
+    cv.mat[sign & (cv.mat == 6)] = 7
+    em = (np.isin(cv.mat, (5,)) * 0.85 + np.isin(cv.mat, (7,)) * 1.0) * (cv.id > 0)
+    return _prop(cv, [GUNMETAL, ramp('#6a4a34', dark=0.35), STEEL, ramp('#c83a3a'), PAINT_WHITE,
+                      ramp('#ff5a3a', dark=0.5, light=1.2), RUBBER, ramp('#ff4ab8', dark=0.5, light=1.2)],
+                 em=em, relief=1.0, cavity=0.4, shadow=0.45)
+
+
+def spr_steam():
+    """A plume of steam rising from a grate or a pot, soft and spreading as it rises: draw it
+    see-through (it is by default) over something lit."""
+    rng = np.random.default_rng(83)
+    w, h = 48, 96
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    a = np.zeros((h, w), np.float32)
+    for _ in range(26):
+        t = rng.random()
+        cy = h - 4 - t * (h - 16)
+        cx = w / 2 + np.sin(t * 5 + rng.uniform(0, 1)) * 5 * t + rng.normal(0, 2)
+        r = 3 + t * 12
+        a = np.maximum(a, np.clip(1 - np.hypot(xx - cx, yy - cy) / r, 0, 1) * (1 - t * 0.6))
+    a = np.clip(a * 1.4, 0, 1)
+    bay = np.tile(np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]) / 16.0, (h // 4, w // 4))
+    a = (a > bay * 0.9 + 0.05) * a                                      # dithered, so it stays pixel art
+    rgba = np.zeros((h, w, 4), np.float32)
+    rgba[..., :3] = 0.86
+    rgba[..., 3] = a
+    return rgba, np.zeros((h, w), np.float32)
+
+
+def spr_holo_ad():
+    """A hologram advertisement: a koi turning in the air, drawn in light - pink and cyan lines with
+    scanlines through it, flickering at the edges. Additive by default: it glows over whatever is
+    behind it."""
+    w, h = 96, 96
+    rgb = np.zeros((h, w, 3), np.float32)
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    cx, cy = 50, 46
+    body = ((xx - cx) / 30) ** 2 + ((yy - cy) / 15) ** 2
+    outline = (np.abs(body - 1) < 0.22)
+    tail = (xx < cx - 26) & (xx > cx - 46) & (np.abs(yy - cy) < (cx - 26 - xx) * 0.9 + 3)
+    dorsal = (yy < cy - 12) & (yy > cy - 24) & (np.abs(xx - (cx - 6)) < (yy - (cy - 24)) * 0.9)
+    pectoral = ((xx - (cx + 6)) / 8) ** 2 + ((yy - (cy + 16)) / 4.5) ** 2 < 1
+    fins = dorsal | pectoral
+    scales = (body < 0.8) & ((((xx + yy) // 6) % 2 == 0) & (((xx - yy) // 6) % 2 == 0))
+    eye = np.hypot(xx - cx - 18, yy - cy + 3) < 2.2
+    pink, cyan = np.array((1.0, 0.3, 0.75)), np.array((0.3, 0.95, 1.0))
+    glow = (body < 1.0) & ~outline
+    rgb[glow] = cyan * 0.32
+    rgb[tail] = cyan * 0.55
+    rgb[fins] = cyan * 0.6
+    rgb[outline] = cyan
+    rgb[scales] = pink * 0.9
+    rgb[eye] = (1.0, 1.0, 1.0)
+    rgb[1::3] *= 0.45                                                   # scanlines
+    a = (rgb.max(-1) > 0.02).astype(np.float32)
+    rgba = np.concatenate([rgb, a[..., None]], -1).astype(np.float32)
+    return rgba, a * 1.0
+
+
+def spr_wires_span():
+    """Wires slung across a street, sagging between the buildings, a string of paper lanterns on one
+    of them: a long card to hang at `z` 2.5-3.5 across a street (`planes` 1, an `angle` across it)."""
+    rng = np.random.default_rng(87)
+    w, h = 256, 48
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    t = np.linspace(0, 1, 40)
+    for k in range(4):
+        y0 = 4 + k * 3
+        sag = rng.uniform(10, 24)
+        cv.stroke(list(zip(t * w, y0 + sag * 4 * t * (1 - t))), 1.3, z=0.2, dome=0.5, mat=0)
+    lantern_sag = 18
+    for x in range(24, w - 16, 26):                                     # lanterns on the lowest wire
+        tt = x / w
+        y = 13 + lantern_sag * 4 * tt * (1 - tt)
+        cv.ellipse(x, y + 5, 3.4, 4.4, z=1.0, dome=1.0, mat=1 + (x // 26) % 2)
+    em = np.isin(cv.mat, (1, 2)) * (cv.id > 0) * 0.9
+    return _prop(cv, [RUBBER, ramp('#ff5a3a', dark=0.5, light=1.2), ramp('#ffd04a', dark=0.5, light=1.15)],
+                 em=em, relief=1.0, cavity=0.2, shadow=0.2)
+
+
 TEXTURES = {
     'hangar_floor': lambda n: (tex_hangar_floor(n), None),
     'conduit': tex_conduit,
@@ -341,12 +472,18 @@ TEXTURES = {
 TEXTURE_NOISE = {'hangar_floor': 1.2, 'conduit': 0.6, 'screen_wall': 0.3}
 SPRITES = {'shuttle': spr_shuttle, 'cargo_container': spr_cargo_container, 'power_loader': spr_power_loader,
            'beacon': spr_beacon, 'reactor_core': spr_reactor_core, 'robot_arm': spr_robot_arm,
-           'cables_hang': spr_cables_hang}
+           'cables_hang': spr_cables_hang, 'vending_machine': spr_vending_machine, 'noodle_stall': spr_noodle_stall,
+           'steam': spr_steam, 'holo_ad': spr_holo_ad, 'wires_span': spr_wires_span}
 SPRITE_HEIGHT = {'shuttle': 2.2, 'cargo_container': 1.2, 'power_loader': 2.0, 'beacon': 0.3, 'reactor_core': 2.8,
-                 'robot_arm': 1.8, 'cables_hang': 1.4}
+                 'robot_arm': 1.8, 'cables_hang': 1.4, 'vending_machine': 1.1, 'noodle_stall': 1.6, 'steam': 1.2,
+                 'holo_ad': 1.6, 'wires_span': 0.75}
 PROP_DEFAULTS = {
     'beacon': {'aura': {'color': [1.0, 0.62, 0.2], 'strength': 0.6, 'radius': 0.3}},
     'reactor_core': {'aura': {'color': [0.35, 0.9, 1.0], 'strength': 0.45, 'radius': 0.25}},
+    'steam': {'opacity': 0.5, 'shadow': False},
+    'holo_ad': {'blend': 'additive', 'opacity': 0.85, 'shadow': False},
+    'wires_span': {'planes': 1, 'shadow': False},
+    'vending_machine': {'aura': {'color': [0.8, 0.95, 1.0], 'strength': 0.25, 'radius': 0.15}},
 }
-NO_CONTACT_SHADOW = {'cables_hang'}
+NO_CONTACT_SHADOW = {'cables_hang', 'steam', 'holo_ad', 'wires_span'}
 DECALS = {'pad_marking': dec_pad_marking, 'hazard_stripe': dec_hazard_stripe}

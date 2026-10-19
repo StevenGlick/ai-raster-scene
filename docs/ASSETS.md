@@ -22,15 +22,15 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
 | Textures | 130 | 100 | 27 | 3 | 0 |
-| Props | 135 | 117 | 16 | 2 | 0 |
-| Characters | 21 | 19 | 2 | 0 | 0 |
+| Props | 140 | 122 | 16 | 2 | 0 |
+| Characters | 22 | 20 | 2 | 0 | 0 |
 | Decals | 24 | 19 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
 | Skylines | 6 | 5 | 1 | 0 | 0 |
 | Sky objects | 5 | 5 | 0 | 0 | 0 |
 | Scatter sets | 13 | 13 | 0 | 0 | 0 |
 | Fringe sets | 2 | 2 | 0 | 0 | 0 |
-| Facade styles | 3 | 2 | 1 | 0 | 0 |
+| Facade styles | 4 | 3 | 1 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
 | Held items | 6 | 0 | 6 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
@@ -38,8 +38,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 16 | 16 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 35 | 28 | 7 | 0 | 0 |
-| **all** | **480** | **410** | **65** | **5** | **0** |
+| Example scenes | 36 | 29 | 7 | 0 | 0 |
+| **all** | **488** | **418** | **65** | **5** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -62,7 +62,7 @@ Weakest first, and in the order the new scenes need them.
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
 | `brick` | good |  | rainy_street |  |
-| `brick_dark` | good |  | rain_alley |  |
+| `brick_dark` | good |  | neon_street, rain_alley |  |
 | `brick_yellow` | good |  | - |  |
 | `stone` | good |  | claude_study, garden_encounter, gui_menus, hospital_garden, post_presets | Even block sizes; a few varied heights would help on long walls. |
 | `stone_dark` | good |  | cathedral_ruin, garden_encounter, gui_menus, gui_themes, gui_trade, hospital_garden, library_medium, mansion_library, misty_moor, post_presets, rainy_street |  |
@@ -152,16 +152,16 @@ Weakest first, and in the order the new scenes need them.
 |---|---|---|---|---|
 | `checker` | good |  | dream_world |  |
 | `linoleum` | good |  | ghost_corridor, gui_hud, hospital_corridor |  |
-| `tile_floor` | good |  | bunker_lab, derelict_ship |  |
+| `tile_floor` | good |  | bunker_lab, derelict_ship, neon_street |  |
 | `tile_white` | good |  | - |  |
 | `tile_green` | good |  | - |  |
 | `cobble` | polish |  | garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street | Good stones, but the same few repeat in a 2x2 tiling. |
-| `asphalt` | good |  | rain_alley, rainy_street |  |
+| `asphalt` | good |  | neon_street, rain_alley, rainy_street |  |
 | `carpet` | good |  | castle_keep, chapel_graveyard, claude_study, gui_themes, gui_trade, library_medium, mansion_library |  |
 | `carpet_green` | good |  | - |  |
-| `flagstone` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, rain_alley |  |
+| `flagstone` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, neon_street, rain_alley |  |
 | `obsidian` | good | mirror 0.45 | dream_world, space_station |  |
-| `concrete_floor` | good |  | 35 scenes |  |
+| `concrete_floor` | good |  | 36 scenes |  |
 | `rock_floor` | polish |  | crystal_cave, gui_lantern, tunnel_encounter, underground_waterway | Same as rock. |
 
 ### Ceilings
@@ -247,7 +247,7 @@ Weakest first, and in the order the new scenes need them.
 | `bamboo` | polish |  | tropical_beach | The nodes still line up into a grid across the poles. |
 | `thatch` | polish |  | tropical_beach | The rows could be clearer, each with a shadow under its fringe. |
 
-## Props (135)
+## Props (140)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -261,8 +261,8 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `book_stack` | good | 0.22 tall | claude_study |  |
 | `chest` | polish | 0.3 tall | castle_keep | Lid corners read as dark notches. |
 | `console` | good | 0.85 tall, glows | bunker_lab, orbital_hangar, space_station |  |
-| `crate` | polish | 0.4 tall | bunker_lab, coast_lighthouse, gui_lantern, gui_themes, gui_trade, hospital_corridor, library_medium, mansion_library, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway, winter_lake, woodland_night | Just a cross brace; add plank seams. |
-| `barrel` | polish | 0.45 tall | bunker_lab, coast_lighthouse, gui_lantern, gui_themes, gui_trade, library_medium, mansion_library, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway | Flat: needs a cylindrical highlight and stave lines. |
+| `crate` | polish | 0.4 tall | bunker_lab, coast_lighthouse, gui_lantern, gui_themes, gui_trade, hospital_corridor, library_medium, mansion_library, neon_street, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway, winter_lake, woodland_night | Just a cross brace; add plank seams. |
+| `barrel` | polish | 0.45 tall | bunker_lab, coast_lighthouse, gui_lantern, gui_themes, gui_trade, library_medium, mansion_library, neon_street, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway | Flat: needs a cylindrical highlight and stave lines. |
 | `locker` | good | 1 tall | bunker_lab |  |
 | `lectern` | good | 0.5 tall | chapel_graveyard |  |
 | `open_book` | good | 0.12 tall, glows, no shadow | claude_study |  |
@@ -280,8 +280,8 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `chains` | good | 0.6 tall, no shadow | castle_keep |  |
 | `ladder` | good | 1 tall, no shadow | sewer_tunnels |  |
 | `pipe_valve` | good | 0.32 tall, no shadow | bunker_lab, sewer_tunnels |  |
-| `sack` | good | 0.42 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, rain_alley, rainy_street, sewer_tunnels, woodland_night |  |
-| `bucket` | good | 0.32 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, rain_alley, rainy_street, sewer_tunnels |  |
+| `sack` | good | 0.42 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, neon_street, rain_alley, rainy_street, sewer_tunnels, woodland_night |  |
+| `bucket` | good | 0.32 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, neon_street, rain_alley, rainy_street, sewer_tunnels |  |
 
 ### Light and fire
 
@@ -325,8 +325,8 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
-| `bones` | good | 0.22 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, crystal_cave, derelict_ship, rain_alley, sewer_tunnels, woodland_night |  |
-| `broken_barrel` | rework | 0.46 tall | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, rain_alley, rainy_street, sewer_tunnels, woodland_night | An unreadable brown heap. |
+| `bones` | good | 0.22 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, crystal_cave, derelict_ship, neon_street, rain_alley, sewer_tunnels, woodland_night |  |
+| `broken_barrel` | rework | 0.46 tall | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, neon_street, rain_alley, rainy_street, sewer_tunnels, woodland_night | An unreadable brown heap. |
 | `rubble` | good | 0.34 tall | ancient_ruins, bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, rainy_street, sewer_tunnels, woodland_night |  |
 
 ### Monuments and outdoors
@@ -353,7 +353,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `drone` | good | 0.22 tall, glows, no shadow | orbital_hangar, space_station |  |
 | `hologram` | good | 0.55 tall, glows, aura, no shadow | orbital_hangar, space_station |  |
 | `lander` | good | 1.6 tall, glows | alien_world |  |
-| `sci_crate` | good | 0.35 tall, glows | derelict_ship, orbital_hangar, space_station |  |
+| `sci_crate` | good | 0.35 tall, glows | derelict_ship, neon_street, orbital_hangar, space_station |  |
 | `stasis_pod` | good | 1 tall, glows | derelict_ship |  |
 | `shuttle` | good | 2.2 tall, glows | orbital_hangar | Drawn with the toolkit in scifi.py: nose-on wedge hull in white and orange, lit cockpit and engine pods, landing legs, panel lines and vents. |
 | `cargo_container` | good | 1.2 tall | orbital_hangar | Drawn with the toolkit in scifi.py: corrugated orange steel, corner castings, door rods, rust streaking down the ribs. Tint for other colours. |
@@ -362,6 +362,11 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `reactor_core` | good | 2.8 tall, glows, aura | orbital_hangar | Drawn with the toolkit in scifi.py: a glowing column in steel collars with coolant pipes; glows, with an aura. |
 | `robot_arm` | good | 1.8 tall, glows | orbital_hangar | Drawn with the toolkit in scifi.py: three orange segments, dark joints, a turntable base, a welding spark. |
 | `cables_hang` | good | 1.4 tall, no shadow | orbital_hangar | Drawn with the toolkit in scifi.py: slack loops of cable and a few dangling ends; hangs from a ceiling, no contact shadow. |
+| `vending_machine` | good | 1.1 tall, glows, aura | neon_street | Drawn with the toolkit in scifi.py: a red steel box, its front a lit window of cans in rows, a glowing strip, coin slot and hatch. |
+| `noodle_stall` | good | 1.6 tall, glows | neon_street | Drawn with the toolkit in scifi.py: a counter under a striped awning, red paper lanterns lit, a neon sign of pseudo-letters, pots. |
+| `steam` | good | 1.2 tall, no shadow | neon_street | A dithered plume, soft and spreading as it rises; see-through by default. |
+| `holo_ad` | good | 1.6 tall, glows, no shadow | neon_street | A hologram koi in cyan and pink with scanlines, dorsal and pectoral fins; additive by default. |
+| `wires_span` | good | 0.75 tall, glows, no shadow | neon_street | Drawn with the toolkit in scifi.py: four sagging wires with paper lanterns, a card to sling across a street. |
 
 ### Alien and dream
 
@@ -446,13 +451,13 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `palm_crown` | good | 3.2 tall, no shadow | tropical_beach | The palm's crown alone, in the same frame as the trunk. |
 | `glass_pane` | good | 1 tall | orbital_hangar | A plain pane for the glass pass. |
 
-## Characters (21)
+## Characters (22)
 
 Pixel-art grids written as text in `scripts/characters.py`, each with a back view.
 
 | character | status | used in | notes |
 |---|---|---|---|
-| `cultist` | good | garden_encounter, gui_lantern, gui_menus, post_presets, tunnel_encounter, woodland_night |  |
+| `cultist` | good | garden_encounter, gui_lantern, gui_menus, neon_street, post_presets, tunnel_encounter, woodland_night |  |
 | `scientist` | good | bunker_lab, coast_lighthouse, gui_lantern, orbital_hangar, tunnel_encounter |  |
 | `guard` | good | garden_encounter, gui_menus, post_presets, rain_alley, rainy_street |  |
 | `nurse` | good | ghost_corridor, gui_hud |  |
@@ -464,15 +469,16 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `child` | polish | winter_lake | Head reads large and round; check the proportions. |
 | `creature` | good | castle_keep, crystal_cave |  |
 | `robot` | good | crystal_cave |  |
-| `shopkeeper` | good | - |  |
+| `shopkeeper` | good | neon_street |  |
 | `astronaut` | good | alien_world, orbital_hangar, space_station |  |
-| `android` | good | orbital_hangar, space_station |  |
+| `android` | good | neon_street, orbital_hangar, space_station |  |
 | `alien` | good | alien_world, derelict_ship | A familiar archetype; could be made stranger. |
 | `dreamer` | polish | dream_world | The face reads as open-eyed; a sleepwalker wants closed eyes. |
 | `claude` | good | claude_study | Claude's own avatar. |
 | `explorer` | good | jungle_temple |  |
 | `hoplite` | good | ancient_ruins |  |
 | `castaway` | good | tropical_beach |  |
+| `runner` | good | neon_street | A cyberpunk: dark hair with a pink streak, a lit cyan visor, a black jacket striped in neon. |
 
 ## Decals (24)
 
@@ -482,7 +488,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 |---|---|---|---|
 | `puddle` | good | coast_lighthouse, rainy_street, woodland_night |  |
 | `puddle_dark` | good | bunker_lab, castle_keep, cathedral_ruin, derelict_ship, sewer_tunnels, woodland_night |  |
-| `puddle_shine` | good | coast_lighthouse, rain_alley, rainy_street, sewer_tunnels |  |
+| `puddle_shine` | good | coast_lighthouse, neon_street, rain_alley, rainy_street, sewer_tunnels |  |
 | `stain` | polish | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, sewer_tunnels, woodland_night | A plain blob; uneven edge, drip marks. |
 | `stain_rust` | polish | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, orbital_hangar, rainy_street, sewer_tunnels | Same as stain. |
 | `splatter` | good | - |  |
@@ -494,8 +500,8 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `leak` | good | bunker_lab, castle_keep, cathedral_ruin, derelict_ship, rainy_street, sewer_tunnels |  |
 | `cobweb` | good | bunker_lab, castle_keep |  |
 | `rune_mark` | good | - |  |
-| `drain` | good | bunker_lab, rainy_street, sewer_tunnels |  |
-| `contact_shadow` | good | 35 scenes |  |
+| `drain` | good | bunker_lab, neon_street, rainy_street, sewer_tunnels |  |
+| `contact_shadow` | good | 36 scenes |  |
 | `pad_marking` | good | orbital_hangar | A painted landing ring with an H and a dashed outer ring, worn in patches. |
 | `hazard_stripe` | good | orbital_hangar | A band of yellow and black diagonal stripes, worn through in places. |
 
@@ -514,7 +520,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 
 | sky | status | used in | notes |
 |---|---|---|---|
-| `night` | good | ancient_ruins, chapel_graveyard, claude_study, garden_encounter, gui_menus, hospital_garden, post_presets, tropical_beach, winter_lake, woodland_night |  |
+| `night` | good | ancient_ruins, chapel_graveyard, claude_study, garden_encounter, gui_menus, hospital_garden, neon_street, post_presets, tropical_beach, winter_lake, woodland_night |  |
 | `dusk` | good | coast_lighthouse, misty_moor |  |
 | `storm` | good | coast_lighthouse, rain_alley, rainy_street | Could use darker cloud masses. |
 | `day` | good | cathedral_ruin, jungle_temple, tropical_beach, winter_lake |  |
@@ -533,7 +539,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `mountains` | good | alien_world, jungle_temple, winter_lake |  |
 | `hills` | good | misty_moor |  |
 | `treeline` | good | chapel_graveyard |  |
-| `city` | good | - | Window grid is regular; vary building tops (spires, water towers). |
+| `city` | good | neon_street | Window grid is regular; vary building tops (spires, water towers). |
 | `islands` | polish | ancient_ruins, tropical_beach | In haze an island and its reflection can read as a saucer floating on the horizon. |
 | `jungle` | good | jungle_temple |  |
 
@@ -558,7 +564,7 @@ Named mixes for `scatter`; repeats in the contents act as weights.
 | `forest` | good | rocks x2, log, stump, mushrooms, grass_tuft x2, fern, bush | woodland_night |  |
 | `undergrowth` | good | grass_tuft x3, fern, bush, mushrooms | chapel_graveyard, woodland_night |  |
 | `shore` | good | rocks x3, boulder, reeds, bones | coast_lighthouse |  |
-| `litter` | good | sack, bucket, crate, barrel, broken_barrel, bones | rain_alley |  |
+| `litter` | good | sack, bucket, crate, barrel, broken_barrel, bones | neon_street, rain_alley |  |
 | `wreckage` | good | rubble x2, broken_barrel, rocks, bones, sack, bucket | bunker_lab, cathedral_ruin, derelict_ship, sewer_tunnels |  |
 | `cave` | good | rocks x3, stalagmite, glowshroom, crystal, bones | crystal_cave |  |
 | `alien` | good | rocks x2, crystal, glowshroom, alien_plant, alien_egg | alien_world |  |
@@ -576,7 +582,7 @@ The cards a `fringe` wall stands in front of its open faces, back to front.
 | `jungle` | good | jungle_card_4, jungle_card_3, jungle_card_2, jungle_card_1 | jungle_temple | Four cards: bushes alone at the front, a dense wall of trees, crowns and bushes at the back. |
 | `forest` | good | forest_card_4, forest_card_3, forest_card_2, forest_card_1 | woodland_night | Four cards: bushes, ferns and grass at the front, a dense wall of spruce and oak at the back. Keep the wall behind lower (2-2.6) than the trees. |
 
-## Facade styles (3)
+## Facade styles (4)
 
 The looks a `facade` can give its buildings (`scripts/buildings.py`); each building is drawn in layers - wall, frames and glass, drapes, rooms.
 
@@ -585,6 +591,7 @@ The looks a `facade` can give its buildings (`scripts/buildings.py`); each build
 | `brick` | good | rain_alley | Red and brown brick, painted sash windows, curtains and blinds, shops. |
 | `sooty` | good | rain_alley | Soot-blackened tenements, dark frames. |
 | `plaster` | polish | - | Washed plaster; only seen on the review sheets so far, no scene uses it. |
+| `neon` | good | neon_street | Concrete panels with form-tie holes, neon signs over the shops and up the walls, blade signs on their own cards, roller shutters, air conditioners, rooms lit pink, blue and green. |
 
 ## Prefabs (13)
 
@@ -652,7 +659,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 
 | theme | status | used in | notes |
 |---|---|---|---|
-| `classic` | good | 29 scenes |  |
+| `classic` | good | 30 scenes |  |
 | `parchment` | good | gui_themes, gui_trade |  |
 | `terminal` | good | bunker_lab, gui_themes, orbital_hangar, space_station |  |
 | `blood` | good | gui_themes |  |
@@ -662,9 +669,9 @@ Named groups placed with one line (`scripts/prefabs.py`).
 
 | widget | status | used in | notes |
 |---|---|---|---|
-| `bubble` | good | alien_world, castle_keep, claude_study, crystal_cave, garden_encounter, ghost_corridor, gui_menus, gui_trade, rainy_street, tunnel_encounter, winter_lake, woodland_night |  |
+| `bubble` | good | alien_world, castle_keep, claude_study, crystal_cave, garden_encounter, ghost_corridor, gui_menus, gui_trade, neon_street, rainy_street, tunnel_encounter, winter_lake, woodland_night |  |
 | `dialog` | good | bunker_lab, chapel_graveyard, claude_study, coast_lighthouse, ghost_corridor, library_medium, orbital_hangar, space_station |  |
-| `caption` | good | 22 scenes |  |
+| `caption` | good | 23 scenes |  |
 | `choice` | good | gui_menus, gui_themes, gui_trade |  |
 | `title` | good | gui_menus |  |
 | `panel` | good | bunker_lab, gui_lantern |  |
@@ -718,7 +725,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `mono` | good | - |  |
 | `bone` | good | - |  |
 
-## Example scenes (35)
+## Example scenes (36)
 
 The environments, judged on their gallery images and shots.
 
@@ -745,6 +752,7 @@ The environments, judged on their gallery images and shots.
 | `coast_lighthouse` | polish | 4 | coast_tower, coast_jetty | The shore rocks in the tower shot are grey lumps. |
 | `rainy_street` | good | 4 | street_rain, street_lightning |  |
 | `rain_alley` | good | 4 | alley_street, alley_rain, alley_glass, alley_storm |  |
+| `neon_street` | good | 4 | neon_street, neon_stall, neon_signs, neon_runner | The neon facade style in the rain: signs, blade signs, lantern wires, a hologram koi, a noodle stall, vending machines, steam, the runner; bloom on the neon. |
 | `misty_moor` | polish | 3 | moor_dawn, moor_circle | The standing stones are plain blocks; weathered tops and lichen would help. |
 | `winter_lake` | polish | 4 | winter_night, winter_day | The ice is blotchy (see the ice texture). |
 | `chapel_graveyard` | good | 4 | chapel_yard, chapel_nave | The yard is a little sparse. |
@@ -795,6 +803,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the neon street.** A `neon` facade style (`scripts/buildings.py`): concrete, neon signs drawn into the wall layer, which now returns a glow, blade signs standing out over the street (a new `blade` layer, placed by the renderer), shutters and tinted rooms - the other styles' buildings unchanged. Street props in scifi.py (`vending_machine`, `noodle_stall`, `steam`, `holo_ad`, `wires_span`), the `runner`, and `examples/neon_street.py` with four gallery shots.
 - **2026-10-19, the orbital hangar.** `examples/orbital_hangar.py`, a scene of several rooms built from the sci-fi hardware: the bay with its shuttle, loader and robot arms behind real glass onto a ringed planet, a control room looking down the bay, and a reactor room in cyan haze under red alarms. Gallery: `hangar_bay`, `hangar_pilot`, `hangar_control`, `hangar_reactor`.
 - **2026-10-19, sci-fi hardware.** `scripts/scifi.py`: `hangar_floor`, `conduit` and `screen_wall` textures, `pad_marking` and `hazard_stripe` decals, and a `shuttle`, `cargo_container`, `power_loader`, `beacon`, `reactor_core`, `robot_arm` and `cables_hang`, all drawn with the toolkit, lights and screens writing an emissive mask.
 - **2026-10-19, the forest, part 2.** The original woodland rebuilt: the `forest` fringe in front of low `forest_deep` walls (a new texture: trunks receding into the dark), trees standing free along the road, a real moon in volumetric fog instead of blue point lights, and two new shots, first light through a gap in the trees and a ghost on the moonlit road (`woods_dawn`, `woods_moon`). `boulder`, `stump`, `log` and `dead_tree` redrawn with the toolkit.

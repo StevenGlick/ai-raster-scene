@@ -458,6 +458,20 @@ class World:
                     if layer == 'wall':                   # as thick as the frames are set back in it
                         fields['reveal'] = depth * (1.0 - dict(self.FACADE_LAYERS)['frame']) + 0.004
                     out.append(self._card(d, line, s0, s1, depth * frac, **fields))
+                # a style with blade signs hangs one or two out over the street, square to the front
+                look_style = buildings.FACADE_STYLES[buildings.pick_style(spec['style'], look)]
+                if look_style.get('blades') and storeys >= 3:
+                    brng = np.random.default_rng([look % (2 ** 31), 7])
+                    for k in range(int(brng.integers(1, look_style['blades'] + 1))):
+                        at = s0 + (s1 - s0) * brng.uniform(0.15, 0.85)
+                        out_len, tall = 0.7, float(brng.uniform(1.0, 1.7))
+                        z = float(brng.uniform(1.15, max(1.2, storeys - tall - 0.4)))
+                        mid = street + o * out_len / 2
+                        out.append({'type': buildings.layer_name('blade', style=spec['style'], look=look, seed=k,
+                                                                 w=out_len, h=round(tall, 3)),
+                                    'x': at if d in 'ns' else mid, 'y': mid if d in 'ns' else at,
+                                    'angle': 90.0 if d in 'ns' else 0.0, 'planes': 1, 'length': out_len,
+                                    'scale': tall, 'z': z, 'shadow': False, 'flip': d in 'nw'})
             # a taller building shows its side wall above a lower neighbour
             for i in range(len(spans) - 1):
                 h0, h1 = heights[i], heights[i + 1]

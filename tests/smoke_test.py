@@ -892,7 +892,18 @@ def check_glass_facades():
         thick = depth_of(dict(yard, sprites=[dict(card, reveal=0.2)]), cam)
         assert (thick < flat - 1e-4).sum() > 200, 'an opening seen at an angle must show its far side'
         assert (thick <= flat + 1e-6).all(), 'the sides of an opening never push anything further away'
-    print('ok glass pass (tint, blur), facades (buildings, layers, corners, side walls, reveals)')
+
+    # 7. a neon street: its signs glow in the wall layer, and blade signs stand out square to the front
+    neon = dict(street, legend=dict(street['legend'], B={'wall': 'brick_dark', 'h': 3, 'facade': {
+        'style': 'neon', 'widths': [3, 5], 'storeys': [3, 6], 'seed': 4}}))
+    sprites = R.World(neon).fringe_sprites
+    blades = [sp for sp in sprites if '"layer":"blade"' in sp['type']]
+    assert blades and all(sp['angle'] == 90.0 and sp['planes'] == 1 for sp in blades), 'blade signs square to the front'
+    assert all(4.0 < sp['y'] < 4.0 + sp['length'] for sp in blades), 'a blade sign stands out over the street'
+    walls = [sp for sp in sprites if '"layer":"wall"' in sp['type']]
+    assert any(buildings.layer_image(sp['type'])[1].max() > 0.5 for sp in walls), 'neon signs glow'
+    assert buildings.layer_image(blades[0]['type'])[1].max() > 0.5
+    print('ok glass pass (tint, blur), facades (buildings, layers, corners, side walls, reveals, neon)')
 
 
 def check_docs():

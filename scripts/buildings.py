@@ -55,7 +55,20 @@ FACADE_STYLES = {
         'doors': ['#3a5a4a', '#5a3a2a', '#4a4a5a'],
         'bay': (1.2, 1.6), 'shops': 0.3, 'courses': True, 'plaster': True,
     },
+    'neon': {
+        'description': 'dark concrete blocks hung with neon: signs on the walls and blade signs standing out over '
+                       'the street, shutters half down, rooms lit pink, blue and green',
+        'colors': ['#3c404a', '#35383f', '#42393f', '#2f353b', '#3d3b46', '#38403e'],
+        'mortar': '#1e2026', 'trim': '#5c6068',
+        'frames': ['#1a1c20', '#2a2d33', '#3a3036'],
+        'doors': ['#1a1a1e', '#262a30', '#2e2228'],
+        'bay': (0.9, 1.2), 'shops': 0.85, 'courses': False, 'concrete': True, 'neon': True, 'blades': 2,
+        'room_tints': [(1.0, 0.32, 0.72), (0.32, 0.6, 1.0), (0.45, 1.0, 0.75), (1.0, 0.72, 0.38), (0.7, 0.45, 1.0)],
+    },
 }
+
+# the colours neon comes in: pink, cyan, gold, violet, green
+NEON = [(1.0, 0.24, 0.66), (0.25, 0.95, 1.0), (1.0, 0.8, 0.25), (0.66, 0.42, 1.0), (0.35, 1.0, 0.5)]
 
 DRAPE_COLORS = ['#7a2a2a', '#8a6a2a', '#2a5a3a', '#d8cfb8', '#3a3a6a', '#6a3a5a', '#c8b890']
 
@@ -79,8 +92,15 @@ def layer_image(name):
     layer = p.pop('layer')
     if layer == 'side':
         return _side(p)
+    if layer == 'blade':
+        return _blade(p)
     plan = _plan(json.dumps(p, sort_keys=True))
     return {'wall': _wall, 'frame': _frame, 'glass': _glass, 'drape': _drape, 'room': _room}[layer](plan)
+
+
+def _surface(S):
+    """What a style's walls are made of: 'brick', 'plaster' or 'concrete'."""
+    return 'concrete' if S.get('concrete') else 'plaster' if S.get('plaster') else 'brick'
 
 
 def _rgb(h):
@@ -143,20 +163,44 @@ def _plan(key):
         wnd['motif'] = str(rng.choice(['lamp', 'picture', 'shelf', 'plant', 'figure', 'empty'],
                                       p=[0.3, 0.2, 0.2, 0.12, 0.08, 0.1]))
         wnd['split'] = rng.uniform(0.18, 0.38)
+    signs, acs = [], []
+    if S.get('neon'):
+        for wnd in windows:
+            if wnd.get('shop'):
+                wnd['neon'] = NEON[int(rng.integers(len(NEON)))]
+                wnd['shutter'] = float(rng.uniform(0.3, 1.0)) if rng.random() < 0.4 else 0.0
+            else:
+                wnd['tint'] = S['room_tints'][int(rng.integers(len(S['room_tints'])))]
+                if wnd['storey'] >= 1 and rng.random() < 0.3:               # an air conditioner under it
+                    x0, y0, x1, y1 = wnd['box']
+                    cx = (x0 + x1) // 2 + int(rng.integers(-4, 5))
+                    acs.append((cx - 7, y1 + 5, cx + 7, y1 + 15))
+        if bays > 1 and storeys >= 3:                                  # a tall sign between two bays
+            x = int(int(rng.integers(1, bays)) * bay_w)
+            top = H - int(PX * rng.uniform(2.3, min(storeys - 0.2, 4.4)))
+            signs.append({'box': (x - 6, top, x + 6, H - int(PX * 1.1)), 'color': NEON[int(rng.integers(len(NEON)))]})
     return {'W': W, 'H': H, 'storeys': storeys, 'color': color, 'frame': frame, 'door_col': door_col,
             'mortar': _rgb(S['mortar']), 'trim': _rgb(S['trim']), 'windows': windows, 'door': door,
+            'signs': signs, 'acs': acs,
             'style': S, 'seed': int(p.get('seed', 0)), 'look': int(p.get('look', 0))}
 
 
 # ------------------------------------------------------------------ the layers
 
 @lru_cache(maxsize=8)
-def _brick_tile(plaster=False):
-    """A seamless 64x64 tile of neutral brick (or plaster), lit from the upper left: a building's
-    colour is multiplied in, so every building shades the same way whatever its colour."""
-    rng = np.random.default_rng(17 if not plaster else 18)
+def _brick_tile(kind='brick'):
+    """A seamless 64x64 tile of neutral brick, plaster or concrete, lit from the upper left: a
+    building's colour is multiplied in, so every building shades the same way whatever its colour."""
+    rng = np.random.default_rng({'brick': 17, 'plaster': 18, 'concrete': 19}[kind])
     cv = Canvas(PX, ground=-0.6, mat=1)
-    if plaster:
+    if kind == 'concrete':                          # cast panels, four to a unit, with form-tie holes
+        for j in range(2):
+            for i in range(2):
+                cv.box(i * 32 + 0.5, j * 32 + 0.5, 31, 31, z=0.0, top=0.6, bevel=1.0, mat=0, tone=rng.normal(0, 0.05))
+                for tx, ty in ((8, 8), (24, 8), (8, 24), (24, 24)):
+                    cv.ellipse(i * 32 + tx, j * 32 + ty, 1.1, 1.1, dome=0.6, mode='carve')
+        cv.noise(0.22, cells=6, rng=rng, octaves=3)
+    elif kind == 'plaster':
         cv.z[:] = 0.0
         cv.mat[:] = 0
         cv.noise(0.35, cells=6, rng=rng, octaves=3)
@@ -192,7 +236,7 @@ def _wall(plan):
     """Brick (or plaster) with openings: sills and lintels round the windows, a surround to the
     door, a plinth, string courses, a cornice, and soot that runs down under the sills."""
     W, H, S = plan['W'], plan['H'], plan['style']
-    lum, mortar = _brick_tile(S.get('plaster', False))
+    lum, mortar = _brick_tile(_surface(S))
     ty, tx = np.arange(H) % PX, (np.arange(W) + plan['seed'] * 7) % PX
     L = lum[np.ix_(ty, tx)]
     m = mortar[np.ix_(ty, tx)]
@@ -214,9 +258,13 @@ def _wall(plan):
     rgb[9:12] *= 0.45                                                     # the shadow under it
     for x in range(3, W - 3, 7):
         _shade_rect(rgb, (x, 9, min(x + 3, W), 12), trim * 0.85)           # dentils
+    em = np.zeros((H, W), np.float32)
     for wnd in plan['windows']:
         x0, y0, x1, y1 = wnd['box']
-        if wnd.get('shop'):
+        if wnd.get('shop') and wnd.get('neon') is not None:            # a neon sign over the shop
+            _neon_sign(rgb, em, (x0 - 4, y0 - 13, x1 + 4, y0 - 2), wnd['neon'],
+                       np.random.default_rng(plan['seed'] + x0), vertical=False)
+        elif wnd.get('shop'):
             _shade_rect(rgb, (x0 - 4, y0 - 12, x1 + 4, y0 - 2), trim * 0.5, bevel=1)   # a sign board
             _shade_rect(rgb, (x0 - 4, y1, x1 + 4, H - 7), trim * 0.7)                   # stall riser
         else:
@@ -229,7 +277,12 @@ def _wall(plan):
         x0, y0, x1, y1 = plan['door']
         _shade_rect(rgb, (x0 - 4, y0 - 5, x1 + 4, y1), trim * 0.85, bevel=1)              # surround
         alpha[y0:y1, x0:x1] = 0
-    return np.concatenate([np.clip(rgb, 0, 1), alpha[..., None]], -1).astype(np.float32), np.zeros((H, W), np.float32)
+    for x0, y0, x1, y1 in plan.get('acs', []):                         # air conditioners
+        _shade_rect(rgb, (x0, y0, x1, min(H, y1)), plan['trim'] * 0.75, bevel=1)
+        rgb[y0 + 2:min(H, y1) - 2:2, x0 + 2:x1 - 2] *= 0.6
+    for sg in plan.get('signs', []):
+        _neon_sign(rgb, em, sg['box'], sg['color'], np.random.default_rng(plan['seed'] + sg['box'][0]), vertical=True)
+    return np.concatenate([np.clip(rgb, 0, 1), alpha[..., None]], -1).astype(np.float32), em
 
 
 def _frame(plan):
@@ -246,6 +299,13 @@ def _frame(plan):
         x0, y0, x1, y1 = wnd['box']
         for (a, b, c, d) in ((x0, y0, x1, y0 + 2), (x0, y1 - 2, x1, y1), (x0, y0, x0 + 2, y1), (x1 - 2, y0, x1, y1)):
             bar(a, b, c, d, f)
+        if wnd.get('shop') and wnd.get('shutter'):                     # a roller shutter part way down
+            down = y0 + int((y1 - y0) * wnd['shutter'])
+            metal = np.array((0.42, 0.44, 0.47), np.float32)
+            bar(x0 - 2, y0 - 3, x1 + 2, y0 + 1, metal * 0.7)                 # its housing
+            for yy in range(y0 + 1, down):
+                bar(x0, yy, x1, yy + 1, metal * (1.08 if yy % 3 == 0 else 0.86))
+            bar(x0, down - 2, x1, down, metal * 0.55)
         if wnd.get('shop'):
             for x in np.arange(x0, x1, PX * 0.55)[1:]:
                 bar(x - 1, y0, x + 1, y1, f * 0.8)
@@ -351,6 +411,8 @@ def _room(plan):
         yy, xx = np.mgrid[0:h, 0:w]
         if wnd['lit']:
             warm = np.array([1.0, 0.72, 0.38], np.float32) if wnd['warm'] else np.array([0.45, 0.62, 0.9], np.float32)
+            if wnd.get('tint') is not None:
+                warm = np.array(wnd['tint'], np.float32)
             glow = np.clip(1.15 - np.hypot((xx - w * 0.5) / (w * 0.55), (yy - h * 0.25) / (h * 0.8)), 0.15, 1)
             rgb[Y0:Y1, X0:X1] = warm * (0.3 + 0.75 * glow[..., None])
             em[Y0:Y1, X0:X1] = 0.5 + 0.5 * glow
@@ -401,10 +463,94 @@ def _side(p):
     look = np.random.default_rng(int(p.get('look', 0)) % (2 ** 32))
     color = _rgb(S['colors'][look.integers(len(S['colors']))]) * float(look.uniform(0.88, 1.12))
     W, H = max(4, int(round(float(p['w']) * PX))), max(4, int(round(float(p['h']) * PX)))
-    lum, mortar = _brick_tile(S.get('plaster', False))
+    lum, mortar = _brick_tile(_surface(S))
     L = lum[np.ix_(np.arange(H) % PX, np.arange(W) % PX)]
     m = mortar[np.ix_(np.arange(H) % PX, np.arange(W) % PX)]
     rgb = np.where(m[..., None], _rgb(S['mortar'])[None, None, :] * (0.5 + 0.6 * L[..., None]),
                    color[None, None, :] * (0.4 + 0.85 * L[..., None]))
     _shade_rect(rgb, (0, 0, W, min(H, 9)), _rgb(S['trim']) * 0.9, bevel=2)
     return np.concatenate([np.clip(rgb, 0, 1), np.ones((H, W, 1), np.float32)], -1), np.zeros((H, W), np.float32)
+
+
+def _stroke_mask(mask, x0, y0, x1, y1):
+    """Set the pixels along a line in a boolean mask (one pixel wide)."""
+    n = int(max(abs(x1 - x0), abs(y1 - y0))) + 1
+    xs = np.clip(np.round(np.linspace(x0, x1, n)).astype(int), 0, mask.shape[1] - 1)
+    ys = np.clip(np.round(np.linspace(y0, y1, n)).astype(int), 0, mask.shape[0] - 1)
+    mask[ys, xs] = True
+
+
+def _glyph_mask(h, w, rng, vertical):
+    """Pseudo-letters in neon tube: in each cell along the sign two to four strokes - bars, uprights,
+    slants, a box or a hook - so a sign reads as writing without being in any real script."""
+    mask = np.zeros((h, w), bool)
+    cell = (w - 2) if vertical else max(6, h - 4)
+    n = max(1, (h - 2) // (cell + 2) if vertical else (w - 2) // (cell + 2))
+    for k in range(n):
+        if vertical:
+            cx0, cy0 = 1, 1 + k * (cell + 2)
+        else:
+            cx0, cy0 = 1 + k * (cell + 2), 2
+        c = cell - 1
+        for _ in range(int(rng.integers(2, 5))):
+            kind = int(rng.integers(5))
+            a, b = rng.uniform(0, c, 2)
+            if kind == 0:
+                _stroke_mask(mask, cx0, cy0 + a, cx0 + c, cy0 + a)
+            elif kind == 1:
+                _stroke_mask(mask, cx0 + a, cy0, cx0 + a, cy0 + c)
+            elif kind == 2:
+                _stroke_mask(mask, cx0, cy0 + a, cx0 + c, cy0 + b)
+            elif kind == 3:
+                for p0, p1 in (((0, 0), (c, 0)), ((c, 0), (c, c)), ((c, c), (0, c)), ((0, c), (0, 0))):
+                    _stroke_mask(mask, cx0 + p0[0] * 0.8, cy0 + p0[1] * 0.8, cx0 + p1[0] * 0.8, cy0 + p1[1] * 0.8)
+            else:
+                _stroke_mask(mask, cx0 + a, cy0, cx0 + a, cy0 + c * 0.7)
+                _stroke_mask(mask, cx0 + a, cy0 + c * 0.7, cx0 + c, cy0 + c * 0.7)
+    return mask
+
+
+def _neon_sign(rgb, em, box, color, rng, vertical):
+    """A sign on a wall: a dark board edged in one neon tube, with glowing pseudo-letters on it and
+    a soft spill of its colour round the letters."""
+    x0, y0, x1, y1 = (int(v) for v in box)
+    H, W = rgb.shape[:2]
+    x0, y0, x1, y1 = max(0, x0), max(0, y0), min(W, x1), min(H, y1)
+    if x1 - x0 < 6 or y1 - y0 < 6:
+        return
+    c = np.array(color, np.float32)
+    rgb[y0:y1, x0:x1] = np.array((0.06, 0.06, 0.08), np.float32) + c * 0.06
+    edge = np.zeros((y1 - y0, x1 - x0), bool)
+    edge[[0, -1], :] = True
+    edge[:, [0, -1]] = True
+    letters = _glyph_mask(y1 - y0 - 4, x1 - x0 - 4, rng, vertical)
+    tube = edge.copy()
+    tube[2:-2, 2:-2] |= letters
+    halo = tube.copy()
+    for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+        halo |= np.roll(tube, (dy, dx), (0, 1))
+    sub = rgb[y0:y1, x0:x1]
+    sub[halo & ~tube] = sub[halo & ~tube] * 0.5 + c * 0.35
+    sub[tube] = np.clip(c * 0.85 + 0.25, 0, 1)
+    em[y0:y1, x0:x1] = np.maximum(em[y0:y1, x0:x1], tube * 1.0 + (halo & ~tube) * 0.5)
+
+
+def _blade(p):
+    """A blade sign standing out from a wall over the street: a tall dark panel in a steel frame,
+    edged in neon, glowing pseudo-letters stacked down it, two brackets at the wall end."""
+    S = FACADE_STYLES[pick_style(p.get('style', 'neon'), p.get('look', 0))]
+    W, H = max(12, int(round(float(p['w']) * PX))), max(24, int(round(float(p['h']) * PX)))
+    rng = np.random.default_rng((int(p.get('look', 0)) * 31 + int(p.get('seed', 0))) % (2 ** 32))
+    color = NEON[int(rng.integers(len(NEON)))]
+    rgb = np.zeros((H, W, 3), np.float32)
+    alpha = np.zeros((H, W), np.float32)
+    em = np.zeros((H, W), np.float32)
+    x0 = 6                                                   # the brackets take the wall end
+    frame = _rgb(S['trim']) * 0.6
+    for y in (int(H * 0.15), int(H * 0.8)):
+        rgb[y:y + 3, 0:x0] = frame
+        alpha[y:y + 3, 0:x0] = 1
+    _shade_rect(rgb, (x0, 0, W, H), frame, bevel=1)
+    alpha[:, x0:W] = 1
+    _neon_sign(rgb, em, (x0 + 2, 2, W - 2, H - 2), color, rng, vertical=True)
+    return np.concatenate([np.clip(rgb, 0, 1), alpha[..., None]], -1).astype(np.float32), em
