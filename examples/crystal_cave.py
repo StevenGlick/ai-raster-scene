@@ -1,0 +1,65 @@
+"""Crystal cave: an underground lake ringed with glowing crystals.
+
+Shows reflections (the lake mirrors the crystals and anything on its shore), emissive props
+casting coloured light, and the `cave` scatter set. Run:  python crystal_cave.py
+"""
+import os
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scripts'))
+from maptools import Grid, scene  # noqa: E402
+
+g = Grid(30, 26, fill='#')
+g.disc(9, 14, 6, '.')                                 # the near chamber
+g.disc(18, 12, 7, '.')                                # the great cavern
+g.disc(23, 18, 4, '.')
+g.disc(14, 20, 4, '.')
+g.disc(17, 12, 4.2, '~')                              # the lake
+g.put(5, 9, '#'); g.put(24, 7, '#'); g.put(13, 23, '#')   # a few knuckles of rock
+
+cyan, violet, green = [0.4, 0.85, 1.0], [0.72, 0.42, 1.0], [0.4, 1.0, 0.7]
+crystals = [(20.5, 6.6), (22.6, 8.4), (12.6, 7.2), (23.4, 14.6), (5.6, 13.0), (16.8, 5.8), (24.0, 11.2),
+            (15.4, 16.4)]
+s = scene(
+    g,
+    title='Crystal cave - an underground lake ringed with glowing crystals',
+    legend={
+        '#': {'wall': 'rock_wet', 'h': 2.2},
+        '.': {'floor': 'rock_floor', 'ceil': 'rock'},
+        '~': {'floor': 'water', 'drop': 0.2, 'reflect': 0.65, 'ceil': 'rock'},
+    },
+    ceiling_height=2.2,
+    sky=None,
+    ambient=[0.1, 0.11, 0.14],
+    fog={'color': [0.03, 0.04, 0.06], 'density': 0.03},
+    lights=[{'x': x, 'y': y, 'z': 0.6, 'radius': 6.5, 'color': cyan if i % 2 == 0 else violet,
+             'intensity': 1.8} for i, (x, y) in enumerate(crystals)] + [
+        {'x': 7.5, 'y': 12.2, 'z': 0.3, 'radius': 3.6, 'color': green, 'intensity': 1.1},
+        {'x': 16.0, 'y': 19.0, 'z': 0.3, 'radius': 3.6, 'color': green, 'intensity': 1.0},
+    ],
+    sprites=[{'x': x, 'y': y, 'type': 'crystal', 'scale': 1.25 if i % 2 == 0 else 0.9}
+             for i, (x, y) in enumerate(crystals)] + [
+        {'x': 7.5, 'y': 12.2, 'type': 'glowshroom'}, {'x': 16.0, 'y': 19.0, 'type': 'glowshroom'},
+        {'x': 8.2, 'y': 12.8, 'type': 'glowshroom', 'scale': 0.12},
+        {'x': 10.2, 'y': 9.2, 'type': 'stalagmite'}, {'x': 22.0, 'y': 16.8, 'type': 'stalagmite', 'scale': 1.1},
+        {'x': 14.0, 'y': 6.2, 'type': 'stalagmite', 'scale': 0.6},
+        {'x': 12.4, 'y': 14.4, 'type': 'stalagmite', 'scale': 0.9},
+        {'id': 'robot', 'x': 8.6, 'y': 14.4, 'type': 'robot'},
+        {'id': 'beast', 'x': 18.4, 'y': 8.6, 'type': 'creature', 'scale': 1.3,   # wading in the shallows
+         'light': {'radius': 2.8, 'color': [1.0, 0.35, 0.25], 'intensity': 1.0, 'z': 0.5}},
+    ],
+    scatter=[{'of': 'cave', 'on': '.', 'density': 0.4, 'clump': 1.6, 'sizes': ['tiny', 'small', 'medium'],
+              'seed': 3}],
+    camera={'x': 12.2, 'y': 18.6, 'look_at': [20.0, 7.5, 0.35], 'fov': 70},
+    shots=[
+        {'x': 12.2, 'y': 18.6, 'look_at': [19.0, 7.0, 0.3], 'fov': 72,
+         'overlays': [{'type': 'caption', 'text': 'The lake under the hill', 'at': 'top', 'box': True}]},
+        {'x': 11.2, 'y': 17.6, 'look_at': 'robot', 'fov': 60,
+         'overlays': [{'type': 'bubble', 'anchor': 'robot', 'name': 'Survey unit',
+                       'text': 'Mineral glow detected. Life signs: one. Large.'}]},
+        {'x': 14.0, 'y': 15.8, 'look_at': 'beast', 'fov': 44, 'post': [{'fx': 'vignette', 'strength': 0.6}]},
+    ],
+    contact_shadows=0.5,
+    supersample=2,
+)
+print(s.save(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'crystal_cave.json')))

@@ -8,8 +8,9 @@ A scene is one JSON file, read as UTF-8. Only `map`, `legend` and `camera` are r
 
 - The map is a grid of characters. Row index is **y** (grows downward / south), column index is **x** (grows right / east).
 - One cell is one world unit. Cell `(x, y)` spans `x..x+1`, `y..y+1`; its centre is `(x+0.5, y+0.5)`.
-- Heights are in the same units. The default eye height is `0.5`, a standard room is `1.0` tall.
-- Camera `angle` is in degrees: **0 = east (+x), 90 = south (+y), 180 = west, 270 = north**.
+- Heights are in the same units. The default eye height is `0.5`, a standard room is `1.0` tall, and people are about `0.6` (so a waist-high rail is about 0.35).
+- Camera `angle` is in degrees: **0 = east (+x), 90 = south (+y), 180 = west, 270 = north**. Sun and moon `azimuth` use the same compass.
+- Rather than working out an angle, aim with `look_at`: a sprite `id`, `[x, y]`, or `[x, y, z]`. The last also sets `pitch` so that height sits mid-frame. Working out atan2 in your head is easy to get wrong by tens of degrees, so prefer `look_at`. A shot that sets its own `angle` (and no `look_at`) is aimed by that angle, not by a `look_at` it would otherwise inherit from `camera`.
 
 ## Top-level keys
 
@@ -21,11 +22,16 @@ A scene is one JSON file, read as UTF-8. Only `map`, `legend` and `camera` are r
 | `legend` | required | char -> cell spec (see below) |
 | `default` | `{"floor":"concrete_floor"}` | spec for chars missing from the legend |
 | `ceiling_height` | `1.0` | z of every ceiling. Walls in roofed areas should be at least this tall |
-| `camera` | required | `{x, y, angle, fov=66, height=0.5, pitch=0, flashlight}` |
+| `camera` | required | `{x, y, angle or look_at, fov=66, height=0.5, pitch=0, flashlight}` |
 | `shots` | none | list of camera dicts; each inherits from `camera`. Renders `out_01.png`, `out_02.png`... |
 | `sky` | `"night"` | `night`, `dusk`, `storm`, `day`, `overcast`, `blood`, or `null` for fully indoor |
+| `skyline` | none | distant silhouettes on the horizon: `mountains`, `hills`, `treeline`, `city` (see Sky and skyline) |
 | `ambient` | `[0.18,0.18,0.22]` | base light RGB. Night exterior ~0.13, dark interior ~0.05 |
-| `lights` | `[]` | point lights, see below |
+| `lights` | `[]` | point lights, plus `sun` and `moon` directional lights (see Lights) |
+| `heights` | none | a digit layer over the map setting wall heights, for steps, daises and altars (see Heights) |
+| `height_unit` | `0.1` | what one step of `heights` is worth |
+| `reflections` | `true` | mirror-like floors: `false` turns them off, a number scales them, `{"amount", "ripple"}` tunes them (see Reflections) |
+| `contact_shadows` | `0.55` | strength of the soft shadow under every prop standing on the floor; `0` or `false` turns them off |
 | `fog` | none | `{color:[r,g,b], density:0.05, sky_mix:0.35}`. Exponential by distance |
 | `fog_sky` | `true` | whether fog also tints the sky panorama (by `sky_mix`) |
 | `sprites` | `[]` | billboards, see below |
@@ -61,7 +67,9 @@ Open cell:
 ".": {"floor": "linoleum", "ceil": "acoustic"}   // roofed
 ",": {"floor": "grass"}                            // no "ceil" -> open to the sky
 "~": {"floor": "water", "drop": 0.16}              // surface sits 0.16 below the surrounding floor
+"=": {"floor": "asphalt", "reflect": 0.3}          // wet street: mirrors what stands on it
 ```
+- `reflect` (0-1) makes a floor mirror-like (see Reflections). `water` (0.5) and `ice` (0.38) reflect by default; set `"reflect": 0` to stop them.
 - `drop` (0 to 0.9) sinks a cell's floor below `z=0`. This is what stops water sitting flush with the bank: the sunken surface is rendered as its own plane, a wall standing in the water carries on down to the surface, and sprites placed in a sunken cell rest on the lower surface (so a `rowboat` floats on the water rather than hovering over it). Keep drops small - 0.1 to 0.25 reads as water, more reads as a pit. Where a sunken cell meets an ordinary *floor* cell, the bank face between them is approximated by a darkened strip rather than modelled.
 
 Wall cell (solid block, `h` units tall):
@@ -70,9 +78,39 @@ Wall cell (solid block, `h` units tall):
 "H": {"wall": ["plaster_white", "window_dark", "window_lit", "window_dark"], "h": 4, "top": "concrete"}
 ```
 - `wall` as a **list** stacks textures per storey, bottom to top (index = floor(z)); the last entry repeats for anything taller. This is how you make building facades with a door on the ground floor and varied lit windows above.
-- Textures tile once per world unit vertically, so a 4-tall wall with one texture repeats it 4 times.
-- `top` is what you see when looking down on a wall shorter than eye height (approximate; keep walls taller than `camera.height` where possible).
+- Textures tile once per world unit vertically, from the floor up, so a 4-tall wall with one texture repeats it 4 times and a 0.3-tall step shows the bottom 30% of its texture.
+- `top` is the texture on the block's upper surface. A block lower than the eye shows it as a real surface you look down onto: a step, a dais, an altar, a table-high ledge (see Heights).
+- A wall cell can also take `ceil`: under a roof, a block lower than the ceiling leaves the ceiling above it in view. Without one it borrows the roof of the room around it, so this is rarely needed.
 - Rays continue past walls, so a tall building behind a low hedge is drawn correctly. A wall stops the ray only when it fills the screen top to bottom.
+
+### See-through walls
+
+A wall whose texture has see-through texels (`bars`, `fence_iron`, `chainlink`, `railing`, `picket`, `portcullis`, `window_broken`, `lattice`, or any PNG with transparent pixels) is drawn as a single grille at the cell's near face. Everything behind it shows through the gaps, and it neither blocks light nor stops the ray.
+
+```json
+"f": {"wall": "fence_iron", "h": 1.0},
+"P": {"wall": ["portcullis", "castle"], "h": 2.0},
+"B": {"wall": ["brick", "window_broken", "brick"], "h": 3.0}
+```
+- The ground carries on under it. A see-through cell takes the floor (and roof) most common among its open neighbours, so a fence across a lawn stands on grass. Give it `floor`/`ceil` to choose.
+- Stacking works as usual: a portcullis under solid stone, or a smashed window in the middle storey of a facade. The whole cell counts as see-through, so the solid storeys above don't cast shadows.
+- Each built-in grille has its own height inside the tile: `railing` about 0.37 (waist height), `picket` about 0.45, `fence_iron` about 0.95 to its spear tips. `bars`, `chainlink`, `portcullis`, `lattice` and `window_broken` fill the whole tile. Use `h: 1` for them and let the texture set the visible height.
+- Only one face per cell is drawn, so the grille has no thickness. Keep see-through cells one cell deep, and don't put sprites inside them.
+
+### Heights: steps, platforms, altars
+
+`heights` is an optional digit layer over the map. A digit `1`-`9` sets that **wall** cell's height to `digit x height_unit` (0.1 by default). Other characters, and open cells, are left alone:
+
+```json
+"map":     ["#######", "#.DDD.#", "#.SSS.#", "#.....#"],
+"heights": [".......", "..333..", "..111..", "......."],
+"legend":  {"D": {"wall": "marble", "top": "flagstone"}, "S": {"wall": "marble", "top": "flagstone"}, ...}
+```
+That gives a 0.3 dais behind a 0.1 step, which is a flight of stairs in one string per row. A cell's own `h` still works; `heights` only saves writing one legend entry per height.
+
+- A block lower than the eye (0.5) is drawn as a solid with its `top` showing. Above eye height you only see its face, as in reality.
+- Sprites placed in the cell of a block lower than 0.95 rest on its top (a throne on a dais, candles on an altar). In a `drop` cell they rest on the sunken surface. Either way `z` counts from that surface.
+- Camera `height` is measured from `z=0`, not from the block underneath. To stand on a 0.3 dais, put the camera in a dais cell and set `height` to 0.8.
 
 ## Textures
 
@@ -81,7 +119,11 @@ Any texture slot accepts:
 - a PNG path (resized to 64x64, nearest). Relative paths are looked up beside the scene file first, then in the working directory - the same goes for PNG sprites, decals and TTF fonts,
 - `{"base": "brick", "tint": [0.8, 0.9, 1.1], "brightness": 0.7}` for a recoloured variant.
 
-Built-ins with emissive texels (glow regardless of lighting): `window_lit`, `window_lit_plaster`, `window_teal`, `runes`. Their dark counterparts are `window_dark`, `window_dark_plaster`.
+Built-ins with emissive texels (glow regardless of lighting): `window_lit`, `window_lit_plaster`, `window_teal`, `runes`, `stained_glass`. Their dark counterparts are `window_dark`, `window_dark_plaster`.
+
+See-through built-ins (see See-through walls): `bars`, `fence_iron`, `chainlink`, `railing`, `picket`, `portcullis`, `window_broken`, `lattice`. A PNG with transparent pixels behaves the same way.
+
+The built-ins also include castle and dungeon stone (`castle`, `flagstone`, `slime_brick`, `door_wood`) and winter ground (`snow`, `ice`, `snow_rock`). `python scripts/assets.py catalog.png` draws them all, with see-through textures over a checkerboard.
 
 ## Lights
 
@@ -89,11 +131,57 @@ Built-ins with emissive texels (glow regardless of lighting): `window_lit`, `win
 {"x": 10.2, "y": 10.0, "z": 1.5, "radius": 4.5, "color": [1.0, 0.82, 0.5], "intensity": 1.1, "shadows": true}
 ```
 - Falloff is `(1 - d/radius)^2 * intensity`, so `radius` is the hard edge of the pool of light. Lanterns 4-6, room lamps 3-4, big sources 6-8.
-- Shadows are traced through the grid: walls at least `min(z, 0.95)` tall block the light.
+- A light dict is a point light unless it says `"type": "sun"` or `"moon"` (below).
+- Shadows are traced through the grid: walls at least `min(z, 0.95)` tall block the light. See-through walls never do.
 - Light above ~1.4 units fades with height, so tall facades darken toward the top.
 - Lights are invisible. Pair each with a sprite (`lamp_post`, `lantern`, `candles`) or an emissive texture so the source reads.
 
 Lighting colour cheat sheet: oil/candle `[1,0.7,0.35]`, incandescent `[1,0.86,0.6]`, moonlight `[0.55,0.65,0.9]`, emergency/cult red `[1,0.15,0.1]`, sickly green `[0.5,1,0.6]`.
+
+### Sun and moon
+
+A light with `"type": "sun"` or `"type": "moon"` is directional. It comes from one compass direction, lights every open cell, casts long shadows from walls, and draws its own disc in the sky:
+
+```json
+{"type": "moon", "azimuth": 300, "elevation": 16, "intensity": 0.75}
+{"type": "sun",  "azimuth": 215, "elevation": 13}
+```
+
+| field | default | meaning |
+|---|---|---|
+| `azimuth` | `300` | compass direction the light comes **from**, in camera degrees (0 east, 90 south, 180 west, 270 north) |
+| `elevation` | `35` | degrees above the horizon, 1-89. Low values give long raking shadows and a disc near the skyline |
+| `color` | sun `[1,0.94,0.82]`, moon `[0.55,0.65,0.95]` | |
+| `intensity` | sun `0.85`, moon `0.4` | |
+| `shadows` | `true` | walls shadow the ground, facades and sprites behind them |
+| `disc` | `true` | draw the sun or moon in the sky. `false` keeps it off-screen. A visible disc replaces the sky preset's own moon |
+| `disc_color`, `disc_size` | per type | disc colour and radius in degrees (sun 2.6, moon 2.0) |
+
+- Shadows are exact to the wall heights: a facade is half-lit behind a lower building, and a character's legs fall into the shadow of a wall. Sprites themselves do not cast sun shadows.
+- Roofed cells get no direct light at all, since sunlight doesn't come in through the windows. Interiors still need point lights.
+- Put the disc in frame by aiming the camera near `azimuth` with a low `elevation` (10-25). Match the sky preset: a sun in `day`, `dusk` or `overcast`, a moon in `night` or `storm`. Lower `ambient` when you add a moon, because it already lights the whole ground.
+- A shot's `overrides` can swap the moon for a sun to show the same place by day (see `examples/winter_lake.py`).
+
+## Sky and skyline
+
+Open cells (no `ceil`) show a 360-degree sky panorama: `sky` picks the preset. `skyline` adds distant silhouettes along its horizon, so an open map doesn't end at a bare line where the ground meets the sky:
+
+```json
+"skyline": "mountains"
+"skyline": {"type": "city", "height": 1.3, "lights": 0.35}
+"skyline": ["mountains", {"type": "treeline", "color": [0.05, 0.08, 0.06]}]
+```
+
+| type | looks like |
+|---|---|
+| `mountains` | two ranges of peaks, the far one paler |
+| `hills` | rolling downs in two layers |
+| `treeline` | a dark wall of overlapping conifers: woods, churchyards, lakesides |
+| `city` | blocky towers with a scatter of lit windows (`lights`, default 0.22, is the share that are lit) |
+
+- A dict takes `type`, `height` (a multiplier, default 1), `color` (RGB; by default each layer is tinted toward the sky's own horizon colour, so it sits in the haze) and `seed`. A list draws back to front, first entry farthest.
+- Heights are in degrees above the horizon, so the silhouette keeps its proportions at any resolution or field of view. It is painted into the sky, so it never occludes anything in the map and costs nothing per frame.
+- Pair it with the map: a `treeline` behind a fenced yard, `mountains` over a frozen lake, `city` beyond a rooftop. Fog's `sky_mix` hazes it along with the sky.
 
 ## Sprites
 
@@ -103,7 +191,7 @@ Lighting colour cheat sheet: oil/candle `[1,0.7,0.35]`, incandescent `[1,0.86,0.
 | field | meaning |
 |---|---|
 | `type` | built-in prop, built-in character, a name from `sprite_defs`, or a PNG path (RGBA) |
-| `id` | name used by overlays to anchor a speech bubble |
+| `id` | name for overlays to anchor a speech bubble to, and for a camera's `look_at` |
 | `scale` | world height in units (each built-in has a default; people are ~0.56-0.62) |
 | `z` | height off the floor (wall lanterns ~0.8) |
 | `flip` | mirror horizontally |
@@ -115,13 +203,16 @@ Lighting colour cheat sheet: oil/candle `[1,0.7,0.35]`, incandescent `[1,0.86,0.
 | `wobble` | sideways sway in texels, stronger toward the bottom (ghost tails, heat) |
 | `light` | `true` or a light dict (`radius`, `color`, `intensity`, `z`): attaches a point light at the sprite |
 | `stretch` | horizontal scale factor |
+| `shadow` | this sprite's contact shadow: a strength, or `false` for none (default: the scene's `contact_shadows`) |
 
 Drawing order: opaque sprites first (they write depth), then translucent/additive ones back to front without writing depth, so ghosts show what is behind them. Built-in lamps, lanterns and candles have emissive flames; place sprites at least ~0.2 from wall faces.
 
-Built-in props (46): barrel, bed, bench, boulder, brazier, buoy, bush, campfire, candles, column, console, crate, dead_tree, fern, flowers, fountain, gravestone, lamp_post, lantern, locker, log, mushrooms, palm, pine, rowboat, signpost, statue, stump, tree, wheelchair, plus the wall-mounted and ground props listed below.
-Built-in characters (16x32 pixel art): cultist, scientist, guard, nurse, spiritualist, ghost (translucent with aura and wobble by default), hybrid.
+**Contact shadows.** Every opaque prop or character standing on the floor gets a soft dark stamp under its feet, sized to its width, so nothing looks pasted onto the ground. `contact_shadows` sets the strength for the scene (0.55 by default, `0` for none) and a sprite's `shadow` overrides it. Sprites lifted off the floor (`z` > 0.05), standing on a block, translucent, additive or `fullbright` get none, and nor do fires, light fixtures, hanging and wall-mounted props, ladders, crystals and glowing mushrooms.
 
-Wall-mounted and hanging props (`sconce`, `painting`, `banner`, `wall_clock`, `pipe_valve`, `ceiling_lamp`, `chandelier`, `ivy_hang`) are ordinary sprites: place them a little off the surface (about 0.2-0.3 from a wall face) and set `z`. Ground clutter (`rocks`, `rubble`, `bones`, `sack`, `bucket`, `broken_barrel`, `grass_tuft`, `reeds`) is sized to read at 320x200; scatter a handful rather than a carpet.
+Built-in props (60): armor, barrel, bed, bench, boulder, brazier, buoy, bush, campfire, candles, chest, column, console, crate, crystal, dead_tree, fern, flowers, fountain, glowshroom, grave_cross, gravestone, lamp_post, lantern, lectern, locker, log, mushrooms, palm, pew, pine, rowboat, signpost, snowman, snowy_pine, stalagmite, statue, stump, table, throne, tree, wheelchair, plus the wall-mounted and ground props listed below. `crystal` and `glowshroom` glow (pair them with a coloured light); `pew`, `table` and `bench` take `stretch` for length.
+Built-in characters (16x32 pixel art): cultist, scientist, guard, nurse, spiritualist, ghost (translucent with aura and wobble by default), hybrid, soldier, knight, child (about 0.42 tall), creature, robot, shopkeeper. The creature's eyes and the robot's eyes and chest lights glow in the dark.
+
+Wall-mounted and hanging props (`sconce`, `painting`, `banner`, `wall_clock`, `pipe_valve`, `ceiling_lamp`, `chandelier`, `ivy_hang`, `chains`, `ladder`) are ordinary sprites: place them a little off the surface (about 0.2-0.3 from a wall face) and set `z`. Ground clutter (`rocks`, `rubble`, `bones`, `sack`, `bucket`, `broken_barrel`, `grass_tuft`, `reeds`) is sized to read at 320x200; scatter a handful rather than a carpet.
 
 ## Decals
 
@@ -146,13 +237,24 @@ Decals are stamps blended into a surface's albedo at render time - puddles, stai
 | `z` | height of the decal's centre above the floor, for wall decals. Default 0.5 |
 | `opacity` | 0-1 multiplier on the decal's own alpha. Default 1 |
 | `tint`, `flip` | RGB multiplier; mirror horizontally |
+| `reflect` | 0-1, floor decals only: how mirror-like the decal makes the floor where it covers it (see Reflections) |
 
-Built-in decals: puddle, puddle_dark, puddle_shine, stain, stain_rust, splatter, splatter_dark, vines, moss_patch, crack, scorch, leak, cobweb, rune_mark, drain. `rune_mark` is emissive, so it glows regardless of lighting.
+Built-in decals: puddle, puddle_dark, puddle_shine, stain, stain_rust, splatter, splatter_dark, vines, moss_patch, crack, scorch, leak, cobweb, rune_mark, drain, contact_shadow. `rune_mark` is emissive, so it glows regardless of lighting. `contact_shadow` is the soft disc used for contact shadows, which you can also stamp by hand (under a prop hanging low over the floor, say). The puddles reflect by default (`puddle_shine` 0.55, `puddle` 0.35, `puddle_dark` 0.25), so a lamp post shows in the wet patch at its foot.
 
 - A floor decal is drawn on the plane of the cell it sits in, so a puddle inside a cell with a `drop` lands on the sunken surface, not the bank above it.
 - Dark puddles read as holes punched in a lit floor. Use `puddle_shine` on anything a lamp reaches (wet asphalt, sand, boards) and keep `puddle_dark` for dim interiors.
 - Wall decals that hang (`vines`, `leak`, `cobweb`) are drawn from the top of their footprint down, so set `z` near the top of the wall.
 - A wall decal is clipped to its own face, so one that overhangs the cell edge ends in a hard vertical cut. Keep `u - size/2` and `u + size/2` inside 0-1, or split a wide stain across two faces.
+
+## Reflections
+
+Water, ice, wet streets and puddles mirror whatever stands over them: lit windows across a frozen lake, a creature wading in a cave pool, a lamp post in the puddle at its foot.
+
+- A floor reflects if its cell has `reflect` (0-1), its texture reflects by default (`water` 0.5, `ice` 0.38), or a reflective decal covers it (the puddles).
+- `"reflections": false` turns them off for the scene, a number scales every reflection (`0.5` halves them), and `{"amount": 1.0, "ripple": 1.0}` also sets the sideways shimmer (`0` for a still, glassy surface, `2` for choppy water).
+- Reflections are stronger at a grazing angle than looking straight down. Bright things (lamps, lit windows, glowing eyes) come through harder than the rest, and the mirror image is smeared a little vertically the way wet ground streaks light.
+- It is screen-space: a reflective floor mirrors what is on screen just above it in the same column. Across water at eye height that is nearly everything. Very close to the camera the mirrored point would be above the frame, so the floor there only takes a faint sheen of the sky or ceiling. Walls never reflect.
+- Reflections read best on dark, still surfaces with something bright beyond them. Give a lake or a wet street a light source on the far side.
 
 ## Pixel-art sprites
 
@@ -282,7 +384,7 @@ result is deterministic for a given seed.
 
 | field | meaning |
 |---|---|
-| `of` | a named set (`stones`, `rubble`, `forest`, `undergrowth`, `shore`, `litter`, `wreckage`), a sprite name, or a list. Repeats inside a set act as weights |
+| `of` | a named set (`stones`, `rubble`, `forest`, `undergrowth`, `shore`, `litter`, `wreckage`, `cave`), a sprite name, or a list. Repeats inside a set act as weights |
 | `on` | legend characters to scatter on, as a string or list. Omit for every open cell |
 | `density` | items per eligible cell. 0.3 is a light dusting, 1.5+ is a stony beach |
 | `sizes` | size classes to draw from: a list, or a dict of weights. Classes are `tiny`, `small`, `medium`, `large`, `huge`, multiplying the prop's default height |
@@ -352,8 +454,9 @@ Palettes: `gameboy`, `cga`, `cga_warm`, `ega`, `amber`, `phosphor`, `sepia`, `mo
 
 ## Known limits (it is a 2.5D raycaster)
 
-- No stairs, slopes, cliffs or general multi-level floors. A cell's floor can be sunk below z=0 with `drop` (for water and shallow pits) and that is the only floor-height variation; walls standing in it extend down to its surface, but the bank between two floor cells is approximated, so keep drops shallow. Fake real elevation by making the low area's surroundings tall walls (a cliff face) and placing the camera accordingly.
+- No slopes, cliffs or walkable upper floors. Low blocks give steps, daises, altars and platforms you look down onto (see Heights), and `drop` sinks water and shallow pits below z=0. The bank between two floor cells is approximated, so keep drops shallow. Fake real elevation by making the low area's surroundings tall walls (a cliff face) and placing the camera accordingly.
 - One ceiling height per scene.
-- Walls are whole grid cells; no thin walls, diagonal walls, arches or doors in the middle of a cell.
-- Water and floors are flat textures; no reflections.
+- Walls are whole grid cells; no thin walls, diagonal walls, arches or doors in the middle of a cell. A see-through cell (a fence, bars) is drawn as one flat grille at its near face.
+- Reflections are screen-space and on floors only: a puddle can't mirror something that is off-screen, and walls are never mirrors.
+- Sun and moon shadows come from walls only. Sprites cast no shadows beyond their contact shadow, and sunlight never enters a roofed cell.
 - Sprites are static billboards that always face the camera (one view per character, no animation).

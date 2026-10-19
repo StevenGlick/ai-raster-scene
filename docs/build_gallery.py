@@ -42,6 +42,14 @@ SHOTS = {
     'coast_jetty': ('coast_lighthouse', 2),
     'bunker_hud': ('bunker_lab', 1),
     'bunker_crt': ('bunker_lab', 3),
+    'castle_throne': ('castle_keep', 1),
+    'castle_gate': ('castle_keep', 4),
+    'chapel_yard': ('chapel_graveyard', 1),
+    'chapel_nave': ('chapel_graveyard', 3),
+    'cave_beast': ('crystal_cave', 3),
+    'sewer_thing': ('sewer_tunnels', 3),
+    'winter_night': ('winter_lake', 1),
+    'winter_day': ('winter_lake', 4),
     'gui_hud': ('gui_hud', 1),
     'gui_lantern': ('gui_lantern', 1),
     'gui_menus_01': ('gui_menus', 1),
@@ -89,7 +97,7 @@ def build_sheet(out, example, gutter=4):
 
 def build_map(out, example):
     sc, (world, _) = scene(example)
-    cams = [{**sc.get('camera', {}), **c} for c in (sc.get('shots') or [sc['camera']])]
+    cams = [render.merge_camera(sc, c) for c in (sc.get('shots') or [sc['camera']])]
     render.draw_map(world, sc, cams, out)
 
 

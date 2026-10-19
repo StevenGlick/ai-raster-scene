@@ -386,6 +386,128 @@ def check_regressions(tmp):
     print('ok release regressions (12 checks)')
 
 
+def check_new_features():
+    """Each engine feature from the castle/cave/winter release has to change the picture the way
+    the reference says it does, not merely run."""
+    sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+    import assets
+    import maptools
+    import render as R
+
+    flat = {'ambient': [0.6, 0.6, 0.6], 'surface_noise': 0, 'light_levels': 0, 'sky': 'dusk'}
+
+    def frame(scene):
+        w = R.World(scene)
+        return R.Renderer(w, scene).render(R.prepare_shot(scene, R.merge_camera(scene, scene['camera'])))
+
+    # 1. look_at aims the camera, an [x, y, z] target also pitches it, and a shot's own angle wins
+    sc = {'sprites': [{'id': 'npc', 'x': 4.0, 'y': 1.0, 'type': 'guard'}]}
+    assert abs(R.resolve_camera(sc, {'x': 1, 'y': 1, 'look_at': [2, 2]})['angle'] - 45) < 1e-6
+    assert abs(R.resolve_camera(sc, {'x': 1, 'y': 1, 'look_at': 'npc'})['angle']) < 1e-6
+    assert R.resolve_camera(sc, {'x': 1, 'y': 1, 'look_at': [5, 1, 1.5]})['pitch'] > 0
+    try:
+        R.resolve_camera(sc, {'x': 1, 'y': 1, 'look_at': 'nobody'})
+        raise AssertionError('look_at at a missing sprite id must fail loudly')
+    except KeyError:
+        pass
+    shot = R.merge_camera(dict(sc, camera={'x': 1, 'y': 1, 'look_at': [2, 2]}), {'angle': 180})
+    assert abs(shot['angle'] - 180) < 1e-6, 'a shot angle must override an inherited look_at'
+
+    # 2. see-through walls: the floor carries on under them, light passes, sprites show through
+    def yard(wall):
+        return dict(flat, map=['#######', '#.....#', '#.....#', '#.fff.#', '#.....#', '#.....#', '#######'],
+                    legend={'#': {'wall': 'stone', 'h': 1}, '.': {'floor': 'cobble'}, 'f': {'wall': wall, 'h': 1}},
+                    camera={'x': 3.5, 'y': 5.5, 'angle': 270},
+                    lights=[{'x': 3.5, 'y': 1.5, 'z': 0.8, 'radius': 5, 'intensity': 1.5}],
+                    sprites=[{'x': 3.5, 'y': 1.8, 'type': 'guard', 'fullbright': True, 'tint': [3, 3, 3]}])
+    w = R.World(yard('bars'))
+    assert w.see[3, 2:5].all() and (w.solid_h[3, 2:5] == 0).all(), 'bars must be see-through'
+    assert (w.floor_tid[3, 2:5] == w.floor_tid[4, 3]).all(), 'a fence must stand on the floor around it'
+
+    def lit_in_front(scene):
+        r = R.Renderer(R.World(scene), scene)
+        return float(R.sample_lm(r.lm, r.lres, np.array([3.5]), np.array([4.6])).sum())
+    assert lit_in_front(yard('bars')) > 2 * lit_in_front(yard('stone')) + 1e-3, 'bars must not block light'
+    seen = lambda scene: np.abs(frame(scene) - frame(dict(scene, sprites=[]))).sum()   # noqa: E731
+    assert seen(yard('bars')) > 20, 'a sprite behind bars must show through the gaps'
+    assert seen(yard('stone')) < 1e-6, 'a stone wall in the same place must hide it'
+    rail = assets.get_alpha('railing')
+    assert 1 - np.nonzero((rail > 0.5).any(axis=1))[0].min() / rail.shape[0] < 0.45, \
+        'a railing must stay below eye height (0.5) so it can be looked over'
+
+    # 3. heights: a digit layer makes low blocks whose tops show; sprites stand on them; roofs cover them
+    dais = dict(flat, map=['#######', '#.....#', '#..B..#', '#.....#', '#.....#', '#######'],
+                heights=['.......', '.......', '...3...', '.......', '.......', '.......'],
+                legend={'#': {'wall': 'stone', 'h': 1}, '.': {'floor': 'cobble'},
+                        'B': {'wall': 'stone', 'top': 'carpet'}},
+                camera={'x': 3.5, 'y': 4.5, 'angle': 270})
+    w = R.World(dais)
+    assert abs(w.height[2, 3] - 0.3) < 1e-6 and abs(w.base_z(3.5, 2.5) - 0.3) < 1e-6
+    img = frame(dais)
+    proj = 160 / math.tan(math.radians(66) / 2)
+    top_row = int(100 + 0.5 * ((0.2 * proj / 2.5) + (0.2 * proj / 1.5)))   # between the top's far and near edges
+    face_row = int(100 + 0.5 * ((0.2 * proj / 1.5) + (0.5 * proj / 1.5)))  # halfway down the near face
+    r, g, b = img[top_row, 150:170].mean(axis=0)
+    assert r > 1.3 * g, f'the top of a low block shows its "top" texture (got rgb {r:.2f} {g:.2f} {b:.2f})'
+    r, g, b = img[face_row, 150:170].mean(axis=0)
+    assert r < 1.3 * g, 'the face of a low block shows its wall texture'
+    roofed = dict(dais, legend=dict(dais['legend'], **{'.': {'floor': 'cobble', 'ceil': 'beams'}}))
+    assert R.World(roofed).ceil_tid[2, 3] >= 0, 'a low block under a roof must get the roof above it'
+
+    # 4. sun and moon: walls cast shadows away from the light, roofs block it, the disc is drawn
+    field = dict(flat, map=['..........', '..........', '....##....', '..........', '..........'],
+                 legend={'#': {'wall': 'stone', 'h': 1}, '.': {'floor': 'grass'}},
+                 camera={'x': 4.5, 'y': 4.5, 'angle': 270, 'fov': 70})
+    sun = R.build_sun(R.World(field), {'type': 'sun', 'azimuth': 270, 'elevation': 30})
+    zl = lambda x, y: sun['zlit'][int(y * sun['res']), int(x * sun['res'])]   # noqa: E731
+    assert zl(4.5, 3.5) > 0 > zl(8.5, 3.5) and zl(4.5, 1.5) < 0, 'a wall must shadow the far side only'
+    covered = dict(field, legend=dict(field['legend'], **{'.': {'floor': 'grass', 'ceil': 'beams'}}))
+    cov = R.build_sun(R.World(covered), {'type': 'sun'})
+    assert np.isinf(cov['zlit'][14, 34]) and np.isinf(cov['zlit'][6, 6]), 'no sunlight under a roof'
+    with_disc = dict(field, sky='day', camera={'x': 4.5, 'y': 3.5, 'angle': 90, 'fov': 70},  # open sky
+                     lights=[{'type': 'sun', 'azimuth': 90, 'elevation': 12}])
+    no_disc = dict(with_disc, lights=[{'type': 'sun', 'azimuth': 90, 'elevation': 12, 'disc': False}])
+    disc_row = int(100 - math.tan(math.radians(12)) * 160 / math.tan(math.radians(35)))
+    patch = lambda img: img[disc_row - 3:disc_row + 4, 155:166].mean()     # noqa: E731
+    assert patch(frame(with_disc)) > patch(frame(no_disc)) + 0.03, 'the sun disc must show in the sky'
+
+    # 5. reflections: water mirrors the lit windows beyond it, and "reflections": false turns that off
+    lake = dict(flat, ambient=[0.15, 0.15, 0.18], sky=None,
+                map=['#########', '#.......#', '#~~~~~~~#', '#~~~~~~~#', '#.......#', '#########'],
+                legend={'#': {'wall': 'window_lit', 'h': 1}, '.': {'floor': 'boards', 'ceil': 'beams'},
+                        '~': {'floor': 'water', 'drop': 0.1, 'ceil': 'beams'}},
+                camera={'x': 4.5, 'y': 4.6, 'angle': 270})
+    on, off = frame(lake), frame(dict(lake, reflections=False))
+    water = slice(165, 200)                                  # the near half of the pool
+    assert on[water].max() > off[water].max() + 0.05, 'lit windows must glint in the water'
+    assert np.abs(on[:95] - off[:95]).max() < 1e-6, 'reflections must only touch the floor'
+
+    # 6. skylines paint the horizon band of the sky and nothing above it
+    plain = assets.make_sky('dusk', 720, 120)
+    for kind in assets.SKYLINES:
+        sky = assets.make_sky('dusk', 720, 120, skyline=kind, proj=proj)
+        assert np.abs(sky[-6:] - plain[-6:]).max() > 0.02, f'skyline {kind} draws nothing'
+        assert np.abs(sky[:30] - plain[:30]).max() < 1e-6, f'skyline {kind} reaches the zenith'
+
+    # 7. contact shadows: under floor props only, scaled by the scene setting, and they darken the floor
+    room = dict(flat, map=['#####', '#...#', '#...#', '#...#', '#####'],
+                legend={'#': {'wall': 'stone', 'h': 1}, '.': {'floor': 'tile_floor'}},
+                camera={'x': 2.5, 'y': 3.6, 'angle': 270},
+                sprites=[{'x': 2.5, 'y': 1.6, 'type': 'barrel'}, {'x': 1.5, 'y': 1.5, 'type': 'lantern', 'z': 0.7}])
+    shadows = R.World(room)._contact_shadows(room)
+    assert len(shadows) == 1, f'expected one contact shadow (barrel only), got {len(shadows)}'
+    off_room = dict(room, contact_shadows=0)
+    assert not R.World(off_room)._contact_shadows(off_room), 'contact_shadows: 0 must turn them off'
+    assert frame(room)[150:200].mean() < frame(dict(room, contact_shadows=0))[150:200].mean() - 1e-4
+
+    # 8. Grid.disc leaves no one-cell nub at its extremes
+    g = maptools.Grid(21, 21, fill='#').disc(10, 10, 8, '.')
+    for lines in (g.g, list(zip(*g.g))):                  # rows, then columns
+        edge = [ln for ln in lines if '.' in ln]
+        assert edge[0].count('.') > 1 and edge[-1].count('.') > 1, 'a whole-number radius left a nub'
+    print('ok new features (look_at, see-through, heights, sun, reflections, skyline, contact shadows)')
+
+
 def check_docs():
     """The docs name assets, keys and counts by hand: fail as soon as they and the code disagree."""
     sys.path.insert(0, os.path.join(ROOT, 'scripts'))
@@ -428,10 +550,14 @@ def check_docs():
     need('reference (scene keys)', ref,
          sorted((R.SCENE_KEYS | R.SHOT_KEYS | R.CELL_KEYS) - meta))
     need('SKILL.md (scatter sets)', skill, assets.DEBRIS_SETS)
+    need('SKILL.md (cast)', skill, CHARACTERS)
+    need('reference (skylines)', ref, assets.SKYLINES)
+    need('reference/Textures (see-through and emissive)', section(ref, '## Textures'),
+         [t for t in assets.TEXTURES if assets.get_alpha(t) is not None or assets.get_texture(t)[1] is not None])
 
     counts = {r'(\d+) procedural props': len(assets.SPRITES), r'(\d+) stamps': len(assets.DECALS),
               r'(\d+) item icons': len(icons.ICONS) - 2, r'(\d+)-character': len(CHARACTERS),
-              r'(\d+) one-word presets': len(post.PRESETS)}
+              r'(\d+) one-word presets': len(post.PRESETS), r'(\d+) textures': len(assets.TEXTURES)}
     for pat, n in counts.items():
         m = re.search(pat, readme)
         if not m or int(m.group(1)) != n:
@@ -473,6 +599,7 @@ def main():
         check_surface_noise(tmp)
         check_scatter(tmp)
         check_regressions(tmp)
+        check_new_features()
         check_docs()
         gs = os.path.join(tmp, 'gui_post.json')
         with open(gs, 'w') as f:

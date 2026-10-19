@@ -32,6 +32,62 @@ import post  # noqa: E402
 T = assets.T
 
 
+# ------------------------------------------------------------------ cameras
+
+def find_sprite(scene, sid, cam=None):
+    """The sprite with this `id`, from the scene or the shot's extra_sprites."""
+    for sp in list(scene.get('sprites', [])) + list((cam or {}).get('extra_sprites', [])):
+        if sp.get('id') == sid:
+            return sp
+    return None
+
+
+def resolve_camera(scene, cam):
+    """Fill in `angle` from a camera's `look_at` (a sprite id, [x, y] or [x, y, z]).
+
+    Aiming by hand means working out atan2 in your head, which is easy to get wrong by tens of
+    degrees. An [x, y, z] target also sets `pitch` so that height sits mid-frame.
+    """
+    tgt = cam.get('look_at')
+    if tgt is None or 'x' not in cam or 'y' not in cam:
+        return cam
+    cam = dict(cam)
+    if isinstance(tgt, str):
+        sp = find_sprite(scene, tgt, cam)
+        if sp is None:
+            raise KeyError(f"look_at names sprite id {tgt!r}, but no sprite has that id")
+        tx, ty, tz = float(sp['x']), float(sp['y']), None
+    else:
+        tx, ty = float(tgt[0]), float(tgt[1])
+        tz = float(tgt[2]) if len(tgt) > 2 else None
+    vx, vy = tx - float(cam['x']), ty - float(cam['y'])
+    dist = math.hypot(vx, vy)
+    if dist < 1e-6:
+        return cam
+    cam['angle'] = math.degrees(math.atan2(vy, vx)) % 360
+    if tz is not None:
+        W, H = scene.get('resolution', [320, 200])
+        fov = math.radians(float(cam.get('fov', 66)))
+        cam['pitch'] = (tz - float(cam.get('height', 0.5))) * (W / 2) / (math.tan(fov / 2) * dist * H)
+    return cam
+
+
+def merge_camera(scene, shot):
+    """A shot over the scene camera, with look_at resolved. A shot that sets its own `angle`
+    (and no look_at) is aimed by that angle, not by a look_at inherited from the camera."""
+    base = dict(scene.get('camera') or {})
+    if 'angle' in shot and 'look_at' not in shot:
+        base.pop('look_at', None)
+    return resolve_camera(scene, {**base, **shot})
+
+
+def _seg_dist(px, py, x0, y0, x1, y1):
+    vx, vy = x1 - x0, y1 - y0
+    L = vx * vx + vy * vy
+    t = 0.0 if L == 0 else max(0.0, min(1.0, ((px - x0) * vx + (py - y0) * vy) / L))
+    return math.hypot(px - (x0 + t * vx), py - (y0 + t * vy))
+
+
 # ------------------------------------------------------------------ scene loading
 
 class World:
@@ -49,10 +105,14 @@ class World:
         self.floor_tid = np.full((self.mh, self.mw), -1, np.int32)
         self.ceil_tid = np.full((self.mh, self.mw), -1, np.int32)
         self.drop = np.zeros((self.mh, self.mw), np.float32)  # how far this floor sits below z=0
+        self.reflect = np.zeros((self.mh, self.mw), np.float32)  # how mirror-like each floor is
         self.tex = []
         self.tex_key = []    # the material name each texture id came from
         self.tex_noise = []  # its relative surface-noise multiplier
+        self.tex_alpha = []  # see-through mask (or None) per texture id
         self._tidx = {}
+        self.see = np.zeros((self.mh, self.mw), bool)  # walls with see-through texels: fences, bars
+        inherit = []
         self.stacks = {}  # (y, x) -> texture ids per storey, bottom to top
 
         for y, row in enumerate(rows):
@@ -66,15 +126,98 @@ class World:
                     self.wall_tid[y, x] = tids[0]
                     if len(tids) > 1:
                         self.stacks[(y, x)] = tids
-                    self.floor_tid[y, x] = self.tid(spec.get('top', stack[-1]))
+                    if any(self.tex_alpha[t] is not None for t in tids):
+                        # a fence or grille: the ground (and any roof) carries on underneath it
+                        self.see[y, x] = True
+                        if spec.get('floor'):
+                            self.floor_tid[y, x] = self.tid(spec['floor'])
+                        if spec.get('ceil'):
+                            self.ceil_tid[y, x] = self.tid(spec['ceil'])
+                        inherit.append((y, x, not spec.get('floor'), not spec.get('ceil')))
+                    else:
+                        self.floor_tid[y, x] = self.tid(spec.get('top', stack[-1]))
+                        if spec.get('ceil'):  # an altar or a step under a roof: the roof is above it
+                            self.ceil_tid[y, x] = self.tid(spec['ceil'])
                 else:
                     self.floor_tid[y, x] = self.tid(spec.get('floor', default.get('floor', 'concrete_floor')))
                     if spec.get('ceil'):
                         self.ceil_tid[y, x] = self.tid(spec['ceil'])
                     self.drop[y, x] = min(0.9, max(0.0, float(spec.get('drop', 0.0))))
+                    floor = spec.get('floor', default.get('floor', 'concrete_floor'))
+                    self.reflect[y, x] = min(1.0, max(0.0, float(spec.get('reflect', assets.texture_reflect(floor)))))
+
+        self._apply_heights(scene)
+        for y, x, want_floor, want_ceil in inherit:
+            self._inherit_surfaces(y, x, want_floor, want_ceil, default)
+        self._roof_low_blocks()
+        # what blocks light and hides what is behind it: see-through cells do neither
+        self.solid_h = np.where(self.see, 0.0, self.height).astype(np.float32)
 
         self.floor_decals, self.ceil_decals, self.wall_decals = [], [], {}
-        self._load_decals(scene, list(scene.get('decals', [])) + self._expand_scatter(scene))
+        grime = self._expand_scatter(scene)
+        # contact shadows go first, so puddles, stains and the author's own decals sit on top
+        self._load_decals(scene, self._contact_shadows(scene) + list(scene.get('decals', [])) + grime)
+
+    def _apply_heights(self, scene):
+        """`heights`: a digit layer over the map setting each wall cell's height in steps of
+        `height_unit` (0.1 by default), so a flight of stairs is one string per row."""
+        rows = scene.get('heights')
+        if not rows:
+            return
+        unit = float(scene.get('height_unit', 0.1))
+        for y, row in enumerate(rows[:self.mh]):
+            for x, ch in enumerate(str(row)[:self.mw]):
+                if ch in '123456789' and self.height[y, x] > 0:
+                    self.height[y, x] = int(ch) * unit
+
+    def _inherit_surfaces(self, y, x, want_floor, want_ceil, default):
+        """A see-through cell borrows the floor (and roof) most common among its open neighbours,
+        so a fence across a lawn stands on grass without the legend having to say so."""
+        from collections import Counter
+        floors, ceils = Counter(), Counter()
+        for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+            ny, nx = y + dy, x + dx
+            if 0 <= ny < self.mh and 0 <= nx < self.mw and self.height[ny, nx] <= 0:
+                floors[int(self.floor_tid[ny, nx])] += 1
+                ceils[int(self.ceil_tid[ny, nx])] += 1
+        if want_floor:
+            self.floor_tid[y, x] = (floors.most_common(1)[0][0] if floors
+                                    else self.tid(default.get('floor', 'concrete_floor')))
+        if want_ceil and ceils:
+            self.ceil_tid[y, x] = ceils.most_common(1)[0][0]
+
+    def _roof_low_blocks(self):
+        """A block lower than the ceiling leaves the ceiling above it in view, so give it the roof
+        of the room around it - spreading inward across a wide platform - or open sky outdoors."""
+        from collections import Counter
+        low = (self.height > 0) & (self.height < self.ceil_h - 1e-6) & ~self.see
+        need = low & (self.ceil_tid < 0)
+        for _ in range(self.mw + self.mh):
+            changed = False
+            for y, x in zip(*np.nonzero(need)):
+                votes = Counter()
+                for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+                    ny, nx = y + dy, x + dx
+                    if (0 <= ny < self.mh and 0 <= nx < self.mw and not need[ny, nx]
+                            and (self.height[ny, nx] <= 0 or low[ny, nx])):
+                        votes[int(self.ceil_tid[ny, nx])] += 1
+                if votes:
+                    self.ceil_tid[y, x] = votes.most_common(1)[0][0]
+                    need[y, x] = False
+                    changed = True
+            if not changed:
+                break
+
+    def base_z(self, x, y):
+        """Height of the surface a sprite standing at (x, y) rests on: below z=0 in a sunken
+        cell, on top of a block lower than a room wall, otherwise the floor."""
+        cx, cy = int(math.floor(x)), int(math.floor(y))
+        if not (0 <= cy < self.mh and 0 <= cx < self.mw):
+            return 0.0
+        h = float(self.height[cy, cx])
+        if h > 0:
+            return h if h < 0.95 and not self.see[cy, cx] else 0.0
+        return -float(self.drop[cy, cx])
 
     def _load_decals(self, scene, decals):
         """Decals are stamps blended into a surface's albedo: puddles, stains, vines, cracks."""
@@ -87,6 +230,7 @@ class World:
             e = {'rgba': rgba, 'em': em, 'dw': dw, 'dh': dh,
                  'size': float(d.get('size', 1.0)),
                  'opacity': float(d.get('opacity', 1.0)),
+                 'reflect': float(d.get('reflect', assets.DECAL_REFLECT.get(d['tex'], 0.0))),
                  'tint': np.array(d.get('tint', [1, 1, 1]), np.float32)}
             surf = d.get('surface', 'floor')
             if surf in ('floor', 'ceil', 'ceiling'):
@@ -152,6 +296,55 @@ class World:
                 out.append((float(sp['x']), float(sp['y']), 1.2))
         return out
 
+    def _sight_lines(self, scene):
+        """Camera-to-subject segments that tall scatter must not stand on: each shot's look_at
+        target, and every sprite with an `id` that sits inside that shot's view."""
+        out = []
+        subjects = [sp for sp in scene.get('sprites', []) if 'id' in sp]
+        for shot in (scene.get('shots') or [scene.get('camera') or {}]):
+            c = merge_camera(scene, shot)
+            if 'x' not in c or 'y' not in c:
+                continue
+            cx, cy = float(c['x']), float(c['y'])
+            ang = math.radians(float(c.get('angle', 0)))
+            half = math.radians(float(c.get('fov', 66))) / 2 + 0.1
+            targets = []
+            if isinstance(c.get('look_at'), (list, tuple)):
+                targets.append((float(c['look_at'][0]), float(c['look_at'][1])))
+            for sp in subjects:
+                vx, vy = float(sp['x']) - cx, float(sp['y']) - cy
+                off = (math.atan2(vy, vx) - ang + math.pi) % (2 * math.pi) - math.pi
+                if 0.3 < math.hypot(vx, vy) < 14 and abs(off) <= half:
+                    targets.append((float(sp['x']), float(sp['y'])))
+            out += [(cx, cy, tx, ty) for tx, ty in targets]
+        return out
+
+    def _contact_shadows(self, scene):
+        """A soft dark stamp under every prop and character standing on the floor, so nothing
+        looks pasted on. `contact_shadows` sets the strength (0 turns them off); a sprite's own
+        `"shadow"` overrides it, `false` for none."""
+        strength = scene.get('contact_shadows', 0.55)
+        strength = 0.0 if strength is False else 0.55 if strength is True else float(strength)
+        defs = scene.get('sprite_defs', {})
+        out = []
+        for sp in list(scene.get('sprites', [])) + self.scatter_sprites:
+            sp = {**assets.sprite_defaults(sp['type'], defs), **sp}
+            own = sp.get('shadow')
+            s = strength if own is None or own is True else 0.0 if own is False else float(own)
+            if s <= 0 or float(sp.get('z', 0)) > 0.05 or sp['type'] in assets.NO_CONTACT_SHADOW:
+                continue
+            if sp.get('fullbright') or sp.get('blend', 'alpha') != 'alpha' or float(sp.get('opacity', 1)) < 1:
+                continue  # ghosts, glows and light sources cast nothing
+            cx, cy = int(math.floor(float(sp['x']))), int(math.floor(float(sp['y'])))
+            if not (0 <= cy < self.mh and 0 <= cx < self.mw) or self.height[cy, cx] > 0:
+                continue  # standing on top of a block, not on the floor
+            width = float(sp.get('scale', 1.0)) * assets.sprite_aspect(sp['type'], defs) * float(sp.get('stretch', 1.0))
+            out.append({'tex': 'contact_shadow', 'surface': 'floor', 'x': float(sp['x']), 'y': float(sp['y']),
+                        # wider than the prop: half the disc hides behind its feet, and the
+                        # visible half is foreshortened to a few rows at a grazing angle
+                        'size': min(max(width * 1.25 + 0.12, 0.3), 1.8), 'opacity': min(1.0, s)})
+        return out
+
     def _scatter_points(self, cells, count, rng, clump, margin, keep=()):
         """Pick `count` positions over `cells`, weighted by the shared noise field.
 
@@ -186,6 +379,7 @@ class World:
         grime = self._grime(scene)
         base_seed = int(scene.get('seed', 0))
         keep = self._keep_clear(scene)
+        sight = self._sight_lines(scene)
         specs = list(scene.get('scatter', []))
         if grime > 0 and scene.get('grime_debris', True):
             specs.append({'of': 'wreckage', 'density': 0.05 * grime, 'sizes': ['tiny', 'small'],
@@ -230,6 +424,9 @@ class World:
                 half = 0.5 * scale * assets.sprite_aspect(name, defs)
                 if any((x - kx) ** 2 + (y - ky) ** 2 < (kr + half) ** 2 for kx, ky, kr in keep):
                     continue
+                # low clutter between camera and subject reads as ground; anything taller blocks it
+                if scale > 0.22 and any(_seg_dist(x, y, *s) < 0.28 + half for s in sight):
+                    continue
                 sp = {'x': round(float(x), 3), 'y': round(float(y), 3), 'type': name,
                       'scale': round(scale, 4)}
                 if rng.random() < 0.5:
@@ -247,7 +444,7 @@ class World:
         faces = []
         for y in range(self.mh):
             for x in range(self.mw):
-                if self.height[y, x] <= 0:
+                if self.height[y, x] <= 0 or self.see[y, x]:
                     continue
                 for face, (dx, dy) in (('south', (0, 1)), ('north', (0, -1)),
                                        ('east', (1, 0)), ('west', (-1, 0))):
@@ -286,6 +483,7 @@ class World:
             self.tex.append((rgb, em))
             self.tex_key.append(assets.texture_key(spec))
             self.tex_noise.append(assets.texture_noise(spec))
+            self.tex_alpha.append(assets.get_alpha(spec))
         return self._tidx[key]
 
 
@@ -326,13 +524,60 @@ def build_lightmap(world, lights, res=8):
                 qy = np.floor(iy + ddy * t).astype(int)
                 inb = (qx >= 0) & (qy >= 0) & (qx < world.mw) & (qy < world.mh)
                 qxc, qyc = np.clip(qx, 0, world.mw - 1), np.clip(qy, 0, world.mh - 1)
-                hb = world.height[qyc, qxc]
+                hb = world.solid_h[qyc, qxc]
                 skip = ((qx == own_x) & (qy == own_y)) | ((qx == lcx) & (qy == lcy))
                 vis &= ~(inb & (hb >= block_h) & ~skip)
             f = f * vis
         flat = lm.reshape(-1, 3)
         flat[idx] += f[:, None] * c[None, :]
     return lm, res
+
+
+SUN_DEFAULTS = {
+    # colour, intensity, disc colour, disc radius (degrees), halo strength
+    'sun': ([1.0, 0.94, 0.82], 0.85, [1.0, 0.96, 0.82], 2.6, 0.6),
+    'moon': ([0.55, 0.65, 0.95], 0.4, [0.9, 0.9, 0.84], 2.0, 0.3),
+}
+
+
+def build_sun(world, L, res=4):
+    """A directional light (sun or moon) and its shadows.
+
+    Shadows come from one map: for each ground sample, the lowest height that can still see the
+    light - the highest (wall height - distance x tan(elevation)) met while marching toward it.
+    A point at height z is then lit when z clears that value, so facades are half-lit behind a
+    lower building, characters' legs fall into the shadow of a wall, and a wall face turned
+    away from the light shadows itself. Roofed cells get no direct light at all.
+    """
+    kind = L.get('type')
+    colour, inten, disc_c, disc_r, glow = SUN_DEFAULTS[kind]
+    az = math.radians(float(L.get('azimuth', 300)))
+    el = math.radians(min(89.0, max(1.0, float(L.get('elevation', 35)))))
+    ux, uy, tan_el = math.cos(az), math.sin(az), math.tan(el)
+    H, W = world.mh * res, world.mw * res
+    sy, sx = np.mgrid[0:H, 0:W]
+    px, py = (sx + 0.5) / res, (sy + 0.5) / res
+    zlit = np.full((H, W), -1.0, np.float32)
+    maxh = float(world.solid_h.max())
+    if L.get('shadows', True) and maxh > 0:
+        own_x, own_y = np.floor(px).astype(int), np.floor(py).astype(int)
+        reach = min(maxh / tan_el, float(world.mw + world.mh))
+        for t in np.arange(0.2, reach + 0.25, 0.25):
+            qx = np.floor(px + ux * t).astype(int)
+            qy = np.floor(py + uy * t).astype(int)
+            inb = (qx >= 0) & (qy >= 0) & (qx < world.mw) & (qy < world.mh)
+            hb = np.where(inb, world.solid_h[np.clip(qy, 0, world.mh - 1), np.clip(qx, 0, world.mw - 1)], 0)
+            cand = np.where((qx == own_x) & (qy == own_y), -1.0, hb - t * tan_el)
+            np.maximum(zlit, cand, out=zlit)
+    roofed = np.repeat(np.repeat(world.ceil_tid >= 0, res, 0), res, 1)
+    zlit[roofed] = np.inf
+    rgb = np.array(L.get('color', colour), np.float32) * float(L.get('intensity', inten))
+    disc = None
+    if L.get('disc', True):
+        disc = {'azimuth': math.degrees(az), 'elevation': math.degrees(el),
+                'color': L.get('disc_color', disc_c), 'radius': float(L.get('disc_size', disc_r)), 'glow': glow}
+    return {'ux': ux, 'uy': uy, 'sin': math.sin(el), 'cos': math.cos(el), 'rgb': rgb, 'zlit': zlit,
+            'res': res, 'disc': disc}
 
 
 def sample_lm(lm, res, x, y):
@@ -411,15 +656,30 @@ class Renderer:
         fog = scene.get('fog')
         self.fog_c = np.array(fog['color'], np.float32) if fog else None
         self.fog_d = float(fog.get('density', 0.1)) if fog else 0.0
-        lights = list(scene.get('lights', []))
+        lights, suns = [], []
+        for L in scene.get('lights', []):
+            kind = L.get('type', 'point')
+            if kind not in ('point', 'sun', 'moon'):
+                raise KeyError(f"unknown light type '{kind}'. Types: point (default), sun, moon")
+            (lights if kind == 'point' else suns).append(L)
         for sp in scene.get('sprites', []):
             sp = {**assets.sprite_defaults(sp['type'], scene.get('sprite_defs', {})), **sp}
             if sp.get('light'):
-                L = {'x': sp['x'], 'y': sp['y'], 'z': float(sp.get('z', 0)) + 0.2, 'shadows': True}
+                base = world.base_z(float(sp['x']), float(sp['y']))
+                L = {'x': sp['x'], 'y': sp['y'], 'z': float(sp.get('z', 0)) + base + 0.2, 'shadows': True}
                 L.update(sp['light'] if isinstance(sp['light'], dict) else {})
                 lights.append(L)
         self.lm, self.lres = build_lightmap(world, lights, scene.get('lightmap_res', 8))
         self.overbright = float(scene.get('overbright', 1.0))
+        self.suns = [build_sun(world, L) for L in suns]
+        rf = scene.get('reflections', True)
+        rf = ({} if rf is True else {'amount': 0.0} if rf is False
+              else rf if isinstance(rf, dict) else {'amount': rf})
+        self.reflect_k = float(rf.get('amount', 1.0))
+        self.ripple = float(rf.get('ripple', 1.0))
+        # a sun or moon light shows itself in the sky (unless it asks not to)
+        self.discs = [s_['disc'] for s_ in self.suns if s_['disc']]
+        self._skies = {}
         sn = scene.get('surface_noise', SURFACE_NOISE_DEFAULT)
         by_texture = {}
         if isinstance(sn, dict):
@@ -453,8 +713,26 @@ class Renderer:
         return np.clip((0.5 * coarse + 0.5 * fine) / NOISE_TYPICAL, -2.6, 2.6)
 
     # --- shading helpers
-    def shade(self, albedo, dyn, z, dist, em, flash):
-        light = self.ambient[None, :] + dyn * height_falloff(z)[..., None] + flash
+    def sun_at(self, x, y, z, lam):
+        """Direct light from every sun or moon at points (x, y) of height z. `lam(sun)` gives the
+        Lambert factor for the surface's orientation (scalar or per point). Not subject to the
+        point lights' height falloff: sunlight reaches the top of a tall facade as well."""
+        total = 0.0
+        for s_ in self.suns:
+            zl = s_['zlit']
+            r = s_['res']
+            iy = np.clip((np.asarray(y) * r).astype(int), 0, zl.shape[0] - 1)
+            ix = np.clip((np.asarray(x) * r).astype(int), 0, zl.shape[1] - 1)
+            vis = np.clip((np.asarray(z) - zl[iy, ix]) / 0.12 + 0.5, 0, 1)
+            total = total + (vis * lam(s_))[..., None] * s_['rgb']
+        return total
+
+    @staticmethod
+    def lam_up(s_):
+        return s_['sin']
+
+    def shade(self, albedo, dyn, z, dist, em, flash, sun=0.0):
+        light = self.ambient[None, :] + dyn * height_falloff(z)[..., None] + flash + sun
         light = light * self.overbright
         if self.levels > 0:
             light = np.floor(light * self.levels + 0.5) / self.levels
@@ -497,19 +775,26 @@ class Renderer:
         """Light falling on things held at the camera (viewmodels): ambient + lightmap + flashlight spill."""
         dyn = sample_lm(self.lm, self.lres, np.array([float(cam['x'])]), np.array([float(cam['y'])]))[0]
         light = self.ambient + dyn * 0.6
+        if self.suns:  # a held item in sunlight is lit by it
+            fx, fy = math.cos(math.radians(float(cam.get('angle', 0)))), math.sin(math.radians(float(cam.get('angle', 0))))
+            light = light + np.asarray(self.sun_at(np.array([float(cam['x'])]), np.array([float(cam['y'])]),
+                                                   np.array([0.4]), lambda s_: s_['sin'] * 0.5 + s_['cos'] * 0.6 *
+                                                   max(0.2, -(fx * s_['ux'] + fy * s_['uy']))))[0]
         if cam.get('flashlight', self.s.get('flashlight')):
             light = light + 0.25
         # a floor keeps held items readable in near-darkness, the cap stops held lamps blowing them out
         return np.clip(light * self.overbright, 0.22, 1.0).astype(np.float32)
 
-    def _blend_plane_decal(self, alb, emv, wx, wy, d, valid, dcl):
+    def _blend_plane_decal(self, alb, emv, wx, wy, d, valid, dcl, rk=None):
         """Stamp one floor/ceiling decal into a surface pass's albedo."""
         sw = dcl['size']
         sh = sw * dcl['dh'] / dcl['dw']
         x0, y0 = dcl['x'] - sw / 2, dcl['y'] - sh / 2
-        # a plane's distance is constant per row, so only a band of rows can touch the decal
+        # a plane's distance is constant per row, so only a band of rows can touch the decal. `d`
+        # is measured along the view axis, so the decal's centre must be too: its straight-line
+        # distance is longer off-axis, which used to clip decals toward the edges of the frame
         rad = 0.5 * math.hypot(sw, sh)
-        ctr = math.hypot(dcl['x'] - self._px, dcl['y'] - self._py)
+        ctr = (dcl['x'] - self._px) * self._fx + (dcl['y'] - self._py) * self._fy
         band = np.nonzero((d >= ctr - rad) & (d <= ctr + rad))[0]
         if band.size == 0:
             return
@@ -528,6 +813,9 @@ class Renderer:
         if de.any():
             sube = emv[r0:r1]
             sube[m] = np.maximum(sube[m], de * (a[:, 0] > 0.4))
+        if rk is not None and dcl['reflect'] > 0:   # a puddle mirrors what stands over it
+            subr = rk[r0:r1]
+            subr[m] = np.maximum(subr[m], dcl['reflect'] * a[:, 0])
 
     def _blend_wall_decals(self, alb, e, decals, uf_raw, z):
         """Stamp wall decals into one column's albedo. Returns the (possibly created) emissive array."""
@@ -563,7 +851,17 @@ class Renderer:
         horizon = H / 2 + float(cam.get('pitch', 0)) * H
         proj = (W / 2) / math.tan(fov / 2)
         dx, dy = math.cos(ang), math.sin(ang)
+        self._fx, self._fy = dx, dy
         pl = math.tan(fov / 2)
+
+        def in_view(dcl):
+            """A floor/ceiling decal that could touch the frame: in front, and inside the cone."""
+            vx, vy = dcl['x'] - px, dcl['y'] - py
+            r = dcl['size'] * max(1.0, dcl['dh'] / dcl['dw'])
+            along = vx * dx + vy * dy
+            return along > -r and abs(vy * dx - vx * dy) <= max(along, 0) * pl + r + 0.5
+        floor_decals = [d_ for d_ in w.floor_decals if in_view(d_)]
+        ceil_decals = [d_ for d_ in w.ceil_decals if in_view(d_)]
         plx, ply = -dy * pl, dx * pl
         cx = 2 * (np.arange(W) + 0.5) / W - 1
         rdx = (dx + plx * cx).astype(np.float64)
@@ -572,6 +870,8 @@ class Renderer:
 
         img = np.zeros((H, W, 3), np.float32)
         depth = np.full((H, W), np.inf, np.float32)
+        refl = np.zeros((H, W), np.float32)          # how mirror-like each floor pixel is
+        refl_depth = np.full((H, W), -1.0, np.float32)
 
         # flashlight cone in screen space
         fl = cam.get('flashlight', self.s.get('flashlight'))
@@ -597,7 +897,11 @@ class Renderer:
         sky_rows = int(max(1, math.ceil(horizon)))
         if sky_name:
             pano_w = int(round(W * 2 * math.pi / fov))
-            pano = assets.make_sky(sky_name, pano_w, max(sky_rows, H // 2))
+            key = (pano_w, max(sky_rows, H // 2), round(proj, 3))
+            if key not in self._skies:  # identical for every shot that shares a lens and pitch
+                self._skies[key] = assets.make_sky(sky_name, pano_w, key[1], skyline=self.s.get('skyline'),
+                                                   proj=proj, discs=self.discs)
+            pano = self._skies[key]
             ph = pano.shape[0]
             ang_cols = (np.arctan2(rdy, rdx) % (2 * math.pi)) / (2 * math.pi) * pano_w
             ang_cols = ang_cols.astype(int) % pano_w
@@ -621,11 +925,9 @@ class Renderer:
         if drops and frows.size:
             # where the un-sunken plane lands, so a deep pass can fill the submerged bank
             D0 = (camz * proj / (frows + 0.5 - horizon))[:, None] * np.ones((1, W))
-            m0x = np.floor(px + rdx[None, :] * D0).astype(int)
-            m0y = np.floor(py + rdy[None, :] * D0).astype(int)
-            ok0 = (m0x >= 0) & (m0y >= 0) & (m0x < w.mw) & (m0y < w.mh)
-            drop0 = np.zeros(D0.shape, np.float32)
-            drop0[ok0] = w.drop[m0y[ok0], m0x[ok0]]
+            m0x = np.clip(np.floor(px + rdx[None, :] * D0).astype(int), 0, w.mw - 1)
+            m0y = np.clip(np.floor(py + rdy[None, :] * D0).astype(int), 0, w.mh - 1)
+            drop0 = w.drop[m0y, m0x]
 
         for kind, dr in [('floor', v) for v in drops] + [('floor', 0.0), ('ceil', 0.0)]:
             if kind == 'floor':
@@ -646,6 +948,10 @@ class Renderer:
             wx = px + rdx[None, :] * D
             wy = py + rdy[None, :] * D
             mx, my = np.floor(wx).astype(int), np.floor(wy).astype(int)
+            if kind == 'floor':
+                # past the map edge the ground carries on as the nearest edge cell - its floor and
+                # its drop alike - so an open vista meets its skyline instead of a black band
+                mx, my = np.clip(mx, 0, w.mw - 1), np.clip(my, 0, w.mh - 1)
             inb = (mx >= 0) & (my >= 0) & (mx < w.mw) & (my < w.mh)
             tids = np.full(D.shape, -1, np.int32)
             tids[inb] = tid_grid[my[inb], mx[inb]]
@@ -676,24 +982,35 @@ class Renderer:
             if self.sn is not None:
                 var = self.surface_variation(wx[valid], wy[valid], 0.0 if kind == 'floor' else 3.1)
                 alb[valid] *= (1 + soft_swing(self.tex_amount[tids[valid]] * var))[:, None]
-            for dcl in (w.floor_decals if kind == 'floor' else w.ceil_decals):
+            rk = None
+            if kind == 'floor' and self.reflect_k > 0:
+                rk = np.where(valid, w.reflect[my, mx], 0.0).astype(np.float32)
+            for dcl in (floor_decals if kind == 'floor' else ceil_decals):
                 if kind == 'floor' and abs(dcl['drop'] - dr) > 1e-6:
                     continue
-                self._blend_plane_decal(alb, em, wx, wy, d, valid, dcl)
+                self._blend_plane_decal(alb, em, wx, wy, d, valid, dcl, rk)
             if lip is not None and lip.any():
                 alb[lip] *= 0.45  # bank below the waterline reads as shadowed, not lit
             dyn = sample_lm(self.lm, self.lres, wx, wy)
             dist = D * rlen[None, :]
             rr, cc = np.meshgrid(rows, np.arange(W), indexing='ij')
-            col = self.shade(alb, dyn, np.full(D.shape, z), dist, em, flash(rr, cc, dist))
+            sun = self.sun_at(wx, wy, np.full(D.shape, z), self.lam_up) if kind == 'floor' and self.suns else 0.0
+            col = self.shade(alb, dyn, np.full(D.shape, z), dist, em, flash(rr, cc, dist), sun)
             sub = img[rows]
             sub[valid] = col[valid]
             img[rows] = sub
             dsub = depth[rows]
             dsub[valid] = D[valid]
             depth[rows] = dsub
+            if rk is not None and rk.any():
+                k = valid & (rk > 0)
+                rsub, dsub2 = refl[rows], refl_depth[rows]
+                rsub[k] = rk[k] * self.reflect_k
+                dsub2[k] = dsub[k]
+                refl[rows], refl_depth[rows] = rsub, dsub2
 
-        # --- walls: vectorised DDA over all columns, collecting every rising edge
+        # --- walls: a vectorised DDA over all columns. It collects a face at every rising edge, and
+        # the top of every block lower than the eye, so steps, altars and kerbs read as solid.
         mapx = np.full(W, int(math.floor(px)))
         mapy = np.full(W, int(math.floor(py)))
         with np.errstate(divide='ignore'):
@@ -704,36 +1021,83 @@ class Renderer:
         sdx = np.where(rdx < 0, (px - mapx) * ddx, (mapx + 1 - px) * ddx)
         sdy = np.where(rdy < 0, (py - mapy) * ddy, (mapy + 1 - py) * ddy)
         inside = 0 <= mapx[0] < w.mw and 0 <= mapy[0] < w.mh
-        prev_h = np.full(W, w.height[mapy[0], mapx[0]] if inside else 0.0, np.float32)
+        cy0, cx0 = (int(mapy[0]), int(mapx[0])) if inside else (0, 0)
+        # the height a new wall has to rise above to be seen; see-through cells never raise it
+        prev_h = np.full(W, w.solid_h[cy0, cx0] if inside else 0.0, np.float32)
+        prev_see = np.full(W, bool(w.see[cy0, cx0]) if inside else False)
         # drop of the cell each ray is leaving: a wall rising out of sunken water starts below z=0
-        prev_d = np.full(W, w.drop[mapy[0], mapx[0]] if inside else 0.0, np.float32)
+        prev_d = np.full(W, w.drop[cy0, cx0] if inside else 0.0, np.float32)
         active = np.ones(W, bool)
         max_dist = float(self.s.get('max_distance', 64))
-        hits = []
+        hits = []  # ('face' | 'top', nearest distance, column, ...), drawn far to near
+        if inside and not w.see[cy0, cx0] and 1e-6 < w.height[cy0, cx0] < camz - 1e-6:
+            # standing on a low block: its own top runs from under the camera to its far edge
+            exit0 = np.minimum(sdx, sdy)
+            hits += [('top', 0.0, c, cx0, cy0, float(w.height[cy0, cx0]), float(exit0[c])) for c in range(W)]
         for _ in range(int(2 * (w.mw + w.mh)) + 4):
             if not active.any():
                 break
             xs = sdx < sdy
-            dist = np.where(xs, sdx, sdy)
+            dist = np.where(xs, sdx, sdy)            # where each ray enters its next cell...
             mapx = np.where(xs & active, mapx + stepx, mapx)
             mapy = np.where(~xs & active, mapy + stepy, mapy)
             sdx = np.where(xs & active, sdx + ddx, sdx)
             sdy = np.where(~xs & active, sdy + ddy, sdy)
+            exitd = np.minimum(sdx, sdy)             # ...and where it leaves it
             inb = (mapx >= 0) & (mapy >= 0) & (mapx < w.mw) & (mapy < w.mh)
             active &= inb & (dist < max_dist)
             cyc, cxc = np.clip(mapy, 0, w.mh - 1), np.clip(mapx, 0, w.mw - 1)
             hgt = np.where(inb, w.height[cyc, cxc], 0)
-            rise = active & (hgt > prev_h + 1e-6) & (dist > 1e-4)
+            see_c = inb & w.see[cyc, cxc]
+            # a run of see-through cells shows only the face the ray enters it by, never inner faces
+            rise = active & (hgt > prev_h + 1e-6) & (dist > 1e-4) & ~(see_c & prev_see)
+            low = active & ~see_c & (hgt > 1e-6) & (hgt < camz - 1e-6)
             for c in np.nonzero(rise)[0]:
-                hits.append((dist[c], c, int(not xs[c]), mapx[c], mapy[c], hgt[c], prev_d[c]))
+                hits.append(('face', dist[c], c, int(not xs[c]), mapx[c], mapy[c], hgt[c], prev_d[c],
+                             bool(see_c[c])))
+            for c in np.nonzero(low)[0]:
+                hits.append(('top', dist[c], c, mapx[c], mapy[c], hgt[c], exitd[c]))
             top = horizon - (hgt - camz) * proj / np.maximum(dist, 1e-4)
             bot = horizon + camz * proj / np.maximum(dist, 1e-4)
-            active &= ~(rise & (top <= 0) & (bot >= H))
-            prev_h = np.where(active, hgt, prev_h)
+            # a solid wall that fills the whole column hides everything behind it
+            active &= ~(rise & ~see_c & (top <= 0) & (bot >= H))
+            prev_h = np.where(active & ~see_c, hgt, prev_h)
+            prev_see = np.where(active, see_c, prev_see)
             prev_d = np.where(active, np.where(inb, w.drop[cyc, cxc], 0), prev_d)
 
-        hits.sort(key=lambda h: -h[0])
-        for dist, c, side, mx, my, hgt, below in hits:
+        # far to near; at the same distance a block's top goes down before its face
+        hits.sort(key=lambda h: (-h[1], h[0] == 'face'))
+        for hit in hits:
+            if hit[0] == 'top':
+                # the top of a low block: a patch of floor at the block's height, between where the
+                # ray crosses into the cell and where it leaves, with its own per-row depth
+                _, din, c, mx, my, hgt, dout = hit
+                lift = camz - hgt
+                far_row = horizon + lift * proj / max(dout, 1e-4)
+                near_row = horizon + lift * proj / din if din > 1e-6 else H + 1
+                y0, y1 = max(0, int(math.ceil(far_row - 0.5))), min(H, int(math.ceil(near_row - 0.5)))
+                if y1 <= y0:
+                    continue
+                rows = np.arange(y0, y1)
+                dd = lift * proj / (rows + 0.5 - horizon)
+                tx, ty = px + rdx[c] * dd, py + rdy[c] * dd
+                tid = w.floor_tid[my, mx]
+                rgb, em = w.tex[tid]
+                tu, tv = ((tx * T) % T).astype(int), ((ty * T) % T).astype(int)
+                alb = rgb[tv, tu]
+                e = em[tv, tu] if em is not None else None
+                if self.sn is not None:
+                    var = self.surface_variation(tx, ty, 5.3)
+                    alb = alb * (1 + soft_swing(self.tex_amount[tid] * var))[:, None]
+                ed = dd * rlen[c]
+                zt = np.full(len(rows), hgt)
+                sun = self.sun_at(tx, ty, zt, self.lam_up) if self.suns else 0.0
+                colr = self.shade(alb, sample_lm(self.lm, self.lres, tx, ty), zt, ed, e,
+                                  flash(rows, np.full(len(rows), c), ed), sun)
+                img[y0:y1, c] = colr
+                depth[y0:y1, c] = dd
+                continue
+            _, dist, c, side, mx, my, hgt, below, see_hit = hit
             top = horizon - (hgt - camz) * proj / dist
             # a wall standing in sunken water carries on down to the surface instead of
             # stopping at z=0 and leaving the floor pass to guess what fills the gap
@@ -754,23 +1118,33 @@ class Renderer:
             z = (horizon - (rows + 0.5)) * dist / proj + camz
             v = ((1 - (z % 1.0)) * T).astype(int).clip(0, T - 1)
             stack = w.stacks.get((my, mx))
+            solid = None  # rows of a see-through wall that are actually there
             if stack is None:
-                rgb, em = w.tex[w.wall_tid[my, mx]]
+                tid = w.wall_tid[my, mx]
+                rgb, em = w.tex[tid]
                 alb = rgb[v, u]
                 e = em[v, u] if em is not None else None
-                wall_amt = self.tex_amount[w.wall_tid[my, mx]]
+                wall_amt = self.tex_amount[tid]
+                if see_hit and w.tex_alpha[tid] is not None:
+                    solid = w.tex_alpha[tid][v, u] > 0.5
             else:
                 storey = np.clip(np.floor(z).astype(int), 0, len(stack) - 1)
                 alb = np.zeros((len(rows), 3), np.float32)
                 e = np.zeros(len(rows), np.float32)
+                if see_hit:
+                    solid = np.ones(len(rows), bool)
                 for k in np.unique(storey):
                     m = storey == k
                     rgb, em = w.tex[stack[k]]
                     alb[m] = rgb[v[m], u]
                     if em is not None:
                         e[m] = em[v[m], u]
+                    if see_hit and w.tex_alpha[stack[k]] is not None:
+                        solid[m] = w.tex_alpha[stack[k]][v[m], u] > 0.5
                 # a facade can change material per storey, so the amount varies down the column
                 wall_amt = self.tex_amount[np.asarray(stack, np.int32)[storey]]
+            if solid is not None and not solid.any():
+                continue
             if self.sn is not None:
                 # one key per wall plane, so a long wall varies continuously but the
                 # two orientations and the far side of a corridor never match
@@ -790,10 +1164,20 @@ class Renderer:
             hy = py + rdy[c] * dist - rdy[c] / rlen[c] * 0.04
             dyn = sample_lm(self.lm, self.lres, np.array([hx]), np.array([hy]))
             ed = dist * rlen[c]
+            sun = 0.0
+            if self.suns:
+                nx, ny = (-math.copysign(1, rdx[c]), 0.0) if side == 0 else (0.0, -math.copysign(1, rdy[c]))
+                sun = self.sun_at(np.full(len(rows), hx), np.full(len(rows), hy), z,
+                                  lambda s_: s_['cos'] * max(0.0, nx * s_['ux'] + ny * s_['uy']))
             colr = self.shade(alb, np.repeat(dyn, len(rows), 0), z, np.full(len(rows), ed), e,
-                              flash(rows, np.full(len(rows), c), np.full(len(rows), ed)))
-            img[y0:y1, c] = colr
-            depth[y0:y1, c] = dist
+                              flash(rows, np.full(len(rows), c), np.full(len(rows), ed)), sun)
+            if solid is None:
+                img[y0:y1, c] = colr
+                depth[y0:y1, c] = dist
+            else:
+                # holes in a fence write nothing, so whatever lies behind (and its depth) shows
+                img[rows[solid], c] = colr[solid]
+                depth[rows[solid], c] = dist
 
         # --- sprites: opaque pass (writes depth), then translucent/additive far-to-near (no depth writes)
         inv = 1.0 / (plx * dy - dx * ply)
@@ -814,17 +1198,54 @@ class Renderer:
         for ty, tx, sp in opaque + trans:
             self._draw_sprite(img, depth, ty, tx, sp, defs, horizon, proj, camz, pl, flash, translucent(sp))
 
+        if refl.any():
+            img = self._reflect(img, depth, refl, refl_depth)
         return np.clip(img, 0, 1)
+
+    def _reflect(self, img, depth, refl, refl_depth):
+        """Mirror the frame into reflective floor pixels, column by column.
+
+        A pixel that still shows the reflective floor it was drawn as (nothing nearer covered it)
+        mirrors whatever stands just above its run in that column: a wall base, a boat on the
+        water, a lamp post's foot, or the horizon for open water. Screen-space, so it can only
+        mirror what is on screen - which at a grazing angle across water is nearly everything.
+        """
+        H, W = depth.shape
+        ss = max(1, W // self.W) if self.W else 1
+        mask = (refl > 0) & (depth == refl_depth)
+        if not mask.any():
+            return img
+        rows = np.arange(H)[:, None]
+        # the last row above each pixel that is not part of its reflective run: the mirror line
+        last = np.maximum.accumulate(np.where(mask, -1, rows * np.ones((1, W), int)), axis=0)
+        src = 2 * last + 1 - rows
+        # a ripple: rows shimmer sideways a pixel or two, more toward the camera
+        amp = self.ripple * ss * (0.6 + 1.4 * np.clip((rows - H / 2) / (H / 2), 0, 1))
+        cols = np.arange(W)[None, :]
+        shift = np.round(amp * np.sin(rows * 0.9 / ss + cols * 0.07 / ss)).astype(int)
+        sc = np.clip(cols + shift, 0, W - 1)
+        ok = mask & (last >= 0)
+        # a short vertical smear: real wet ground and water stretch reflections into streaks
+        s0 = np.clip(src, 0, H - 1)
+        mirrored = (0.5 * img[s0, sc] + 0.25 * img[np.clip(s0 - 2 * ss, 0, H - 1), sc]
+                    + 0.25 * img[np.clip(s0 + 2 * ss, 0, H - 1), sc])
+        # stronger at a grazing angle (far away), weaker looking straight down
+        k = refl * (0.55 + 0.45 * (1 - np.exp(-np.maximum(refl_depth, 0) / 4.0)))
+        # close to the camera the mirrored point is above the top of the frame; what is up there
+        # is mostly sky, so those pixels take the top row's colour as a fainter sheen
+        k = np.where(src < 0, k * 0.45, k)
+        k = np.where(ok, np.clip(k, 0, 1), 0)[..., None]
+        # lights glint: anything bright in the reflection comes through harder than the rest
+        glint = np.maximum(mirrored - 0.45, 0) * 0.9
+        return img * (1 - k) + (mirrored * 0.85 + glint) * k
 
     def _draw_sprite(self, img, depth, ty, tx, sp, defs, horizon, proj, camz, pl, flash, is_trans):
         W, H = self.W, self.H
         rgba, em = assets.get_sprite(sp['type'], defs)
         th, tw = rgba.shape[:2]
         hs = float(sp.get('scale', 1.0))
-        # a sprite standing in a sunken cell rests on that lower surface (a boat sits on the water)
-        cx, cy = int(math.floor(float(sp['x']))), int(math.floor(float(sp['y'])))
-        sink = float(self.w.drop[cy, cx]) if 0 <= cy < self.w.mh and 0 <= cx < self.w.mw else 0.0
-        zb = float(sp.get('z', 0.0)) - sink
+        # a sprite rests on the surface under it: a boat on sunken water, a candle on an altar
+        zb = float(sp.get('z', 0.0)) + self.w.base_z(float(sp['x']), float(sp['y']))
         ph = hs * proj / ty
         pw = ph * tw / th * float(sp.get('stretch', 1.0))
         scx = (tx / ty + 1) * W / 2  # screen centre column
@@ -869,8 +1290,13 @@ class Renderer:
         rr, cc = np.meshgrid(rows, cols, indexing='ij')
         emm = np.maximum(emb, 1.0 if sp.get('fullbright') else 0.0)
         tint = np.array(sp.get('tint', [1, 1, 1]), np.float32)
+        sun = 0.0
+        if self.suns:
+            fx, fy = self._fx, self._fy
+            sun = self.sun_at(np.full(Z.shape, float(sp['x'])), np.full(Z.shape, float(sp['y'])), Z,
+                              lambda s_: s_['sin'] * 0.5 + s_['cos'] * 0.6 * max(0.2, -(fx * s_['ux'] + fy * s_['uy'])))
         colr = self.shade(block[..., :3] * tint, np.broadcast_to(dyn, block.shape[:2] + (3,)), Z,
-                          np.full(Z.shape, ed), emm, flash(rr, cc, np.full(Z.shape, ed)))
+                          np.full(Z.shape, ed), emm, flash(rr, cc, np.full(Z.shape, ed)), sun)
         sub = img[cy0:cy1, cx0:cx1]
         a = (alpha * mask)[..., None]
         if sp.get('blend') == 'additive':
@@ -948,7 +1374,7 @@ def render_shot(scene, i, base=None):
     `overrides` reuse it, so a many-shot scene builds its lightmap and scatter once.
     """
     shots = scene.get('shots') or [scene['camera']]
-    cam = prepare_shot(scene, {**scene.get('camera', {}), **shots[i]})
+    cam = prepare_shot(scene, merge_camera(scene, shots[i]))
     if cam.get('overrides'):
         sc = {**scene, **cam['overrides']}
         rr = Renderer(World(sc), sc)
@@ -980,6 +1406,8 @@ def draw_map(world, scene, cams, path, cell=24):
                 if world.ceil_tid[y, x] >= 0:
                     d.line([box[0], box[1], box[2], box[3]], fill=(60, 60, 70))
     for L in scene.get('lights', []):
+        if L.get('type', 'point') != 'point':
+            continue
         lx, ly = L['x'] * cell, L['y'] * cell
         c = tuple(int(min(1, v) * 255) for v in L.get('color', [1, 0.85, 0.6]))
         r = L.get('radius', 4) * cell
@@ -1016,11 +1444,12 @@ SCENE_KEYS = {
     'scatter', 'grime', 'grime_debris', 'grime_decals', 'surface_noise', 'decals', 'decal_defs',
     'palette', 'auto_levels', 'dither', 'scanlines', 'overbright', 'lightmap_res', 'max_distance',
     'supersample', 'overlays', 'ui', 'post', 'icon_defs', 'viewmodel_defs', 'seed',
+    'skyline', 'contact_shadows', 'heights', 'height_unit', 'reflections',
     'title', 'description', 'notes',  # free-form metadata, never read
 }
-SHOT_KEYS = {'x', 'y', 'angle', 'fov', 'height', 'pitch', 'flashlight', 'overlays', 'overrides',
+SHOT_KEYS = {'x', 'y', 'angle', 'look_at', 'fov', 'height', 'pitch', 'flashlight', 'overlays', 'overrides',
              'post', 'scanlines', 'seed', 'supersample', 'extra_sprites', 'title', 'description', 'notes'}
-CELL_KEYS = {'wall', 'h', 'top', 'floor', 'ceil', 'drop'}
+CELL_KEYS = {'wall', 'h', 'top', 'floor', 'ceil', 'drop', 'reflect'}
 ASSET_EXTS = ('.png', '.ttf', '.otf')
 
 
@@ -1097,7 +1526,7 @@ def main():
     if args.shot is not None and not 1 <= args.shot <= len(shots):
         ap.error(f'--shot {args.shot} is out of range: this scene has {len(shots)} shot(s)')
     for i, cam in enumerate(shots):
-        c = {**scene.get('camera', {}), **cam}
+        c = merge_camera(scene, cam)
         if 'x' not in c or 'y' not in c:
             ap.error(f'shot {i + 1} has no x/y and there is no camera to inherit them from')
     base, ext = os.path.splitext(args.out)
@@ -1118,7 +1547,7 @@ def main():
         print(path)
     if args.map:
         mp = base + '_map.png'
-        draw_map(world, scene, [{**scene.get('camera', {}), **c} for c in shots], mp)
+        draw_map(world, scene, [merge_camera(scene, c) for c in shots], mp)
         print(mp)
     if args.sheet and len(outs) > 1:
         w, h = outs[0][1].size

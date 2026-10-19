@@ -643,6 +643,253 @@ def tex_grate(name, c='#5a5e60'):
     return grain(np.clip(img, 0, 1), rng, 0.04)
 
 
+# ------------------------------------------------- see-through (masked) wall textures
+# These return (rgb, emissive, alpha): alpha 1 is solid, 0 is a hole the renderer looks through.
+# Each is designed for a 1-unit tile; low fences keep their parts in the lower rows, so they read
+# correctly on a short wall (a wall shows the bottom of its texture first).
+
+
+def _iron(rng, a, c):
+    """Shade a mask as dark iron: noise, a highlight down each member, the odd rust fleck."""
+    n = fbm(T, rng, 10, 3)
+    img = col(c)[None, None, :] * (0.8 + 0.35 * n[..., None])
+    img[(rng.random((T, T)) > 0.95) & (a > 0)] = col('#6a4028')
+    return img
+
+
+def tex_bars(name, c='#3c3c44'):
+    """Jail bars: four thick uprights per unit between a top and a bottom rail."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    a = (((xx % 16) < 5) | (yy < 5) | (yy > 58)).astype(np.float32)
+    img = _iron(rng, a, c)
+    round_ = 0.7 + 0.55 * np.clip(1 - np.abs((xx % 16) - 1.5) / 3.0, 0, 1)   # lit edge, dark edge
+    img = img * np.where((xx % 16) < 5, round_, 1.0)[..., None]
+    return np.clip(img, 0, 1), None, a
+
+
+def tex_fence_iron(name, c='#26262c'):
+    """Wrought-iron railings with spear tips, about 0.9 high."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    cx = (xx % 8) - 3.5
+    upright = (np.abs(cx) <= 1.0) & (yy >= 8)
+    spear = (yy >= 2) & (yy < 9) & (np.abs(cx) <= np.minimum(yy - 2, 9 - yy) * 0.55)
+    rails = ((yy >= 12) & (yy <= 13)) | ((yy >= 55) & (yy <= 57))
+    a = (upright | spear | rails).astype(np.float32)
+    img = _iron(rng, a, c)
+    img[spear] *= 1.25
+    return np.clip(img, 0, 1), None, a
+
+
+def tex_chainlink(name, c='#8e949a'):
+    """Chain-link mesh between steel posts, with a top rail."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    mesh = (((xx + yy) % 8) < 2) | (((xx - yy) % 8) < 2)
+    post = (xx < 3) | (xx > 60)
+    a = (mesh | post | (yy < 3)).astype(np.float32)
+    n = fbm(T, rng, 12, 3)
+    img = col(c)[None, None, :] * (0.75 + 0.4 * n[..., None])
+    img[post] = col('#5a5e62') * (0.85 + 0.3 * n[post])[:, None]
+    return np.clip(img, 0, 1), None, a
+
+
+def tex_railing(name, c='#5a4028'):
+    """A waist-high timber railing, about 0.37 high: jetties, walkways, balconies."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    posts = (((xx % 32) < 4) & (yy >= 40))
+    top = (yy >= 40) & (yy < 44)
+    mid = (yy >= 51) & (yy < 54)
+    a = (posts | top | mid).astype(np.float32)
+    wood = tex_planks(name + 'w', c)
+    img = wood * (0.9 + 0.2 * rng.random((T, T)))[..., None]
+    img[top] *= 1.15
+    return np.clip(img, 0, 1), None, a
+
+
+def tex_picket(name, c='#d8d4c8'):
+    """A white picket fence, about 0.45 high, pointed boards on two rails."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    cx = (xx % 8) - 3.5
+    board = (np.abs(cx) <= 2.5) & (yy >= 40) & (yy <= 61)
+    point = (yy >= 35) & (yy < 40) & (np.abs(cx) <= (yy - 35) * 0.6)
+    rails = ((yy >= 44) & (yy <= 46)) | ((yy >= 55) & (yy <= 57))
+    a = (board | point | rails).astype(np.float32)
+    n = fbm(T, rng, 10, 3)
+    img = col(c)[None, None, :] * (0.82 + 0.25 * n[..., None])
+    dirt = np.clip((yy - 44) / 20.0, 0, 1)[..., None] * 0.25   # grime splashed up from the ground
+    img = img * (1 - dirt)
+    img[rails] *= 0.8
+    return np.clip(img, 0, 1), None, a
+
+
+def tex_portcullis(name, c='#30302e'):
+    """An iron portcullis grid with spiked feet. Stack it under stone for a castle gate."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    vert = ((xx % 16) >= 6) & ((xx % 16) < 10)
+    horiz = ((yy % 16) >= 6) & ((yy % 16) < 10) & (yy < 54)
+    spike = vert & (yy >= 54) & (np.abs((xx % 16) - 7.5) <= (63 - yy) * 0.25)
+    a = ((vert & (yy < 54)) | horiz | spike).astype(np.float32)
+    img = _iron(rng, a, c)
+    rivet = vert & horiz & (((xx % 16) == 7) | ((xx % 16) == 8)) & (((yy % 16) == 7) | ((yy % 16) == 8))
+    img[rivet] = col('#7a7670')
+    return np.clip(img, 0, 1), None, a
+
+
+def tex_window_broken(name, wall='#7a766c'):
+    """A stone wall with a smashed window: frame and a few shards left, the rest open."""
+    rng = _rng(name)
+    img = tex_stone(name + 's', wall, '#3e3a34')
+    a = np.ones((T, T), np.float32)
+    x0, x1, y0, y1 = 16, 48, 10, 50
+    img[y0 - 2:y1 + 2, x0 - 2:x1 + 2] = col('#3a2c20')                   # frame
+    pane = np.zeros((T, T), bool)
+    pane[y0:y1, x0:x1] = True
+    pane[y0:y1, 31:33] = False                                          # mullion
+    pane[29:31, x0:x1] = False                                          # transom
+    shards = fbm(T, _rng(name + 'g'), 6, 3) < 0.36                      # what is left of the glass
+    hole = pane & ~shards
+    a[hole] = 0
+    img[pane & shards] = col('#28343c') * 1.2
+    return np.clip(img, 0, 1), None, a
+
+
+def tex_lattice(name, c='#5a4630'):
+    """A diagonal timber lattice in a frame: trellises, screens, confessionals."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    strips = (((xx + yy) % 16) < 3) | (((xx - yy) % 16) < 3)
+    frame = (xx < 3) | (xx > 60) | (yy < 3) | (yy > 60)
+    a = (strips | frame).astype(np.float32)
+    wood = tex_planks(name + 'w', c, False)
+    img = wood * (0.85 + 0.3 * rng.random((T, T)))[..., None]
+    img[frame] *= 0.8
+    return np.clip(img, 0, 1), None, a
+
+
+# ------------------------------------------------- castle, chapel, cave, sewer and winter textures
+
+def tex_castle(name, c='#77736a', mortar='#34312c'):
+    """Big rough-cut ashlar blocks: keeps, dungeons, city walls."""
+    rng = _rng(name)
+    n = fbm(T, rng, 8, 4)
+    yy, xx = np.mgrid[0:T, 0:T]
+    bh, bw = 16, 32
+    row = yy // bh
+    off = (row % 2) * (bw // 2)
+    bx, by = (xx + off) % bw, yy % bh
+    block = ((xx + off) // bw) + row * 7
+    tone = 0.78 + 0.32 * ((block * 37 + 11) % 9) / 8.0
+    img = col(c)[None, None, :] * tone[..., None] * (0.82 + 0.3 * n[..., None])
+    img[(by < 2) | (bx < 2)] *= 1.12               # chiselled edges catch the light...
+    img[(by > bh - 3) | (bx > bw - 3)] *= 0.72     # ...and the far edges fall into shadow
+    img[(by == 0) | (bx == 0)] = col(mortar)
+    img[rng.random((T, T)) > 0.985] *= 0.6
+    return grain(np.clip(img, 0, 1), rng, 0.04)
+
+
+def tex_flagstone(name, c='#6e6a62', grout='#2e2c28'):
+    """Large worn paving slabs in staggered rows: castle halls, chapels, courtyards."""
+    rng = _rng(name)
+    n = fbm(T, rng, 10, 4)
+    yy, xx = np.mgrid[0:T, 0:T]
+    row = yy // 32
+    off = (row % 2) * 16
+    bx, by = (xx + off) % 32, yy % 32
+    slab = ((xx + off) // 32) % 2 + row * 3
+    tone = 0.8 + 0.3 * ((slab * 53 + 7) % 5) / 4.0
+    img = col(c)[None, None, :] * tone[..., None] * (0.8 + 0.35 * n[..., None])
+    wear = np.clip((fbm(T, _rng(name + 'w'), 4, 3) - 0.55) * 3, 0, 1)
+    img = img * (1 - 0.25 * wear[..., None])
+    img[(bx < 2) | (by < 2)] = col(grout)
+    crack = np.abs(fbm(T, _rng(name + 'c'), 3, 4) - 0.5) < 0.012
+    img[crack] *= 0.55
+    return grain(np.clip(img, 0, 1), rng, 0.04)
+
+
+def tex_stained_glass(name, wall='#8a857c'):
+    """A pointed-arch window of leaded jewel-coloured glass in a stone wall. Emissive panes."""
+    rng = _rng(name)
+    img = tex_stone(name + 's', wall, '#4a4740')
+    em = np.zeros((T, T), np.float32)
+    yy, xx = np.mgrid[0:T, 0:T]
+    cx = 31.5
+    lower = (np.abs(xx - cx) <= 11) & (yy >= 22) & (yy <= 58)
+    arch = (yy < 22) & (yy >= 3) & ((xx - (cx - 11)) ** 2 + (yy - 22) ** 2 <= 22 ** 2) \
+        & ((xx - (cx + 11)) ** 2 + (yy - 22) ** 2 <= 22 ** 2)
+    win = lower | arch
+    grow = np.zeros_like(win)
+    for dy in (-2, -1, 0, 1, 2):
+        for dx in (-2, -1, 0, 1, 2):
+            grow |= np.roll(np.roll(win, dy, 0), dx, 1)
+    img[grow & ~win] = col('#3a3630')                       # stone surround
+    jewels = [col(h) for h in ('#c02030', '#2050c0', '#e0b030', '#30a050', '#8030a0', '#e06020')]
+    cell = ((xx + yy) // 8) * 5 + ((xx - yy) // 8) * 3
+    pane = np.stack([jewels[int(k) % len(jewels)] for k in cell.ravel()]).reshape(T, T, 3)
+    lead = (((xx + yy) % 8) == 0) | (((xx - yy) % 8) == 0) | (np.abs(xx - cx) < 0.6)
+    glass = win & ~lead
+    shimmer = (0.8 + 0.4 * rng.random((T, T)))[..., None]
+    img[glass] = (pane * shimmer)[glass]
+    img[win & lead] = col('#1a1814')
+    em[glass] = 1.0
+    return np.clip(img, 0, 1), em
+
+
+def tex_ice(name, c='#b6d0dc'):
+    """Frozen water: pale, glassy, cracked. Reflective by default."""
+    rng = _rng(name)
+    n = fbm(T, rng, 5, 4)
+    img = col(c)[None, None, :] * (0.78 + 0.3 * n[..., None])
+    deep = np.clip((0.45 - fbm(T, _rng(name + 'd'), 6, 3)) * 3, 0, 1)
+    img = img * (1 - 0.35 * deep[..., None]) + col('#4a7088')[None, None, :] * 0.35 * deep[..., None]
+    crack = np.abs(fbm(T, _rng(name + 'c'), 3, 4) - 0.5) < 0.014
+    img[crack] = col('#eef6fa')
+    img[rng.random((T, T)) > 0.993] = col('#ffffff')       # trapped bubbles
+    return np.clip(img, 0, 1)
+
+
+def tex_snow_rock(name):
+    """Rock with snow lying on its ledges: mountainsides, cliffs, winter walls."""
+    rng = _rng(name)
+    img = tex_rock(name + 'r', '#5a5650')
+    yy = np.mgrid[0:T, 0:T][0]
+    lie = np.clip((fbm(T, rng, 6, 4) - 0.5 + (1 - yy / T) * 0.35) * 4, 0, 1)
+    snow = col('#dce4ee')[None, None, :] * (0.85 + 0.2 * fbm(T, _rng(name + 's'), 12, 3)[..., None])
+    return np.clip(img * (1 - lie[..., None]) + snow * lie[..., None], 0, 1)
+
+
+def tex_slime_brick(name):
+    """Dark sewer brick, wet, with green slime creeping up from the waterline."""
+    rng = _rng(name)
+    img = tex_brick(name + 'b', '#2e2a26', '#4a3a30', '#3a2c24')
+    yy = np.mgrid[0:T, 0:T][0]
+    slime = np.clip((fbm(T, rng, 8, 4) - 0.75 + (yy / T) * 0.7) * 3, 0, 1)
+    green = col('#3a5a28')[None, None, :] * (0.7 + 0.5 * fbm(T, _rng(name + 'g'), 14, 3)[..., None])
+    img = img * (1 - slime[..., None]) + green * slime[..., None]
+    wet = np.clip((fbm(T, _rng(name + 'w'), 6, 3) - 0.55) * 4, 0, 1)
+    return np.clip(img * (1 - 0.3 * wet[..., None]), 0, 1)
+
+
+def tex_door_wood(name, c='#5a3c22'):
+    """A heavy plank door with iron straps and studs."""
+    rng = _rng(name)
+    img = tex_planks(name + 'p', c, False)
+    yy, xx = np.mgrid[0:T, 0:T]
+    straps = ((yy >= 10) & (yy < 15)) | ((yy >= 46) & (yy < 51))
+    img[straps] = col('#2e2c2a') * (0.8 + 0.4 * rng.random((T, T)))[straps][:, None]
+    studs = straps & ((xx % 8) == 4) & (((yy - 12) % 36 == 0) | ((yy - 48) % 36 == 0))
+    img[studs] = col('#8a8478')
+    ring = np.abs(np.hypot(xx - 44, yy - 32) - 4) < 1.0
+    img[ring] = col('#6a645c')
+    img[:, :2] *= 0.6
+    img[:, -2:] *= 0.6
+    return np.clip(img, 0, 1)
+
+
 # ---------------------------------------------------------------- registry
 
 def _plain(fn, *a, **k):
@@ -650,6 +897,11 @@ def _plain(fn, *a, **k):
 
 
 def _em(fn, *a, **k):
+    return lambda name: fn(name, *a, **k)
+
+
+def _masked(fn, *a, **k):
+    """A texture with see-through texels: fn returns (rgb, emissive, alpha)."""
     return lambda name: fn(name, *a, **k)
 
 
@@ -724,9 +976,26 @@ TEXTURES = {
     'snow': _plain(tex_snow),
     'asphalt': _plain(tex_asphalt),
     'grate': _plain(tex_grate),
+    # see-through: the renderer looks past their holes (fences, bars, railings, broken glass)
+    'castle': _plain(tex_castle),
+    'flagstone': _plain(tex_flagstone),
+    'stained_glass': _em(tex_stained_glass),
+    'ice': _plain(tex_ice),
+    'snow_rock': _plain(tex_snow_rock),
+    'slime_brick': _plain(tex_slime_brick),
+    'door_wood': _plain(tex_door_wood),
+    'bars': _masked(tex_bars),
+    'fence_iron': _masked(tex_fence_iron),
+    'chainlink': _masked(tex_chainlink),
+    'railing': _masked(tex_railing),
+    'picket': _masked(tex_picket),
+    'portcullis': _masked(tex_portcullis),
+    'window_broken': _masked(tex_window_broken),
+    'lattice': _masked(tex_lattice),
 }
 
 _cache = {}
+_alpha = {}
 
 
 def get_texture(spec):
@@ -734,23 +1003,35 @@ def get_texture(spec):
     key = str(spec)
     if key in _cache:
         return _cache[key]
-    em = None
+    em = alpha = None
     if isinstance(spec, dict):
         rgb, em = get_texture(spec['base'])
+        alpha = get_alpha(spec['base'])
         rgb = rgb.copy()
         if 'tint' in spec:
             rgb = rgb * np.array(spec['tint'], dtype=np.float32)[None, None, :]
         rgb = np.clip(rgb * spec.get('brightness', 1.0), 0, 1)
     elif isinstance(spec, str) and spec.lower().endswith('.png'):
-        im = Image.open(spec).convert('RGB').resize((T, T), Image.NEAREST)
-        rgb = np.asarray(im, dtype=np.float32) / 255
+        rgba = np.asarray(Image.open(spec).convert('RGBA').resize((T, T), Image.NEAREST), np.float32) / 255
+        rgb = rgba[..., :3]
+        if (rgba[..., 3] < 0.5).any():   # a PNG with transparent pixels is a see-through wall
+            alpha = (rgba[..., 3] >= 0.5).astype(np.float32)
     else:
         if spec not in TEXTURES:
             raise KeyError(f"unknown texture '{spec}'. Known: {', '.join(sorted(TEXTURES))}")
-        rgb, em = TEXTURES[spec](spec)
+        res = TEXTURES[spec](spec)
+        rgb, em = res[0], res[1]
+        alpha = res[2] if len(res) > 2 else None
     out = (np.clip(rgb, 0, 1).astype(np.float32), None if em is None else em.astype(np.float32))
     _cache[key] = out
+    _alpha[key] = alpha
     return out
+
+
+def get_alpha(spec):
+    """See-through mask for a texture (64x64, 1 = solid, 0 = hole), or None if it is solid."""
+    get_texture(spec)
+    return _alpha.get(str(spec))
 
 
 # ---------------------------------------------------------------- sprites
@@ -1427,6 +1708,209 @@ def spr_rocks():
     return _finish(im, em, w, h)
 
 
+def spr_throne():
+    w, h = 28, 52
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    gold, wood, dark, red = '#c8a040', '#5a3a22', '#3a2414', '#8a1e26'
+    d.polygon([(6 * S, 34 * S), (6 * S, 6 * S), (14 * S, 0), (22 * S, 6 * S), (22 * S, 34 * S)], fill=wood)
+    d.polygon([(8 * S, 32 * S), (8 * S, 8 * S), (14 * S, 3 * S), (20 * S, 8 * S), (20 * S, 32 * S)], fill=red)
+    d.line([(14 * S, 0), (14 * S, 3 * S)], fill=gold, width=S)
+    d.ellipse([12 * S, 10 * S, 16 * S, 14 * S], fill=gold)
+    d.rectangle([2 * S, 30 * S, 26 * S, 36 * S], fill=wood)            # arms and seat
+    d.rectangle([2 * S, 30 * S, 6 * S, 32 * S], fill=gold)
+    d.rectangle([22 * S, 30 * S, 26 * S, 32 * S], fill=gold)
+    d.rectangle([7 * S, 34 * S, 21 * S, 38 * S], fill=red)
+    for x in (3, 22):
+        d.rectangle([x * S, 36 * S, (x + 3) * S, 52 * S], fill=dark)
+    d.rectangle([6 * S, 38 * S, 22 * S, 48 * S], fill=wood)
+    d.line([(6 * S, 38 * S), (22 * S, 38 * S)], fill=gold, width=S)
+    return _finish(im, em, w, h)
+
+
+def spr_armor():
+    """A suit of armour on its stand, halberd in hand."""
+    w, h = 24, 56
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    st, dk, hi = '#9aa0a8', '#5a606a', '#d4dae0'
+    d.line([(20 * S, 0), (20 * S, 54 * S)], fill='#4a3420', width=S)       # halberd shaft
+    d.polygon([(20 * S, 0), (24 * S, 5 * S), (20 * S, 10 * S)], fill=hi)
+    d.ellipse([7 * S, 2 * S, 15 * S, 11 * S], fill=st)                     # helm
+    d.rectangle([8 * S, 6 * S, 14 * S, 7 * S], fill='#0a0a0c')
+    d.rectangle([3 * S, 12 * S, 19 * S, 16 * S], fill=dk)                  # pauldrons
+    d.polygon([(6 * S, 14 * S), (16 * S, 14 * S), (15 * S, 28 * S), (7 * S, 28 * S)], fill=st)
+    d.line([(11 * S, 15 * S), (11 * S, 27 * S)], fill=hi, width=S)
+    for x in (3, 16):
+        d.rectangle([x * S, 16 * S, (x + 3) * S, 28 * S], fill=st)         # arms
+    d.rectangle([7 * S, 28 * S, 15 * S, 33 * S], fill=dk)
+    for x in (7, 12):
+        d.rectangle([x * S, 33 * S, (x + 3) * S, 50 * S], fill=st)         # legs
+        d.line([(x * S + S, 34 * S), (x * S + S, 49 * S)], fill=hi, width=S // 2)
+    d.rectangle([4 * S, 50 * S, 18 * S, 56 * S], fill='#4a3a2a')           # stand
+    return _finish(im, em, w, h)
+
+
+def spr_chains():
+    """Two chains hanging from above, one ending in a shackle. Hang it with z near the ceiling."""
+    w, h = 16, 44
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    for x, ln in ((4, 37), (11, 29)):
+        for y in range(0, ln, 4):
+            if (y // 4) % 2:   # links alternate face-on (a ring) and edge-on (a bar)
+                d.ellipse([(x - 2) * S, y * S, (x + 2) * S, (y + 4) * S], outline='#6a6a72', width=S)
+            else:
+                d.rectangle([(x - 1) * S, y * S, (x + 1) * S, (y + 4) * S], fill='#7a7a82')
+    d.ellipse([1 * S, 36 * S, 8 * S, 43 * S], outline='#5a5a62', width=S + S // 2)
+    return _finish(im, em, w, h)
+
+
+def spr_chest():
+    w, h = 24, 18
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.rectangle([1 * S, 7 * S, 23 * S, 18 * S], fill='#6a4428')
+    d.chord([1 * S, 0, 23 * S, 12 * S], 180, 360, fill='#7a5030')
+    for x in (4, 18):
+        d.rectangle([x * S, 1 * S, (x + 2) * S, 18 * S], fill='#3a3a3e')
+    d.line([(1 * S, 7 * S), (23 * S, 7 * S)], fill='#3a3a3e', width=S)
+    d.rectangle([10 * S, 6 * S, 14 * S, 11 * S], fill='#c8a040')
+    d.rectangle([11 * S, 8 * S, 13 * S, 10 * S], fill='#2a2014')
+    return _finish(im, em, w, h)
+
+
+def spr_table():
+    w, h = 40, 20
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.rectangle([0, 4 * S, 40 * S, 8 * S], fill='#6a4a2c')
+    d.rectangle([0, 4 * S, 40 * S, 5 * S], fill='#8a6a44')
+    for x in (2, 35):
+        d.rectangle([x * S, 8 * S, (x + 3) * S, 20 * S], fill='#4a3220')
+    d.rectangle([5 * S, 8 * S, 35 * S, 10 * S], fill='#4a3220')
+    return _finish(im, em, w, h)
+
+
+def spr_pew():
+    """A long church bench with a back, seen from the aisle."""
+    w, h = 52, 24
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    wood, dark = '#5a3a22', '#3a2414'
+    d.rectangle([0, 0, 52 * S, 12 * S], fill=wood)              # backrest
+    d.rectangle([0, 0, 52 * S, 2 * S], fill='#7a5432')
+    d.rectangle([0, 12 * S, 52 * S, 15 * S], fill=dark)          # seat edge
+    for x in (0, 49):
+        d.rectangle([x * S, 0, (x + 3) * S, 24 * S], fill=dark)  # end boards
+    d.rectangle([3 * S, 15 * S, 49 * S, 18 * S], fill=wood)
+    return _finish(im, em, w, h)
+
+
+def spr_stalagmite():
+    w, h = 18, 44
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.polygon([(2 * S, 44 * S), (8 * S, 0), (11 * S, 6 * S), (16 * S, 44 * S)], fill='#5a5248')
+    d.polygon([(5 * S, 44 * S), (8 * S, 4 * S), (9 * S, 44 * S)], fill='#7a7064')
+    for y in range(8, 42, 6):
+        d.line([(4 * S, y * S), (14 * S, (y + 2) * S)], fill='#4a443c', width=S // 2)
+    return _finish(im, em, w, h)
+
+
+def spr_crystal():
+    """A cluster of glowing crystals: give it a light of its own to cast the glow."""
+    w, h = 22, 26
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    for (x0, x1, top, c) in ((3, 8, 10, '#5ac8e8'), (8, 14, 0, '#8ae0ff'), (13, 19, 7, '#6ab0f0'), (6, 10, 14, '#a8f0ff')):
+        poly = [(x0 * S, 26 * S), ((x0 + x1) / 2 * S, top * S), (x1 * S, 26 * S)]
+        d.polygon(poly, fill=c)
+        de.polygon(poly, fill=230)
+    d.rectangle([1 * S, 23 * S, 21 * S, 26 * S], fill='#3a3440')
+    return _finish(im, em, w, h)
+
+
+def spr_glowshroom():
+    w, h = 22, 14
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    for (x, y, r) in ((5, 7, 4), (12, 5, 5), (18, 9, 3)):
+        d.rectangle([(x - 1) * S, y * S, (x + 1) * S, 14 * S], fill='#c8d8c0')
+        cap = [(x - r) * S, (y - r) * S, (x + r) * S, (y + r // 2) * S]
+        d.ellipse(cap, fill='#4af0c8')
+        de.ellipse(cap, fill=255)
+    return _finish(im, em, w, h)
+
+
+def spr_snowy_pine():
+    w, h = 48, 112
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.rectangle([21 * S, 84 * S, 27 * S, 112 * S], fill='#3a2a1c')
+    for i in range(7):
+        half = 23 - 16 * (i / 6.0)
+        base = 96 - 13 * i
+        d.polygon([((24 - half) * S, base * S), ((24 + half) * S, base * S), (24 * S, (base - 26) * S)],
+                  fill=('#16301c', '#1e3c22', '#264828')[i % 3])
+        # snow along each tier's upper slopes
+        d.polygon([((24 - half * 0.75) * S, (base - 6) * S), (24 * S, (base - 26) * S),
+                   ((24 + half * 0.75) * S, (base - 6) * S), (24 * S, (base - 12) * S)], fill='#dce6ee')
+    d.polygon([(19 * S, 20 * S), (29 * S, 20 * S), (24 * S, 0)], fill='#e8eef4')
+    return _finish(im, em, w, h)
+
+
+def spr_snowman():
+    w, h = 22, 34
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    snow = '#e6ecf2'
+    d.ellipse([1 * S, 16 * S, 21 * S, 34 * S], fill=snow)
+    d.ellipse([4 * S, 7 * S, 18 * S, 20 * S], fill=snow)
+    d.ellipse([6 * S, 0, 16 * S, 10 * S], fill=snow)
+    d.rectangle([5 * S, 9 * S, 17 * S, 11 * S], fill='#a02828')      # scarf
+    d.rectangle([14 * S, 10 * S, 16 * S, 16 * S], fill='#a02828')
+    for (x, y) in ((9, 4), (13, 4), (11, 13), (11, 16), (11, 19)):
+        d.rectangle([x * S, y * S, (x + 1) * S, (y + 1) * S], fill='#1a1a1a')
+    d.polygon([(11 * S, 5 * S), (11 * S, 7 * S), (15 * S, 6 * S)], fill='#e07020')
+    return _finish(im, em, w, h)
+
+
+def spr_grave_cross():
+    w, h = 16, 30
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.rectangle([6 * S, 0, 10 * S, 30 * S], fill='#5a4a38')
+    d.rectangle([1 * S, 7 * S, 15 * S, 11 * S], fill='#5a4a38')
+    d.rectangle([7 * S, 1 * S, 8 * S, 28 * S], fill='#6e5c46')
+    d.rectangle([3 * S, 26 * S, 13 * S, 30 * S], fill='#3a3028')
+    return _finish(im, em, w, h)
+
+
+def spr_ladder():
+    """Iron rungs up a wall. Place it a little off the wall face."""
+    w, h = 16, 64
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    for x in (2, 12):
+        d.rectangle([x * S, 0, (x + 2) * S, 64 * S], fill='#4a4e52')
+    for y in range(3, 64, 6):
+        d.rectangle([2 * S, y * S, 14 * S, (y + 1) * S], fill='#6a6e72')
+    return _finish(im, em, w, h)
+
+
+def spr_lectern():
+    w, h = 20, 30
+    im, d, em, de = _canvas(w, h)
+    S = 4
+    d.polygon([(1 * S, 6 * S), (19 * S, 2 * S), (19 * S, 9 * S), (1 * S, 11 * S)], fill='#5a3a22')
+    d.polygon([(3 * S, 5 * S), (10 * S, 4 * S), (10 * S, 8 * S), (3 * S, 9 * S)], fill='#e8e0c8')   # open book
+    d.polygon([(10 * S, 4 * S), (17 * S, 3 * S), (17 * S, 7 * S), (10 * S, 8 * S)], fill='#d8d0b8')
+    d.rectangle([8 * S, 10 * S, 12 * S, 27 * S], fill='#4a3020')
+    d.rectangle([4 * S, 27 * S, 16 * S, 30 * S], fill='#3a2414')
+    return _finish(im, em, w, h)
+
+
 SPRITES = {
     'lamp_post': spr_lamp_post, 'statue': spr_statue, 'flowers': spr_flowers, 'palm': spr_palm,
     'tree': spr_tree, 'barrel': spr_barrel, 'crate': spr_crate, 'lantern': spr_lantern,
@@ -1441,6 +1925,10 @@ SPRITES = {
     'wall_clock': spr_wall_clock, 'pipe_valve': spr_pipe_valve, 'rubble': spr_rubble,
     'bones': spr_bones, 'sack': spr_sack, 'bucket': spr_bucket, 'broken_barrel': spr_broken_barrel,
     'grass_tuft': spr_grass_tuft, 'reeds': spr_reeds, 'ivy_hang': spr_ivy_hang, 'rocks': spr_rocks,
+    'throne': spr_throne, 'armor': spr_armor, 'chains': spr_chains, 'chest': spr_chest,
+    'table': spr_table, 'pew': spr_pew, 'stalagmite': spr_stalagmite, 'crystal': spr_crystal,
+    'glowshroom': spr_glowshroom, 'snowy_pine': spr_snowy_pine, 'snowman': spr_snowman,
+    'grave_cross': spr_grave_cross, 'ladder': spr_ladder, 'lectern': spr_lectern,
 }
 
 # default world size (height in map units) for each sprite
@@ -1455,6 +1943,9 @@ SPRITE_HEIGHT = {
     'painting': 0.45, 'banner': 0.95, 'wall_clock': 0.28, 'pipe_valve': 0.32, 'rubble': 0.34,
     'bones': 0.22, 'sack': 0.42, 'bucket': 0.32, 'broken_barrel': 0.46, 'grass_tuft': 0.40,
     'reeds': 0.8, 'ivy_hang': 0.8, 'rocks': 0.22,
+    'throne': 0.95, 'armor': 0.66, 'chains': 0.6, 'chest': 0.3, 'table': 0.36, 'pew': 0.42,
+    'stalagmite': 0.8, 'crystal': 0.36, 'glowshroom': 0.16, 'snowy_pine': 3.4, 'snowman': 0.62,
+    'grave_cross': 0.55, 'ladder': 1.0, 'lectern': 0.5,
 }
 
 # ---------------------------------------------------------------- debris and scatter
@@ -1479,6 +1970,7 @@ DEBRIS_SETS = {
     'shore': ['rocks', 'rocks', 'rocks', 'boulder', 'reeds', 'bones'],
     'litter': ['sack', 'bucket', 'crate', 'barrel', 'broken_barrel', 'bones'],
     'wreckage': ['rubble', 'rubble', 'broken_barrel', 'rocks', 'bones', 'sack', 'bucket'],
+    'cave': ['rocks', 'rocks', 'rocks', 'stalagmite', 'glowshroom', 'crystal', 'bones'],
 }
 
 # What `grime` stamps on surfaces when it is turned up.
@@ -1624,7 +2116,23 @@ TEXTURE_NOISE = {
     'dirt': 2.4, 'mud': 2.4, 'asphalt': 2.4, 'moss_stone': 2.4,
     'gravel': 2.6, 'rust': 2.6,
     'cobble': 3.0,
+    # see-through: only their solid parts are drawn, so the factor applies to the metal or wood
+    'chainlink': 0.6, 'fence_iron': 0.8, 'picket': 0.8, 'bars': 1.0, 'railing': 1.0,
+    'lattice': 1.0, 'portcullis': 1.2, 'window_broken': 1.4,
+    'castle': 2.0, 'flagstone': 2.2, 'stained_glass': 0.3, 'ice': 0.8, 'snow_rock': 1.8,
+    'slime_brick': 1.4, 'door_wood': 1.0,
 }
+
+
+# How mirror-like a floor is by default. Any floor cell can set its own "reflect" (wet asphalt,
+# polished marble); puddle decals carry their own (DECAL_REFLECT).
+TEXTURE_REFLECT = {'water': 0.5, 'ice': 0.38}
+DECAL_REFLECT = {'puddle': 0.35, 'puddle_shine': 0.55, 'puddle_dark': 0.25}
+
+
+def texture_reflect(spec):
+    """Default reflectivity of a floor texture (0 = matte)."""
+    return float(TEXTURE_REFLECT.get(texture_key(spec), 0.0))
 
 
 def texture_key(spec):
@@ -1823,6 +2331,18 @@ def dec_rune_mark(c='#c02018', glow='#ff4030'):
     return _finish_soft(im, em, w, h)
 
 
+def dec_contact_shadow(c='#0a0806'):
+    """Soft round shadow for the foot of a prop or character. A smooth falloff on purpose: the
+    palette's ordered dither turns it into a properly 90s stippled shadow."""
+    n = 32
+    yy, xx = np.mgrid[0:n, 0:n]
+    r = np.hypot((xx + 0.5 - n / 2) / (n / 2), (yy + 0.5 - n / 2) / (n / 2))
+    rgba = np.zeros((n, n, 4), np.float32)
+    rgba[..., :3] = col(c)
+    rgba[..., 3] = np.clip(1 - r * r, 0, 1) ** 1.3
+    return rgba, np.zeros((n, n), np.float32)
+
+
 def dec_drain(c='#3a3e40', bar='#6a6e70'):
     w = h = 32
     im, d, em, de = _canvas(w, h)
@@ -1850,7 +2370,14 @@ DECALS = {
     'cobweb': dec_cobweb,
     'rune_mark': dec_rune_mark,
     'drain': dec_drain,
+    'contact_shadow': lambda: dec_contact_shadow(),
 }
+
+# Props that never get an automatic contact shadow: light sources whose base glows (a dark blob
+# under a fire reads as a hole), and things that hang or mount on walls.
+NO_CONTACT_SHADOW = {'campfire', 'brazier', 'candles', 'lantern', 'ceiling_lamp', 'chandelier',
+                     'sconce', 'ivy_hang', 'painting', 'banner', 'wall_clock', 'pipe_valve',
+                     'chains', 'ladder', 'crystal', 'glowshroom'}
 
 _dcache = {}
 
@@ -1879,8 +2406,130 @@ def get_decal(spec, defs=None):
 
 # ---------------------------------------------------------------- skies
 
-def make_sky(preset, w, h, seed=3):
-    """Panorama (h, w, 3) covering 360 degrees. h is the height above the horizon line."""
+SKYLINES = ('mountains', 'hills', 'treeline', 'city')
+
+
+def _harmonics(w, rng, terms, ridged=False):
+    """A 1-D profile over 360 degrees built from whole-number harmonics, so it wraps seamlessly."""
+    az = np.arange(w) / w * 2 * np.pi
+    out = np.zeros(w)
+    for k, amp in terms:
+        s = np.sin(k * az + rng.random() * 2 * np.pi)
+        out += amp * ((1 - np.abs(s)) if ridged else 0.5 + 0.5 * s)
+    return out / sum(a for _, a in terms)
+
+
+def _wrapdist(w, centre):
+    x = np.arange(w)
+    d = np.abs(x - centre)
+    return np.minimum(d, w - d)
+
+
+def _silhouette(sky, elev_deg, proj, colour, rng, texture=0.08):
+    """Paint a ground silhouette whose top edge is `elev_deg` (per column) above the horizon."""
+    h, w = sky.shape[:2]
+    top = h - 1 - proj * np.tan(np.radians(np.clip(elev_deg, 0, 60)))
+    mask = np.arange(h)[:, None] >= top[None, :]
+    shade = 1 - texture + texture * 2 * rng.random((h, w))
+    sky[mask] = (colour[None, None, :] * shade[..., None])[mask]
+    return mask
+
+
+def draw_skyline(sky, spec, proj, seed=0):
+    """Paint distant silhouettes into a sky panorama, back to front.
+
+    spec: a name from SKYLINES, a dict {"type", "height", "color", "seed", "lights"}, or a list of
+    those (first = farthest). Heights are in degrees above the horizon, so the skyline keeps its
+    proportions at any resolution or field of view.
+    """
+    specs = spec if isinstance(spec, list) else [spec]
+    hor = sky[-1].mean(axis=0)  # the sky's own horizon colour, for atmospheric perspective
+
+    def tone(depth, ink=(0.03, 0.035, 0.05)):
+        return hor * (1 - depth) + np.array(ink, np.float32) * depth
+
+    for i, s in enumerate(specs):
+        s = {'type': s} if isinstance(s, str) else dict(s)
+        kind = s.get('type')
+        if kind not in SKYLINES:
+            raise KeyError(f"unknown skyline '{kind}'. Skylines: {', '.join(SKYLINES)}")
+        rng = np.random.default_rng(int(s.get('seed', seed)) * 31 + i * 7 + 11)
+        k = float(s.get('height', 1.0))
+        w = sky.shape[1]
+        custom = np.array(s['color'], np.float32) if 'color' in s else None
+        if kind == 'mountains':
+            far = 2.0 + 6.5 * _harmonics(w, rng, [(2, 1), (3, .8), (5, .6), (8, .45), (13, .3), (21, .2), (34, .12)], True)
+            _silhouette(sky, far * k, proj, custom if custom is not None else tone(0.42), rng)
+            near = 0.8 + 3.2 * _harmonics(w, rng, [(3, 1), (5, .7), (9, .5), (15, .3), (27, .15)], True)
+            _silhouette(sky, near * k, proj, custom * 0.7 if custom is not None else tone(0.68), rng)
+        elif kind == 'hills':
+            back = 1.0 + 3.4 * _harmonics(w, rng, [(5, 1), (8, .7), (13, .45), (21, .25)])
+            _silhouette(sky, back * k, proj, custom if custom is not None else tone(0.5), rng)
+            front = 0.4 + 2.2 * _harmonics(w, rng, [(7, 1), (11, .6), (17, .35), (29, .2)])
+            _silhouette(sky, front * k, proj, custom * 0.75 if custom is not None else tone(0.72), rng)
+        elif kind == 'treeline':
+            px_deg = w / 360.0
+            base = 1.4 + 1.2 * _harmonics(w, rng, [(9, 1), (17, .6), (31, .3)])
+            elev = base.copy()
+            for _ in range(int(360 * 1.6)):          # overlapping conifers, ~1.6 per degree
+                cx = rng.random() * w
+                th, half = 1.0 + 2.4 * rng.random(), (0.45 + 0.5 * rng.random()) * px_deg
+                d = _wrapdist(w, cx)
+                top = base[int(cx) % w] + th
+                elev = np.maximum(elev, np.where(d < half, top - (top - base) * (d / half), 0))
+            ink = (0.02, 0.045, 0.03)
+            _silhouette(sky, elev * k, proj, custom if custom is not None else tone(0.86, ink), rng, 0.05)
+        elif kind == 'city':
+            px_deg = w / 360.0
+            h = sky.shape[0]
+            elev = np.zeros(w)
+            x = 0.0
+            spans = []
+            while x < w:
+                bw = (1.2 + 3.0 * rng.random()) * px_deg
+                bh = (1.5 + 5.0 * rng.random() ** 1.7 + (4.0 if rng.random() < 0.08 else 0)) * k
+                x1 = min(w, x + bw)
+                elev[int(x):int(x1)] = bh
+                spans.append((int(x), int(x1), bh))
+                x = x1 + (0 if rng.random() < 0.75 else rng.random() * 2 * px_deg)
+            ink = (0.04, 0.04, 0.06)
+            body = custom if custom is not None else tone(0.8, ink)
+            mask = _silhouette(sky, elev, proj, body, rng, 0.04)
+            # lit windows: a sparse grid on each block, warm with the odd cold office light
+            lit = float(s.get('lights', 0.22))
+            yy = np.arange(h)
+            for x0, x1, bh in spans:
+                top = h - 1 - proj * np.tan(np.radians(bh))
+                for wx in range(x0 + 1, x1 - 1, max(2, int(0.45 * px_deg))):
+                    for wy in yy[(yy > top + 2) & (yy < h - 2)][::max(2, int(0.55 * px_deg))]:
+                        if rng.random() < lit and mask[wy, wx]:
+                            sky[wy, wx] = col('#f0c860') if rng.random() < 0.8 else col('#a8d0f0')
+    return sky
+
+
+def draw_disc(sky, az_deg, el_deg, proj, colour, radius_deg=2.2, glow=0.35):
+    """A sun or moon at an azimuth/elevation, with a soft additive halo. Wraps around 360."""
+    h, w = sky.shape[:2]
+    cx = (az_deg % 360) / 360.0 * w
+    cy = h - 1 - proj * np.tan(np.radians(el_deg))
+    r = max(2.0, proj * np.tan(np.radians(radius_deg)))
+    dx = _wrapdist(w, cx)[None, :]
+    dy = (np.arange(h) - cy)[:, None]
+    d = np.sqrt(dx * dx + dy * dy)
+    c = np.asarray(colour, np.float32)
+    halo = np.clip(1 - d / (r * 4.5), 0, 1) ** 2 * glow
+    sky += halo[..., None] * c[None, None, :]
+    disc = d <= r
+    sky[disc] = c * (0.92 + 0.08 * np.clip(1 - d[disc] / r, 0, 1))[:, None]
+    return sky
+
+
+def make_sky(preset, w, h, seed=3, skyline=None, proj=None, discs=()):
+    """Panorama (h, w, 3) covering 360 degrees. h is the height above the horizon line.
+
+    `skyline` adds distant silhouettes (see draw_skyline). `discs` are suns and moons placed by
+    directional lights; when any are given, the preset's own decorative moon is left out.
+    """
     rng = np.random.default_rng(seed)
     presets = {
         'night': ('#05070e', '#1b2232', '#26304a'),
@@ -1908,11 +2557,16 @@ def make_sky(preset, w, h, seed=3):
     if preset in ('night', 'storm', 'blood', 'dusk'):
         stars = (rng.random((h, w)) > 0.997) & (t[:, 0][:, None] < 0.6) & (mask < 0.2)
         sky[stars] = col('#c8c8d0') * (0.5 if preset != 'night' else 1)
-    if preset in ('night', 'blood'):
+    if preset in ('night', 'blood') and not discs:
         mx, my, r = int(w * 0.62), int(h * 0.28), max(4, h // 14)
         yy, xx = np.mgrid[0:h, 0:w]
         m = (yy - my) ** 2 + (xx - mx) ** 2 < r * r
         sky[m] = col('#e6e0c8') if preset == 'night' else col('#d04a30')
+    proj = proj or w / (2 * np.pi)
+    for d in discs:
+        draw_disc(sky, d['azimuth'], d['elevation'], proj, d['color'], d.get('radius', 2.2), d.get('glow', 0.35))
+    if skyline:
+        draw_skyline(sky, skyline, proj, seed)
     return np.clip(sky, 0, 1).astype(np.float32)
 
 
@@ -1931,6 +2585,10 @@ def catalog(path):
     d = ImageDraw.Draw(sheet)
     for i, n in enumerate(names):
         rgb, _ = get_texture(n)
+        a = get_alpha(n)
+        if a is not None:   # see-through: show the holes against a checkerboard
+            chk = np.where(((np.arange(T)[:, None] // 8 + np.arange(T)[None, :] // 8) % 2)[..., None] == 0, 0.35, 0.55)
+            rgb = rgb * a[..., None] + chk * (1 - a[..., None])
         tile = Image.fromarray((np.clip(rgb, 0, 1) * 255).astype(np.uint8)).resize((88, 88), Image.NEAREST)
         x, y = (i % cols) * cw + 4, (i // cols) * ch + 4
         sheet.paste(tile, (x, y))

@@ -65,9 +65,10 @@ class Grid:
         return self
 
     def disc(self, cx, cy, r, c):
+        # strictly inside: with <= a whole-number radius leaves a one-cell nub at each extreme
         for y in range(int(cy - r - 1), int(cy + r + 2)):
             for x in range(int(cx - r - 1), int(cx + r + 2)):
-                if (x + 0.5 - cx - 0.5) ** 2 + (y + 0.5 - cy - 0.5) ** 2 <= r * r:
+                if (x - cx) ** 2 + (y - cy) ** 2 < r * r:
                     self.put(x, y, c)
         return self
 
