@@ -2275,40 +2275,6 @@ def spr_pocket_watch():
     return _finish(im, em, w, h)
 
 
-def _chess(w, h, crown):
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    c, s, hi = '#e8e4dc', '#bcb6aa', '#fbf8f2'
-    cx = w / 2
-    d.rounded_rectangle([1 * S, (h - 5) * S, (w - 1) * S, h * S], radius=S, fill=c)
-    d.rectangle([3 * S, (h - 8) * S, (w - 3) * S, (h - 5) * S], fill=s)
-    top = 12 if crown else 11
-    d.polygon([((cx - 4) * S, (h - 8) * S), ((cx + 4) * S, (h - 8) * S), ((cx + 2) * S, top * S),
-               ((cx - 2) * S, top * S)], fill=c)
-    d.polygon([((cx + 1) * S, (h - 8) * S), ((cx + 4) * S, (h - 8) * S), ((cx + 2) * S, top * S),
-               ((cx + 1) * S, top * S)], fill=s)
-    d.rectangle([(cx - 4) * S, (top - 1) * S, (cx + 4) * S, (top + 1) * S], fill=s)
-    if crown:
-        d.polygon([((cx - 4) * S, (top - 1) * S), ((cx + 4) * S, (top - 1) * S), ((cx + 5) * S, 6 * S),
-                   ((cx - 5) * S, 6 * S)], fill=c)
-        d.rectangle([(cx - 1) * S, 0, (cx + 1) * S, 6 * S], fill=c)
-        d.rectangle([(cx - 3) * S, 2 * S, (cx + 3) * S, 4 * S], fill=c)
-    else:
-        d.ellipse([(cx - 5) * S, 1 * S, (cx + 5) * S, (top + 0.5) * S], fill=c)
-        d.ellipse([(cx - 3) * S, 2 * S, (cx - 1) * S, 5 * S], fill=hi)
-    return _finish(im, em, w, h)
-
-
-def spr_chess_pawn():
-    """A giant marble pawn. Tint it dark for the other side."""
-    return _chess(18, 30, False)
-
-
-def spr_chess_king():
-    """A giant marble king, crowned and crossed. Tint it dark for the other side."""
-    return _chess(18, 48, True)
-
-
 def spr_balloon():
     """A striped hot-air balloon drifting overhead. Float it high with z."""
     w, h = 30, 46
@@ -2473,7 +2439,7 @@ SPRITES = {
     'alien_plant': spr_alien_plant, 'monolith': spr_monolith, 'orb': spr_orb, 'alien_egg': spr_alien_egg,
     'floating_rock': spr_floating_rock,
     'door_frame': spr_door_frame, 'sky_whale': spr_sky_whale, 'koi': spr_koi,
-    'pocket_watch': spr_pocket_watch, 'chess_pawn': spr_chess_pawn, 'chess_king': spr_chess_king,
+    'pocket_watch': spr_pocket_watch,
     'balloon': spr_balloon,
     'telescope': spr_telescope, 'globe': spr_globe, 'armchair': spr_armchair,
     'book_stack': spr_book_stack, 'open_book': spr_open_book, 'writing_desk': spr_writing_desk,
@@ -3005,6 +2971,18 @@ PROP_DEFAULTS.update(scifi.PROP_DEFAULTS)
 NO_CONTACT_SHADOW |= scifi.NO_CONTACT_SHADOW
 DECALS.update(scifi.DECALS)
 
+# ---------------------------------------------------------------- dream things
+# A marble chess set, a melting clock, an hourglass, a stone arch, floating stairs, a paper boat
+# and chequered marble, drawn with the toolkit in dream.py.
+import dream  # noqa: E402
+
+TEXTURES.update(dream.TEXTURES)
+TEXTURE_REFLECT.update(dream.TEXTURE_REFLECT)
+TEXTURE_NOISE.update(dream.TEXTURE_NOISE)
+SPRITES.update(dream.SPRITES)
+SPRITE_HEIGHT.update(dream.SPRITE_HEIGHT)
+NO_CONTACT_SHADOW |= dream.NO_CONTACT_SHADOW
+
 _dcache = {}
 
 
@@ -3194,7 +3172,7 @@ def draw_disc(sky, az_deg, el_deg, proj, colour, radius_deg=2.2, glow=0.35, hrow
 # placed in degrees (azimuth on the camera compass, elevation above the horizon, size as an
 # angular radius), so they keep their size and place at any resolution or field of view.
 
-SKY_OBJECTS = ('planet', 'ringed', 'moon', 'sun', 'eye')
+SKY_OBJECTS = ('planet', 'ringed', 'moon', 'sun', 'eye', 'clock')
 
 
 def _sky_object_frame(sky, o, proj, hrow, default_size):
@@ -3228,7 +3206,7 @@ def draw_sky_object(sky, o, proj, hrow, seed=0):
     rng = np.random.default_rng(int(o.get('seed', seed)) * 97 + 13)
     defaults = {'planet': ('#c87a4a', '#e8b07a', 9), 'ringed': ('#d8b880', '#a8784a', 7),
                 'moon': ('#c8c4b8', '#8a867c', 3.5), 'sun': ('#fff0c0', '#ffb060', 3),
-                'eye': ('#5a9a6a', '#f2ece0', 8)}[kind]
+                'eye': ('#5a9a6a', '#f2ece0', 8), 'clock': ('#f2e8d0', '#3a2e26', 7)}[kind]
     c1 = np.array(o['color'] if 'color' in o else col(defaults[0]), np.float32)
     c2 = np.array(o['color2'] if 'color2' in o else col(defaults[1]), np.float32)
     nx, ny, r = _sky_object_frame(sky, o, proj, hrow, defaults[2])
@@ -3242,6 +3220,31 @@ def draw_sky_object(sky, o, proj, hrow, seed=0):
     if kind == 'sun':
         core = np.clip(1 - d2, 0, 1) ** 0.25
         sky[inside] = (c1[None, :] * (0.85 + 0.15 * core[inside][:, None]))
+        return sky
+
+    if kind == 'clock':
+        # a clock face hung in the sky, its hands stopped at `time`, the bottom of it running like
+        # wax (`melt`, 0 for a whole face)
+        t = float(o.get('time', 10.15))
+        melt = float(o.get('melt', 0.45))
+        span = np.clip(1 - nx * nx, 0, 1)
+        drip = melt * (0.3 + 0.7 * np.clip(np.sin(nx * 6.3 + 1.1) * 0.5 + 0.5, 0, 1) ** 3) * span
+        face = inside | ((ny > 0) & (np.abs(nx) <= 1) & (ny <= np.sqrt(span) + drip))
+        rr = np.sqrt(d2)
+        ang = np.arctan2(ny, nx)
+        sky[face] = (c1[None, :] * (0.82 + 0.18 * np.clip(1 - d2, 0, 1))[face][:, None])
+        sky[inside & (rr >= 0.88)] = c2
+        for k in range(12):                         # the ticks
+            a = k * np.pi / 6 - np.pi / 2
+            tick = inside & (rr > 0.66) & (rr < (0.84 if k % 3 else 0.86)) & (np.cos(ang - a) > 0) & \
+                (np.abs(np.sin(ang - a)) * rr < (0.05 if k % 3 == 0 else 0.03))
+            sky[tick] = c2
+        for frac, length, half in (((t % 12) / 12.0, 0.5, 0.055), (t % 1.0, 0.76, 0.035)):
+            a = frac * 2 * np.pi - np.pi / 2
+            along = nx * np.cos(a) + ny * np.sin(a)
+            across = -nx * np.sin(a) + ny * np.cos(a)
+            sky[face & (along >= -0.1) & (along <= length) & (np.abs(across) <= half)] = c2
+        sky[rr <= 0.06] = c2
         return sky
 
     if kind == 'eye':

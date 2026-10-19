@@ -1,0 +1,545 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "                                            ",
+  "                                            ",
+  "                                            ",
+  "                                            ",
+  "                                            ",
+  "                  ccccccccc                 ",
+  "               ccccccccccccccc              ",
+  "             ccccccccccccccccccc            ",
+  "            ccccccccccccccccccccc           ",
+  "           ccccccccccccccccccccccc          ",
+  "          ccccccccccccccccccccccccc         ",
+  "         ccccccccccccccccccccccccccc        ",
+  "        ccccccWWDWWcccccccccccccccccc       ",
+  "       ccccccccccccccccccccccccccccccc      ",
+  "       cccccccccccccccccccccccSccccccc      ",
+  "      ccccccccccccccccccccccccScccccccc     ",
+  "      ccccccccccccccccccccccccScccccccc     ",
+  "      ccccccccccccccccccccccccScccccccc     ",
+  "     cccccccccccccccccccccccccSccccccccc    ",
+  "     cccccccccccccccccccccccccSccccccccc    ",
+  "     cccccccccccccccccccccccccSccccccccc    ",
+  "     ccccccccccccccccccccccccccccccccccc    ",
+  "     ccccccccccccccccccccccccccccccccccc    ",
+  "     cccccccccccccccccchhhhhhccccccccccc    ",
+  "     cccccccccccccccccch    hccccccccccc    ",
+  "     cccccccccccccccccch    hccccccccccc    ",
+  "     cccccccccccccPcccch    hccccccccccc    ",
+  "      ccccccccccccccccch    hcccccccccc     ",
+  "      ccccccccccccccccchhhhhhcccccccccc     ",
+  "      ccccccccccccccccPcccccccccccccccc     ",
+  "       ccccccccccccccccccccccccccccccc      ",
+  "       ccccccccccccccccccccccccccccccc      ",
+  "        ccccccccccccccccccccccccccccc       ",
+  "         ccccccccccccccccccccccccccc        ",
+  "          ccccccccccccccccccccccccc         ",
+  "           ccccccccccccccccccccccc          ",
+  "            ccccccccccccccccccccc           ",
+  "             ccccccccccccccccccc            ",
+  "               ccccccccccccccc              ",
+  "                  ccccccccc                 ",
+  "                                            ",
+  "                                            ",
+  "                                            ",
+  "                                            "
+ ],
+ "legend": {
+  " ": {
+   "floor": "void"
+  },
+  "c": {
+   "floor": "checker_marble",
+   "side": "marble",
+   "reflect": 0.22
+  },
+  "h": {
+   "floor": "checker_marble",
+   "side": "sky_wall",
+   "reflect": 0.22
+  },
+  "W": {
+   "wall": "sky_wall",
+   "h": 2.4
+  },
+  "D": {
+   "wall": [
+    "door_wood",
+    "sky_wall"
+   ],
+   "h": 2.4
+  },
+  "S": {
+   "wall": "marble",
+   "top": "marble",
+   "side": "marble",
+   "floor": "checker_marble"
+  },
+  "P": {
+   "wall": "marble",
+   "top": "marble",
+   "floor": "checker_marble"
+  }
+ },
+ "camera": {
+  "x": 21.0,
+  "y": 38.6,
+  "look_at": [
+   21.0,
+   18.0,
+   1.6
+  ],
+  "fov": 70
+ },
+ "title": "The chequered plain - a dream of an unfinished game",
+ "heights": [
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "..............................6.............",
+  "..............................6.............",
+  "..............................5.............",
+  "..............................4.............",
+  "..............................3.............",
+  "..............................2.............",
+  "..............................1.............",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "..................2.........................",
+  "............................................",
+  "............................................",
+  "......................2.....................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................",
+  "............................................"
+ ],
+ "height_unit": 0.3,
+ "sky": "dream",
+ "sky_objects": [
+  {
+   "type": "clock",
+   "azimuth": 268,
+   "elevation": 16,
+   "size": 9,
+   "time": 10.15,
+   "melt": 0.5
+  },
+  {
+   "type": "moon",
+   "azimuth": 210,
+   "elevation": 26,
+   "size": 3.5,
+   "color": [
+    0.98,
+    0.9,
+    0.93
+   ],
+   "color2": [
+    0.85,
+    0.75,
+    0.85
+   ],
+   "lit_from": 230,
+   "phase": 0.35
+  }
+ ],
+ "ambient": [
+  0.5,
+  0.46,
+  0.54
+ ],
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 140,
+   "elevation": 30,
+   "color": [
+    1.0,
+    0.9,
+    0.86
+   ],
+   "intensity": 0.55,
+   "disc": false
+  }
+ ],
+ "fog": {
+  "color": [
+   0.86,
+   0.76,
+   0.86
+  ],
+  "density": 0.012,
+  "sky_mix": 0.0
+ },
+ "sprites": [
+  {
+   "x": 20.5,
+   "y": 17.5,
+   "type": "chess_king",
+   "scale": 3.1
+  },
+  {
+   "x": 23.0,
+   "y": 18.2,
+   "type": "chess_queen",
+   "scale": 2.9
+  },
+  {
+   "x": 17.8,
+   "y": 21.0,
+   "type": "chess_knight",
+   "scale": 2.4
+  },
+  {
+   "x": 25.6,
+   "y": 21.5,
+   "type": "chess_bishop",
+   "scale": 2.6
+  },
+  {
+   "x": 13.6,
+   "y": 18.8,
+   "type": "chess_rook",
+   "scale": 2.2
+  },
+  {
+   "x": 21.2,
+   "y": 21.8,
+   "type": "chess_pawn",
+   "scale": 1.8
+  },
+  {
+   "x": 15.6,
+   "y": 23.6,
+   "type": "chess_pawn",
+   "scale": 1.8
+  },
+  {
+   "x": 26.8,
+   "y": 17.0,
+   "type": "chess_pawn",
+   "scale": 1.8
+  },
+  {
+   "x": 29.0,
+   "y": 31.4,
+   "type": "chess_king",
+   "tint": [
+    0.24,
+    0.22,
+    0.28
+   ],
+   "flip": true,
+   "scale": 3.1
+  },
+  {
+   "x": 29.8,
+   "y": 27.6,
+   "type": "chess_rook",
+   "tint": [
+    0.24,
+    0.22,
+    0.28
+   ],
+   "flip": true,
+   "scale": 2.2
+  },
+  {
+   "x": 23.4,
+   "y": 25.0,
+   "type": "chess_knight",
+   "tint": [
+    0.24,
+    0.22,
+    0.28
+   ],
+   "flip": true,
+   "scale": 2.4
+  },
+  {
+   "x": 15.8,
+   "y": 29.4,
+   "type": "chess_bishop",
+   "tint": [
+    0.24,
+    0.22,
+    0.28
+   ],
+   "flip": true,
+   "scale": 2.6
+  },
+  {
+   "x": 20.0,
+   "y": 31.4,
+   "type": "chess_pawn",
+   "tint": [
+    0.24,
+    0.22,
+    0.28
+   ],
+   "flip": true,
+   "scale": 1.8
+  },
+  {
+   "x": 27.6,
+   "y": 23.4,
+   "type": "chess_pawn",
+   "tint": [
+    0.24,
+    0.22,
+    0.28
+   ],
+   "flip": true,
+   "scale": 1.8
+  },
+  {
+   "x": 12.6,
+   "y": 26.2,
+   "type": "chess_queen",
+   "tint": [
+    0.24,
+    0.22,
+    0.28
+   ],
+   "flip": true,
+   "scale": 2.9
+  },
+  {
+   "x": 30.5,
+   "y": 14.5,
+   "type": "door_frame",
+   "z": 1.8
+  },
+  {
+   "x": 18.5,
+   "y": 27.03,
+   "type": "melting_clock",
+   "z": 0.17
+  },
+  {
+   "x": 22.5,
+   "y": 29.5,
+   "type": "hourglass"
+  },
+  {
+   "x": 16.0,
+   "y": 13.0,
+   "type": "stone_arch",
+   "z": 2.8,
+   "scale": 2.6
+  },
+  {
+   "x": 27.5,
+   "y": 19.5,
+   "type": "stone_arch",
+   "z": 1.7,
+   "scale": 1.8,
+   "flip": true
+  },
+  {
+   "x": 11.5,
+   "y": 19.0,
+   "type": "stair_float",
+   "z": 2.0,
+   "scale": 3.0
+  },
+  {
+   "x": 24.4,
+   "y": 34.4,
+   "type": "paper_boat"
+  },
+  {
+   "x": 27.0,
+   "y": 33.2,
+   "type": "paper_boat",
+   "flip": true
+  },
+  {
+   "x": 9.6,
+   "y": 24.0,
+   "type": "paper_boat",
+   "scale": 0.24
+  },
+  {
+   "id": "dreamer",
+   "x": 21.8,
+   "y": 35.2,
+   "type": "dreamer",
+   "facing": 270,
+   "light": {
+    "radius": 2.0,
+    "color": [
+     1.0,
+     0.8,
+     0.5
+    ],
+    "intensity": 0.5
+   }
+  },
+  {
+   "x": 17.0,
+   "y": 10.0,
+   "type": "koi",
+   "z": 2.2
+  },
+  {
+   "x": 16.2,
+   "y": 9.4,
+   "type": "koi",
+   "z": 2.5,
+   "flip": true
+  }
+ ],
+ "shots": [
+  {
+   "x": 21.0,
+   "y": 38.6,
+   "look_at": [
+    21.0,
+    18.0,
+    1.6
+   ],
+   "fov": 70,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.4,
+     "threshold": 0.8,
+     "radius": 8
+    },
+    {
+     "fx": "vignette",
+     "strength": 0.25,
+     "color": [
+      0.35,
+      0.25,
+      0.45
+     ]
+    }
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Nobody remembers whose move it is",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 34.6,
+   "y": 23.2,
+   "look_at": [
+    30.5,
+    14.5,
+    2.4
+   ],
+   "fov": 70,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.4,
+     "threshold": 0.8,
+     "radius": 8
+    },
+    {
+     "fx": "vignette",
+     "strength": 0.25,
+     "color": [
+      0.35,
+      0.25,
+      0.45
+     ]
+    }
+   ]
+  },
+  {
+   "x": 25.6,
+   "y": 31.4,
+   "height": 2.4,
+   "look_at": [
+    25.8,
+    25.6,
+    -0.6
+   ],
+   "fov": 70,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.4,
+     "threshold": 0.8,
+     "radius": 8
+    },
+    {
+     "fx": "vignette",
+     "strength": 0.25,
+     "color": [
+      0.35,
+      0.25,
+      0.45
+     ]
+    }
+   ]
+  },
+  {
+   "x": 18.0,
+   "y": 28.7,
+   "look_at": [
+    18.6,
+    27.0,
+    0.42
+   ],
+   "fov": 58,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.4,
+     "threshold": 0.8,
+     "radius": 8
+    },
+    {
+     "fx": "vignette",
+     "strength": 0.25,
+     "color": [
+      0.35,
+      0.25,
+      0.45
+     ]
+    }
+   ]
+  }
+ ],
+ "contact_shadows": 0.5,
+ "supersample": 2
+}

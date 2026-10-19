@@ -21,13 +21,13 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 130 | 100 | 27 | 3 | 0 |
-| Props | 140 | 122 | 16 | 2 | 0 |
+| Textures | 131 | 101 | 27 | 3 | 0 |
+| Props | 149 | 131 | 16 | 2 | 0 |
 | Characters | 22 | 20 | 2 | 0 | 0 |
 | Decals | 24 | 19 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
 | Skylines | 6 | 5 | 1 | 0 | 0 |
-| Sky objects | 5 | 5 | 0 | 0 | 0 |
+| Sky objects | 6 | 6 | 0 | 0 | 0 |
 | Scatter sets | 13 | 13 | 0 | 0 | 0 |
 | Fringe sets | 2 | 2 | 0 | 0 | 0 |
 | Facade styles | 4 | 3 | 1 | 0 | 0 |
@@ -38,8 +38,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 16 | 16 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 36 | 29 | 7 | 0 | 0 |
-| **all** | **488** | **418** | **65** | **5** | **0** |
+| Example scenes | 37 | 30 | 7 | 0 | 0 |
+| **all** | **500** | **430** | **65** | **5** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -53,7 +53,7 @@ Weakest first, and in the order the new scenes need them.
 5. **Small things.** The hands on the held items, the `stain`, `stain_rust` and `moss_patch` decals, the `child` and `dreamer` characters, the `city` skyline, `alien_rock`, `alien_ground`, and the `glowshroom` and `alien_egg` props.
 6. **Second look.** Every asset marked good, checked again on the review sheets and in its scenes, with fresh eyes and the new techniques in hand.
 
-## Textures (130)
+## Textures (131)
 
 64x64 tiles, drawn in code. "glows" means the texture lights itself (windows, screens, runes), "see-through" that the map shows through its holes, "mirror" that floors made of it reflect.
 
@@ -75,12 +75,12 @@ Weakest first, and in the order the new scenes need them.
 | `hospital_wall` | good |  | ghost_corridor, gui_hud, hospital_corridor |  |
 | `ivy` | polish |  | rainy_street | Ivy is soft blotches; give it leaf shapes and stems. |
 | `concrete` | good |  | bunker_lab, garden_encounter, gui_lantern, gui_menus, hospital_garden, post_presets, sewer_tunnels, tunnel_encounter, underground_waterway |  |
-| `marble` | good |  | cathedral_ruin, chapel_graveyard, dream_world, gui_themes, gui_trade, library_medium, mansion_library |  |
+| `marble` | good |  | cathedral_ruin, chapel_graveyard, dream_chess, dream_world, gui_themes, gui_trade, library_medium, mansion_library |  |
 | `marble_dark` | polish |  | - | Veins read as dotted lines; make them continuous and softer. |
 | `rock` | polish |  | castle_keep, coast_lighthouse, crystal_cave, garden_encounter, gui_lantern, gui_menus, hospital_garden, post_presets, tunnel_encounter, underground_waterway | Crack network looks like jigsaw pieces; add strata and lit edges. |
 | `rock_wet` | polish |  | crystal_cave, gui_lantern, tunnel_encounter, underground_waterway | Same as rock; wet sheen highlights would sell it. |
 | `snow_rock` | polish |  | winter_lake | Snow is blotchy; it should lie on ledges and in cracks. |
-| `sky_wall` | good |  | dream_world |  |
+| `sky_wall` | good |  | dream_chess, dream_world |  |
 
 ### Wood
 
@@ -90,7 +90,7 @@ Weakest first, and in the order the new scenes need them.
 | `planks` | good |  | - |  |
 | `boards` | good |  | coast_lighthouse, rain_alley, tropical_beach |  |
 | `logs` | good |  | coast_lighthouse, winter_lake |  |
-| `door_wood` | good |  | dream_world, winter_lake |  |
+| `door_wood` | good |  | dream_chess, dream_world, winter_lake |  |
 | `bookshelf` | good |  | claude_study, gui_themes, gui_trade, library_medium, mansion_library |  |
 | `bark` | good |  | - | Redrawn with the toolkit in forest.py: long wavy ridges split by deep dark furrows; tiles without a seam. |
 | `bark_pine` | good |  | - | Redrawn with the toolkit in forest.py: a mosaic of tall plates (nearest-seed cells) with dark fissures and flaking. |
@@ -151,6 +151,7 @@ Weakest first, and in the order the new scenes need them.
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
 | `checker` | good |  | dream_world |  |
+| `checker_marble` | good | mirror 0.35 | dream_chess | Drawn with the toolkit in dream.py: black and white marble squares, veined, fine joints; mirror 0.35. |
 | `linoleum` | good |  | ghost_corridor, gui_hud, hospital_corridor |  |
 | `tile_floor` | good |  | bunker_lab, derelict_ship, neon_street |  |
 | `tile_white` | good |  | - |  |
@@ -161,7 +162,7 @@ Weakest first, and in the order the new scenes need them.
 | `carpet_green` | good |  | - |  |
 | `flagstone` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, neon_street, rain_alley |  |
 | `obsidian` | good | mirror 0.45 | dream_world, space_station |  |
-| `concrete_floor` | good |  | 36 scenes |  |
+| `concrete_floor` | good |  | 37 scenes |  |
 | `rock_floor` | polish |  | crystal_cave, gui_lantern, tunnel_encounter, underground_waterway | Same as rock. |
 
 ### Ceilings
@@ -247,7 +248,7 @@ Weakest first, and in the order the new scenes need them.
 | `bamboo` | polish |  | tropical_beach | The nodes still line up into a grid across the poles. |
 | `thatch` | polish |  | tropical_beach | The rows could be clearer, each with a shadow under its fringe. |
 
-## Props (140)
+## Props (149)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -375,11 +376,20 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `alien_egg` | polish | 0.35 tall, glows | alien_world, derelict_ship | Reads as a brown sack with a green cross; it wants a wet sheen and veins. |
 | `alien_plant` | good | 1.1 tall, glows | alien_world |  |
 | `balloon` | good | 2.6 tall, no shadow | dream_world |  |
-| `chess_king` | good | 1.5 tall | dream_world |  |
-| `chess_pawn` | good | 0.9 tall | dream_world |  |
-| `door_frame` | good | 1.1 tall | dream_world |  |
+| `chess_king` | good | 1.55 tall | dream_chess, dream_world | Drawn with the toolkit in dream.py: the tallest piece, crown and cross, turned marble. |
+| `chess_rook` | good | 1.1 tall | dream_chess | Drawn with the toolkit in dream.py: a turned tower with a flared, crenellated top. |
+| `chess_knight` | good | 1.2 tall | dream_chess | Drawn with the toolkit in dream.py: a horse head and neck on a turned foot, ridged mane, eye and ear. |
+| `chess_bishop` | good | 1.3 tall | dream_chess | Drawn with the toolkit in dream.py: a slender stem and a mitre with its slit, a bead on top. |
+| `chess_queen` | good | 1.45 tall | dream_chess | Drawn with the toolkit in dream.py: a tall stem and a beaded coronet with an orb. |
+| `melting_clock` | good | 0.6 tall, no shadow | dream_chess | Drawn with the toolkit in dream.py: a clock face warped over a ledge, the hanging part stretched and dripping. |
+| `hourglass` | good | 0.6 tall | dream_chess | Drawn with the toolkit in dream.py: glass bulbs in a wooden frame, sand running into a heap, a gleam. |
+| `stone_arch` | good | 2.4 tall | dream_chess | Drawn with the toolkit in dream.py: coursed piers and a round arch of voussoirs with a keystone, open in the middle. |
+| `stair_float` | good | 2 tall | dream_chess | Drawn with the toolkit in dream.py: a flight of stairs on a soffit, broken off at both ends, stones falling. |
+| `paper_boat` | good | 0.3 tall | dream_chess | Drawn with the toolkit in dream.py: folded planes, a peak and a crease. |
+| `chess_pawn` | good | 0.9 tall | dream_chess, dream_world | Drawn with the toolkit in dream.py: a turned marble pawn (lathe profile), faint veins. Tint dark for the other side. |
+| `door_frame` | good | 1.1 tall | dream_chess, dream_world |  |
 | `floating_rock` | good | 1.6 tall, no shadow | dream_world |  |
-| `koi` | good | 0.35 tall, no shadow | dream_world |  |
+| `koi` | good | 0.35 tall, no shadow | dream_chess, dream_world |  |
 | `orb` | good | 0.2 tall, glows, aura, no shadow | dream_world |  |
 | `pocket_watch` | good | 0.8 tall, no shadow | dream_world |  |
 | `sky_whale` | good | 2 tall, glows, no shadow | dream_world |  |
@@ -473,7 +483,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `astronaut` | good | alien_world, orbital_hangar, space_station |  |
 | `android` | good | neon_street, orbital_hangar, space_station |  |
 | `alien` | good | alien_world, derelict_ship | A familiar archetype; could be made stranger. |
-| `dreamer` | polish | dream_world | The face reads as open-eyed; a sleepwalker wants closed eyes. |
+| `dreamer` | polish | dream_chess, dream_world | The face reads as open-eyed; a sleepwalker wants closed eyes. |
 | `claude` | good | claude_study | Claude's own avatar. |
 | `explorer` | good | jungle_temple |  |
 | `hoplite` | good | ancient_ruins |  |
@@ -501,7 +511,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `cobweb` | good | bunker_lab, castle_keep |  |
 | `rune_mark` | good | - |  |
 | `drain` | good | bunker_lab, neon_street, rainy_street, sewer_tunnels |  |
-| `contact_shadow` | good | 36 scenes |  |
+| `contact_shadow` | good | 37 scenes |  |
 | `pad_marking` | good | orbital_hangar | A painted landing ring with an H and a dashed outer ring, worn in patches. |
 | `hazard_stripe` | good | orbital_hangar | A band of yellow and black diagonal stripes, worn through in places. |
 
@@ -528,7 +538,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `blood` | good | - |  |
 | `space` | good | orbital_hangar, space_station |  |
 | `alien` | good | alien_world |  |
-| `dream` | good | dream_world |  |
+| `dream` | good | dream_chess, dream_world |  |
 | `sunset` | good | tropical_beach |  |
 | `golden` | good | ancient_ruins, woodland_night |  |
 
@@ -543,15 +553,16 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `islands` | polish | ancient_ruins, tropical_beach | In haze an island and its reflection can read as a saucer floating on the horizon. |
 | `jungle` | good | jungle_temple |  |
 
-## Sky objects (5)
+## Sky objects (6)
 
 | object | status | used in | notes |
 |---|---|---|---|
 | `planet` | good | - |  |
 | `ringed` | good | alien_world, orbital_hangar, space_station |  |
-| `moon` | good | alien_world, dream_world, orbital_hangar, space_station |  |
+| `moon` | good | alien_world, dream_chess, dream_world, orbital_hangar, space_station |  |
 | `sun` | good | orbital_hangar, space_station |  |
 | `eye` | good | dream_world |  |
+| `clock` | good | dream_chess | A cream face in a dark rim, twelve ticks, two hands set by `time`, its bottom running like wax (`melt`). |
 
 ## Scatter sets (13)
 
@@ -659,7 +670,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 
 | theme | status | used in | notes |
 |---|---|---|---|
-| `classic` | good | 30 scenes |  |
+| `classic` | good | 31 scenes |  |
 | `parchment` | good | gui_themes, gui_trade |  |
 | `terminal` | good | bunker_lab, gui_themes, orbital_hangar, space_station |  |
 | `blood` | good | gui_themes |  |
@@ -671,7 +682,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 |---|---|---|---|
 | `bubble` | good | alien_world, castle_keep, claude_study, crystal_cave, garden_encounter, ghost_corridor, gui_menus, gui_trade, neon_street, rainy_street, tunnel_encounter, winter_lake, woodland_night |  |
 | `dialog` | good | bunker_lab, chapel_graveyard, claude_study, coast_lighthouse, ghost_corridor, library_medium, orbital_hangar, space_station |  |
-| `caption` | good | 23 scenes |  |
+| `caption` | good | 24 scenes |  |
 | `choice` | good | gui_menus, gui_themes, gui_trade |  |
 | `title` | good | gui_menus |  |
 | `panel` | good | bunker_lab, gui_lantern |  |
@@ -725,7 +736,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `mono` | good | - |  |
 | `bone` | good | - |  |
 
-## Example scenes (36)
+## Example scenes (37)
 
 The environments, judged on their gallery images and shots.
 
@@ -774,6 +785,7 @@ The environments, judged on their gallery images and shots.
 | `orbital_hangar` | good | 4 | hangar_bay, hangar_control, hangar_reactor, hangar_pilot | A shuttle bay in orbit, its control room and the reactor: the scifi.py hardware, glass panes between mullions onto space and a ringed planet, a window onto the bay, cyan haze and red alarm light. |
 | `alien_world` | good | 3 | alien_landing, alien_monolith |  |
 | `dream_world` | good | 3 | dream_stair, dream_mirror |  |
+| `dream_chess` | good | 4 | dream_plain, dream_door, dream_hole, dream_clock | A giant marble chess game on a floating plain of checker_marble under a melting sky clock: arches and stairs in the air, a stair up to a lone door, a hole onto the sky. |
 
 ### Claude
 
@@ -803,6 +815,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the chequered plain.** `scripts/dream.py`: a marble chess set turned on a lathe (pawn and king redrawn, rook, knight, bishop and queen new), `melting_clock`, `hourglass`, `stone_arch`, `stair_float`, `paper_boat`, the `checker_marble` floor, and a `clock` sky object that melts. `examples/dream_chess.py`: a giant unfinished game on a floating plain, with four gallery shots.
 - **2026-10-19, the neon street.** A `neon` facade style (`scripts/buildings.py`): concrete, neon signs drawn into the wall layer, which now returns a glow, blade signs standing out over the street (a new `blade` layer, placed by the renderer), shutters and tinted rooms - the other styles' buildings unchanged. Street props in scifi.py (`vending_machine`, `noodle_stall`, `steam`, `holo_ad`, `wires_span`), the `runner`, and `examples/neon_street.py` with four gallery shots.
 - **2026-10-19, the orbital hangar.** `examples/orbital_hangar.py`, a scene of several rooms built from the sci-fi hardware: the bay with its shuttle, loader and robot arms behind real glass onto a ringed planet, a control room looking down the bay, and a reactor room in cyan haze under red alarms. Gallery: `hangar_bay`, `hangar_pilot`, `hangar_control`, `hangar_reactor`.
 - **2026-10-19, sci-fi hardware.** `scripts/scifi.py`: `hangar_floor`, `conduit` and `screen_wall` textures, `pad_marking` and `hazard_stripe` decals, and a `shuttle`, `cargo_container`, `power_loader`, `beacon`, `reactor_core`, `robot_arm` and `cables_hang`, all drawn with the toolkit, lights and screens writing an emissive mask.
