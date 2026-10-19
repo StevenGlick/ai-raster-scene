@@ -21,8 +21,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 144 | 120 | 24 | 0 | 0 |
-| Props | 184 | 170 | 14 | 0 | 0 |
+| Textures | 144 | 123 | 21 | 0 | 0 |
+| Props | 184 | 174 | 10 | 0 | 0 |
 | Characters | 26 | 24 | 2 | 0 | 0 |
 | Decals | 24 | 19 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
@@ -39,7 +39,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 42 | 35 | 7 | 0 | 0 |
-| **all** | **564** | **504** | **60** | **0** | **0** |
+| **all** | **564** | **511** | **53** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -95,7 +95,7 @@ Weakest first, and in the order the new scenes need them.
 | `bark` | good |  | - | Redrawn with the toolkit in forest.py: long wavy ridges split by deep dark furrows; tiles without a seam. |
 | `bark_pine` | good |  | - | Redrawn with the toolkit in forest.py: a mosaic of tall plates (nearest-seed cells) with dark fissures and flaking. |
 | `wood_floor` | good |  | claude_study, drowned_library, gui_lantern, gui_themes, gui_trade, library_medium, mansion_library, tunnel_encounter, underground_waterway |  |
-| `shingle` | polish |  | bayou, chapel_graveyard, coast_lighthouse, rainy_street, winter_lake | Looks like grey brick; shingles want staggered rounded tabs and shadow under each row. |
+| `shingle` | good |  | bayou, chapel_graveyard, coast_lighthouse, rainy_street, winter_lake | Redrawn with the toolkit in basics.py: courses of staggered slates, each tipped up to its foot so it throws a shadow on the course below, chipped corners, moss in the joints. |
 
 ### Metal and sci-fi
 
@@ -161,7 +161,7 @@ Weakest first, and in the order the new scenes need them.
 | `tile_floor` | good |  | bunker_lab, derelict_ship, neon_street |  |
 | `tile_white` | good |  | - |  |
 | `tile_green` | good |  | - |  |
-| `cobble` | polish |  | garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, village_green | Good stones, but the same few repeat in a 2x2 tiling. |
+| `cobble` | good |  | garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, village_green | Redrawn with the toolkit in basics.py: a Voronoi mosaic of 36 rounded stones a tile in grey and brown, dark grit and moss in the joints; the repeat no longer shows. |
 | `asphalt` | good |  | neon_street, rain_alley, rainy_street |  |
 | `carpet` | good |  | castle_keep, chapel_graveyard, claude_study, gui_themes, gui_trade, library_medium, mansion_library |  |
 | `carpet_green` | good |  | - |  |
@@ -176,7 +176,7 @@ Weakest first, and in the order the new scenes need them.
 |---|---|---|---|---|
 | `acoustic` | polish |  | ghost_corridor, gui_hud, hospital_corridor | Flat; a slight bevel per tile. |
 | `ceiling_plaster` | polish |  | gui_themes, gui_trade, library_medium | A hard horizontal band across the middle of the tile. |
-| `beams` | polish |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, mansion_library | Reads as stripes; beams want depth (a lit side and a shadow side). |
+| `beams` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, mansion_library | Redrawn with the toolkit in basics.py: two oak beams a unit, proud of the limewash: a lit edge, a side in shadow and a soft shadow on the plaster; grain and checks. |
 
 ### Fabric and interior
 
@@ -271,7 +271,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 |---|---|---|---|---|
 | `armchair` | good | 0.6 tall | claude_study |  |
 | `bed` | polish | 0.4 tall | bunker_lab, ghost_corridor, gui_hud, hospital_corridor | Plain; add a pillow, blanket fold and frame detail. |
-| `bench` | polish | 0.35 tall | coast_lighthouse, garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, village_green | Plain slats; add a backrest variant. |
+| `bench` | good | 0.35 tall | coast_lighthouse, garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, village_green | Redrawn with the toolkit in basics.py: three backrest slats and two in the seat, held in cast-iron ends with scrolled armrests and curving legs. |
 | `book_stack` | good | 0.22 tall | claude_study, drowned_library |  |
 | `chest` | polish | 0.3 tall | castle_keep | Lid corners read as dark notches. |
 | `console` | good | 0.85 tall, glows | bunker_lab, orbital_hangar, space_station |  |
@@ -321,7 +321,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `birch_autumn` | good | 3 tall | autumn_lane | Drawn with the toolkit in forest.py: the birch gone to gold, a few patches already orange. |
 | `dead_tree` | good | 2.9 tall | chapel_graveyard, misty_moor, woodland_night | Redrawn with the toolkit in forest.py: a split trunk on a gnarled foot, bare limbs forking into twigs, grey peeling bark. |
 | `fern` | good | 0.42 tall | autumn_lane, chapel_graveyard, jungle_temple, misty_moor, tropical_beach, woodland_night | Redrawn: arching fronds from one crown. |
-| `flowers` | polish | 0.35 tall | garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, village_green | Red dots on a bush. |
+| `flowers` | good | 0.35 tall | garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, village_green | Redrawn with the toolkit in basics.py: leaves and stems with blooms of four colours, five petals round a dark eye, at different heights. |
 | `grass_tuft` | good | 0.4 tall | autumn_lane, chapel_graveyard, coast_lighthouse, misty_moor, rainy_street, tropical_beach, village_green, woodland_night | Redrawn: thin arching blades. |
 | `ivy_hang` | good | 0.8 tall, no shadow | cathedral_ruin, rainy_street |  |
 | `log` | good | 0.28 tall | tropical_beach, winter_lake, woodland_night | Redrawn with the toolkit in forest.py: bark in long ridges, a branch stub, moss along the top, a pale ringed end. |
@@ -360,9 +360,9 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `gravestone` | good | 0.6 tall | chapel_graveyard |  |
 | `grave_cross` | good | 0.55 tall | chapel_graveyard |  |
 | `signpost` | good | 1.3 tall | coast_lighthouse |  |
-| `statue` | polish | 1.5 tall | garden_encounter, gui_menus, hospital_garden, mansion_library, post_presets | Featureless grey figure; give it a pose and lit planes. |
+| `statue` | good | 1.5 tall | garden_encounter, gui_menus, hospital_garden, mansion_library, post_presets | Redrawn with the toolkit in basics.py: a draped woman in weathered marble raising a wreath, folds catching the light, on a moulded plinth with lichen. |
 | `monolith` | good | 2.2 tall | alien_world |  |
-| `rowboat` | polish | 0.3 tall | bayou, coast_lighthouse, gui_lantern, tunnel_encounter, underground_waterway | A flat brown shape; planks, gunwale, oars. |
+| `rowboat` | good | 0.3 tall | bayou, coast_lighthouse, gui_lantern, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: a clinker hull of lapped strakes, the top one painted a faded teal, a lighter gunwale, the bow rising, an oar along it. |
 | `buoy` | polish | 0.5 tall, glows | coast_lighthouse | Reads as a bottle. |
 | `snowman` | good | 0.62 tall | winter_lake |  |
 | `scarecrow` | good | 1.9 tall | autumn_lane | Drawn with the toolkit in village.py: post and crossbar, a sack head with a stitched face, a battered hat, a patched coat with straw at the cuffs and hem, a crow on one arm. |
@@ -879,6 +879,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, polish pass 2.** Redrawn with the toolkit in `scripts/basics.py`: `shingle`, `cobble`, `beams`, `rowboat`, `bench`, `flowers`, `statue` - all of them in many scenes.
 - **2026-10-19, four more characters.** `cowboy`, `witch`, `farmer`, `pirate` (16x32, with back views), put to work in the canyon, the autumn lane at dusk, the village green and the bayou.
 - **2026-10-19, the bayou.** `scripts/swamp.py`: `swamp_water` (mirrors), `bog`, `swamp_deep`; `bald_cypress`, `spanish_moss`, `cypress_knees`, `cattails`, `heron`, `alligator`, `fireflies`; a `swamp` fringe and scatter set. `examples/bayou.py` with four gallery shots.
 - **2026-10-19, the desert.** `scripts/desert.py`: `sandstone`, `sandstone_pale`, `slot_rock`, `desert_wash`, `pueblo_stone`, `pueblo_door`; `saguaro`, `prickly_pear`, `tumbleweed`, `cow_skull`, `clay_pot`; a `desert` scatter set. `examples/red_canyon.py` (a slot canyon lit through one gap in its roof) with four gallery shots.

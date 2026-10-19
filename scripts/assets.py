@@ -339,30 +339,6 @@ def tex_linoleum(name, c='#8a8a6e'):
     return grain(np.clip(img, 0, 1), rng, 0.03)
 
 
-def tex_cobble(name, c='#6a665e'):
-    rng = _rng(name)
-    img = np.zeros((T, T, 3))
-    n = fbm(T, rng, 8, 3)
-    pts = rng.random((22, 2)) * T
-    yy, xx = np.mgrid[0:T, 0:T]
-    best = np.full((T, T), 1e9)
-    second = np.full((T, T), 1e9)
-    idx = np.zeros((T, T), int)
-    for i, (py, px) in enumerate(pts):
-        for oy in (-T, 0, T):
-            for ox in (-T, 0, T):
-                d = np.hypot(yy - py - oy, xx - px - ox)
-                upd = d < best
-                second = np.where(upd, best, np.minimum(second, d))
-                idx = np.where(upd, i, idx)
-                best = np.where(upd, d, best)
-    edge = (second - best) < 1.6
-    shades = 0.7 + rng.random(len(pts)) * 0.45
-    img = col(c)[None, None, :] * shades[idx][..., None] * (0.85 + 0.3 * n[..., None])
-    img[edge] = col('#2a2824')
-    return np.clip(img, 0, 1)
-
-
 def tex_carpet(name, c='#6a1e22', border='#b08a3a'):
     rng = _rng(name)
     img = shade(col(c), fbm(T, rng, 16, 2), 0.15)
@@ -388,14 +364,6 @@ def tex_marble(name, c='#d8d4cc'):
     img[veins < 0.08] = col('#8a8478')
     img[0, :] *= 0.6; img[:, 0] *= 0.6
     img[32, :] *= 0.6; img[:, 32] *= 0.6
-    return img
-
-
-def tex_beams(name):
-    img = tex_plaster(name + 'c', '#b0a488', '#5a4a38', 0.2)
-    wood = tex_planks(name + 'bm', '#4a3220')
-    img[0:14] = wood[0:14]
-    img[32:46] = wood[32:46]
     return img
 
 
@@ -441,23 +409,6 @@ def tex_logs(name, c='#6a5134', chink='#3a3028'):
     img = np.where(((y % lh) < 2)[..., None], col(chink)[None, None, :] * (0.7 + 0.5 * n[..., None]), img)
     img[rng.random((T, T)) > 0.99] = col('#4a3826')
     return grain(np.clip(img, 0, 1), rng, 0.035)
-
-
-def tex_shingle(name, c='#4a4a4e', edge='#22222a'):
-    """Overlapping roof shingles; also reads as a low roofline or a wall top."""
-    rng = _rng(name)
-    n = fbm(T, rng, 12, 3)
-    yy, xx = np.mgrid[0:T, 0:T]
-    sw, sh = 16, 8
-    off = ((yy // sh) % 2) * (sw // 2)
-    u = ((xx + off) % sw) / sw
-    v = (yy % sh) / sh
-    tone = 0.72 + 0.32 * (((yy // sh) * 7 + ((xx + off) // sw) * 13) % 5) / 4
-    img = col(c)[None, None, :] * tone[..., None] * (0.85 + 0.3 * n[..., None]) * (0.62 + 0.62 * v)[..., None]
-    img[v > 0.84] *= 0.4
-    img[v < 0.14] = np.clip(col(c) * 1.45, 0, 1) * tone[v < 0.14][:, None]
-    img[(u < 0.09) | (u > 0.94)] = col(edge)
-    return grain(np.clip(img, 0, 1), rng, 0.04)
 
 
 def tex_rust(name, c='#6a4a32'):
@@ -1135,7 +1086,6 @@ TEXTURES = {
     'moss_stone': _plain(tex_moss_stone),
     'ivy': _plain(tex_ivy),
     'logs': _plain(tex_logs),
-    'shingle': _plain(tex_shingle),
     'rust': _plain(tex_rust),
     'pipes': _plain(tex_pipes),
     'panel': _plain(tex_panel),
@@ -1144,7 +1094,6 @@ TEXTURES = {
     'checker': _plain(tex_checker),
     'linoleum': _plain(tex_linoleum),
     'tile_floor': _plain(tex_tile, '#b8b4a8', '#5a5850', 16),
-    'cobble': _plain(tex_cobble),
     'carpet': _plain(tex_carpet),
     'carpet_green': _plain(tex_carpet, '#1e3a2a', '#9a8a4a'),
     'sand': _plain(tex_sand),
@@ -1153,7 +1102,6 @@ TEXTURES = {
     'wood_floor': _plain(tex_planks, '#5a3e26'),
     'concrete_floor': _plain(tex_concrete, '#6e6e68'),
     'rock_floor': _plain(tex_rock, '#4a4440'),
-    'beams': _plain(tex_beams),
     'acoustic': _plain(tex_acoustic),
     'ceiling_plaster': _plain(tex_plaster, '#a8a08a', '#4a4030', 0.3),
     'mud': _plain(tex_mud),
@@ -1271,38 +1219,6 @@ def spr_lamp_post():
     return _finish(im, em, w, h)
 
 
-def spr_statue():
-    w, h = 24, 64
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    stone, dark = '#8a857c', '#5a5650'
-    d.rectangle([2 * S, 46 * S, 22 * S, 64 * S], fill='#6a6660')
-    d.rectangle([1 * S, 44 * S, 23 * S, 47 * S], fill='#77736c')
-    d.polygon([(12 * S, 8 * S), (6 * S, 16 * S), (5 * S, 44 * S), (19 * S, 44 * S), (18 * S, 16 * S)], fill=stone)
-    d.ellipse([8 * S, 1 * S, 16 * S, 10 * S], fill=stone)
-    d.polygon([(7 * S, 4 * S), (12 * S, 0), (17 * S, 4 * S), (16 * S, 12 * S), (8 * S, 12 * S)], fill=dark)  # hood
-    d.ellipse([10 * S, 5 * S, 14 * S, 10 * S], fill='#2a2826')  # shadowed face
-    d.line([(12 * S, 20 * S), (12 * S, 43 * S)], fill=dark, width=S)
-    d.line([(9 * S, 22 * S), (9 * S, 43 * S)], fill=dark, width=S // 2)
-    d.polygon([(8 * S, 20 * S), (16 * S, 20 * S), (14 * S, 28 * S), (10 * S, 28 * S)], fill=dark)  # hands clasped
-    return _finish(im, em, w, h)
-
-
-def spr_flowers():
-    w, h = 32, 20
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    rng = np.random.default_rng(4)
-    d.ellipse([0, 4 * S, 32 * S, 24 * S], fill='#1e3a22')
-    d.ellipse([3 * S, 2 * S, 20 * S, 16 * S], fill='#264a2a')
-    d.ellipse([14 * S, 3 * S, 30 * S, 17 * S], fill='#22422a')
-    for _ in range(26):
-        x, y = rng.random() * 28 + 2, rng.random() * 12 + 2
-        d.ellipse([x * S, y * S, (x + 2) * S, (y + 2) * S], fill='#c4302a')
-        d.point([((x + 1) * S, (y + 1) * S)], fill='#ffd060')
-    return _finish(im, em, w, h)
-
-
 def spr_lantern():
     w, h = 12, 20
     im, d, em, de = _canvas(w, h)
@@ -1352,29 +1268,6 @@ def spr_wheelchair():
     d.rectangle([4 * S, 2 * S, 16 * S, 14 * S], fill='#4a3a2a')
     d.rectangle([4 * S, 2 * S, 16 * S, 4 * S], fill='#2a2a2a')
     d.line([(10 * S, 10 * S), (10 * S, 24 * S)], fill='#3a3a3a', width=S // 2)
-    return _finish(im, em, w, h)
-
-
-def spr_bench():
-    w, h = 40, 16
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.rectangle([0, 0, 40 * S, 3 * S], fill='#5a3e26')
-    d.rectangle([0, 6 * S, 40 * S, 9 * S], fill='#6a4a2e')
-    for x in (3, 37):
-        d.rectangle([(x - 1) * S, 0, (x + 1) * S, 16 * S], fill='#1e1e1e')
-    return _finish(im, em, w, h)
-
-
-def spr_rowboat():
-    w, h = 48, 16
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.polygon([(0, 4 * S), (48 * S, 4 * S), (42 * S, 14 * S), (6 * S, 14 * S)], fill='#5a4030')
-    d.rectangle([0, 3 * S, 48 * S, 5 * S], fill='#6e5038')
-    for y in (8, 11):
-        d.line([(4 * S, y * S), (44 * S, y * S)], fill='#4a3424', width=S // 2)
-    d.line([(36 * S, 4 * S), (36 * S, 0)], fill='#3a2c22', width=S)
     return _finish(im, em, w, h)
 
 
@@ -2303,10 +2196,9 @@ def spr_orrery():
 
 
 SPRITES = {
-    'lamp_post': spr_lamp_post, 'statue': spr_statue, 'flowers': spr_flowers,
+    'lamp_post': spr_lamp_post, 
     'lantern': spr_lantern,
-    'candles': spr_candles, 'bed': spr_bed, 'wheelchair': spr_wheelchair, 'bench': spr_bench,
-    'rowboat': spr_rowboat,
+    'candles': spr_candles, 'bed': spr_bed, 'wheelchair': spr_wheelchair, 
     'mushrooms': spr_mushrooms, 'signpost': spr_signpost,
     'campfire': spr_campfire, 'locker': spr_locker, 'console': spr_console, 'buoy': spr_buoy,
     'gravestone': spr_gravestone,

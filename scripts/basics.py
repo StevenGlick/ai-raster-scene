@@ -1,7 +1,8 @@
 """Everyday materials and props redrawn with the pixel-art toolkit (scripts/pixelart.py): grass,
-a clipped hedge, dirt, gravel, wood panelling and water; a barrel, a broken one, a crate and a
-fountain. These are the oldest things in the set - the first versions were noise and flat shapes
-- and they turn up in a great many scenes.
+a clipped hedge, dirt, gravel, wood panelling, water, slates, cobbles and ceiling beams; a barrel,
+a broken one, a crate, a fountain, a rowboat, a bench, flowers and a statue. These are the oldest
+things in the set - the first versions were noise and flat shapes - and they turn up in a great
+many scenes.
 
 As in the other toolkit modules, shapes are stamped into a height field, lit from the upper left
 and snapped onto hue-shifted ramps; every texture tiles without a seam.
@@ -10,6 +11,7 @@ import numpy as np
 
 from biomes import T, _leaf_layers, _prop, _rng, _tile
 from dream import _lathe
+from forest import _plates
 from pixelart import Canvas, ramp, smooth_noise
 
 GRASS = [ramp('#3e6a2a', dark=0.3), ramp('#5a8a32'), ramp('#9aa848', dark=0.45, light=1.2)]
@@ -23,6 +25,23 @@ PANEL = ramp('#553620', dark=0.3)
 WATER = ramp('#163a44', dark=0.35, light=1.45, warm=0.02, cool=0.12)
 IRON = ramp('#4a4a4e', dark=0.4, light=1.6)
 STONE_F = ramp('#a8a294', dark=0.4, light=1.2)
+SLATE = [ramp('#4a4e58', dark=0.35, light=1.35, cool=0.2), ramp('#5a5a62', dark=0.35, light=1.3),
+         ramp('#3e4450', dark=0.35, light=1.4)]
+SETT = [ramp('#7a766c', dark=0.35, light=1.25), ramp('#8a7e6c', dark=0.35, light=1.22),
+        ramp('#62646a', dark=0.35, light=1.3)]
+JOINT = ramp('#2e2a26', dark=0.5, light=1.5)
+MOSS_J = ramp('#4e6230', dark=0.35)
+BEAM = ramp('#5a3e28', dark=0.3, light=1.3)
+LIME = ramp('#d6cdb4', dark=0.45, light=1.1)
+HULL_PAINT = ramp('#4e7a78', dark=0.35, light=1.25)
+OAR = ramp('#a8865a', dark=0.35, light=1.2)
+CAST_IRON = ramp('#2e3034', dark=0.5, light=1.9)
+SLAT = ramp('#8a5e3a', dark=0.32)
+FLOWER = [ramp('#c8303a', dark=0.4, light=1.25), ramp('#e8c040', dark=0.4, light=1.15),
+          ramp('#e8e0d8', dark=0.5, light=1.05), ramp('#d070a0', dark=0.4, light=1.2)]
+STEMS = ramp('#3e6a2e', dark=0.3)
+MARBLE_W = ramp('#c8c2b4', dark=0.4, light=1.15)
+LICHEN_S = ramp('#8a8a5a', dark=0.4)
 
 
 # ---------------------------------------------------------------- textures
@@ -140,6 +159,70 @@ def tex_water(name):
     return _tile(cv, [WATER], dither=0.4, cavity=0.0, shadow=0.0, ambient=0.12, diffuse=0.45)
 
 
+def tex_shingle(name):
+    """A roof of slates seen from above: courses of staggered tabs, each tipped up toward its foot
+    where it laps over the course below, so every course throws a shadow along the next; the odd
+    tab a shade off, a chipped corner, a little moss in the joints."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=-0.4, mat=3)
+    for r in range(8):
+        y0 = r * 8
+        for c in range(8):
+            x0 = c * 8 + (r % 2) * 4 + rng.uniform(-0.4, 0.4)
+            ys, xs = np.arange(y0, y0 + 8), np.arange(int(x0), int(x0) + 8)
+            X, Y = np.meshgrid(xs + 0.5 - x0, ys + 0.5 - y0)
+            mask = (X > 0.6) & (X < 7.5) & (Y < 7.6)
+            if rng.random() < 0.25:                                  # a chipped corner
+                cx_, cy_ = (1.0 if rng.random() < 0.5 else 7.0), 7.0
+                mask &= (X - cx_) ** 2 + (Y - cy_) ** 2 > 2.2
+            cv.put(ys, xs, mask, 0.2 + 0.85 * (Y / 8.0), mat=int(rng.choice([0, 0, 0, 1, 2])),
+                   tone=rng.normal(0, 0.05))
+    cv.noise(0.08, cells=12, rng=rng)
+    moss = (cv.mat == 3) & (smooth_noise(T, T, 5, rng) > 0.62)
+    cv.mat[moss] = 4
+    return _tile(cv, SLATE + [JOINT, MOSS_J], cavity=0.45, shadow=0.55, ambient=0.26, diffuse=0.6)
+
+
+def tex_cobble(name):
+    """Cobbles: rounded stones of grey and brown set close in a mosaic of every size, dark grit and
+    a little moss in the joints - enough stones in a tile that its repeat does not show."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=-0.8, mat=3)
+    _plates(cv, rng, rows=6, cols=6, fissure=1.5, bevel=2.4)
+    own = rng.integers(0, 3, cv.n + 1)
+    stones = cv.id > 0
+    cv.mat[stones] = own[cv.id[stones]]
+    cv.noise(0.12, cells=10, rng=rng)
+    moss = ~stones & (smooth_noise(T, T, 4, rng) > 0.6)
+    cv.mat[moss] = 4
+    return _tile(cv, SETT + [JOINT, MOSS_J], cavity=0.5, shadow=0.5, ambient=0.26, diffuse=0.62)
+
+
+def tex_beams(name):
+    """A beamed ceiling seen from below: two heavy oak beams to a unit standing proud of the
+    limewashed plaster between them, so each has a lit edge and a shadowed one and throws a soft
+    shadow onto the plaster; grain, a check or two along the beams."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=0.0, mat=1)
+    cv.noise(0.2, cells=6, rng=rng)
+    for y0 in (2, 34):
+        ys = np.arange(y0, y0 + 15)                                  # the beam, bevelled along its edges only
+        edge = np.minimum(ys + 0.5 - y0, y0 + 15 - ys - 0.5)
+        cv.z[y0:y0 + 15] = (0.3 + 1.6 * np.clip(edge / 2.5, 0, 1) ** 0.6)[:, None].astype(np.float32)
+        cv.mat[y0:y0 + 15] = 0
+        cv.id[y0:y0 + 15] = y0 + 1
+        cv.tone[y0:y0 + 15] = rng.normal(0, 0.03)
+        for _ in range(9):                                           # grain along the beam
+            x, y = rng.random() * T, y0 + rng.uniform(2.5, 12.5)
+            cv.stroke([(x, y), (x + rng.uniform(8, 20), y + rng.normal(0, 0.3))], 0.55, dome=0.2, mode='carve')
+        x = rng.random() * T                                         # a check (a long crack)
+        cv.stroke([(x, y0 + 7), (x + rng.uniform(14, 24), y0 + 7.5)], 0.9, dome=0.5, mode='carve')
+        cv.tone[y0:y0 + 2] += 0.12                                   # the lit edge
+        cv.tone[y0 + 11:y0 + 15] -= np.linspace(0.12, 0.28, 4)[:, None].astype(np.float32)   # the side in shadow
+        cv.tone[y0 + 15:y0 + 21] -= np.linspace(0.22, 0.02, 6)[:, None].astype(np.float32)   # its shadow on the plaster
+    return _tile(cv, [BEAM, LIME], cavity=0.45, shadow=0.55, ambient=0.26, diffuse=0.6)
+
+
 # ---------------------------------------------------------------- props
 
 def spr_barrel():
@@ -243,6 +326,114 @@ def spr_fountain():
     return _prop(cv, [STONE_F, WATER, ramp('#bfe8f0', dark=0.6, light=1.05)], relief=1.0, cavity=0.4, shadow=0.45)
 
 
+def spr_rowboat():
+    """A wooden rowboat drawn up or afloat: a clinker hull of overlapping strakes, the top one
+    painted a faded teal, a lighter gunwale, the bow rising, an oar laid along it with its blade
+    over the stern."""
+    w, h = 88, 26
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    xs = np.arange(w) + 0.5
+    top = 6.0 + 0.0016 * (xs - 50) ** 2 - np.clip((14 - xs) / 14, 0, 1) * 4.5       # sheer: the bow rises
+    keel = np.where(xs < 16, 9 + (xs / 16) * 13, 22.5 - np.clip((xs - 78) / 9, 0, 1) * 7)
+    keel = np.minimum(keel, 23.5)
+    yy = np.arange(h)[:, None] + 0.5
+    hull = (yy >= top[None, :]) & (yy <= keel[None, :]) & (xs[None, :] > 1.5) & (xs[None, :] < 86)
+    t = np.clip((yy - top[None, :]) / np.maximum(keel - top, 1)[None, :], 0, 1)
+    cv.put(np.arange(h), np.arange(w), hull, 1.0 - 0.4 * t, mat=0)
+    for k in (0.3, 0.55, 0.78):                                       # the strakes' lapped edges
+        line = top + (keel - top) * k
+        pts = [(x, line[int(x)]) for x in range(3, 85, 4)]
+        cv.stroke(pts, 0.8, dome=0.4, mode='carve')
+    painted = hull & (t < 0.3)
+    cv.mat[painted] = 1
+    rim = hull & (yy < top[None, :] + 1.6)
+    cv.mat[rim] = 2
+    cv.z[rim] += 0.3
+    cv.stroke([(18, top[18] - 1.2), (70, top[70] - 2.6), (84, top[84] - 3.4)], 1.4, z=1.6, dome=0.6, mat=2)   # the oar
+    cv.polygon([(80, top[80] - 4.8), (88, top[84] - 6.2), (88, top[84] - 1.6), (80, top[80] - 2.0)], z=1.6,
+               top=0.5, bevel=1.0, mat=2)
+    return _prop(cv, [WOOD, HULL_PAINT, OAR], relief=1.0, cavity=0.4, shadow=0.45, ambient=0.3, diffuse=0.65)
+
+
+def spr_bench():
+    """A park bench: three slats in the backrest and two in the seat, held in cast-iron ends with
+    a scrolled armrest and curving legs."""
+    w, h = 60, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for y in (3, 9, 15):                                              # the backrest
+        cv.box(6, y, 48, 4.6, z=0.0, top=0.8, bevel=1.0, mat=0, tone=0.02)
+    for y, tn in ((23, 0.04), (27.5, -0.04)):                         # the seat
+        cv.box(5, y, 50, 4.0, z=0.4, top=0.8, bevel=1.0, mat=0, tone=tn)
+    for side in (-1, 1):                                              # the iron ends
+        x = 30 + side * 25
+        cv.stroke([(x - side * 1, 2), (x, 22), (x - side * 2, 31), (x + side * 1, h)], 2.2, z=1.2, dome=0.6, mat=1)
+        cv.stroke([(x - side * 2, 31), (x - side * 6, h)], 1.8, z=1.1, dome=0.6, mat=1)
+        a = np.linspace(0, 1.7 * np.pi, 16)
+        cv.stroke(list(zip(x + side * (2.5 + np.cos(a) * 2.6), 20 + np.sin(a) * 2.6)), 1.3, z=1.4, dome=0.5,
+                  mat=1)                                               # the scrolled armrest
+        cv.stroke([(x - side * 1, 18), (x + side * 3, 17.5)], 1.6, z=1.4, dome=0.5, mat=1)
+    return _prop(cv, [SLAT, CAST_IRON], relief=1.0, cavity=0.4, shadow=0.45, ambient=0.3, diffuse=0.65)
+
+
+def spr_flowers():
+    """A clump of flowers: leaves and stems, and blooms of four kinds - red, yellow, white, pink -
+    each five petals round a dark eye, at different heights."""
+    rng = np.random.default_rng(161)
+    w, h = 44, 30
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for _ in range(26):                                               # leaves
+        x = rng.uniform(4, 40)
+        a = np.radians(rng.uniform(-150, -30))
+        L = rng.uniform(5, 9)
+        cv.leaf(x, h, x + np.cos(a) * L, h + np.sin(a) * L, L * 0.45, z=rng.random() * 0.4, dome=0.6, mat=4,
+                tone=rng.normal(0, 0.05), rib=0.3)
+    for k in range(13):                                               # stems and blooms
+        x = rng.uniform(5, 39)
+        top = rng.uniform(4, 16)
+        cv.stroke([(x, h - 2), (x + rng.normal(0, 1.2), top)], 0.7, z=0.6, dome=0.3, mat=4)
+        m = int(rng.integers(0, 4))
+        r = rng.uniform(1.6, 2.4)
+        for p in range(5):
+            b = p * 2 * np.pi / 5 + rng.uniform(0, 1)
+            cv.ellipse(x + np.cos(b) * r, top + np.sin(b) * r * 0.8, r * 0.75, r * 0.6, z=1.4 + k * 0.02, dome=0.6,
+                       angle=np.degrees(b), mat=m)
+        cv.ellipse(x, top, 0.9, 0.8, z=1.9 + k * 0.02, dome=0.5, mat=5)
+    return _prop(cv, FLOWER + [STEMS, ramp('#3a2a1a', dark=0.5, light=1.6)], relief=1.0, cavity=0.35, shadow=0.4)
+
+
+def spr_statue():
+    """A statue on a plinth: a draped woman in weathered marble, her weight on one leg, one arm
+    raised with a wreath, the other gathering her robe; long folds in the drapery catching the
+    light; the moulded plinth stained and touched with lichen."""
+    rng = np.random.default_rng(163)
+    w, h = 48, 104
+    cx = 24
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(8, 80, 32, 24, z=0.0, top=1.0, bevel=2.0, mat=0, tone=-0.04)                 # the plinth
+    cv.box(5, 76, 38, 5, z=0.8, top=0.8, bevel=1.5, mat=0, tone=0.04)                   # its cornice
+    cv.box(6, 98, 36, 6, z=0.6, top=0.8, bevel=1.5, mat=0)                              # its foot
+    cv.polygon([(cx - 9, 76), (cx - 8, 40), (cx - 5, 24), (cx + 5, 24), (cx + 8, 40), (cx + 11, 76)], z=0.8,
+               top=1.6, bevel=5, mat=0)                                                  # the robed body
+    for x0, x1 in ((cx - 6, cx - 7), (cx - 3, cx - 3.5), (cx, cx + 0.5), (cx + 3, cx + 5), (cx + 6, cx + 9)):
+        cv.stroke([(x0, 34), (x0 + (x1 - x0) * 0.5, 55), (x1, 75)], 0.8, dome=0.5, mode='carve')   # folds
+    cv.stroke([(cx - 8, 44), (cx + 7, 36)], 1.6, z=2.3, dome=0.7, mat=0, tone=0.05)        # the robe's sash
+    cv.ellipse(cx + 0.5, 15, 4.2, 5.0, z=2.4, dome=1.2, mat=0, tone=0.06)                 # head
+    cv.ellipse(cx + 2.5, 11.5, 2.6, 2.4, z=2.6, dome=0.8, mat=0)                          # hair, gathered up
+    cv.stroke([(cx, 20), (cx, 24)], 2.6, z=2.2, dome=0.8, mat=0)                           # neck
+    cv.stroke([(cx + 5, 26), (cx + 10, 16), (cx + 12, 5)], 2.4, z=2.6, dome=0.8, taper=(1.1, 0.8), mat=0)   # raised arm
+    a = np.linspace(0, 2 * np.pi, 20)
+    cv.stroke(list(zip(cx + 12.5 + np.cos(a) * 3.4, 3.4 + np.sin(a) * 2.2)), 1.2, z=3.0, dome=0.5, mat=0,
+              tone=0.03)                                                                   # the wreath
+    cv.stroke([(cx - 5, 26), (cx - 9, 38), (cx - 8, 46)], 2.4, z=2.5, dome=0.8, taper=(1.1, 0.9), mat=0)   # the other
+    for x in (cx - 4, cx + 6):
+        cv.ellipse(x, 76.5, 2.6, 1.4, z=2.0, dome=0.6, mat=0)                             # feet
+    stain = smooth_noise(w, h, 4, rng, wrap=False, cells_y=8) > 0.66
+    cv.tone[stain & (cv.mat == 0)] -= 0.08
+    lichen = (smooth_noise(w, h, 6, rng, wrap=False) > 0.7) & (np.arange(h)[:, None] > 78) & (cv.id > 0)
+    cv.mat[lichen] = 1
+    return _prop(cv, [MARBLE_W, LICHEN_S], relief=1.1, cavity=0.45, shadow=0.5, ambient=0.28, diffuse=0.62)
+
+
 TEXTURES = {
     'grass': lambda n: (tex_grass(n), None),
     'hedge': lambda n: (tex_hedge(n), None),
@@ -250,5 +441,9 @@ TEXTURES = {
     'gravel': lambda n: (tex_gravel(n), None),
     'wood_panel': lambda n: (tex_wood_panel(n), None),
     'water': lambda n: (tex_water(n), None),
+    'shingle': lambda n: (tex_shingle(n), None),
+    'cobble': lambda n: (tex_cobble(n), None),
+    'beams': lambda n: (tex_beams(n), None),
 }
-SPRITES = {'barrel': spr_barrel, 'broken_barrel': spr_broken_barrel, 'crate': spr_crate, 'fountain': spr_fountain}
+SPRITES = {'barrel': spr_barrel, 'broken_barrel': spr_broken_barrel, 'crate': spr_crate, 'fountain': spr_fountain,
+           'rowboat': spr_rowboat, 'bench': spr_bench, 'flowers': spr_flowers, 'statue': spr_statue}
