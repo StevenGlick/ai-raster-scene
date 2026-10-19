@@ -2987,6 +2987,7 @@ FRINGES = dict(biomes.FRINGES)
 import forest  # noqa: E402
 
 TEXTURES.update(forest.TEXTURES)
+TEXTURE_NOISE.update(forest.TEXTURE_NOISE)
 SPRITES.update(forest.SPRITES)
 SPRITE_HEIGHT.update(forest.SPRITE_HEIGHT)
 FRINGES.update(forest.FRINGES)

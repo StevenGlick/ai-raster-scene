@@ -440,6 +440,8 @@ TEXTURES = {
     'pine_needles': lambda n: (tex_needles(n), None),
     'moss': lambda n: (tex_moss(n), None),
 }
+# how strongly the world-space surface noise varies each texture (see assets.TEXTURE_NOISE)
+TEXTURE_NOISE = {'forest_deep': 1.6}
 SPRITES = {'pine': spr_pine, 'tree': spr_tree, 'birch': spr_birch, 'bush': spr_bush, 'boulder': spr_boulder,
            'stump': spr_stump, 'log': spr_log, 'dead_tree': spr_dead_tree}
 SPRITES.update({f'forest_card_{k}': (lambda k=k: _forest_card(k)) for k in (1, 2, 3, 4)})
