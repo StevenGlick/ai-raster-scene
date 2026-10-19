@@ -747,3 +747,62 @@ CHARACTERS = {
         ],
     },
 }
+
+
+# ------------------------------------------------------------------ back views
+# How each character looks from behind, derived from its front: (first row, last row, {char: char})
+# turns the face into hair, hood or helmet and the front-only details (ties, badges, chest
+# lights, a held book) into plain coat. Only pixels inside the silhouette change, so the outline
+# stays, and the result is mirrored left to right, so a rifle over the right shoulder is over the
+# left one when you see the soldier from behind.
+BACK_RECIPES = {
+    'cultist': [(5, 9, {'k': 'r', 'e': 'r', 's': 'r'}), (14, 17, {'a': 'r', 's': 'r'}), (18, 18, {'s': 'y'})],
+    'scientist': [(3, 7, {'s': 'h', 'S': 'h', 'e': 'h', 'g': 'h'}), (8, 8, {'s': 'S'}),
+                  (10, 19, {'c': 'w', 't': 'w'})],
+    'guard': [(2, 2, {'y': 'c'}), (4, 7, {'s': 'b', 'S': 'b', 'e': 'b', 'm': 'b'}), (8, 8, {'s': 'S'}),
+              (10, 18, {'y': 'c'}), (17, 17, {'y': 'l'})],
+    'nurse': [(4, 8, {'s': 'h', 'S': 'h', 'e': 'h', 'm': 'h'}), (10, 31, {'w': 'd', 'W': 'D'})],
+    'spiritualist': [(3, 8, {'s': 'p', 'S': 'P', 'e': 'p', 'm': 'p'}),
+                     (9, 14, {'g': 'p', 'f': 'p', 'w': 'p', 's': 'p', 'S': 'p'})],
+    'ghost': [(3, 7, {'s': 'h', 'k': 'h'})],
+    'hybrid': [(5, 8, {'e': 'g', 'k': 'g', 't': 'g'})],
+    'soldier': [(5, 6, {'s': 'H', 'S': 'H', 'e': 'H'}), (7, 9, {'s': 'S', 'e': 'S'})],
+    'knight': [(3, 8, {'v': 'a', 'l': 'a'}), (10, 19, {'g': 't', 's': 'T'})],
+    'child': [(10, 12, {'s': 'h', 'S': 'h', 'e': 'h'}), (13, 14, {'s': 'S', 'm': 'S'})],
+    'creature': [(7, 11, {'e': 'g', 'k': 'g', 't': 'g', 'r': 'g'})],
+    'robot': [(5, 8, {'l': 'm', 'e': 'm', 'k': 'M'}), (12, 17, {'k': 'M', 'r': 'M', 'q': 'M', 'l': 'm'})],
+    'shopkeeper': [(3, 6, {'s': 'h', 'S': 'h', 'e': 'h', 'm': 'h'}), (7, 9, {'s': 'S', 'm': 'S'}),
+                   (10, 31, {'w': 'v', 'W': 'V', 'g': 'v'})],
+    'astronaut': [(4, 8, {'v': 'w', 'V': 'w'}), (11, 18, {'l': 'W', 'o': 'W'})],
+    'android': [(6, 6, {'e': 's'}), (12, 16, {'e': 's'})],
+    'alien': [(6, 8, {'e': 'a', 'E': 'a'})],
+    'dreamer': [(4, 8, {'s': 'h', 'S': 'h', 'z': 'h', 'm': 'h'}), (12, 17, {'c': 'n', 'f': 'n', 's': 'n'})],
+    'claude': [(4, 7, {'e': 'L', 'm': 'L', 'q': 'L'}),
+               (11, 25, {'s': 'c', 'p': 'c', 'r': 'c', 'w': 'c', 'W': 'C', 'T': 't'})],
+}
+
+
+def back_rows(defn, recipe):
+    """The back of a character: its front with the recipe applied inside the outline, mirrored.
+    Returned in the same form as its `pixels` (half rows for a `mirror` sprite)."""
+    rows = defn['pixels']
+    if defn.get('mirror'):
+        rows = [r + r[::-1] for r in rows]
+    grid = [list(r) for r in rows]
+    h, w = len(grid), len(grid[0])
+
+    def inside(y, x):
+        return all(0 <= y + dy < h and 0 <= x + dx < w and grid[y + dy][x + dx] not in '. '
+                   for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)))
+    out = [row[:] for row in grid]
+    for y0, y1, swap in recipe:
+        for y in range(y0, min(y1, h - 1) + 1):
+            for x in range(w):
+                if grid[y][x] in swap and inside(y, x):
+                    out[y][x] = swap[grid[y][x]]
+    out = [''.join(r)[::-1] for r in out]
+    return [r[:w // 2] for r in out] if defn.get('mirror') else out
+
+
+for _name, _recipe in BACK_RECIPES.items():
+    CHARACTERS[_name]['back'] = back_rows(CHARACTERS[_name], _recipe)

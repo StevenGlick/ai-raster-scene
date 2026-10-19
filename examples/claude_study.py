@@ -78,7 +78,7 @@ s = scene(
          'overlays': [{'type': 'bubble', 'anchor': 'claude', 'name': 'Claude',
                        'text': "Ask me anything. I'll tell you what I know, and what I don't."}]},
         {'x': 14.0, 'y': 7.4, 'height': 0.8, 'look_at': [16.0, -8.0, -1.4], 'fov': 70,   # over the rail
-         'extra_sprites': [{'id': 'claude_out', 'x': 15.1, 'y': 4.8, 'type': 'claude'}]},
+         'extra_sprites': [{'id': 'claude_out', 'x': 15.1, 'y': 4.8, 'type': 'claude', 'facing': 270}]},   # watching the moon
         {'x': 14.0, 'y': 16.0, 'look_at': [15.0, 23.0, 0.5], 'fov': 66,
          'overlays': [{'type': 'dialog', 'portrait': 'claude', 'name': 'Claude',
                        'text': 'A longer answer goes here, in a box like this one, with my lantern in the corner.'}]},

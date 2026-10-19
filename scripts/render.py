@@ -166,6 +166,12 @@ class World:
         for y, x, want_floor, want_ceil in inherit:
             self._inherit_surfaces(y, x, want_floor, want_ceil, default)
         self._roof_low_blocks()
+        # rain-soaked: open ground under the sky darkens and turns mirror-like (roofed and void
+        # cells stay dry)
+        wet = min(1.0, max(0.0, float(scene.get('wet', 0) or 0)))
+        outside = (self.height <= 0) & (self.ceil_tid < 0) & ~self.void
+        self.wet = np.where(outside, wet, 0.0).astype(np.float32)
+        self.reflect = np.clip(self.reflect + self.wet * 0.35, 0, 1).astype(np.float32)
         # what blocks light and hides what is behind it: see-through cells do neither
         self.solid_h = np.where(self.see, 0.0, self.height).astype(np.float32)
 
@@ -565,7 +571,12 @@ def build_sun(world, L, res=4):
     light - the highest (wall height - distance x tan(elevation)) met while marching toward it.
     A point at height z is then lit when z clears that value, so facades are half-lit behind a
     lower building, characters' legs fall into the shadow of a wall, and a wall face turned
-    away from the light shadows itself. Roofed cells get no direct light at all.
+    away from the light shadows itself.
+
+    Under a roof the light can only arrive through a gap - a doorway, a see-through window, the
+    open side of a porch - so a second map holds the highest height that can still see it: the
+    ray toward the light must be below the ceiling where it leaves the last roofed cell. A
+    sunbeam therefore comes in low through a window and lands on the floor across the room.
     """
     kind = L.get('type')
     colour, inten, disc_c, disc_r, glow = SUN_DEFAULTS[kind]
@@ -587,15 +598,50 @@ def build_sun(world, L, res=4):
             hb = np.where(inb, world.solid_h[np.clip(qy, 0, world.mh - 1), np.clip(qx, 0, world.mw - 1)], 0)
             cand = np.where((qx == own_x) & (qy == own_y), -1.0, hb - t * tan_el)
             np.maximum(zlit, cand, out=zlit)
-    roofed = np.repeat(np.repeat(world.ceil_tid >= 0, res, 0), res, 1)
-    zlit[roofed] = np.inf
+    roof = world.ceil_tid >= 0
+    zroof = np.full((H, W), np.inf, np.float32)
+    if roof.any() and L.get('shadows', True):
+        last = np.full((H, W), -1.0, np.float32)    # how far toward the light the roof lasts
+        reach = min(world.ceil_h / tan_el + 1.0, float(world.mw + world.mh))
+        for t in np.arange(0.0, reach + 0.25, 0.25):
+            qx = np.floor(px + ux * t).astype(int)
+            qy = np.floor(py + uy * t).astype(int)
+            inb = (qx >= 0) & (qy >= 0) & (qx < world.mw) & (qy < world.mh)
+            under = inb & roof[np.clip(qy, 0, world.mh - 1), np.clip(qx, 0, world.mw - 1)]
+            last = np.where(under, t, last)
+        zroof = np.where(last >= 0, world.ceil_h - (last + 0.25) * tan_el, np.inf).astype(np.float32)
+    elif roof.any():
+        zroof[np.repeat(np.repeat(roof, res, 0), res, 1)] = -np.inf
     rgb = np.array(L.get('color', colour), np.float32) * float(L.get('intensity', inten))
     disc = None
     if L.get('disc', True):
         disc = {'azimuth': math.degrees(az), 'elevation': math.degrees(el),
                 'color': L.get('disc_color', disc_c), 'radius': float(L.get('disc_size', disc_r)), 'glow': glow}
     return {'ux': ux, 'uy': uy, 'sin': math.sin(el), 'cos': math.cos(el), 'rgb': rgb, 'zlit': zlit,
-            'res': res, 'disc': disc}
+            'zroof': zroof, 'ceil_h': world.ceil_h, 'res': res, 'disc': disc}
+
+
+def sun_visibility(s_, x, y, z, soft=0.12):
+    """0-1: how much of a sun or moon a point (x, y, z) sees, with a soft edge to its shadows
+    (`soft` is the height over which a shadow edge fades)."""
+    zl, zr, r = s_['zlit'], s_['zroof'], s_['res']
+    iy = np.clip((np.asarray(y) * r).astype(int), 0, zl.shape[0] - 1)
+    ix = np.clip((np.asarray(x) * r).astype(int), 0, zl.shape[1] - 1)
+    z = np.asarray(z)
+    with np.errstate(invalid='ignore'):
+        roof = np.clip(np.nan_to_num(zr[iy, ix] - z, posinf=9.0, neginf=-9.0) / soft + 0.5, 0, 1)
+    roof = np.where(z >= s_['ceil_h'], 1.0, roof)    # air above a roof is outdoors
+    return np.clip((z - zl[iy, ix]) / soft + 0.5, 0, 1) * roof
+
+
+def _box4(a):
+    """4x4 box average over axes 1 and 2 (rows and columns) of a stack of images, edges clamped."""
+    pad = [(0, 0), (2, 1), (2, 1)] + [(0, 0)] * (a.ndim - 3)
+    c = np.pad(a, pad, mode='edge').cumsum(axis=1).cumsum(axis=2)
+    c = np.pad(c, [(0, 0), (1, 0), (1, 0)] + [(0, 0)] * (a.ndim - 3))
+    h, w = a.shape[1], a.shape[2]
+    out = c[:, 4:4 + h, 4:4 + w] - c[:, :h, 4:4 + w] - c[:, 4:4 + h, :w] + c[:, :h, :w]
+    return (out / 16.0).astype(np.float32)
 
 
 def sample_lm(lm, res, x, y):
@@ -674,6 +720,22 @@ class Renderer:
         fog = scene.get('fog')
         self.fog_c = np.array(fog['color'], np.float32) if fog else None
         self.fog_d = float(fog.get('density', 0.1)) if fog else 0.0
+        # Any of the volumetric keys moves fog from a per-surface fade to a pass that marches
+        # through the air in front of every pixel, so it can lie low, drift in banks, glow round
+        # lamps and carry shafts of sun or moonlight.
+        self.vol = None
+        if fog and any(k in fog for k in FOG_VOLUME_KEYS):
+            sh = fog.get('shafts', True)
+            self.vol = {'density': float(fog.get('density', 0.02)),
+                        'ground': float(fog.get('ground', 0.0)),
+                        'height': max(0.05, float(fog.get('height', 0.6))),
+                        'noise': float(fog.get('noise', 0.0)),
+                        'scale': max(0.2, float(fog.get('scale', 4.0))),
+                        'glow': float(fog.get('glow', 1.0)),
+                        'shafts': 1.0 if sh is True else 0.0 if sh is False else float(sh),
+                        'steps': max(6, int(fog.get('steps', 32))),
+                        'distance': float(fog.get('distance', min(48.0, float(scene.get('max_distance', 64))))),
+                        'g': min(0.9, max(-0.5, float(fog.get('anisotropy', 0.3))))}
         lights, suns = [], []
         for L in scene.get('lights', []):
             kind = L.get('type', 'point')
@@ -738,12 +800,7 @@ class Renderer:
         point lights' height falloff: sunlight reaches the top of a tall facade as well."""
         total = 0.0
         for s_ in self.suns:
-            zl = s_['zlit']
-            r = s_['res']
-            iy = np.clip((np.asarray(y) * r).astype(int), 0, zl.shape[0] - 1)
-            ix = np.clip((np.asarray(x) * r).astype(int), 0, zl.shape[1] - 1)
-            vis = np.clip((np.asarray(z) - zl[iy, ix]) / 0.12 + 0.5, 0, 1)
-            total = total + (vis * lam(s_))[..., None] * s_['rgb']
+            total = total + (sun_visibility(s_, x, y, z) * lam(s_))[..., None] * s_['rgb']
         return total
 
     @staticmethod
@@ -759,7 +816,7 @@ class Renderer:
         if em is not None:
             e = em[..., None]
             out = out * (1 - e) + albedo * e * 1.15
-        if self.fog_c is not None:
+        if self.fog_c is not None and self.vol is None:
             k = (1 - np.exp(-self.fog_d * dist))[..., None]
             out = out * (1 - k) + self.fog_c[None, :] * k
         return out
@@ -771,6 +828,8 @@ class Renderer:
         self.W, self.H = bw * ss, bh * ss
         try:
             img = self._render3d(cam)
+            if self.vol is not None:
+                img = self._atmosphere(img, self.depth, ss)
         finally:
             self.W, self.H = bw, bh
         if ss > 1:
@@ -778,6 +837,7 @@ class Renderer:
             for a in self.anchors.values():
                 for k in ('x', 'top', 'w', 'h'):
                     a[k] /= ss
+        self.last_report = self._report(cam, img, ss)
         overlays = list(self.s.get('overlays', [])) + list(cam.get('overlays', []))
         effects = post.expand(list(self.s.get('post', [])) + list(cam.get('post', [])))
         if cam.get('scanlines', self.s.get('scanlines')) and not any(e['fx'] in ('scanlines', 'crt') for e in effects):
@@ -785,10 +845,168 @@ class Renderer:
         H, W = img.shape[:2]
         ctx = gui.Ctx(Image.new('RGBA', (W, H), (0, 0, 0, 0)), self.s, self.anchors, cam, self.w, self.camera_light(cam))
         img = gui.draw_world_layer(img, overlays, ctx)
-        img = post.apply_world(img, effects, {'seed': int(self.s.get('seed', 0)) + int(cam.get('seed', 0))})
+        img = post.apply_world(img, effects, self._weather_ctx(cam, ss, bw, bh))
         img = gui.draw_ui_layer(img, overlays, ctx)
         self.last_effects = effects
         return np.clip(img, 0, 1)
+
+    def _report(self, cam, img, ss):
+        """Problems with the frame that are easy to miss in a small preview, each with a fix:
+        too dark or blown out, a black foreground, a blank where there is no sky, a wall in the
+        lens, a camera inside a wall, and a subject (the `look_at` sprite or a bubble's speaker)
+        that is hidden, cut off, tiny or unlit. The CLI prints them after each shot."""
+        out = []
+        lum = img @ np.array([0.299, 0.587, 0.114], np.float32)
+        H, W = lum.shape
+        mean = float(lum.mean())
+        if mean < 0.045:
+            out.append(f'the frame is very dark (mean brightness {mean:.2f}): raise "ambient" or add lights in view')
+        elif float(lum[int(H * 0.75):].mean()) < 0.02:
+            out.append('the bottom of the frame is nearly black: no light reaches the floor near the camera; '
+                       'stretch a light over it or raise "ambient"')
+        hot = float((lum > 0.97).mean())
+        if hot > 0.25:
+            out.append(f'{hot:.0%} of the frame is near white: lower the lights or "ambient", '
+                       'or drop a bright post preset')
+        depth = self.depth
+        if not self.s.get('sky'):
+            dark = img.repeat(ss, 0).repeat(ss, 1).sum(axis=2) < 1e-4
+            blank = float((np.isinf(depth) & dark).mean())
+            if blank > 0.02:
+                out.append(f'{blank:.0%} of the frame shows nothing: with "sky": null an open cell needs a "ceil", '
+                           'and the map needs walls all round where the camera can see')
+        close = float((depth < 0.6).mean())
+        if close > 0.3:
+            out.append(f'something under 0.6 units from the camera fills {close:.0%} of the frame: step back or turn')
+        cx, cy = int(math.floor(float(cam['x']))), int(math.floor(float(cam['y'])))
+        if not (0 <= cy < self.w.mh and 0 <= cx < self.w.mw):
+            out.append(f'the camera ({cam["x"]}, {cam["y"]}) is outside the map')
+        elif self.w.solid_h[cy, cx] >= float(cam.get('height', 0.5)):
+            out.append(f'the camera ({cam["x"]}, {cam["y"]}) is inside a wall cell')
+        subjects = [cam['look_at']] if isinstance(cam.get('look_at'), str) else []
+        for ov in list(self.s.get('overlays', [])) + list(cam.get('overlays', [])):
+            if isinstance(ov, dict) and ov.get('type') == 'bubble' and ov.get('anchor'):
+                subjects.append(ov['anchor'])
+        named = {sp.get('id') for sp in list(self.s.get('sprites', [])) + list(cam.get('extra_sprites', []))}
+        for sid in dict.fromkeys(subjects):
+            st = self.sprite_stats.get(sid)
+            if st is None:
+                if sid in named:
+                    out.append(f'"{sid}" is behind the camera or out of the frame')
+                continue
+            if st['visible'] <= 0:
+                out.append(f'"{sid}" is completely hidden, behind a wall or a nearer sprite: check the map')
+                continue
+            seen = st['visible'] / max(st['area'], 1e-6)
+            if seen < 0.4:
+                out.append(f'only {seen:.0%} of "{sid}" is visible: something is in front of it, '
+                           'or the frame edge cuts it off')
+            if st['height'] / ss < 14:
+                out.append(f'"{sid}" is only {st["height"] / ss:.0f} px tall on screen: move closer or narrow the fov')
+            if st['brightness'] < 0.06:
+                out.append(f'"{sid}" is almost black: give it a light (sprite "light") unless a silhouette is the point')
+        return out
+
+    def _weather_ctx(self, cam, ss, bw, bh):
+        """What the world-stage post effects need to put weather in the scene: the depth buffer
+        and the camera rays at output resolution, the world (walls, roofs) and the fog."""
+        ctx = {'seed': int(self.s.get('seed', 0)) + int(cam.get('seed', 0)), 'world': self.w,
+               'fog_d': self.fog_d if (self.fog_c is not None and self.vol is None) else 0.0}
+        r = getattr(self, 'rays', None)
+        if r is not None:
+            c0 = np.arange(bw) * ss + ss // 2
+            ctx['rays'] = {'px': r['px'], 'py': r['py'], 'rdx': r['rdx'][c0], 'rdy': r['rdy'][c0],
+                           'horizon': r['horizon'] / ss, 'proj': r['proj'] / ss, 'camz': r['camz']}
+            ctx['depth'] = self.depth.reshape(bh, ss, bw, ss).min(axis=(1, 3))
+            if self.vol is not None:
+                ctx['fog_t'] = self.fog_t[:2]
+        return ctx
+
+    def _atmosphere(self, img, depth, ss):
+        """Volumetric fog: march the air in front of every pixel, losing the surface behind it to
+        the fog's density and gaining the light the fog scatters toward the eye.
+
+        One ray is marched per output pixel; each supersampled pixel then reads the result at its
+        own depth, so fog meets the edge of every wall cleanly. Density is a thin even haze plus
+        a ground layer that thins with height and drifts in banks (`noise`); the light it carries
+        is its own colour, the point lights (`glow`, read from the shadowed lightmap, so lamps
+        get halos and doorways spill light) and every sun or moon it can see (`shafts`, through
+        the shadow maps, with forward scattering so beams brighten as you look toward them).
+        """
+        v, r = self.vol, self.rays
+        H, W = depth.shape
+        h, w = H // ss, W // ss
+        c0 = np.arange(w) * ss + ss // 2
+        rdx, rdy, rlen = r['rdx'][c0], r['rdy'][c0], r['rlen'][c0]
+        slope = (r['horizon'] - (np.arange(h) * ss + ss / 2)) / r['proj']        # z gained per unit t
+        sx, sl = rdx[None, :], slope[:, None]
+        path = np.sqrt(rlen[None, :] ** 2 + sl ** 2)                              # metres per unit t
+        n = v['steps']
+        t = v['distance'] * (np.arange(n + 1) / n) ** 1.6                         # finer near the eye
+        # each ray samples its segments at a dithered point, so a shaft's edge and the steps of a
+        # coarse far segment come out as fine grain instead of bands
+        bayer = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]], np.float32)
+        jit = (bayer[np.arange(h)[:, None] % 4, np.arange(w)[None, :] % 4] + 0.5) / 16
+        tv = np.zeros((n + 1, h, w), np.float32)
+        lv = np.zeros((n + 1, h, w, 3), np.float32)
+        T = np.ones((h, w), np.float32)
+        L = np.zeros((h, w, 3), np.float32)
+        tv[0] = 1.0
+        fogc = self.fog_c if self.fog_c is not None else np.zeros(3, np.float32)
+        field = noise_field() if v['noise'] > 0 else None
+        phase = []
+        for s_ in self.suns:
+            cos = (sx * s_['ux'] * s_['cos'] + rdy[None, :] * s_['uy'] * s_['cos'] + sl * s_['sin']) / path
+            g = v['g']
+            phase.append(((1 - g * g) / (1 + g * g - 2 * g * cos) ** 1.5).astype(np.float32))
+        for k in range(1, n + 1):
+            dt = t[k] - t[k - 1]
+            tm = t[k - 1] + jit * dt
+            x, y = r['px'] + sx * tm, r['py'] + rdy[None, :] * tm
+            z = r['camz'] + sl * tm
+            z = np.broadcast_to(z, (h, w))
+            # optical depth of the segment: the even haze, plus the ground layer integrated along
+            # the ray (Simpson's rule on its height profile, which depends only on the row), so
+            # it thins smoothly with height instead of in noisy steps
+            tau = np.full((h, w), v['density'] * dt, np.float32)
+            if v['ground'] > 0:
+                zp = [np.maximum(r['camz'] + sl * tt, 0.0) for tt in (t[k - 1], 0.5 * (t[k - 1] + t[k]), t[k])]
+                prof = [np.exp(-zz / v['height']) for zz in zp]
+                layer = v['ground'] * dt / 6.0 * (prof[0] + 4 * prof[1] + prof[2])
+                if field is not None:            # banks about `scale` wide, fading smoothly
+                    patch = sample_noise(field, x / (v['scale'] * 4.0), y / (v['scale'] * 4.0))
+                    layer = layer * np.exp(v['noise'] * 1.6 * (2 * patch - 1))
+                tau = tau + layer
+            a = 1 - np.exp(-tau * path)
+            light = np.broadcast_to(fogc, (h, w, 3)).astype(np.float32)
+            if v['glow'] > 0:
+                light = light + v['glow'] * sample_lm(self.lm, self.lres, x, y) * height_falloff(z)[..., None]
+            if v['shafts'] > 0:
+                for s_, ph in zip(self.suns, phase):
+                    # scaled so a beam seen side-on reads as a beam, and the air round a low
+                    # sun glows without whiting out the frame
+                    light = light + (0.6 * v['shafts'] * sun_visibility(s_, x, y, z, 0.35) * ph)[..., None] * s_['rgb']
+            L = L + (T * a)[..., None] * light
+            T = T * (1 - a)
+            tv[k], lv[k] = T, L
+        # neighbouring rays see nearly the same air: averaging each step over the 4x4 tile of the
+        # dither pattern removes the pattern but keeps shafts and banks, and each pixel still reads
+        # the result at its own depth, so nothing bleeds across a silhouette
+        tv, lv = _box4(tv), _box4(lv)
+        # read each supersampled pixel's own depth along its parent ray
+        d = np.minimum(np.nan_to_num(depth, posinf=t[-1]), t[-1])
+        k = np.clip(np.searchsorted(t, d), 1, n)
+        f = np.clip((d - t[k - 1]) / np.maximum(t[k] - t[k - 1], 1e-6), 0, 1)
+        pi = np.repeat(np.arange(h), ss)[:, None]
+        pj = np.repeat(np.arange(w), ss)[None, :]
+        Tp = tv[k - 1, pi, pj] * (1 - f) + tv[k, pi, pj] * f
+        Lp = lv[k - 1, pi, pj] * (1 - f)[..., None] + lv[k, pi, pj] * f[..., None]
+        # light scattered toward the eye eases off toward white instead of clipping, so mist
+        # lit by a low sun glows rather than whiting out the frame
+        knee = 0.55
+        Lp = np.where(Lp > knee, knee + (1 - knee) * np.tanh((Lp - knee) / (1 - knee)), Lp)
+        self.fog_t = (t, tv, lv)        # kept for weather, which sits inside the same fog
+        return img * Tp[..., None] + Lp
 
     def camera_light(self, cam):
         """Light falling on things held at the camera (viewmodels): ambient + lightmap + flashlight spill."""
@@ -930,7 +1148,7 @@ class Renderer:
             rows = np.arange(H) if below else np.arange(min(H, sky_rows + 2))
             pr = np.clip(ph - (horizon - rows) - 1, 0, pano.shape[0] - 1).astype(int)
             img[rows] = pano[pr][:, ang_cols]
-            if self.fog_c is not None and self.s.get('fog_sky', True):
+            if self.fog_c is not None and self.s.get('fog_sky', True) and self.vol is None:
                 k = float(self.s['fog'].get('sky_mix', 0.35))
                 img[rows] = img[rows] * (1 - k) + self.fog_c * k
         else:
@@ -1004,6 +1222,8 @@ class Renderer:
                 alb[m] = rgb[v[m], u[m]]
                 if e is not None:
                     em[m] = e[v[m], u[m]]
+            if kind == 'floor' and w.wet.any():
+                alb *= (1 - 0.3 * w.wet[my, mx])[..., None]       # wet ground is darker
             if self.sn is not None:
                 var = self.surface_variation(wx[valid], wy[valid], 0.0 if kind == 'floor' else 3.1)
                 alb[valid] *= (1 + soft_swing(self.tex_amount[tids[valid]] * var))[:, None]
@@ -1265,11 +1485,25 @@ class Renderer:
         translucent = lambda sp: sp.get('blend', 'alpha') != 'alpha' or float(sp.get('opacity', 1)) < 1
         opaque = sorted([p for p in placed if not translucent(p[2])], key=lambda s: -s[0])
         trans = sorted([p for p in placed if translucent(p[2])], key=lambda s: -s[0])
+        self._named = {}
         for ty, tx, sp in opaque + trans:
             self._draw_sprite(img, depth, ty, tx, sp, defs, horizon, proj, camz, pl, flash, translucent(sp))
+        self.sprite_stats = {}
+        for sid, n in self._named.items():
+            vis, lum = 0.0, 0.0
+            if n['box'] is not None:                 # what is left once everything nearer is drawn
+                y0_, y1_, x0_, x1_, solid = n['box']
+                seen = solid & (depth[y0_:y1_, x0_:x1_] >= n['ty'] - 1e-3)
+                vis = float(seen.sum())
+                if vis:
+                    lum = float(img[y0_:y1_, x0_:x1_][seen].mean())
+            self.sprite_stats[sid] = {'visible': vis, 'area': n['area'], 'height': n['h'], 'brightness': lum}
 
         if refl.any():
             img = self._reflect(img, depth, refl, refl_depth)
+        self.depth = depth
+        self.rays = {'px': px, 'py': py, 'rdx': rdx, 'rdy': rdy, 'rlen': rlen, 'horizon': horizon,
+                     'proj': proj, 'camz': camz}
         return np.clip(img, 0, 1)
 
     def _reflect(self, img, depth, refl, refl_depth):
@@ -1309,9 +1543,20 @@ class Renderer:
         glint = np.maximum(mirrored - 0.45, 0) * 0.9
         return img * (1 - k) + (mirrored * 0.85 + glint) * k
 
+    def sprite_view(self, sp):
+        """'back' when a sprite with a `facing` has its back to the camera (or `view` says so)."""
+        v = sp.get('view')
+        if v in ('front', 'back'):
+            return v
+        if 'facing' not in sp:
+            return 'front'
+        to_cam = math.degrees(math.atan2(self._py - float(sp['y']), self._px - float(sp['x'])))
+        off = (to_cam - float(sp['facing']) + 180.0) % 360.0 - 180.0
+        return 'back' if abs(off) > 90.0 else 'front'
+
     def _draw_sprite(self, img, depth, ty, tx, sp, defs, horizon, proj, camz, pl, flash, is_trans):
         W, H = self.W, self.H
-        rgba, em = assets.get_sprite(sp['type'], defs)
+        rgba, em = assets.get_sprite(sp['type'], defs, self.sprite_view(sp))
         th, tw = rgba.shape[:2]
         hs = float(sp.get('scale', 1.0))
         # a sprite rests on the surface under it: a boat on sunken water, a candle on an altar
@@ -1323,6 +1568,8 @@ class Renderer:
         if 'id' in sp:
             self.anchors[sp['id']] = {'x': scx, 'top': ytop, 'w': pw, 'h': ph, 'depth': ty,
                                       'visible': -pw < scx < W + pw and ytop + ph > 0 and ytop < H}
+            self._named[sp['id']] = {'ty': ty, 'h': ph, 'area': float((rgba[..., 3] > 0.5).mean()) * pw * ph,
+                                     'box': None}
         x0, x1 = int(math.floor(scx - pw / 2)), int(math.ceil(scx + pw / 2))
         y0, y1 = int(math.floor(ytop)), int(math.ceil(ytop + ph))
         cx0, cx1 = max(0, x0), min(W, x1)
@@ -1351,6 +1598,8 @@ class Renderer:
         if not is_trans:
             alpha = (alpha > 0.5).astype(np.float32)
         mask = (alpha > 0.02) & (ty < dsub)
+        if 'id' in sp:
+            self._named[sp['id']]['box'] = (cy0, cy1, cx0, cx1, alpha > 0.5)
         if not mask.any():
             return
         dyn = sample_lm(self.lm, self.lres, np.array([float(sp['x'])]), np.array([float(sp['y'])]))[0]
@@ -1437,7 +1686,7 @@ def prepare_shot(scene, cam):
     return cam
 
 
-def render_shot(scene, i, base=None):
+def render_shot(scene, i, base=None, report=None):
     """Render shot `i` (0-based) of a scene to a finished PIL image.
 
     `base` is an optional (World, Renderer) pair for the scene as written; shots without
@@ -1454,6 +1703,8 @@ def render_shot(scene, i, base=None):
             base = (w, Renderer(w, scene))
         rr = base[1]
     frame = rr.render(cam)
+    if report is not None:
+        report.extend(rr.last_report)
     return finish(frame, {**scene, **cam.get('overrides', {})}, rr.last_effects, i)
 
 
@@ -1506,6 +1757,9 @@ def draw_map(world, scene, cams, path, cell=24):
     im.save(path)
 
 
+# Fog keys that switch on the volumetric pass (see Renderer._atmosphere).
+FOG_VOLUME_KEYS = ('height', 'ground', 'noise', 'scale', 'glow', 'shafts', 'steps', 'distance', 'anisotropy')
+
 # Every key the renderer reads. Anything else is ignored, which for a hand- or LLM-written file
 # almost always means a typo ("ligths", "sprits") that silently drops part of the scene.
 SCENE_KEYS = {
@@ -1514,7 +1768,7 @@ SCENE_KEYS = {
     'scatter', 'grime', 'grime_debris', 'grime_decals', 'surface_noise', 'decals', 'decal_defs',
     'palette', 'auto_levels', 'dither', 'scanlines', 'overbright', 'lightmap_res', 'max_distance',
     'supersample', 'overlays', 'ui', 'post', 'icon_defs', 'viewmodel_defs', 'seed',
-    'skyline', 'contact_shadows', 'heights', 'height_unit', 'reflections', 'sky_objects',
+    'skyline', 'contact_shadows', 'heights', 'height_unit', 'reflections', 'sky_objects', 'wet',
     'title', 'description', 'notes',  # free-form metadata, never read
 }
 SHOT_KEYS = {'x', 'y', 'angle', 'look_at', 'fov', 'height', 'pitch', 'flashlight', 'overlays', 'overrides',
@@ -1611,7 +1865,10 @@ def main():
         if args.shot and i + 1 != args.shot:
             continue
         path = args.out if len(shots) == 1 else f"{base}_{i + 1:02d}{ext}"
-        img = render_shot(scene, i, base_pair)
+        notes = []
+        img = render_shot(scene, i, base_pair, notes)
+        for note in notes:
+            print(f'warning: shot {i + 1}: {note}', file=sys.stderr)
         img.save(path)
         outs.append((path, img))
         print(path)

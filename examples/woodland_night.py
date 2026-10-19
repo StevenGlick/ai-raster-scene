@@ -104,7 +104,7 @@ def woodland():
              'overlays': [{'type': 'bubble', 'anchor': 'watcher', 'name': 'The Watcher',
                            'text': 'Sit. The fire does not care who you are.'}]},
             {'x': 18.2, 'y': 19.8, 'angle': 209, 'fov': 70, 'post': ['horror']},
-            {'x': 22.0, 'y': 14.5, 'angle': 305, 'fov': 74, 'flashlight': True},
+            {'x': 19.5, 'y': 11.0, 'look_at': [27.0, 9.0, 0.6], 'fov': 74, 'flashlight': True},
         ],
         supersample=2,
     )

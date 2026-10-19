@@ -302,7 +302,8 @@
      "id": "claude_out",
      "x": 15.1,
      "y": 4.8,
-     "type": "claude"
+     "type": "claude",
+     "facing": 270
     }
    ]
   },

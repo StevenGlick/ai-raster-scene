@@ -40,6 +40,14 @@ Interiors, streets, woodland, coast, castles, chapels, caves, sewers, snow, star
 | ![A landing site under a gas giant](docs/gallery/alien_landing.png) | ![The monolith and the one who waits by it](docs/gallery/alien_monolith.png) |
 | ![A staircase to nowhere on an island in the sky](docs/gallery/dream_stair.png) | ![Koi over a mirror lake](docs/gallery/dream_mirror.png) |
 
+## Fog, light and weather
+
+| | |
+|---|---|
+| ![A stone circle at dawn, mist lying low, a knight seen from behind](docs/gallery/moor_dawn.png) | ![The low sun through the stones](docs/gallery/moor_circle.png) |
+| ![A sunbeam through the fallen roof of a cathedral](docs/gallery/cathedral_beam.png) | ![A pilgrim standing in the light](docs/gallery/cathedral_pilgrim.png) |
+| ![An officer walking away down a wet alley in the rain](docs/gallery/alley_rain.png) | ![Lightning over the alley](docs/gallery/alley_storm.png) |
+
 ## Ask Claude
 
 Asked what it would look like and where it would want to be, Claude picked a small figure whose head is a paper lantern lit from inside, in a coat the colour of fired clay, carrying an open book. It picked a round reading room at the top of a tower, above a sea of cloud. The shelves are there because it was made from an enormous amount of human writing, the fire because conversations go better somewhere warm, and the open balcony because the questions that stay interesting are the open ones. The avatar is the `claude` character, and [`examples/claude_study.py`](examples/claude_study.py) has ready-made shots for answering a question in a picture.
@@ -54,10 +62,11 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **See-through walls**: iron fences, railings, picket fences, chain-link, jail bars, portcullises, lattices and smashed windows, with the scene showing through the gaps
 - **Floors, ceilings and open sky** per cell, with nine procedural sky panoramas (night, dusk, storm, day, overcast, blood, deep space, alien, dream), distant skylines (mountains, hills, treeline, city), and planets, ringed gas giants, moons and stranger things hung in the sky
 - **Void floors**: no ground at all, just sky carrying on below the horizon, for space outside a station's viewport or islands adrift over a sea of cloud with ragged cliffs underneath
-- **Lighting**: coloured point lights baked into a shadowed lightmap, a sun or moon with long cast shadows and its disc in the sky, emissive texels (lit windows, stained glass, glowing runes), flashlight cone, exponential fog, Doom-style light banding, and a soft contact shadow under every prop
+- **Lighting**: coloured point lights baked into a shadowed lightmap, a sun or moon with long cast shadows and its disc in the sky, emissive texels (lit windows, stained glass, glowing runes), flashlight cone, Doom-style light banding, and a soft contact shadow under every prop
+- **Volumetric fog**: mist that lies low and drifts in banks, halos round every lamp, and beams of sun or moonlight through windows, doorways, standing stones and trees; sunlight finds its way into roofed rooms through their openings
 - **Reflections**: water, ice, wet streets and puddles mirror the lamps, windows and figures beyond them
 - **The 90s look**: 320x200 framebuffer, Bayer-dithered 256-colour palette, chunky nearest-neighbour upscale, optional scanlines and 2x supersampling
-- **Sprites**: 85 procedural props - scenery, light fixtures, wall decorations, castle furnishings, sci-fi gear, alien flora, dream objects, debris and vegetation - an 18-character pixel-art cast, any PNG, or new pixel art written as text grids right in the scene
+- **Sprites**: 85 procedural props - scenery, light fixtures, wall decorations, castle furnishings, sci-fi gear, alien flora, dream objects, debris and vegetation - an 18-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
 - **Procedural scatter**: declare debris by set, density and size class and the loader expands it into hundreds of placed props, clumped by a noise field so it drifts and leaves bare patches instead of spreading evenly - and never piles up on a camera or in front of a speaker
 - **One grime dial**: raises surface variation, debris density and wall/floor wear together
 - **Surface variation**: a world-space noise field breaks up texture tiling on walls, floors and ceilings - anchored to the world, so it stays put as the camera moves instead of crawling like film grain, and scaled per material so plaster stays subtle while cobble and rust vary hard
@@ -67,8 +76,9 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **GUI toolkit** in a hand-drawn pixel font: speech bubbles anchored over characters, dialog panels with portraits, choice menus with pointers and costs, title cards, objective panels, pickup toasts, interaction prompts, health bars, ammo counters, hotbars, inventories, crosshair, compass and a Doom-style automap traced from the level; five themes (classic, parchment, terminal, blood, steel)
 - **First-person held items**: revolver, lantern, flashlight, axe, crowbar, torch, lit by the scene; the lantern and torch cast their own light
 - **24 item icons** and a draw-op format (with automatic outlines) for new icons and held items
-- **Post-processing**: colour grading, bloom, vignette, grain, rain, snow, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 16 one-word presets
-- **Authoring tools**: `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
+- **Weather**: rain, snow, splashes, ash, embers, autumn leaves, fireflies, glowing spores and blowing dust, placed in the world rather than painted over it - hidden behind walls, kept out from under roofs, shrinking and fading into the fog with distance - plus wet ground that mirrors the lamps
+- **Post-processing**: colour grading, bloom, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
+- **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
 - **No assets to download**: all 103 textures, 85 props, 18 characters, 16 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
 
 ![Character cast](docs/gallery/cast.png)
@@ -116,7 +126,7 @@ git clone https://github.com/StevenGlick/ai-raster-scene
 cd ai-raster-scene
 python package_skill.py
 ```
-writes `dist/ai-raster-scene.zip` (about 180 KB) containing only what the skill needs at runtime - `SKILL.md`, `scripts/`, `references/`, `examples/` and `requirements.txt`. The README gallery, tests and CI config are deliberately left out; `docs/` alone is several megabytes of PNG and is no use inside a skill.
+writes `dist/ai-raster-scene.zip` (about 200 KB) containing only what the skill needs at runtime - `SKILL.md`, `scripts/`, `references/`, `examples/` and `requirements.txt`. The README gallery, tests and CI config are deliberately left out; `docs/` alone is several megabytes of PNG and is no use inside a skill.
 
 - Claude apps: upload that zip as a custom skill in Claude's settings.
 - Claude Code: clone straight into your skills folder, `git clone https://github.com/StevenGlick/ai-raster-scene ~/.claude/skills/ai-raster-scene` (or a project's `.claude/skills/`), or unzip the package there.
@@ -168,7 +178,7 @@ Regenerate with `python scripts/assets.py catalog.png`. Any texture slot also ta
 
 ## Limits
 
-It is a 2.5D raycaster: one ground floor (plus shallow sunken cells for water, and low blocks for steps and daises you look down onto), one ceiling height per scene, grid-aligned block walls, camera-facing sprites with one view each, no slopes or walkable upper floors. Reflections are screen-space and on floors only; sun and moon shadows come from walls, not sprites. In-frame text uses a pixel font covering printable ASCII; accented letters are drawn without their accents.
+It is a 2.5D raycaster: one ground floor (plus shallow sunken cells for water, and low blocks for steps and daises you look down onto), one ceiling height per scene, grid-aligned block walls, camera-facing sprites with a front and a back but no side view, no slopes or walkable upper floors. Reflections are screen-space and on floors only; sun and moon shadows come from walls, not sprites. In-frame text uses a pixel font covering printable ASCII; accented letters are drawn without their accents.
 
 ## Roadmap
 

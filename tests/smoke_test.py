@@ -463,7 +463,8 @@ def check_new_features():
     assert zl(4.5, 3.5) > 0 > zl(8.5, 3.5) and zl(4.5, 1.5) < 0, 'a wall must shadow the far side only'
     covered = dict(field, legend=dict(field['legend'], **{'.': {'floor': 'grass', 'ceil': 'beams'}}))
     cov = R.build_sun(R.World(covered), {'type': 'sun'})
-    assert np.isinf(cov['zlit'][14, 34]) and np.isinf(cov['zlit'][6, 6]), 'no sunlight under a roof'
+    deep = R.sun_visibility(cov, np.array([8.5, 1.5]), np.array([3.5, 1.5]), np.array([0.0, 0.0]))
+    assert deep.max() < 0.05, 'no sunlight reaches a floor deep under a roof'
     with_disc = dict(field, sky='day', camera={'x': 4.5, 'y': 3.5, 'angle': 90, 'fov': 70},  # open sky
                      lights=[{'type': 'sun', 'azimuth': 90, 'elevation': 12}])
     no_disc = dict(with_disc, lights=[{'type': 'sun', 'azimuth': 90, 'elevation': 12, 'disc': False}])
@@ -538,6 +539,103 @@ def check_new_features():
         assert edge[0].count('.') > 1 and edge[-1].count('.') > 1, 'a whole-number radius left a nub'
     print('ok new features (look_at, see-through, heights, sun, reflections, skyline, contact shadows, '
           'void floors, sky objects)')
+
+
+def check_atmosphere():
+    """Volumetric fog, light through openings, weather, wet ground, back views and the render
+    report each have to do what the reference promises, not merely run."""
+    sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+    import assets
+    import render as R
+    import weather
+    from characters import CHARACTERS
+
+    def frame(scene, report=None):
+        w = R.World(scene)
+        rr = R.Renderer(w, scene)
+        img = rr.render(R.prepare_shot(scene, R.merge_camera(scene, scene['camera'])))
+        if report is not None:
+            report.extend(rr.last_report)
+        return img
+
+    field = {'map': ['.' * 24] * 24, 'legend': {'.': {'floor': 'grass'}}, 'sky': 'dusk',
+             'ambient': [0.5, 0.5, 0.5], 'surface_noise': 0, 'light_levels': 0,
+             'camera': {'x': 12, 'y': 22, 'angle': 270}}
+
+    # 1. ground fog lies low: it changes the view along the ground far more than the sky overhead
+    clear = frame(field)
+    misty = frame(dict(field, fog={'color': [0.8, 0.8, 0.85], 'density': 0.0, 'ground': 0.8, 'height': 0.3}))
+    low = np.abs(misty[100:130] - clear[100:130]).mean()
+    high = np.abs(misty[:25] - clear[:25]).mean()
+    assert low > 3 * high + 0.02, f'ground fog must lie low (near the horizon {low:.3f}, overhead {high:.3f})'
+
+    # 2. sunlight comes into a roofed room through its doorway, and only there
+    rows = ['##########', '#........#', '#........#', '#........#', '####..####']
+    room = dict(field, map=rows + ['          '] * 3, sky='day',
+                legend={'#': {'wall': 'stone', 'h': 1.0}, '.': {'floor': 'flagstone', 'ceil': 'beams'},
+                        ' ': {'floor': 'grass'}},
+                lights=[{'type': 'sun', 'azimuth': 90, 'elevation': 25}], camera={'x': 5, 'y': 2, 'angle': 270})
+    sun = R.build_sun(R.World(room), room['lights'][0])
+    lit = lambda x, y: float(R.sun_visibility(sun, np.array([x]), np.array([y]), np.array([0.0]))[0])   # noqa: E731
+    assert lit(5.0, 3.6) > 0.9, 'the floor just inside the doorway must catch the sun'
+    assert lit(2.0, 3.6) < 0.1 and lit(5.0, 1.2) < 0.1, 'the rest of the roofed room must stay out of it'
+
+    # 3. shafts and glow put light into the air
+    hall = dict(room, ambient=[0.05, 0.05, 0.05], fog={'color': [0.03, 0.03, 0.03], 'density': 0.15, 'shafts': 0},
+                camera={'x': 2.0, 'y': 2.0, 'angle': 0})
+    beams = dict(hall, fog=dict(hall['fog'], shafts=2.0))
+    assert frame(beams).mean() > frame(hall).mean() + 0.003, 'sun shafts must light the fog'
+    lamp = dict(hall, lights=[{'x': 6.5, 'y': 2.0, 'z': 0.6, 'radius': 3, 'intensity': 1.5}])
+    halo = dict(lamp, fog=dict(hall['fog'], glow=2.0))
+    assert frame(halo)[60:140, 150:250].mean() > frame(lamp)[60:140, 150:250].mean() + 0.01, 'lamps must glow in fog'
+
+    # 4. weather stays out from under roofs and behind walls
+    w = R.World(room)
+    ctx = {'seed': 1, 'shape': (200, 320), 'world': w, 'depth': np.full((200, 320), np.inf, np.float32),
+           'rays': {'px': 5.0, 'py': 7.0, 'rdx': np.full(320, 0.0) + np.linspace(-0.6, 0.6, 320),
+                    'rdy': np.full(320, -1.0), 'horizon': 100.0, 'proj': 246.0, 'camz': 0.5}}
+    sx, sy, t, z, fade = weather.place(ctx, np.random.default_rng(0), 3000, 0.0, 3.0)
+    col = np.clip(sx.astype(int), 0, 319)
+    cx = np.floor(5.0 + ctx['rays']['rdx'][col] * t).astype(int)
+    cy = np.floor(7.0 - t).astype(int)
+    inside = (cy >= 0) & (cy < w.mh) & (cx >= 0) & (cx < w.mw)
+    roofed = inside & (w.ceil_tid[np.clip(cy, 0, w.mh - 1), np.clip(cx, 0, w.mw - 1)] >= 0) & (z < w.ceil_h)
+    assert len(t) > 100 and not roofed.any(), 'rain must not fall under a roof'
+    ctx['depth'] = np.full((200, 320), 2.0, np.float32)
+    sx, sy, t, z, fade = weather.place(ctx, np.random.default_rng(0), 3000, 0.0, 3.0)
+    assert len(t) > 0 and (t < 2.0).all(), 'particles must hide behind anything nearer'
+
+    # 5. wet ground: open floors turn mirror-like, roofed ones stay dry
+    wet = R.World(dict(room, wet=0.8))
+    assert wet.reflect[6, 4] > 0.25 and wet.reflect[2, 4] == 0.0
+
+    # 6. every character has a back the size of its front, and `facing` picks it
+    for name, d in CHARACTERS.items():
+        front, _ = assets.get_sprite(name)
+        back, _ = assets.get_sprite(name, view='back')
+        assert front.shape == back.shape, name
+        assert np.abs(front - back).max() > 0 or name == 'ghost', f'{name} looks the same from behind'
+    stage = dict(field, sprites=[{'id': 'k', 'x': 12.0, 'y': 19.0, 'type': 'knight', 'facing': 90}])
+    away = dict(stage, sprites=[dict(stage['sprites'][0], facing=270)])
+    assert np.abs(frame(stage) - frame(away)).max() > 0.05, 'facing away from the camera must show the back'
+
+    # 7. the render report catches what it says it does, and stays quiet on a good frame
+    notes = []
+    frame(stage, notes)
+    assert not notes, notes
+    for scene, expect in (
+            (dict(field, ambient=[0.01, 0.01, 0.01], sky=None,
+                  legend={'.': {'floor': 'grass', 'ceil': 'beams'}}), 'very dark'),
+            (dict(stage, map=['.' * 24] * 20 + ['.' * 10 + '####' + '.' * 10] + ['.' * 24] * 3,
+                  legend={'.': {'floor': 'grass'}, '#': {'wall': 'stone', 'h': 2}},
+                  camera={'x': 12.0, 'y': 21.6, 'look_at': 'k'}), 'hidden'),
+            (dict(stage, map=['.' * 24] * 22 + ['.' * 12 + '#' + '.' * 11] + ['.' * 24],
+                  legend={'.': {'floor': 'grass'}, '#': {'wall': 'stone', 'h': 2}},
+                  camera={'x': 12.5, 'y': 22.5, 'angle': 270}), 'inside a wall')):
+        notes = []
+        frame(scene, notes)
+        assert any(expect in n for n in notes), (expect, notes)
+    print('ok fog, light through openings, weather, wet ground, back views, render report')
 
 
 def check_docs():
@@ -633,6 +731,7 @@ def main():
         check_scatter(tmp)
         check_regressions(tmp)
         check_new_features()
+        check_atmosphere()
         check_docs()
         gs = os.path.join(tmp, 'gui_post.json')
         with open(gs, 'w') as f:

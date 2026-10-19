@@ -12,6 +12,7 @@ import math
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
+import weather
 from pixelfont import PixelFont
 
 BAYER4 = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]], np.float32) / 16 - 0.47
@@ -52,10 +53,18 @@ PRESETS = {
     'bloodmoon': [{'fx': 'grade', 'tint': [1.25, 0.75, 0.7], 'saturation': 0.8, 'contrast': 1.1}, {'fx': 'vignette', 'strength': 0.6, 'color': [0.15, 0, 0]}],
     'storm': [{'fx': 'rain'}, {'fx': 'grade', 'saturation': 0.75, 'tint': [0.9, 0.97, 1.08]}],
     'blizzard': [{'fx': 'snow', 'count': 500}, {'fx': 'grade', 'lift': [0.05, 0.06, 0.08], 'saturation': 0.7}],
+    'downpour': [{'fx': 'rain', 'density': 2.2, 'length': 9, 'opacity': 0.42, 'angle': 16},
+                 {'fx': 'splashes', 'density': 1.4},
+                 {'fx': 'grade', 'saturation': 0.7, 'brightness': -0.02, 'tint': [0.9, 0.96, 1.06]}],
+    'autumn': [{'fx': 'leaves'}, {'fx': 'grade', 'tint': [1.08, 0.98, 0.86], 'saturation': 1.1}],
+    'sandstorm': [{'fx': 'dust', 'density': 1.6}, {'fx': 'grade', 'tint': [1.12, 0.98, 0.8], 'saturation': 0.7}],
+    'ashfall': [{'fx': 'ash'}, {'fx': 'embers', 'count': 50},
+                {'fx': 'grade', 'tint': [1.1, 0.9, 0.82], 'saturation': 0.55}],
     'hurt': [{'fx': 'hurt'}],
 }
 
 WORLD = {'grade', 'bloom', 'vignette', 'grain', 'rain', 'snow', 'lightning', 'letterbox', 'hurt', 'fade',
+         'splashes', 'embers', 'fireflies', 'spores', 'ash', 'leaves', 'dust',
          'pixelate', 'posterize', 'gradient_map'}
 DISPLAY = {'crt', 'vhs', 'chromatic', 'scanlines'}
 
@@ -146,6 +155,8 @@ def fx_grain(img, p, ctx):
 
 
 def fx_rain(img, p, ctx):
+    if ctx.get('rays') is not None:            # a 3D frame: rain falls in the world, behind things
+        return weather.rain(img, p, ctx)
     H, W = img.shape[:2]
     rng = np.random.default_rng(ctx['seed'] + 2)
     n = int(float(p.get('density', 1.0)) * W * H / 160)
@@ -163,6 +174,8 @@ def fx_rain(img, p, ctx):
 
 
 def fx_snow(img, p, ctx):
+    if ctx.get('rays') is not None:
+        return weather.snow(img, p, ctx)
     H, W = img.shape[:2]
     rng = np.random.default_rng(ctx['seed'] + 3)
     lay = Image.new('L', (W, H), 0)
@@ -173,6 +186,34 @@ def fx_snow(img, p, ctx):
         d.rectangle([x, y, x + s - 1, y + s - 1], fill=int(150 + rng.random() * 105))
     a = np.asarray(lay, np.float32)[..., None] / 255 * float(p.get('opacity', 0.85))
     return img * (1 - a) + _rgb(p.get('color', [0.95, 0.97, 1.0])) * a
+
+
+def fx_splashes(img, p, ctx):
+    return weather.splashes(img, p, ctx)
+
+
+def fx_embers(img, p, ctx):
+    return weather.embers(img, p, ctx)
+
+
+def fx_fireflies(img, p, ctx):
+    return weather.fireflies(img, p, ctx)
+
+
+def fx_spores(img, p, ctx):
+    return weather.spores(img, p, ctx)
+
+
+def fx_ash(img, p, ctx):
+    return weather.ash(img, p, ctx)
+
+
+def fx_leaves(img, p, ctx):
+    return weather.leaves(img, p, ctx)
+
+
+def fx_dust(img, p, ctx):
+    return weather.dust(img, p, ctx)
 
 
 def fx_lightning(img, p, ctx):

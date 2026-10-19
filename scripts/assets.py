@@ -2845,10 +2845,21 @@ def sprite_defaults(spec, defs=None):
     return out
 
 
-def get_sprite(spec, defs=None):
-    """spec: built-in prop name, character name, a name defined in the scene's sprite_defs, or a PNG path."""
+def get_sprite(spec, defs=None, view='front'):
+    """spec: built-in prop name, character name, a name defined in the scene's sprite_defs, or a PNG path.
+
+    `view` 'back' gives the character from behind when its definition has a `back` grid (every
+    built-in character does); anything without one looks the same from both sides.
+    """
     from characters import CHARACTERS
     defs = defs or {}
+    if view == 'back':
+        d = defs.get(spec) if spec in defs else CHARACTERS.get(spec)
+        if d and d.get('back'):
+            key = 'back:' + (json_key(d) if spec in defs else spec)
+            if key not in _scache:
+                _scache[key] = sprite_from_pixels(dict(d, pixels=d['back']))
+            return _scache[key]
     if spec in defs:
         key = 'def:' + json_key(defs[spec])
         if key not in _scache:

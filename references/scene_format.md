@@ -33,8 +33,9 @@ A scene is one JSON file, read as UTF-8. Only `map`, `legend` and `camera` are r
 | `height_unit` | `0.1` | what one step of `heights` is worth |
 | `reflections` | `true` | mirror-like floors: `false` turns them off, a number scales them, `{"amount", "ripple"}` tunes them (see Reflections) |
 | `contact_shadows` | `0.55` | strength of the soft shadow under every prop standing on the floor; `0` or `false` turns them off |
-| `fog` | none | `{color:[r,g,b], density:0.05, sky_mix:0.35}`. Exponential by distance |
+| `fog` | none | `{color:[r,g,b], density:0.05, sky_mix:0.35}`, exponential by distance; add `ground`, `height`, `noise`, `glow` or `shafts` for volumetric fog: mist lying low, drifting banks, halos round lamps, beams of sun and moonlight (see Fog) |
 | `fog_sky` | `true` | whether fog also tints the sky panorama (by `sky_mix`) |
+| `wet` | `0` | 0-1: rain-soaked ground. Open floors under the sky darken and turn mirror-like; roofed and void cells stay dry |
 | `sprites` | `[]` | billboards, see below |
 | `flashlight` | none | `true` or `{intensity:1.2, radius:0.35, range:5, color}`; per-shot override allowed |
 | `light_levels` | `24` | brightness quantisation steps (Doom-style banding). `0` = smooth |
@@ -176,7 +177,7 @@ A light with `"type": "sun"` or `"type": "moon"` is directional. It comes from o
 | `disc_color`, `disc_size` | per type | disc colour and radius in degrees (sun 2.6, moon 2.0) |
 
 - Shadows are exact to the wall heights: a facade is half-lit behind a lower building, and a character's legs fall into the shadow of a wall. Sprites themselves do not cast sun shadows.
-- Roofed cells get no direct light at all, since sunlight doesn't come in through the windows. Interiors still need point lights.
+- Under a roof, sun and moonlight only come in through openings: a doorway, a see-through window (`window_broken`, `viewport`, `lattice`...), a fallen stretch of roof (open cells inside the walls). A low sun lays a long patch of light across the floor, and with volumetric fog the beam itself shows (see Fog). Everywhere else indoors still needs point lights.
 - Put the disc in frame by aiming the camera near `azimuth` with a low `elevation` (10-25). Match the sky preset: a sun in `day`, `dusk` or `overcast`, a moon in `night` or `storm`. Lower `ambient` when you add a moon, because it already lights the whole ground.
 - A shot's `overrides` can swap the moon for a sun to show the same place by day (see `examples/winter_lake.py`).
 
@@ -230,6 +231,36 @@ Fields: `color` and `color2` (the main colour and the bands, ring or iris second
 - Match `lit_from` to the scene's sun, so the planet and the shadows agree.
 - Any sky object replaces the `night` preset's decorative moon, just as a sun or moon light does.
 
+## Fog
+
+The plain fog is a fade by distance: `{"color": [r, g, b], "density": 0.05}`. Every surface blends toward `color` as it recedes, and the sky takes `sky_mix` of it.
+
+Add any of the keys below and fog becomes **volumetric**. Each pixel marches through the air in front of it, so the fog has a shape and carries light.
+
+```json
+"fog": {"color": [0.58, 0.55, 0.62], "density": 0.01, "ground": 0.4, "height": 0.3, "noise": 0.6, "shafts": 0.8}
+"fog": {"color": [0.12, 0.11, 0.09], "density": 0.06, "glow": 0.6, "shafts": 2.4}
+"fog": {"color": [0.06, 0.07, 0.09], "density": 0.035, "glow": 1.3}
+```
+
+| key | default | meaning |
+|---|---|---|
+| `density` | `0.02` | an even haze everywhere (per unit of distance) |
+| `ground` | `0` | extra density at ground level: mist lying in hollows, sea fog, smoke along the floor |
+| `height` | `0.6` | how fast the ground layer thins with height. 0.3 is knee-deep mist, 1.5 a fog bank you stand in |
+| `noise` | `0` | 0-1: the ground layer drifts in banks instead of lying evenly |
+| `scale` | `4` | the size of those banks, in world units |
+| `glow` | `1` | how strongly the point lights light the fog: halos round lamps, light spilling through a doorway |
+| `shafts` | `1` | how strongly sun and moonlight light it. The light keeps its shadows, so it falls in beams through gaps between stones, trees and windows. `false` or `0` for none |
+| `anisotropy` | `0.3` | how much brighter the light is when you look toward it (0 even, 0.6 strong) |
+| `steps`, `distance` | `32`, `48` | samples along each ray and how far they reach. Raise `steps` if a beam looks banded |
+
+- The volumetric pass covers everything: walls, sprites and the sky. Looking up through a ground layer you see clear sky, and looking along it the horizon vanishes. `sky_mix` and `fog_sky` don't apply.
+- Beams need three things: a `sun` or `moon` light, something to cast shadows (walls, stones, the edges of a window), and enough haze to catch the light. A dark scene shows them best: dusty interiors, forests, dawn mist.
+- `glow` uses the point lights as the lightmap stores them, shadows included. A lamp gets a halo and a lit doorway breathes light into a foggy street.
+- Light the fog brighter than the dark: `color` is the light the fog holds by itself, so a moonlit mist wants a pale blue-grey and a dusty hall a warm brown.
+- It costs about as much again as the rest of the frame. Weather particles fade into the same fog.
+
 ## Sprites
 
 ```json
@@ -251,6 +282,8 @@ Fields: `color` and `color2` (the main colour and the bands, ring or iris second
 | `light` | `true` or a light dict (`radius`, `color`, `intensity`, `z`): attaches a point light at the sprite |
 | `stretch` | horizontal scale factor |
 | `shadow` | this sprite's contact shadow: a strength, or `false` for none (default: the scene's `contact_shadows`) |
+| `facing` | the compass direction a character faces (camera degrees). With the camera behind it, you see its back |
+| `view` | `"front"` or `"back"`: force a view whatever the camera does |
 
 Drawing order: opaque sprites first (they write depth), then translucent/additive ones back to front without writing depth, so ghosts show what is behind them. Built-in lamps, lanterns and candles have emissive flames; place sprites at least ~0.2 from wall faces.
 
@@ -335,6 +368,7 @@ Define new characters, creatures or props as text grids, inline in the scene or 
 - `emissive` lists palette chars that glow (eyes, flames, screens).
 - `mirror: true` means each row is the left half; it is mirrored to build the right half (symmetric figures in half the typing).
 - `defaults` are placement fields applied whenever the sprite is used (opacity, aura, light...).
+- `back` (optional) is the same figure from behind, as another grid of the same size, written the same way as `pixels`. It shows when the sprite's `facing` points away from the camera. Every built-in character has one. Turn the face to hair or hood, and the front details (buttons, a badge, a held book) to plain cloth.
 - 16x32 is the house size for people (about 3x upscaled at conversation distance). Props can be any size; keep rows equal length.
 - Shade with 2-3 tones per material (shadow, base, highlight) and a dark outline colour for readability.
 
@@ -481,7 +515,7 @@ for a derelict sublevel or a damp cellar; leave it at 0 for somewhere clean and 
 "post": ["storm", {"fx": "lightning", "x": 0.7}, {"fx": "grade", "contrast": 1.2}, "crt"]
 ```
 
-Presets: `crt`, `crt_amber`, `crt_green`, `vhs`, `gameboy`, `cga`, `ega`, `nightvision`, `cinematic`, `horror`, `old_photo`, `dream`, `bloodmoon`, `storm`, `blizzard`, `hurt`.
+Presets: `crt`, `crt_amber`, `crt_green`, `vhs`, `gameboy`, `cga`, `ega`, `nightvision`, `cinematic`, `horror`, `old_photo`, `dream`, `bloodmoon`, `hurt`, and the weather presets `storm`, `downpour`, `blizzard`, `autumn`, `sandstorm`, `ashfall`.
 
 | effect | stage | parameters (defaults) |
 |---|---|---|
@@ -489,8 +523,15 @@ Presets: `crt`, `crt_amber`, `crt_green`, `vhs`, `gameboy`, `cga`, `ega`, `night
 | `bloom` | world | `threshold` 0.65, `strength` 0.6, `radius` 6, `color` |
 | `vignette` | world | `strength` 0.5, `radius` 0.7, `color` |
 | `grain` | world | `amount` 0.06, `color` false |
-| `rain` | world | `density` 1, `length` 7, `angle` 12, `opacity` 0.35, `color` |
-| `snow` | world | `count` 260, `opacity` 0.85, `color` |
+| `rain` | world | `density` 1, `length` 7 (pixels, for a drop two units away), `angle` 12, `opacity` 0.35, `color` |
+| `snow` | world | `count` 260, `size` 1, `wind` 0 (-1 to 1), `opacity` 0.85, `color` |
+| `splashes` | world | rain landing on open ground: `density` 1, `opacity` 0.3, `color` |
+| `embers` | world | glowing sparks drifting up: `count` 80, `size`, `glow`, `color` |
+| `ash` | world | grey flakes drifting down: `count` 300, `wind` 0.2 |
+| `leaves` | world | autumn leaves tumbling: `count` 120, `colors` |
+| `fireflies` | world | little lights hanging low: `count` 40, `glow` 1.5, `color` |
+| `spores` | world | glowing motes in the air: `count` 70, `colors`, `glow` |
+| `dust` | world | wind-blown dust or sand: `density` 1, `wind` 1, `haze` 0.12, `color` |
 | `lightning` | world | `amount` 0.45, `bolt` true, `x` (0-1 screen position), `y_end` 0.42 |
 | `letterbox` | world | `height` 0.11, `color` |
 | `hurt` | world | red damage vignette: `strength` 0.75 |
@@ -506,6 +547,20 @@ Presets: `crt`, `crt_amber`, `crt_green`, `vhs`, `gameboy`, `cga`, `ega`, `night
 
 Palettes: `gameboy`, `cga`, `cga_warm`, `ega`, `amber`, `phosphor`, `sepia`, `mono`, `bone` (ramp palettes map by brightness), an integer for an adaptive palette (default 256), or a list of hex colours. Few-colour palettes stretch the frame's tonal range first (`auto_levels`) so dark scenes keep detail. `seed` (scene or shot) changes the random pattern of grain, rain, snow and VHS noise.
 
+**Weather.** The weather effects place their particles in the world in front of the camera. A drop or flake has a real depth: it hides behind anything nearer, shrinks and fades with distance, and fades into the scene's fog. Rain, snow, leaves, ash, dust and splashes never fall under a roof, so the inside of a doorway stays dry. Embers, fireflies and spores glow and go anywhere. Pair rain with `"wet"`, and with `splashes` for a downpour. A heavy shower reads better with a little `ground` fog and `glow`, so the lamps get halos.
+
+## Render report
+
+After each shot the CLI prints warnings, with a suggested fix, for problems that are easy to miss in a small preview:
+- the frame is very dark, or its bottom is nearly black because no light reaches the floor near the camera;
+- a large part of it is near white;
+- part of it shows nothing (`"sky": null` with an open cell that has no `ceil`, or a gap in the walls);
+- something within 0.6 units of the camera fills much of the frame;
+- the camera is outside the map or inside a wall;
+- the subject (a `look_at` sprite id, or a speech bubble's `anchor`) is behind the camera, hidden behind something, mostly hidden or cut off by the frame edge, under 14 pixels tall, or almost black.
+
+Treat them like the unknown-key warnings: look at the frame and fix the cause, unless the darkness or the silhouette is the point.
+
 ## Known limits (it is a 2.5D raycaster)
 
 - No slopes, cliffs or walkable upper floors. Low blocks give steps, daises, altars and platforms you look down onto (see Heights), and `drop` sinks water and shallow pits below z=0. The bank between two floor cells is approximated, so keep drops shallow. Fake real elevation by making the low area's surroundings tall walls (a cliff face) and placing the camera accordingly.
@@ -514,4 +569,5 @@ Palettes: `gameboy`, `cga`, `cga_warm`, `ega`, `amber`, `phosphor`, `sepia`, `mo
 - Reflections are screen-space and on floors only: a puddle can't mirror something that is off-screen, and walls are never mirrors.
 - Sun and moon shadows come from walls only. Sprites cast no shadows beyond their contact shadow, and sunlight never enters a roofed cell.
 - Floating islands are slabs: flat on top, with a cliff of fixed depth (2.5 units) and a ragged edge underneath, not a tapering rock. Sky objects are painted on the sky, so they have no parallax and light nothing.
-- Sprites are static billboards that always face the camera (one view per character, no animation).
+- Sprites are static billboards that face the camera: characters have a front and a back, but no side view and no animation.
+- Volumetric fog and weather are stills. A beam is lit air, and nothing moves.
