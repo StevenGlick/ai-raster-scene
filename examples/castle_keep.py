@@ -20,6 +20,8 @@ g.rect(7, 2, 16, 4, 'D')                              # the dais...
 g.rect(8, 5, 15, 5, 'E')                              # ...and its two steps
 g.rect(9, 6, 14, 6, 'E')
 g.rect(11, 7, 12, 19, 'r')                            # carpet up the aisle
+for x in (10, 11, 12, 13):
+    g.put(x, 1, 'G')                                  # a great window of stained glass behind the throne
 g.put(11, 20, 'P'); g.put(12, 20, 'P')                # portcullis down to the cells
 g.rect(10, 21, 13, 32, 'f')                           # dungeon corridor
 for y0 in (23, 28):                                   # two cells either side, behind bars
@@ -44,6 +46,7 @@ s = scene(
     legend={
         '#': {'wall': 'castle', 'h': 2.0},
         'W': {'wall': ['castle', 'stained_glass'], 'h': 2.0},
+        'G': {'wall': ['castle', 'stained_glass'], 'h': 2.0},
         'C': {'wall': 'castle', 'h': 2.0},
         '.': {'floor': 'flagstone', 'ceil': 'beams'},
         'r': {'floor': 'carpet', 'ceil': 'beams'},
@@ -78,10 +81,17 @@ s = scene(
         {'x': 5.8, 'y': 23.6, 'z': 0.3, 'radius': 3.6, 'color': [1.0, 0.7, 0.4], 'intensity': 1.2},
         {'x': 8.0, 'y': 2.6, 'z': 0.9, 'radius': 5.0, 'color': fire, 'intensity': 1.2},
         {'x': 16.0, 'y': 2.6, 'z': 0.9, 'radius': 5.0, 'color': fire, 'intensity': 1.2},
+        {'x': 12.0, 'y': 2.4, 'z': 1.6, 'radius': 4.5, 'color': [0.7, 0.5, 1.0], 'intensity': 0.8},   # the window's colour
+        {'x': 10.4, 'y': 3.4, 'z': 1.4, 'radius': 3.5, 'color': [1.0, 0.72, 0.4], 'intensity': 0.9},  # the candelabras
+        {'x': 13.6, 'y': 3.4, 'z': 1.4, 'radius': 3.5, 'color': [1.0, 0.72, 0.4], 'intensity': 0.9},
     ],
     sprites=[
-        {'x': 12.0, 'y': 2.9, 'type': 'throne'},                                   # on the dais
-        {'id': 'knight', 'x': 12.0, 'y': 6.55, 'type': 'knight'},                   # on the lower step
+        {'x': 12.0, 'y': 2.9, 'type': 'throne', 'scale': 1.3},                     # on the dais
+        {'x': 9.6, 'y': 2.3, 'type': 'banner', 'z': 0.9, 'scale': 1.1},              # banners either side of it
+        {'x': 14.4, 'y': 2.3, 'type': 'banner', 'z': 0.9, 'scale': 1.1},
+        {'x': 10.4, 'y': 3.2, 'type': 'candelabra'}, {'x': 13.6, 'y': 3.2, 'type': 'candelabra'},
+        {'x': 9.4, 'y': 7.3, 'type': 'soldier'}, {'x': 14.6, 'y': 7.3, 'type': 'soldier', 'flip': True},   # the guard
+        {'id': 'knight', 'x': 13.3, 'y': 6.55, 'type': 'knight'},                   # on the lower step, to one side
         {'x': 8.5, 'y': 6.6, 'type': 'brazier'}, {'x': 15.5, 'y': 6.6, 'type': 'brazier'},
         {'x': 11.5, 'y': 9.0, 'type': 'chandelier', 'z': 1.45},
         {'x': 11.5, 'y': 15.0, 'type': 'chandelier', 'z': 1.45},
@@ -112,12 +122,12 @@ s = scene(
         {'tex': 'cobweb', 'surface': 'wall', 'cell': [8, 22], 'face': 'south', 'u': 0.5, 'z': 1.6, 'size': 0.8},
         {'tex': 'crack', 'surface': 'floor', 'x': 6.5, 'y': 17.0, 'size': 1.6, 'opacity': 0.6},
     ],
-    camera={'x': 12.0, 'y': 15.5, 'look_at': [12.0, 3.0, 0.55], 'fov': 66},
+    camera={'x': 12.0, 'y': 12.6, 'look_at': [12.0, 3.0, 0.8], 'fov': 62},
     shots=[
-        {'x': 12.0, 'y': 15.5, 'look_at': [12.0, 3.0, 0.55], 'fov': 66,
+        {'x': 12.0, 'y': 12.6, 'look_at': [12.0, 3.0, 0.8], 'fov': 62,
          'overlays': [{'type': 'caption', 'text': 'The throne room', 'at': 'top', 'box': True}]},
         {'x': 3.6, 'y': 18.4, 'look_at': [1.6, 5.0, 1.15], 'fov': 70},
-        {'x': 12.6, 'y': 10.2, 'look_at': 'knight', 'fov': 62,
+        {'x': 12.2, 'y': 10.0, 'look_at': 'knight', 'fov': 62,
          'overlays': [{'type': 'bubble', 'anchor': 'knight', 'name': 'Knight',
                        'text': 'The king sees no one tonight. State your business, or leave.'}]},
         {'x': 12.0, 'y': 17.0, 'angle': 90, 'fov': 70,

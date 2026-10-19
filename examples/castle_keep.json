@@ -6,7 +6,7 @@
  "scale": 3,
  "map": [
   "########################",
-  "########################",
+  "##########GGGG##########",
   "##.....DDDDDDDDDD.....##",
   "##.....DDDDDDDDDD.....##",
   "#W.....DDDDDDDDDD.....W#",
@@ -46,6 +46,13 @@
    "h": 2.0
   },
   "W": {
+   "wall": [
+    "castle",
+    "stained_glass"
+   ],
+   "h": 2.0
+  },
+  "G": {
    "wall": [
     "castle",
     "stained_glass"
@@ -101,13 +108,13 @@
  },
  "camera": {
   "x": 12.0,
-  "y": 15.5,
+  "y": 12.6,
   "look_at": [
    12.0,
    3.0,
-   0.55
+   0.8
   ],
-  "fov": 66
+  "fov": 62
  },
  "title": "Castle keep - throne room, portcullis and the cells below",
  "heights": [
@@ -389,17 +396,89 @@
     0.3
    ],
    "intensity": 1.2
+  },
+  {
+   "x": 12.0,
+   "y": 2.4,
+   "z": 1.6,
+   "radius": 4.5,
+   "color": [
+    0.7,
+    0.5,
+    1.0
+   ],
+   "intensity": 0.8
+  },
+  {
+   "x": 10.4,
+   "y": 3.4,
+   "z": 1.4,
+   "radius": 3.5,
+   "color": [
+    1.0,
+    0.72,
+    0.4
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 13.6,
+   "y": 3.4,
+   "z": 1.4,
+   "radius": 3.5,
+   "color": [
+    1.0,
+    0.72,
+    0.4
+   ],
+   "intensity": 0.9
   }
  ],
  "sprites": [
   {
    "x": 12.0,
    "y": 2.9,
-   "type": "throne"
+   "type": "throne",
+   "scale": 1.3
+  },
+  {
+   "x": 9.6,
+   "y": 2.3,
+   "type": "banner",
+   "z": 0.9,
+   "scale": 1.1
+  },
+  {
+   "x": 14.4,
+   "y": 2.3,
+   "type": "banner",
+   "z": 0.9,
+   "scale": 1.1
+  },
+  {
+   "x": 10.4,
+   "y": 3.2,
+   "type": "candelabra"
+  },
+  {
+   "x": 13.6,
+   "y": 3.2,
+   "type": "candelabra"
+  },
+  {
+   "x": 9.4,
+   "y": 7.3,
+   "type": "soldier"
+  },
+  {
+   "x": 14.6,
+   "y": 7.3,
+   "type": "soldier",
+   "flip": true
   },
   {
    "id": "knight",
-   "x": 12.0,
+   "x": 13.3,
    "y": 6.55,
    "type": "knight"
   },
@@ -681,13 +760,13 @@
  "shots": [
   {
    "x": 12.0,
-   "y": 15.5,
+   "y": 12.6,
    "look_at": [
     12.0,
     3.0,
-    0.55
+    0.8
    ],
-   "fov": 66,
+   "fov": 62,
    "overlays": [
     {
      "type": "caption",
@@ -708,8 +787,8 @@
    "fov": 70
   },
   {
-   "x": 12.6,
-   "y": 10.2,
+   "x": 12.2,
+   "y": 10.0,
    "look_at": "knight",
    "fov": 62,
    "overlays": [

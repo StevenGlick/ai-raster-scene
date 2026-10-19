@@ -38,8 +38,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 16 | 16 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 47 | 41 | 6 | 0 | 0 |
-| **all** | **611** | **585** | **26** | **0** | **0** |
+| Example scenes | 47 | 42 | 5 | 0 | 0 |
+| **all** | **611** | **586** | **25** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -313,7 +313,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `ceiling_lamp` | good | 0.3 tall, glows, no shadow | bunker_lab, sewer_tunnels |  |
 | `chandelier` | good | 0.45 tall, glows, no shadow | castle_keep, claude_study, haunted_house |  |
 | `cobweb` | good | 0.9 tall, no shadow | haunted_house | Drawn with the toolkit in haunted.py: threads radiating from a corner with sagging spiral rings, a broken strand; translucent. |
-| `candelabra` | good | 1.2 tall, glows, aura | haunted_house | Drawn with the toolkit in haunted.py: a turned brass stem on a tripod foot, five curved arms with candles burning, wax run down them; aura. |
+| `candelabra` | good | 1.2 tall, glows, aura | castle_keep, haunted_house | Drawn with the toolkit in haunted.py: a turned brass stem on a tripod foot, five curved arms with candles burning, wax run down them; aura. |
 | `portrait` | good | 0.75 tall, glows, no shadow | haunted_house | Drawn with the toolkit in haunted.py: an oval beaded gilt frame round a pale, unsmiling face, black coat and white collar; the eyes glow faintly. |
 | `grandfather_clock` | good | 1.6 tall | haunted_house | Drawn with the toolkit in haunted.py: a mahogany case: hood with a broken pediment and finial, a dial near midnight, a glass door on the pendulum. |
 | `balustrade` | good | 0.5 tall | haunted_house | Drawn with the toolkit in haunted.py: turned balusters every eighth of a unit between handrail and base rail, newel posts; three units a card. |
@@ -880,7 +880,7 @@ The environments, judged on their gallery images and shots.
 
 | scene | status | shots | gallery | notes |
 |---|---|---|---|---|
-| `castle_keep` | polish | 5 | castle_throne, castle_gate | The throne hall is long and bare, and the throne small and far. |
+| `castle_keep` | good | 5 | castle_throne, castle_gate | The throne hall closer: a great stained-glass window, banners and candelabras behind a larger throne, guards at the steps, the knight to one side. |
 | `cathedral_ruin` | polish | 3 | cathedral_beam, cathedral_pilgrim | The hole in the roof reads as a flat white quad; the nave is bare. |
 | `crystal_cave` | good | 3 | cave_beast |  |
 
@@ -926,6 +926,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the throne hall.** castle_keep: the camera closer, a larger throne under a great stained-glass window, banners and candelabras on the dais, guards at the foot of the steps, the knight to one side.
 - **2026-10-19, the stone circle.** `menhir`, `menhir_top` and a `stone_cap` prop: the misty moor's stones get varied heights, weathered faces and slanted, chipped tops instead of flat-topped blocks.
 - **2026-10-19, polish pass 4.** `alien_rock` (faceted, glowing in its crevices), `alien_ground`, `dry_grass` (fewer, larger clumps), and the `jaguar` redrawn prowling side on in rosettes.
 - **2026-10-19, the Moon.** An `earth` sky object; `scripts/moon.py`: `regolith`, `rover_tracks`, `dome`, `hab_module`, `solar_array`, `rover`. `examples/moon_base.py` with four gallery shots.
