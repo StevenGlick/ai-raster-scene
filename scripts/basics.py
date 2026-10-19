@@ -1,7 +1,7 @@
 """Everyday materials and props redrawn with the pixel-art toolkit (scripts/pixelart.py): grass,
 a clipped hedge, dirt, gravel, wood panelling, water, slates, cobbles, ceiling beams, raw rock (dry,
 wet, a floor of it, under snow), ice, sand, plaster and ivy on brick, velvet curtains, acoustic
-ceiling tiles, corrugated iron and dark marble; a barrel,
+ceiling tiles, corrugated iron, dark marble, and the rock and dust of an alien world; a barrel,
 a broken one, a crate, a fountain, a rowboat, a bench, flowers, a statue, an iron bed, a
 wheelchair, a table, a chest, glowing mushrooms, a buoy and an alien egg. These are the oldest
 things in the set - the first versions were noise and flat shapes - and they turn up in a great
@@ -572,6 +572,97 @@ def tex_marble_dark(name):
                  dither=0.3, relief=0.6, cavity=0.2, shadow=0.2, ambient=0.22, diffuse=0.45)
 
 
+def tex_alien_rock(name):
+    """The rock of an alien world: dark violet masses, each a facet tilted to the light, and in the
+    crevices between them a teal light welling up from inside (emissive), brightest in the cracks
+    and spilling a little onto the faces either side."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=-1.6, mat=3)
+    _facets(cv, rng, 3, 3, 1.2, 5.0, 0.04)
+    cv.noise(0.2, cells=10, rng=rng, octaves=2)
+    crack = (cv.mat == 3)
+    halo = np.zeros_like(crack)
+    for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1)):
+        halo |= np.roll(crack, (dy, dx), (0, 1))
+    halo &= ~crack
+    cv.mat[halo] = 4
+    light = cv.light(relief=1.2, cavity=0.4, shadow=0.5, ambient=0.25, diffuse=0.55)
+    rgb = cv.paint([ramp('#4a3a5e', dark=0.3, light=1.45), ramp('#3e3252', dark=0.3, light=1.5),
+                    ramp('#52405a', dark=0.3, light=1.45), ramp('#5af0d8', dark=0.75, light=1.1),
+                    ramp('#3a7a80', dark=0.5, light=1.4)], light, dither=0.3)
+    em = np.where(crack, 1.0, np.where(halo, 0.4, 0.0)).astype(np.float32)
+    return rgb, em
+
+
+def tex_alien_ground(name):
+    """The dust of an alien world: violet drifts over teal grit, and shards of crystal - pink, cyan,
+    white - of every size, each with a bright facet and a shadow."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=0.0, mat=0)
+    drift = smooth_noise(T, T, 4, rng)
+    cv.z += (1.2 * drift).astype(np.float32)
+    grit = drift + 0.25 * (rng.random((T, T)) - 0.5) < 0.3               # teal grit where the dust is thin,
+    cv.mat[grit] = 1                                                     # its edge broken up grain by grain
+    cv.tone += (0.12 * (smooth_noise(T, T, 9, rng) - 0.5)).astype(np.float32)
+    cv.noise(0.15, cells=12, rng=rng)
+    for _ in range(26):                                                  # crystal shards
+        x, y = rng.random() * T, rng.random() * T
+        L = rng.uniform(1.2, 3.6)
+        a = np.radians(rng.uniform(-150, -30))
+        m = int(rng.choice([2, 2, 3, 4]))
+        cv.polygon([(x - L * 0.3, y), (x + np.cos(a) * L, y + np.sin(a) * L), (x + L * 0.3, y)], z=1.4, top=0.8,
+                   bevel=0.6, mat=m)
+    return _tile(cv, [ramp('#6a4a6e', dark=0.35, light=1.35), ramp('#3a6a72', dark=0.35, light=1.4),
+                      ramp('#e88ad0', dark=0.5, light=1.2), ramp('#8ae8f0', dark=0.5, light=1.15),
+                      ramp('#e8f0f8', dark=0.6, light=1.05)], dither=0.3, cavity=0.35, shadow=0.45,
+                 ambient=0.32, diffuse=0.62)
+
+
+def spr_jaguar():
+    """A jaguar prowling, side on, facing left: a long, low, heavy body, the shoulders working, a
+    broad head with round ears, the tail curving down and up at the tip; a golden coat in black
+    rosettes, spots on the head and legs, a pale belly. Its eyes catch the light (emissive)."""
+    rng = np.random.default_rng(181)
+    w, h = 72, 32
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    t = np.linspace(0, 1, 14)                                            # the tail
+    cv.stroke(list(zip(56 + 14 * t, 13 + 10 * t - 8 * t ** 4)), 2.6, z=0.0, dome=0.8, taper=(1.0, 0.7), mat=0)
+    for x0, x1, tn in ((20, 19, -0.08), (50, 52, -0.08)):                # the far legs
+        cv.stroke([(x0, 16), (x0 + 1, 24), (x1, h - 1)], 3.0, z=0.2, dome=0.7, taper=(1.3, 0.8), mat=0, tone=tn)
+    cv.ellipse(38, 15, 20, 7.5, z=0.6, dome=1.2, mat=0)                  # the body
+    cv.ellipse(23, 13, 8.5, 7.5, z=0.9, dome=1.2, mat=0)                 # the shoulders
+    cv.ellipse(53, 14, 7.5, 6.5, z=0.8, dome=1.1, mat=0)                 # the haunch
+    cv.ellipse(36, 20.5, 14, 2.6, z=1.3, dome=0.4, mat=1)                # the pale belly
+    for x0, x1 in ((26, 24), (55, 57)):                                  # the near legs, one stepping forward
+        cv.stroke([(x0, 17), (x0 - 2, 24), (x1, h - 1.5)], 3.4, z=1.4, dome=0.8, taper=(1.3, 0.85), mat=0)
+        cv.ellipse(x1 - 0.8, h - 1.4, 2.4, 1.3, z=1.6, dome=0.5, mat=0)   # paws
+    cv.ellipse(10, 11, 7.0, 5.6, z=1.4, dome=1.1, mat=0)                 # the head
+    cv.ellipse(5, 13.5, 3.6, 2.6, z=1.6, dome=0.8, mat=1)                # the muzzle
+    cv.ellipse(2.6, 12.4, 1.0, 0.8, z=2.0, dome=0.3, mat=3)              # nose
+    cv.ellipse(12.5, 6.4, 2.0, 2.0, z=1.5, dome=0.6, mat=0)              # ear
+    cv.ellipse(7.8, 9.6, 1.1, 0.8, z=2.2, dome=0.2, mat=2)               # the eye
+    coat = (cv.mat == 0) & (cv.id > 0)
+    ys, xs = np.nonzero(coat[7:21, 15:62])
+    placed = []
+    for i in rng.permutation(len(ys)):                                   # rosettes spread over the coat, apart
+        x, y = xs[i] + 15.5, ys[i] + 7.5
+        if any((x - px) ** 2 + (y - py) ** 2 < 4.2 ** 2 for px, py in placed):
+            continue
+        placed.append((x, y))
+        r = rng.uniform(1.2, 1.7)
+        for b in np.linspace(0, 2 * np.pi, 7)[:-1] + rng.uniform(0, 1):
+            if rng.random() < 0.85:                                      # a broken ring of dark spots
+                cv.ellipse(x + np.cos(b) * r, y + np.sin(b) * r * 0.85, 0.5, 0.5, z=2.0, dome=0.1, mat=3)
+        cv.ellipse(x, y, 0.7, 0.6, z=1.9, dome=0.1, mat=0, tone=-0.08)   # the darker gold inside
+    for _ in range(14):                                                  # spots on the head and legs
+        x, y = (rng.uniform(5, 14), rng.uniform(7, 13)) if rng.random() < 0.5 else (rng.uniform(22, 58), rng.uniform(21, 29))
+        cv.ellipse(x, y, 0.5, 0.5, z=2.0, dome=0.1, mat=3)
+    em = ((cv.mat == 2) & (cv.id > 0)) * 1.0
+    return _prop(cv, [ramp('#d0943a', dark=0.32, light=1.25, warm=0.12), ramp('#ecdcb8', dark=0.45, light=1.06),
+                      ramp('#d8f050', dark=0.6, light=1.1), ramp('#24160c', dark=0.6, light=1.6)], relief=1.0,
+                 cavity=0.35, shadow=0.45, em=em)
+
+
 # ---------------------------------------------------------------- props
 
 def spr_barrel():
@@ -969,8 +1060,10 @@ TEXTURES = {
     'ceiling_plaster': lambda n: (tex_plaster(n, '#a8a08a', '#4a4030', 0.3), None),
     'corrugated': lambda n: (tex_corrugated(n), None),
     'marble_dark': lambda n: (tex_marble_dark(n), None),
+    'alien_rock': tex_alien_rock,
+    'alien_ground': lambda n: (tex_alien_ground(n), None),
 }
 SPRITES = {'barrel': spr_barrel, 'broken_barrel': spr_broken_barrel, 'crate': spr_crate, 'fountain': spr_fountain,
            'rowboat': spr_rowboat, 'bench': spr_bench, 'flowers': spr_flowers, 'statue': spr_statue,
            'bed': spr_bed, 'wheelchair': spr_wheelchair, 'table': spr_table, 'chest': spr_chest,
-           'glowshroom': spr_glowshroom, 'buoy': spr_buoy, 'alien_egg': spr_alien_egg}
+           'glowshroom': spr_glowshroom, 'buoy': spr_buoy, 'alien_egg': spr_alien_egg, 'jaguar': spr_jaguar}

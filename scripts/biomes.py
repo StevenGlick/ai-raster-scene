@@ -401,15 +401,15 @@ def tex_dry_grass(name):
     rng = _rng(name)
     cv = Canvas(T, ground=0.0, mat=0)
     cv.noise(0.3, cells=6, rng=rng)
-    for i in range(130):
+    for i in range(46):                         # fewer, larger clumps, earth between them
         cx, cy = rng.random() * T, rng.random() * T
         mat = 1 if rng.random() < 0.8 else 2
         tone = rng.normal(0, 0.05)
-        for _ in range(7):
+        for _ in range(13):
             a = np.radians(rng.uniform(215, 325))
-            L = rng.uniform(3, 6)
-            x0, y0 = cx + rng.normal(0, 1.2), cy + rng.normal(0, 0.6)
-            cv.stroke([(x0, y0), (x0 + np.cos(a) * L, y0 + np.sin(a) * L)], 1.4, z=0.3 + i * 0.004, dome=0.5,
+            L = rng.uniform(4, 8)
+            x0, y0 = cx + rng.normal(0, 1.8), cy + rng.normal(0, 0.8)
+            cv.stroke([(x0, y0), (x0 + np.cos(a) * L, y0 + np.sin(a) * L)], 1.4, z=0.3 + i * 0.01, dome=0.5,
                       taper=(1.0, 0.5), mat=mat, tone=tone + rng.normal(0, 0.03))
     for _ in range(3):
         cv.ellipse(rng.random() * T, rng.random() * T, 1.2, 1.1, z=1.3, dome=0.3, mat=3)

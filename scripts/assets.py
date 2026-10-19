@@ -834,33 +834,6 @@ def tex_hex(name, c='#2a4a50', edge='#6a9a98'):
     return grain(np.clip(img, 0, 1), rng, 0.03)
 
 
-def tex_alien_rock(name, c='#3a2a4a', vein='#4af0d0'):
-    """Dark violet rock split by glowing veins (emissive): alien worlds, otherworldly caves."""
-    img = tex_rock(name + 'r', c)
-    v1 = np.abs(fbm(T, _rng(name + 'v'), 3, 4) - 0.5)
-    v2 = np.abs(fbm(T, _rng(name + 'w'), 5, 3) - 0.5)
-    line = (v1 < 0.018) | (v2 < 0.012)
-    glow = (v1 < 0.05) & ~line
-    img[glow] = img[glow] * 0.6 + col(vein) * 0.25
-    img[line] = col(vein)
-    em = np.zeros((T, T), np.float32)
-    em[line] = 1.0
-    return np.clip(img, 0, 1), em
-
-
-def tex_alien_ground(name, c='#6a4a6e'):
-    """Violet dust drifting over teal grit, with crystal flecks that catch the light."""
-    rng = _rng(name)
-    n = fbm(T, rng, 6, 4)
-    img = col(c)[None, None, :] * (0.65 + 0.6 * n[..., None])
-    drift = np.clip((fbm(T, _rng(name + 'd'), 4, 3) - 0.5) * 3, 0, 1)
-    img = img * (1 - 0.4 * drift[..., None]) + col('#3a6a72')[None, None, :] * 0.4 * drift[..., None]
-    s = rng.random((T, T))
-    img[s > 0.985] = col('#c8f0ff')
-    img[s < 0.04] *= 0.6
-    return grain(np.clip(img, 0, 1), rng, 0.04)
-
-
 def tex_organic(name, c='#7a2a3a'):
     """A living wall: ridged flesh with dark veins and wet highlights. Hives, infested ships."""
     rng = _rng(name)
@@ -1033,8 +1006,6 @@ TEXTURES = {
     'grid_floor': _em(tex_grid_floor),
     'hex_panel': _plain(tex_hex),
     # alien and dream
-    'alien_rock': _em(tex_alien_rock),
-    'alien_ground': _plain(tex_alien_ground),
     'organic': _plain(tex_organic),
     'sky_wall': _plain(tex_sky_wall),
     'cloud_floor': _plain(tex_cloud_floor),
