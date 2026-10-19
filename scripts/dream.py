@@ -278,7 +278,115 @@ def spr_paper_boat():
     return _prop(cv, [PAPER], relief=1.0, cavity=0.3, shadow=0.4)
 
 
+def spr_jellyfish():
+    """A jellyfish drifting through the air: a bell of soft light frilled at its rim, ribbons of
+    oral arms and long trailing tentacles - see-through and glowing (additive by default), so float
+    it with `z` over something dark."""
+    w, h = 48, 104
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    cx, cy, rx, ry = 24, 24, 19, 17
+    wave = 1.6 * np.sin(xx / 2.2)
+    bell = (((xx - cx) / rx) ** 2 + ((yy - cy) / ry) ** 2 <= 1) & (yy <= cy + 3 + wave)
+    inner = (((xx - cx) / (rx - 4)) ** 2 + ((yy - cy + 2) / (ry - 5)) ** 2 <= 1) & bell
+    rim = bell & (yy > cy - 1 + wave)
+    rgb = np.zeros((h, w, 3), np.float32)
+    rgb[bell] = (0.3, 0.55, 1.0)
+    rgb[inner] = (0.5, 0.8, 1.0)
+    rgb[rim] = (0.9, 0.55, 1.0)
+    glowing = bell.copy()
+    tent = np.zeros((h, w), bool)
+    for k in range(7):                                                # tentacles
+        x0 = cx - rx + 4 + k * (2 * rx - 8) / 6
+        for y in range(int(cy + 3), h - 2):
+            t = (y - cy) / (h - cy)
+            x = int(round(x0 + np.sin(y / 7.0 + k) * 3 * t + (k - 3) * t * 2))
+            if 0 <= x < w and (y + k) % 9 != 0:
+                tent[y, x] = True
+    for k in (-1, 1):                                                 # two frilled oral arms
+        for y in range(int(cy), int(cy + 46)):
+            t = (y - cy) / 46
+            x = cx + k * (2 + 3 * np.sin(y / 4.0)) * (1 - t * 0.4)
+            for dx in range(-1, 2):
+                if 0 <= int(x) + dx < w:
+                    tent[y, int(x) + dx] = True
+    rgb[tent & ~bell] = (0.75, 0.45, 1.0)
+    glowing |= tent
+    rgb *= np.where(((yy.astype(int) // 1) % 3 == 0)[..., None] & glowing[..., None], 0.75, 1.0)
+    a = glowing.astype(np.float32)
+    return np.concatenate([rgb, a[..., None]], -1).astype(np.float32), a * 1.0
+
+
+def spr_sky_lantern():
+    """A paper sky lantern drifting up, lit from inside: a tapering shade of warm paper, the flame
+    showing through at its open foot, a wire ring round it."""
+    w, h = 26, 34
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    _lathe(cv, 13, [(2, 10.5), (12, 10), (24, 8.5), (30, 7)], z=0.0, dome=1.0, mat=0)
+    for y in (9, 17, 25):                                             # the ribs of the shade
+        cv.stroke([(4, y), (22, y)], 0.8, dome=0.3, mode='carve')
+    cv.stroke([(6, 30), (20, 30)], 1.2, z=1.2, dome=0.4, mat=1)       # the wire ring
+    cv.ellipse(13, 28, 2.2, 3.0, z=1.4, dome=0.5, mat=2)              # the flame
+    em = (cv.mat == 0) * (cv.id > 0) * 0.75 + (cv.mat == 2) * (cv.id > 0) * 1.0
+    return _prop(cv, [ramp('#ffb05a', dark=0.55, light=1.2), INK, ramp('#fff4c0', dark=0.7, light=1.02)], em=em,
+                 relief=1.0, cavity=0.2, shadow=0.2)
+
+
+def spr_book_fly():
+    """A book flying like a bird: open, its covers raised as wings, its pages fanned out between
+    them and fluttering."""
+    w, h = 52, 30
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(26, 22), (3, 6), (6, 2), (26, 16)], z=0.0, top=0.8, bevel=1.2, mat=1)      # left cover
+    cv.polygon([(26, 22), (49, 8), (47, 3), (26, 16)], z=0.0, top=0.8, bevel=1.2, mat=1)    # right cover
+    for k in range(7):                                                # the fanned pages
+        a = np.radians(200 + k * 20)
+        L = 18 + 3 * np.sin(k * 1.7)
+        cv.stroke([(26, 19), (26 + np.cos(a) * L, 19 + np.sin(a) * L * 0.7)], 2.2, z=0.5 + k * 0.05, dome=0.4,
+                  taper=(0.6, 1.0), mat=0)
+    cv.stroke([(26, 15), (26, 24)], 2.0, z=1.0, dome=0.6, mat=1)      # the spine
+    return _prop(cv, [PAPER, ramp('#7a2e2a', dark=0.35)], relief=1.0, cavity=0.3, shadow=0.35)
+
+
 # ---------------------------------------------------------------- textures
+
+def tex_tall_window(name, top=False):
+    """A tall gothic window in pale stone: two lancets parted by a mullion, leaded across every
+    quarter unit and open to the air between the leads. Stack it two or three storeys high and end
+    it with `tall_window_top`, where the lancets close in pointed arches under a small rose."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=0.0, mat=0)
+    for row in range(4):                                              # ashlar behind everything
+        off = 8 if row % 2 else 0
+        for col in range(-1, 5):
+            cv.box(col * 16 + off + 0.5, row * 16 + 0.5, 15, 15, z=0.0, top=1.0, bevel=2.0, mat=0,
+                   tone=rng.normal(0, 0.04))
+    yy, xx = np.mgrid[0:T, 0:T] + 0.5
+    hole = np.zeros((T, T), bool)
+    for xc in (22, 42):                                               # the two lancets
+        half = 7.0
+        if top:
+            # a pointed arch: two arcs meeting at the apex, springing at row 34
+            spring, apex = 34.0, 12.0
+            r = ((spring - apex) ** 2 + half ** 2) / (2 * half)
+            left = (xx - (xc + half - r)) ** 2 + (yy - spring) ** 2 <= r * r
+            right = (xx - (xc - half + r)) ** 2 + (yy - spring) ** 2 <= r * r
+            arch = (yy < spring) & left & right & (np.abs(xx - xc) < half) & (yy > apex)
+            hole |= arch | ((yy >= spring) & (np.abs(xx - xc) < half))
+        else:
+            hole |= np.abs(xx - xc) < half
+    if top:                                                           # the rose between the arches
+        d = np.hypot(xx - 32, yy - 8)
+        hole |= (d < 4.5) & ~((np.abs(xx - 32) < 0.8) | (np.abs(yy - 8) < 0.8))
+    leads = hole & ((yy.astype(int) % 16) < 1)
+    edge = np.zeros_like(hole)
+    for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+        edge |= np.roll(hole, (dy, dx), (0, 1)) & ~hole
+    cv.tone[edge] += 0.15                                            # the chamfer round the opening, catching light
+    rgb = cv.paint([STONE_D], cv.light(relief=1.0, cavity=0.4, shadow=0.35), dither=0.25)
+    rgb[leads] = (0.16, 0.16, 0.18)
+    alpha = np.where(hole & ~leads, 0.0, 1.0).astype(np.float32)
+    return rgb, None, alpha
+
 
 def tex_checker_marble(name):
     """Chequered marble, black and white squares two to a side per unit, each square veined,
@@ -299,16 +407,23 @@ def tex_checker_marble(name):
     return _tile(cv, [MARBLE_W, MARBLE_B], dither=0.12, cavity=0.3, shadow=0.2)
 
 
-TEXTURES = {'checker_marble': lambda n: (tex_checker_marble(n), None)}
+TEXTURES = {'checker_marble': lambda n: (tex_checker_marble(n), None),
+            'tall_window': lambda n: tex_tall_window(n), 'tall_window_top': lambda n: tex_tall_window(n, top=True)}
 TEXTURE_REFLECT = {'checker_marble': 0.35}
-TEXTURE_NOISE = {'checker_marble': 0.3}
+TEXTURE_NOISE = {'checker_marble': 0.3, 'tall_window': 0.5, 'tall_window_top': 0.5}
 SPRITES = {
     'chess_pawn': spr_chess_pawn, 'chess_rook': spr_chess_rook, 'chess_bishop': spr_chess_bishop,
     'chess_knight': spr_chess_knight, 'chess_queen': spr_chess_queen, 'chess_king': spr_chess_king,
     'melting_clock': spr_melting_clock, 'hourglass': spr_hourglass, 'stone_arch': spr_stone_arch,
-    'stair_float': spr_stair_float, 'paper_boat': spr_paper_boat,
+    'stair_float': spr_stair_float, 'paper_boat': spr_paper_boat, 'jellyfish': spr_jellyfish,
+    'sky_lantern': spr_sky_lantern, 'book_fly': spr_book_fly,
 }
 SPRITE_HEIGHT = {'chess_pawn': 0.9, 'chess_rook': 1.1, 'chess_bishop': 1.3, 'chess_knight': 1.2, 'chess_queen': 1.45,
                  'chess_king': 1.55, 'melting_clock': 0.6, 'hourglass': 0.6, 'stone_arch': 2.4, 'stair_float': 2.0,
-                 'paper_boat': 0.3}
-NO_CONTACT_SHADOW = {'melting_clock'}
+                 'paper_boat': 0.3, 'jellyfish': 0.9, 'sky_lantern': 0.34, 'book_fly': 0.3}
+PROP_DEFAULTS = {
+    'jellyfish': {'blend': 'additive', 'opacity': 0.9, 'shadow': False},
+    'sky_lantern': {'aura': {'color': [1.0, 0.66, 0.3], 'strength': 0.5, 'radius': 0.3}, 'shadow': False},
+    'book_fly': {'shadow': False},
+}
+NO_CONTACT_SHADOW = {'melting_clock', 'jellyfish', 'sky_lantern', 'book_fly'}

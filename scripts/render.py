@@ -807,8 +807,11 @@ def build_sun(world, L, res=4):
             np.maximum(zlit, cand, out=zlit)
     roof = world.ceil_tid >= 0
     zroof = np.full((H, W), np.inf, np.float32)
+    zsky = np.full((2, H, W), -np.inf, np.float32)     # the band of heights lit down through a skylight
     if roof.any() and L.get('shadows', True):
         last = np.full((H, W), -1.0, np.float32)    # how far toward the light the roof lasts
+        t_open = np.full((H, W), np.inf, np.float32)     # where the first stretch of open sky begins...
+        t_shut = np.full((H, W), np.inf, np.float32)     # ...and where roof takes over again
         reach = min(world.ceil_h / tan_el + 1.0, float(world.mw + world.mh))
         for t in np.arange(0.0, reach + 0.25, 0.25):
             qx = np.floor(px + ux * t).astype(int)
@@ -816,7 +819,13 @@ def build_sun(world, L, res=4):
             inb = (qx >= 0) & (qy >= 0) & (qx < world.mw) & (qy < world.mh)
             under = inb & roof[np.clip(qy, 0, world.mh - 1), np.clip(qx, 0, world.mw - 1)]
             last = np.where(under, t, last)
+            t_shut = np.where(np.isfinite(t_open) & np.isinf(t_shut) & under, t, t_shut)
+            t_open = np.where(np.isinf(t_open) & ~under, t, t_open)
         zroof = np.where(last >= 0, world.ceil_h - (last + 0.25) * tan_el, np.inf).astype(np.float32)
+        # a ray rising from height z crosses the roof's height (t - z/tan) along the way; if it
+        # crosses inside that first open stretch it escapes, whatever roof lies beyond
+        zsky[1] = np.where(np.isfinite(t_open), world.ceil_h - t_open * tan_el, -np.inf)
+        zsky[0] = np.where(np.isfinite(t_shut), world.ceil_h - (t_shut - 0.25) * tan_el, -np.inf)
     elif roof.any():
         zroof[np.repeat(np.repeat(roof, res, 0), res, 1)] = -np.inf
     rgb = np.array(L.get('color', colour), np.float32) * float(L.get('intensity', inten))
@@ -825,7 +834,7 @@ def build_sun(world, L, res=4):
         disc = {'azimuth': math.degrees(az), 'elevation': math.degrees(el),
                 'color': L.get('disc_color', disc_c), 'radius': float(L.get('disc_size', disc_r)), 'glow': glow}
     return {'ux': ux, 'uy': uy, 'sin': math.sin(el), 'cos': math.cos(el), 'rgb': rgb, 'zlit': zlit,
-            'zroof': zroof, 'ceil_h': world.ceil_h, 'res': res, 'disc': disc}
+            'zroof': zroof, 'zsky': zsky, 'ceil_h': world.ceil_h, 'res': res, 'disc': disc}
 
 
 def sun_visibility(s_, x, y, z, soft=0.12):
@@ -837,6 +846,11 @@ def sun_visibility(s_, x, y, z, soft=0.12):
     z = np.asarray(z)
     with np.errstate(invalid='ignore'):
         roof = np.clip(np.nan_to_num(zr[iy, ix] - z, posinf=9.0, neginf=-9.0) / soft + 0.5, 0, 1)
+        if 'zsky' in s_:                              # or down through a skylight
+            lo, hi = s_['zsky'][0][iy, ix], s_['zsky'][1][iy, ix]
+            band = np.clip(np.nan_to_num(z - lo, posinf=9.0, neginf=9.0) / soft + 0.5, 0, 1) * \
+                np.clip(np.nan_to_num(hi - z, posinf=9.0, neginf=-9.0) / soft + 0.5, 0, 1)
+            roof = np.maximum(roof, band)
     roof = np.where(z >= s_['ceil_h'], 1.0, roof)    # air above a roof is outdoors
     return np.clip((z - zl[iy, ix]) / soft + 0.5, 0, 1) * roof
 

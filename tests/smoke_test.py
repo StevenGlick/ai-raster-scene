@@ -635,7 +635,18 @@ def check_atmosphere():
         notes = []
         frame(scene, notes)
         assert any(expect in n for n in notes), (expect, notes)
-    print('ok fog, light through openings, weather, wet ground, back views, render report')
+
+    # 8. the sun comes down through a skylight even with more roof beyond it, and not elsewhere
+    hall = {'map': ['#' * 12] + ['#' + '.' * 10 + '#'] * 10 + ['#' * 12], 'sky': 'day', 'ceiling_height': 3.0,
+            'legend': {'#': {'wall': 'stone', 'h': 3.0}, '.': {'floor': 'flagstone', 'ceil': 'beams'},
+                       'o': {'floor': 'flagstone'}},
+            'lights': [{'type': 'sun', 'azimuth': 0, 'elevation': 50}], 'camera': {'x': 6.0, 'y': 9.0, 'angle': 270}}
+    hall['map'][5] = '#....oo....#'
+    sun = R.Renderer(R.World(hall), hall).suns[0]
+    seen = lambda x, y, z: float(np.asarray(R.sun_visibility(sun, np.array([x]), np.array([y]), np.array([z]))).ravel()[0])  # noqa: E731
+    assert seen(5.8, 5.5, 2.6) > 0.9 and seen(6.5, 5.5, 2.9) > 0.9, 'sunlight must come down through a skylight'
+    assert seen(6.0, 8.5, 1.0) < 0.1 and seen(2.0, 2.5, 1.0) < 0.1, 'the roof round a skylight still shades'
+    print('ok fog, light through openings and skylights, weather, wet ground, back views, render report')
 
 
 def check_pixel_art():

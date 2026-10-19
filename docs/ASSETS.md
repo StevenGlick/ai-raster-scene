@@ -21,8 +21,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 131 | 101 | 27 | 3 | 0 |
-| Props | 149 | 131 | 16 | 2 | 0 |
+| Textures | 133 | 103 | 27 | 3 | 0 |
+| Props | 152 | 134 | 16 | 2 | 0 |
 | Characters | 22 | 20 | 2 | 0 | 0 |
 | Decals | 24 | 19 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
@@ -38,8 +38,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 16 | 16 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 37 | 30 | 7 | 0 | 0 |
-| **all** | **500** | **430** | **65** | **5** | **0** |
+| Example scenes | 38 | 31 | 7 | 0 | 0 |
+| **all** | **506** | **436** | **65** | **5** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -53,7 +53,7 @@ Weakest first, and in the order the new scenes need them.
 5. **Small things.** The hands on the held items, the `stain`, `stain_rust` and `moss_patch` decals, the `child` and `dreamer` characters, the `city` skyline, `alien_rock`, `alien_ground`, and the `glowshroom` and `alien_egg` props.
 6. **Second look.** Every asset marked good, checked again on the review sheets and in its scenes, with fresh eyes and the new techniques in hand.
 
-## Textures (131)
+## Textures (133)
 
 64x64 tiles, drawn in code. "glows" means the texture lights itself (windows, screens, runes), "see-through" that the map shows through its holes, "mirror" that floors made of it reflect.
 
@@ -86,15 +86,15 @@ Weakest first, and in the order the new scenes need them.
 
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
-| `wood_panel` | polish |  | - | Flat; needs panel frames and grain. |
+| `wood_panel` | polish |  | drowned_library | Flat; needs panel frames and grain. |
 | `planks` | good |  | - |  |
 | `boards` | good |  | coast_lighthouse, rain_alley, tropical_beach |  |
 | `logs` | good |  | coast_lighthouse, winter_lake |  |
 | `door_wood` | good |  | dream_chess, dream_world, winter_lake |  |
-| `bookshelf` | good |  | claude_study, gui_themes, gui_trade, library_medium, mansion_library |  |
+| `bookshelf` | good |  | claude_study, drowned_library, gui_themes, gui_trade, library_medium, mansion_library |  |
 | `bark` | good |  | - | Redrawn with the toolkit in forest.py: long wavy ridges split by deep dark furrows; tiles without a seam. |
 | `bark_pine` | good |  | - | Redrawn with the toolkit in forest.py: a mosaic of tall plates (nearest-seed cells) with dark fissures and flaking. |
-| `wood_floor` | good |  | claude_study, gui_lantern, gui_themes, gui_trade, library_medium, mansion_library, tunnel_encounter, underground_waterway |  |
+| `wood_floor` | good |  | claude_study, drowned_library, gui_lantern, gui_themes, gui_trade, library_medium, mansion_library, tunnel_encounter, underground_waterway |  |
 | `shingle` | polish |  | chapel_graveyard, coast_lighthouse, rainy_street, winter_lake | Looks like grey brick; shingles want staggered rounded tabs and shadow under each row. |
 
 ### Metal and sci-fi
@@ -139,7 +139,7 @@ Weakest first, and in the order the new scenes need them.
 | `sand` | polish |  | coast_lighthouse | Plain noise; wind ripples and the odd shell fragment. |
 | `snow` | good |  | winter_lake |  |
 | `ice` | polish | mirror 0.38 | winter_lake | Cracks look like scribbles; straighter fractures, depth in the blue. |
-| `water` | polish | mirror 0.5 | alien_world, coast_lighthouse, crystal_cave, gui_lantern, sewer_tunnels, tunnel_encounter, underground_waterway | Flat teal with white dashes; needs depth, caustics and a ripple pattern that tiles. |
+| `water` | polish | mirror 0.5 | alien_world, coast_lighthouse, crystal_cave, drowned_library, gui_lantern, sewer_tunnels, tunnel_encounter, underground_waterway | Flat teal with white dashes; needs depth, caustics and a ripple pattern that tiles. |
 | `pine_needles` | good |  | woodland_night | Redrawn with the toolkit in forest.py: criss-crossed needle litter over dark soil, a few green needles, cones and twigs. |
 | `alien_ground` | polish |  | alien_world | Crystal flecks are uniform white specks; vary size and tint. |
 | `alien_rock` | polish | glows | alien_world | Veins too thick and dense; the repeat shows when tiled. |
@@ -162,7 +162,7 @@ Weakest first, and in the order the new scenes need them.
 | `carpet_green` | good |  | - |  |
 | `flagstone` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, neon_street, rain_alley |  |
 | `obsidian` | good | mirror 0.45 | dream_world, space_station |  |
-| `concrete_floor` | good |  | 37 scenes |  |
+| `concrete_floor` | good |  | 38 scenes |  |
 | `rock_floor` | polish |  | crystal_cave, gui_lantern, tunnel_encounter, underground_waterway | Same as rock. |
 
 ### Ceilings
@@ -207,6 +207,8 @@ Weakest first, and in the order the new scenes need them.
 | `picket` | good | see-through | - |  |
 | `portcullis` | good | see-through | castle_keep |  |
 | `window_broken` | good | see-through | cathedral_ruin |  |
+| `tall_window` | good | see-through | drowned_library | Drawn with the toolkit in dream.py: two lancets in pale ashlar, leaded every quarter unit, open between the leads (see-through). |
+| `tall_window_top` | good | see-through | drowned_library | Drawn with the toolkit in dream.py: the lancets closing in pointed arches under a small rose; see-through. |
 | `lattice` | good | see-through | tropical_beach |  |
 | `viewport` | good | see-through | space_station |  |
 
@@ -248,7 +250,7 @@ Weakest first, and in the order the new scenes need them.
 | `bamboo` | polish |  | tropical_beach | The nodes still line up into a grid across the poles. |
 | `thatch` | polish |  | tropical_beach | The rows could be clearer, each with a shadow under its fringe. |
 
-## Props (149)
+## Props (152)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -259,27 +261,27 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `armchair` | good | 0.6 tall | claude_study |  |
 | `bed` | polish | 0.4 tall | bunker_lab, ghost_corridor, gui_hud, hospital_corridor | Plain; add a pillow, blanket fold and frame detail. |
 | `bench` | polish | 0.35 tall | coast_lighthouse, garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street | Plain slats; add a backrest variant. |
-| `book_stack` | good | 0.22 tall | claude_study |  |
+| `book_stack` | good | 0.22 tall | claude_study, drowned_library |  |
 | `chest` | polish | 0.3 tall | castle_keep | Lid corners read as dark notches. |
 | `console` | good | 0.85 tall, glows | bunker_lab, orbital_hangar, space_station |  |
 | `crate` | polish | 0.4 tall | bunker_lab, coast_lighthouse, gui_lantern, gui_themes, gui_trade, hospital_corridor, library_medium, mansion_library, neon_street, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway, winter_lake, woodland_night | Just a cross brace; add plank seams. |
 | `barrel` | polish | 0.45 tall | bunker_lab, coast_lighthouse, gui_lantern, gui_themes, gui_trade, library_medium, mansion_library, neon_street, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway | Flat: needs a cylindrical highlight and stave lines. |
 | `locker` | good | 1 tall | bunker_lab |  |
 | `lectern` | good | 0.5 tall | chapel_graveyard |  |
-| `open_book` | good | 0.12 tall, glows, no shadow | claude_study |  |
+| `open_book` | good | 0.12 tall, glows, no shadow | claude_study, drowned_library |  |
 | `pew` | good | 0.42 tall | cathedral_ruin, chapel_graveyard |  |
 | `table` | polish | 0.36 tall | castle_keep | Plain. |
 | `throne` | good | 0.95 tall | castle_keep |  |
 | `wheelchair` | polish | 0.45 tall | ghost_corridor, gui_hud, hospital_corridor | Reads as a box on a wheel. |
-| `writing_desk` | good | 0.55 tall, glows | claude_study |  |
-| `globe` | good | 0.45 tall | claude_study |  |
+| `writing_desk` | good | 0.55 tall, glows | claude_study, drowned_library |  |
+| `globe` | good | 0.45 tall | claude_study, drowned_library |  |
 | `orrery` | good | 0.6 tall, glows | claude_study |  |
 | `telescope` | good | 0.8 tall | claude_study |  |
 | `painting` | good | 0.45 tall, no shadow | - |  |
 | `wall_clock` | good | 0.28 tall, no shadow | bunker_lab, rainy_street |  |
 | `banner` | good | 0.95 tall, no shadow | castle_keep, rainy_street |  |
 | `chains` | good | 0.6 tall, no shadow | castle_keep |  |
-| `ladder` | good | 1 tall, no shadow | sewer_tunnels |  |
+| `ladder` | good | 1 tall, no shadow | drowned_library, sewer_tunnels |  |
 | `pipe_valve` | good | 0.32 tall, no shadow | bunker_lab, sewer_tunnels |  |
 | `sack` | good | 0.42 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, neon_street, rain_alley, rainy_street, sewer_tunnels, woodland_night |  |
 | `bucket` | good | 0.32 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, neon_street, rain_alley, rainy_street, sewer_tunnels |  |
@@ -290,7 +292,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 |---|---|---|---|---|
 | `brazier` | good | 0.85 tall, glows, no shadow | ancient_ruins, castle_keep, coast_lighthouse |  |
 | `campfire` | good | 0.4 tall, glows, no shadow | tropical_beach, woodland_night |  |
-| `candles` | good | 0.2 tall, glows, no shadow | castle_keep, cathedral_ruin, chapel_graveyard, gui_lantern, gui_themes, gui_trade, jungle_temple, library_medium, mansion_library, tunnel_encounter, underground_waterway |  |
+| `candles` | good | 0.2 tall, glows, no shadow | castle_keep, cathedral_ruin, chapel_graveyard, drowned_library, gui_lantern, gui_themes, gui_trade, jungle_temple, library_medium, mansion_library, tunnel_encounter, underground_waterway |  |
 | `ceiling_lamp` | good | 0.3 tall, glows, no shadow | bunker_lab, sewer_tunnels |  |
 | `chandelier` | good | 0.45 tall, glows, no shadow | castle_keep, claude_study |  |
 | `lamp_post` | good | 1.6 tall, glows | garden_encounter, gui_menus, hospital_garden, post_presets, rain_alley, rainy_street | Thin at a distance. |
@@ -386,13 +388,16 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `stone_arch` | good | 2.4 tall | dream_chess | Drawn with the toolkit in dream.py: coursed piers and a round arch of voussoirs with a keystone, open in the middle. |
 | `stair_float` | good | 2 tall | dream_chess | Drawn with the toolkit in dream.py: a flight of stairs on a soffit, broken off at both ends, stones falling. |
 | `paper_boat` | good | 0.3 tall | dream_chess | Drawn with the toolkit in dream.py: folded planes, a peak and a crease. |
+| `jellyfish` | good | 0.9 tall, glows, no shadow | drowned_library | A bell of light frilled at the rim, oral arms and tentacles; additive and glowing, no shadow. |
+| `sky_lantern` | good | 0.34 tall, glows, aura, no shadow | drowned_library | Drawn with the toolkit in dream.py: a tapering paper shade lit from inside, the flame at its foot, a wire ring; aura. |
+| `book_fly` | good | 0.3 tall, no shadow | drowned_library | Drawn with the toolkit in dream.py: an open book with its covers raised as wings and its pages fanned. |
 | `chess_pawn` | good | 0.9 tall | dream_chess, dream_world | Drawn with the toolkit in dream.py: a turned marble pawn (lathe profile), faint veins. Tint dark for the other side. |
 | `door_frame` | good | 1.1 tall | dream_chess, dream_world |  |
 | `floating_rock` | good | 1.6 tall, no shadow | dream_world |  |
-| `koi` | good | 0.35 tall, no shadow | dream_chess, dream_world |  |
+| `koi` | good | 0.35 tall, no shadow | dream_chess, dream_world, drowned_library |  |
 | `orb` | good | 0.2 tall, glows, aura, no shadow | dream_world |  |
 | `pocket_watch` | good | 0.8 tall, no shadow | dream_world |  |
-| `sky_whale` | good | 2 tall, glows, no shadow | dream_world |  |
+| `sky_whale` | good | 2 tall, glows, no shadow | dream_world, drowned_library |  |
 
 ### Jungle
 
@@ -483,7 +488,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `astronaut` | good | alien_world, orbital_hangar, space_station |  |
 | `android` | good | neon_street, orbital_hangar, space_station |  |
 | `alien` | good | alien_world, derelict_ship | A familiar archetype; could be made stranger. |
-| `dreamer` | polish | dream_chess, dream_world | The face reads as open-eyed; a sleepwalker wants closed eyes. |
+| `dreamer` | polish | dream_chess, dream_world, drowned_library | The face reads as open-eyed; a sleepwalker wants closed eyes. |
 | `claude` | good | claude_study | Claude's own avatar. |
 | `explorer` | good | jungle_temple |  |
 | `hoplite` | good | ancient_ruins |  |
@@ -511,7 +516,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `cobweb` | good | bunker_lab, castle_keep |  |
 | `rune_mark` | good | - |  |
 | `drain` | good | bunker_lab, neon_street, rainy_street, sewer_tunnels |  |
-| `contact_shadow` | good | 37 scenes |  |
+| `contact_shadow` | good | 38 scenes |  |
 | `pad_marking` | good | orbital_hangar | A painted landing ring with an H and a dashed outer ring, worn in patches. |
 | `hazard_stripe` | good | orbital_hangar | A band of yellow and black diagonal stripes, worn through in places. |
 
@@ -538,7 +543,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `blood` | good | - |  |
 | `space` | good | orbital_hangar, space_station |  |
 | `alien` | good | alien_world |  |
-| `dream` | good | dream_chess, dream_world |  |
+| `dream` | good | dream_chess, dream_world, drowned_library |  |
 | `sunset` | good | tropical_beach |  |
 | `golden` | good | ancient_ruins, woodland_night |  |
 
@@ -559,7 +564,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 |---|---|---|---|
 | `planet` | good | - |  |
 | `ringed` | good | alien_world, orbital_hangar, space_station |  |
-| `moon` | good | alien_world, dream_chess, dream_world, orbital_hangar, space_station |  |
+| `moon` | good | alien_world, dream_chess, dream_world, drowned_library, orbital_hangar, space_station |  |
 | `sun` | good | orbital_hangar, space_station |  |
 | `eye` | good | dream_world |  |
 | `clock` | good | dream_chess | A cream face in a dark rim, twelve ticks, two hands set by `time`, its bottom running like wax (`melt`). |
@@ -670,7 +675,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 
 | theme | status | used in | notes |
 |---|---|---|---|
-| `classic` | good | 31 scenes |  |
+| `classic` | good | 32 scenes |  |
 | `parchment` | good | gui_themes, gui_trade |  |
 | `terminal` | good | bunker_lab, gui_themes, orbital_hangar, space_station |  |
 | `blood` | good | gui_themes |  |
@@ -682,7 +687,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 |---|---|---|---|
 | `bubble` | good | alien_world, castle_keep, claude_study, crystal_cave, garden_encounter, ghost_corridor, gui_menus, gui_trade, neon_street, rainy_street, tunnel_encounter, winter_lake, woodland_night |  |
 | `dialog` | good | bunker_lab, chapel_graveyard, claude_study, coast_lighthouse, ghost_corridor, library_medium, orbital_hangar, space_station |  |
-| `caption` | good | 24 scenes |  |
+| `caption` | good | 25 scenes |  |
 | `choice` | good | gui_menus, gui_themes, gui_trade |  |
 | `title` | good | gui_menus |  |
 | `panel` | good | bunker_lab, gui_lantern |  |
@@ -736,7 +741,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `mono` | good | - |  |
 | `bone` | good | - |  |
 
-## Example scenes (37)
+## Example scenes (38)
 
 The environments, judged on their gallery images and shots.
 
@@ -786,6 +791,7 @@ The environments, judged on their gallery images and shots.
 | `alien_world` | good | 3 | alien_landing, alien_monolith |  |
 | `dream_world` | good | 3 | dream_stair, dream_mirror |  |
 | `dream_chess` | good | 4 | dream_plain, dream_door, dream_hole, dream_clock | A giant marble chess game on a floating plain of checker_marble under a melting sky clock: arches and stairs in the air, a stair up to a lone door, a hole onto the sky. |
+| `drowned_library` | good | 4 | library_hall, library_reader, library_beams, library_water | Bookshelves three storeys high in still water under tall windows and skylights: beams in dark fog, jellyfish, lanterns, flying books, koi and a whale. |
 
 ### Claude
 
@@ -815,6 +821,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the drowned library.** Sunlight now comes down through skylights - holes in a roof with more roof beyond them, which the roof test used to treat as roofed (the cathedral's beam through its fallen roof got brighter and truer with it). dream.py: `tall_window`/`tall_window_top`, `jellyfish`, `sky_lantern`, `book_fly`. `examples/drowned_library.py` with four gallery shots.
 - **2026-10-19, the chequered plain.** `scripts/dream.py`: a marble chess set turned on a lathe (pawn and king redrawn, rook, knight, bishop and queen new), `melting_clock`, `hourglass`, `stone_arch`, `stair_float`, `paper_boat`, the `checker_marble` floor, and a `clock` sky object that melts. `examples/dream_chess.py`: a giant unfinished game on a floating plain, with four gallery shots.
 - **2026-10-19, the neon street.** A `neon` facade style (`scripts/buildings.py`): concrete, neon signs drawn into the wall layer, which now returns a glow, blade signs standing out over the street (a new `blade` layer, placed by the renderer), shutters and tinted rooms - the other styles' buildings unchanged. Street props in scifi.py (`vending_machine`, `noodle_stall`, `steam`, `holo_ad`, `wires_span`), the `runner`, and `examples/neon_street.py` with four gallery shots.
 - **2026-10-19, the orbital hangar.** `examples/orbital_hangar.py`, a scene of several rooms built from the sci-fi hardware: the bay with its shuttle, loader and robot arms behind real glass onto a ringed planet, a control room looking down the bay, and a reactor room in cyan haze under red alarms. Gallery: `hangar_bay`, `hangar_pilot`, `hangar_control`, `hangar_reactor`.
