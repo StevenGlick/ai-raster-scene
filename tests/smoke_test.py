@@ -914,7 +914,26 @@ def check_glass_facades():
     walls = [sp for sp in sprites if '"layer":"wall"' in sp['type']]
     assert any(buildings.layer_image(sp['type'])[1].max() > 0.5 for sp in walls), 'neon signs glow'
     assert buildings.layer_image(blades[0]['type'])[1].max() > 0.5
-    print('ok glass pass (tint, blur), facades (buildings, layers, corners, side walls, reveals, neon)')
+
+    # 8. a village: every timber house wears a roof standing on its wall - a gable end in the wall's
+    # own plane, a slope of thatch or tiles set back behind the eave - and the other styles none
+    village = dict(street, legend=dict(street['legend'], B={'wall': 'plaster', 'h': 1, 'facade': {
+        'style': 'timber', 'widths': [2, 3], 'storeys': [1, 2], 'seed': 4}}))
+    sprites = R.World(village).fringe_sprites
+    walls = [sp for sp in sprites if '"layer":"wall"' in sp['type']]
+    roofs = [sp for sp in sprites if '"layer":"roof"' in sp['type']]
+    assert len(roofs) == len(walls) >= 6, 'a roof on every house'
+    kinds = set()
+    for wall_, roof_ in zip(walls, roofs):
+        p = json.loads(roof_['type'][7:])
+        kinds.add(p['kind'])
+        assert roof_['z'] == wall_['scale'] and roof_['length'] > wall_['length'], 'it stands on the wall, overhanging'
+        assert (roof_['y'] > wall_['y']) == (p['kind'] == 'gable'), 'a gable in the front, a slope set back'
+        img = buildings.layer_image(roof_['type'])[0]
+        assert img.shape[0] == round(roof_['scale'] * 64) and img[..., 3].mean() > 0.3
+    assert kinds == {'gable', 'eaves'}, kinds
+    assert not any('"layer":"roof"' in sp['type'] for sp in R.World(street).fringe_sprites)
+    print('ok glass pass (tint, blur), facades (buildings, layers, corners, side walls, reveals, neon, timber roofs)')
 
 
 def check_docs():

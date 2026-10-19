@@ -458,6 +458,19 @@ class World:
                     if layer == 'wall':                   # as thick as the frames are set back in it
                         fields['reveal'] = depth * (1.0 - dict(self.FACADE_LAYERS)['frame']) + 0.004
                     out.append(self._card(d, line, s0, s1, depth * frac, **fields))
+                # a village style stands a roof on the wall: a gable end in the wall's own plane, or the
+                # slope of thatch or tiles set back behind the eave, so the wall's top hides its foot;
+                # each overhangs the ends a little and stands a hair off its neighbour so they never fight
+                roof = buildings.roof_of(spec['style'], look, s1 - s0)
+                if roof:
+                    kind, cover, rh, chim = roof
+                    over = 0.1
+                    off = depth + 0.05 if kind == 'gable' else depth - min(0.4, depth * 0.45)
+                    out.append(self._card(d, line, s0 - over, s1 + over, off + 0.03 * (i % 2),
+                                          type=buildings.layer_name('roof', style=spec['style'], look=look, kind=kind,
+                                                                    cover=cover, chimney=chim,
+                                                                    w=round(s1 - s0 + 2 * over, 3), h=rh),
+                                          scale=rh, z=float(storeys), flip=d in 'ne'))
                 # a style with blade signs hangs one or two out over the street, square to the front
                 look_style = buildings.FACADE_STYLES[buildings.pick_style(spec['style'], look)]
                 if look_style.get('blades') and storeys >= 3:
