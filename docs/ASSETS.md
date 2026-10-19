@@ -22,7 +22,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
 | Textures | 147 | 135 | 12 | 0 | 0 |
-| Props | 202 | 192 | 10 | 0 | 0 |
+| Props | 202 | 199 | 3 | 0 | 0 |
 | Characters | 27 | 25 | 2 | 0 | 0 |
 | Decals | 24 | 19 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
@@ -39,7 +39,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 45 | 38 | 7 | 0 | 0 |
-| **all** | **593** | **549** | **44** | **0** | **0** |
+| **all** | **593** | **556** | **37** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -273,10 +273,10 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
 | `armchair` | good | 0.6 tall | claude_study |  |
-| `bed` | polish | 0.4 tall | bunker_lab, ghost_corridor, gui_hud, hospital_corridor | Plain; add a pillow, blanket fold and frame detail. |
+| `bed` | good | 0.4 tall | bunker_lab, ghost_corridor, gui_hud, hospital_corridor | Redrawn with the toolkit in basics.py: an iron bedstead with uprights, a mattress in white sheets, a pillow, a grey blanket turned back, castors. |
 | `bench` | good | 0.35 tall | coast_lighthouse, garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, village_green | Redrawn with the toolkit in basics.py: three backrest slats and two in the seat, held in cast-iron ends with scrolled armrests and curving legs. |
 | `book_stack` | good | 0.22 tall | claude_study, drowned_library |  |
-| `chest` | polish | 0.3 tall | castle_keep, kelp_forest | Lid corners read as dark notches. |
+| `chest` | good | 0.3 tall | castle_keep, kelp_forest | Redrawn with the toolkit in basics.py: oak planks under a rounded lid, iron straps studded with rivets, iron corners, a brass lock plate. |
 | `console` | good | 0.85 tall, glows | bunker_lab, orbital_hangar, space_station |  |
 | `crate` | good | 0.4 tall | bunker_lab, coast_lighthouse, ghost_town, gui_lantern, gui_themes, gui_trade, hospital_corridor, library_medium, mansion_library, neon_street, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway, village_green, winter_lake, woodland_night | Redrawn with the toolkit in basics.py: planks behind battens and a diagonal brace, nails at the corners, a stencilled arrow. |
 | `barrel` | good | 0.45 tall | bayou, bunker_lab, coast_lighthouse, ghost_town, gui_lantern, gui_themes, gui_trade, library_medium, mansion_library, neon_street, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway, village_green | Redrawn with the toolkit in basics.py: bulging staves turned on a lathe, three iron hoops, the lid showing at the top. |
@@ -284,9 +284,9 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `lectern` | good | 0.5 tall | chapel_graveyard |  |
 | `open_book` | good | 0.12 tall, glows, no shadow | claude_study, drowned_library |  |
 | `pew` | good | 0.42 tall | cathedral_ruin, chapel_graveyard |  |
-| `table` | polish | 0.36 tall | castle_keep | Plain. |
+| `table` | good | 0.36 tall | castle_keep | Redrawn with the toolkit in basics.py: a thick top with grain along it, an apron, turned legs, the far pair darker. |
 | `throne` | good | 0.95 tall | castle_keep |  |
-| `wheelchair` | polish | 0.45 tall | ghost_corridor, gui_hud, hospital_corridor | Reads as a box on a wheel. |
+| `wheelchair` | good | 0.45 tall | ghost_corridor, gui_hud, hospital_corridor | Redrawn with the toolkit in basics.py: side on: a big spoked wheel with its push rim, a caster, leather seat and back, armrest, handles, footrest. |
 | `writing_desk` | good | 0.55 tall, glows | claude_study, drowned_library |  |
 | `globe` | good | 0.45 tall | claude_study, drowned_library |  |
 | `orrery` | good | 0.6 tall, glows | claude_study |  |
@@ -346,7 +346,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `tree` | good | 2.6 tall | dream_world, garden_encounter, gui_menus, hospital_garden, post_presets, village_green, woodland_night | Redrawn with the toolkit in forest.py: an oak with a furrowed trunk on a flared foot, limbs showing between lobes of crown lit from above. |
 | `tree_autumn` | good | 2.6 tall | autumn_lane | Drawn with the toolkit in forest.py: the oak turned: orange and gold in patches cluster by cluster, a side going first, a little rust. |
 | `tree_winter` | good | 2.6 tall | winter_woods | Drawn with the toolkit in forest.py: a bare oak grown by recursive branching down to twigs, snow along every limb level enough to hold it. |
-| `glowshroom` | polish | 0.16 tall, glows, no shadow | alien_world, crystal_cave | Flat cut-outs; the caps want a gradient and a bright rim. |
+| `glowshroom` | good | 0.16 tall, glows, no shadow | alien_world, crystal_cave | Redrawn with the toolkit in basics.py: domed caps freckled with paler spots over dark gills, pale stems; the caps glow. |
 | `crystal` | good | 0.36 tall, glows, no shadow | alien_world, crystal_cave |  |
 | `stalagmite` | good | 0.8 tall | crystal_cave |  |
 
@@ -372,7 +372,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `rowboat` | good | 0.3 tall | bayou, coast_lighthouse, gui_lantern, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: a clinker hull of lapped strakes, the top one painted a faded teal, a lighter gunwale, the bow rising, an oar along it. |
 | `anchor` | good | 0.75 tall | kelp_forest | Drawn with the toolkit in sea.py: an iron anchor: ring, stock, shank, curved arms and spade flukes, rusted and grown over. |
 | `wreck_mast` | good | 3.6 tall | kelp_forest | Drawn with the toolkit in sea.py: a snapped mast leaning, a yard askew, torn rigging, furred with weed. |
-| `buoy` | polish | 0.5 tall, glows | coast_lighthouse | Reads as a bottle. |
+| `buoy` | good | 0.5 tall, glows | coast_lighthouse | Redrawn with the toolkit in basics.py: a red can with a white band, a lattice cage carrying its lit lamp, ripples at the waterline. |
 | `snowman` | good | 0.62 tall | winter_lake, winter_woods |  |
 | `scarecrow` | good | 1.9 tall | autumn_lane | Drawn with the toolkit in village.py: post and crossbar, a sack head with a stitched face, a battered hat, a patched coat with straw at the cuffs and hem, a crow on one arm. |
 | `pumpkin` | good | 0.32 tall | autumn_lane | Drawn with the toolkit in village.py: a squat gourd of deep ribs, a woody stem, a curl of vine and a leaf. |
@@ -411,7 +411,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
-| `alien_egg` | polish | 0.35 tall, glows | alien_world, derelict_ship | Reads as a brown sack with a green cross; it wants a wet sheen and veins. |
+| `alien_egg` | good | 0.35 tall, glows | alien_world, derelict_ship | Redrawn with the toolkit in basics.py: a leathery, mottled egg with a wet sheen, veins glowing faintly green, four lips at its crown parting on a glow. |
 | `alien_plant` | good | 1.1 tall, glows | alien_world |  |
 | `balloon` | good | 2.6 tall, no shadow | dream_world |  |
 | `chess_king` | good | 1.55 tall | dream_chess, dream_world | Drawn with the toolkit in dream.py: the tallest piece, crown and cross, turned marble. |
@@ -908,6 +908,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, polish pass 3.** Redrawn with the toolkit in `scripts/basics.py`: `bed`, `wheelchair`, `table`, `chest`, `glowshroom`, `buoy`, `alien_egg` (its veins glow, so a dark hive still reads as a field of eggs).
 - **2026-10-19, winter woods.** forest.py: `tree_winter` (recursive bare branches with snow along them), `birch_winter`, `bush_snow`, `deer`, `forest_deep_snow` and a `forest_snow` fringe (the green and autumn wood unchanged, hashed); `snow` redrawn. `examples/winter_woods.py` with four gallery shots.
 - **2026-10-19, the ghost town.** A `western` facade style: clapboard false fronts with painted signs (drawn with the pixel font, shuffled along each street), batwing doors on the saloon, and a `porch` layer - posts and fascia out at the edge of a boardwalk whose `ceil` is the porch roof. desert.py: `windpump`, `water_trough`, `wagon_wheel`. `examples/ghost_town.py` with four gallery shots.
 - **2026-10-19, under the sea.** `scripts/sea.py`: `seabed`, `water_surface`; `kelp`, `fish_school`, `bubbles`, `anchor`, `wreck_mast`; a `kelp` fringe and a `seabed` scatter set; the `diver`. `examples/kelp_forest.py` with four gallery shots.

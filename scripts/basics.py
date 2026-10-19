@@ -1,7 +1,8 @@
 """Everyday materials and props redrawn with the pixel-art toolkit (scripts/pixelart.py): grass,
 a clipped hedge, dirt, gravel, wood panelling, water, slates, cobbles, ceiling beams, raw rock (dry,
 wet, a floor of it, under snow), ice, sand, plaster and ivy on brick; a barrel,
-a broken one, a crate, a fountain, a rowboat, a bench, flowers and a statue. These are the oldest
+a broken one, a crate, a fountain, a rowboat, a bench, flowers, a statue, an iron bed, a
+wheelchair, a table, a chest, glowing mushrooms, a buoy and an alien egg. These are the oldest
 things in the set - the first versions were noise and flat shapes - and they turn up in a great
 many scenes.
 
@@ -43,6 +44,23 @@ FLOWER = [ramp('#c8303a', dark=0.4, light=1.25), ramp('#e8c040', dark=0.4, light
 STEMS = ramp('#3e6a2e', dark=0.3)
 MARBLE_W = ramp('#c8c2b4', dark=0.4, light=1.15)
 LICHEN_S = ramp('#8a8a5a', dark=0.4)
+BED_IRON = ramp('#6a7076', dark=0.4, light=1.5, cool=0.1)
+SHEET = ramp('#e2ded2', dark=0.5, light=1.06)
+BLANKET = ramp('#7a8070', dark=0.35, light=1.25)
+CHROME = ramp('#9aa0a6', dark=0.35, light=1.45, cool=0.1)
+LEATHER = ramp('#4a3a30', dark=0.35, light=1.4)
+TYRE = ramp('#2a2a2c', dark=0.6, light=1.8)
+TABLE_WOOD = ramp('#6a4a2c', dark=0.3, light=1.3)
+CHEST_WOOD = ramp('#7a5030', dark=0.3, light=1.3)
+BRASS = ramp('#c8a040', dark=0.4, light=1.2)
+SHROOM = ramp('#3ad8b8', dark=0.45, light=1.25, cool=0.15)
+SHROOM_STEM = ramp('#c8d8c0', dark=0.45, light=1.1)
+BUOY_RED = ramp('#b03a2e', dark=0.32, light=1.3)
+BUOY_WHITE = ramp('#dedad0', dark=0.5, light=1.06)
+LAMP = ramp('#ffd060', dark=0.7, light=1.1)
+EGG = ramp('#6a5640', dark=0.32, light=1.5)
+EGG_VEIN = ramp('#6a9a3a', dark=0.45, light=1.3)
+EGG_GLOW = ramp('#a8ff6a', dark=0.7, light=1.1)
 
 
 # ---------------------------------------------------------------- textures
@@ -669,6 +687,166 @@ def spr_statue():
     return _prop(cv, [MARBLE_W, LICHEN_S], relief=1.1, cavity=0.45, shadow=0.5, ambient=0.28, diffuse=0.62)
 
 
+def spr_bed():
+    """An iron bedstead: head and foot rails of tubing with uprights, a mattress made up in white
+    sheets, a pillow at the head and a grey blanket turned back over the foot of it."""
+    w, h = 80, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (3, 76):                                                          # the posts
+        cv.stroke([(x, 2 if x == 3 else 10), (x, h)], 2.6, z=0.6, dome=0.8, mat=0)
+    for x0, top in ((3, 2), (76, 10)):                                          # head and foot rails
+        x1 = x0 + 0.0
+        cv.stroke([(x0 - 0.2, top + 1), (x0 + 0.2, top + 1)], 2.6, z=0.8, dome=0.8, mat=0)
+    cv.stroke([(3, 4), (3, 4)], 3.2, z=1.0, dome=0.8, mat=0)
+    cv.box(4, 18, 72, 8, z=0.4, top=1.0, bevel=2.5, mat=1)                       # the mattress, made up
+    cv.box(44, 15, 32, 11, z=0.8, top=1.2, bevel=3.0, mat=2)                     # the blanket over the foot
+    cv.stroke([(44, 16), (44, 25)], 1.0, dome=0.5, mode='carve')                 # its turned-back edge
+    cv.stroke([(48, 15.5), (75, 15.5)], 1.2, z=2.0, dome=0.4, mat=2, tone=0.06)
+    cv.ellipse(15, 15, 9, 4.2, z=1.2, dome=1.2, mat=1, tone=0.04)                 # the pillow
+    cv.stroke([(4, 27), (76, 27)], 2.0, z=0.6, dome=0.6, mat=0)                   # the side rail
+    for x in (8, 72):                                                          # legs and castors
+        cv.stroke([(x, 27), (x, h - 3)], 2.0, z=0.4, dome=0.6, mat=0)
+        cv.ellipse(x, h - 2, 2.0, 1.8, z=0.4, dome=0.6, mat=3)
+    for x in range(8, 20, 3):                                                   # the headboard's uprights
+        cv.stroke([(x - 4, 4), (x - 4, 18)], 0.9, z=0.5, dome=0.5, mat=0)
+    return _prop(cv, [BED_IRON, SHEET, BLANKET, TYRE], relief=1.0, cavity=0.35, shadow=0.45)
+
+
+def spr_wheelchair():
+    """An old wheelchair, side on: a big spoked rear wheel with its push rim, a small caster in
+    front, a leather seat and back on a steel frame, armrest, push handles and a footrest."""
+    w, h = 40, 48
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.stroke([(9, 4), (11, 26), (12, 30)], 1.6, z=0.3, dome=0.6, mat=0)            # the back post and handle
+    cv.stroke([(6, 4), (10, 4)], 2.0, z=0.4, dome=0.6, mat=2)
+    cv.polygon([(10.5, 7), (14, 7), (15, 26), (12, 26)], z=0.6, top=0.8, bevel=1.2, mat=1)   # the back
+    cv.polygon([(12, 24), (30, 23), (30, 27), (12, 28)], z=0.7, top=0.8, bevel=1.2, mat=1)   # the seat
+    cv.stroke([(12, 18), (28, 18), (29, 23)], 1.3, z=1.6, dome=0.5, mat=0)           # the armrest
+    cv.stroke([(28, 27), (33, 40), (37, 40)], 1.3, z=0.6, dome=0.5, mat=0)           # the footrest
+    cv.stroke([(28, 27), (31, h - 6)], 1.2, z=0.4, dome=0.5, mat=0)
+    a = np.linspace(0, 2 * np.pi, 40)                                           # the big wheel
+    wx, wy, R = 16, 31, 15
+    cv.stroke(list(zip(wx + np.cos(a) * R, wy + np.sin(a) * R)), 2.4, z=1.2, dome=0.8, mat=3)
+    cv.stroke(list(zip(wx + np.cos(a) * (R - 2.6), wy + np.sin(a) * (R - 2.6))), 0.8, z=1.6, dome=0.5, mat=0)
+    for k in range(12):
+        b = k * np.pi / 6
+        cv.stroke([(wx, wy), (wx + np.cos(b) * (R - 1.5), wy + np.sin(b) * (R - 1.5))], 0.5, z=1.1, dome=0.3, mat=0)
+    cv.ellipse(wx, wy, 1.8, 1.8, z=1.8, dome=0.6, mat=0)
+    cv.stroke(list(zip(32 + np.cos(a) * 3.2, h - 4 + np.sin(a) * 3.2)), 1.4, z=0.8, dome=0.6, mat=3)   # caster
+    return _prop(cv, [CHROME, LEATHER, TYRE, TYRE], relief=1.0, cavity=0.3, shadow=0.4)
+
+
+def spr_table():
+    """A heavy wooden table: a thick top with a lit edge and grain along it, an apron under it,
+    turned legs at the corners, the far pair a shade darker."""
+    rng = np.random.default_rng(171)
+    w, h = 80, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x, tn in ((10, -0.1), (68, -0.1)):                                       # the far legs
+        _lathe(cv, x, [(12, 2.2), (20, 2.8), (24, 2.0), (34, 2.4), (39, 2.0)], z=0.0, dome=1.0, mat=0, tone=tn)
+    cv.box(3, 12, 74, 6, z=0.3, top=0.8, bevel=1.2, mat=0, tone=-0.05)              # the apron
+    for x in (6, 74):                                                          # the near legs, turned
+        _lathe(cv, x, [(12, 2.6), (19, 3.4), (23, 2.3), (27, 3.0), (34, 2.6), (40, 2.2)], z=0.6, dome=1.2, mat=0)
+    cv.box(0, 6, 80, 7, z=0.9, top=1.0, bevel=1.5, mat=0, tone=0.04)                # the top
+    for _ in range(12):
+        x, y = rng.uniform(0, 70), rng.uniform(7, 12)
+        cv.stroke([(x, y), (x + rng.uniform(8, 20), y + rng.normal(0, 0.2))], 0.5, dome=0.2, mode='carve')
+    return _prop(cv, [TABLE_WOOD], relief=1.0, cavity=0.4, shadow=0.45, ambient=0.32, diffuse=0.66)
+
+
+def spr_chest():
+    """A chest of oak planks under a rounded lid, bound with iron straps studded with rivets,
+    iron corners, and a brass lock plate with its keyhole at the front."""
+    w, h = 48, 36
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(2, 14, 44, 21, z=0.0, top=1.0, bevel=2.0, mat=0)                        # the body
+    for y in (20, 26, 31):
+        cv.stroke([(3, y), (45, y)], 0.7, dome=0.4, mode='carve')                  # plank seams
+    t = np.linspace(-1, 1, 25)                                                  # the rounded lid
+    lid = [(24 + 22 * u, 14 - 11 * np.sqrt(max(0.0, 1 - u * u))) for u in t]
+    cv.polygon(lid + [(46, 14), (2, 14)], z=0.4, top=1.2, bevel=3.0, mat=0, tone=0.05)
+    cv.stroke([(2, 14), (46, 14)], 1.6, z=1.6, dome=0.5, mat=1)                     # the lid's iron edge
+    for x in (9, 39):                                                          # straps over the lid and down
+        cv.stroke([(x, 3 + 4 * (1 - abs(x - 24) / 22)), (x, 14), (x, 34)], 2.6, z=1.5, dome=0.6, mat=1)
+        for y in (8, 17, 24, 31):
+            cv.ellipse(x, y, 0.8, 0.8, z=2.6, dome=0.4, mat=1, tone=0.1)
+    for x0 in (2, 42):                                                          # iron corners
+        cv.box(x0, 30, 4, 5, z=1.4, top=0.4, bevel=0.8, mat=1)
+    cv.box(20.5, 12, 7, 9, z=1.6, top=0.6, bevel=1.0, mat=2)                       # the lock plate
+    cv.ellipse(24, 15.5, 1.0, 1.0, z=2.0, dome=0.0, mat=3)
+    cv.stroke([(24, 16), (24, 18.2)], 0.7, z=2.0, dome=0.0, mat=3)
+    return _prop(cv, [CHEST_WOOD, ramp('#3e3e44', dark=0.45, light=1.7), BRASS, ramp('#140e0a', dark=0.7, light=1.4)],
+                 relief=1.0, cavity=0.4, shadow=0.45)
+
+
+def spr_glowshroom():
+    """A clump of glowing mushrooms: pale stems under domed caps that shade from a bright rim to a
+    deeper heart, freckled with paler spots, the gills dark underneath. The caps glow."""
+    rng = np.random.default_rng(173)
+    w, h = 44, 28
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    caps = [(10, 14, 7.5, 4.6), (24, 10, 9.5, 5.6), (36, 18, 5.5, 3.6), (31, 22, 3.6, 2.4)]
+    for x, y, rx, ry in caps:                                                   # stems first
+        cv.stroke([(x, h), (x + rng.normal(0, 0.6), y)], rx * 0.36, z=0.2, dome=0.8, taper=(1.2, 0.9), mat=1)
+    for x, y, rx, ry in caps:
+        cv.ellipse(x, y + ry * 0.5, rx * 0.9, 1.2, z=0.9, dome=0.3, mat=2)           # the gills
+        cv.ellipse(x, y, rx, ry, z=1.0, dome=1.4, mat=0)
+        for _ in range(int(rx)):                                                 # spots
+            a, r = rng.uniform(np.pi, 2 * np.pi), rng.uniform(0.2, 0.75)
+            cv.ellipse(x + np.cos(a) * rx * r, y + np.sin(a) * ry * r, 0.9, 0.7, z=2.4, dome=0.2, mat=3)
+    glow = ((cv.mat == 0) | (cv.mat == 3)) & (cv.id > 0)
+    return _prop(cv, [SHROOM, SHROOM_STEM, ramp('#1e4a44', dark=0.5, light=1.5), ramp('#c8fff0', dark=0.7, light=1.04)],
+                 relief=1.0, cavity=0.3, shadow=0.35, em=glow * 0.85)
+
+
+def spr_buoy():
+    """A channel buoy riding the water: a red can with a white band, a lattice cage on top of it
+    carrying its lamp (lit), a ring of ripples where it sits in the water."""
+    w, h = 40, 64
+    cx = 20
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for side in (-1, 1):                                                         # the cage
+        cv.stroke([(cx + side * 7, 34), (cx + side * 3, 9)], 1.3, z=0.4, dome=0.6, mat=2)
+    for y in (16, 24):
+        cv.stroke([(cx - 6 + (24 - y) * 0.12, y), (cx + 6 - (24 - y) * 0.12, y)], 1.0, z=0.4, dome=0.5, mat=2)
+    cv.box(cx - 5, 7, 10, 3, z=0.6, top=0.6, bevel=0.8, mat=2)                     # the lamp's platform
+    cv.ellipse(cx, 4, 3.0, 3.4, z=1.0, dome=1.0, mat=3)                             # the lamp
+    _lathe(cv, cx, [(32, 11), (36, 13), (52, 13), (58, 12)], z=0.8, dome=1.3, mat=0)   # the can
+    _lathe(cv, cx, [(41, 13.2), (46, 13.2)], z=1.0, dome=1.3, mat=1)               # its white band
+    a = np.linspace(0, 2 * np.pi, 30)                                           # ripples at the waterline
+    cv.stroke(list(zip(cx + np.cos(a) * 17, 59 + np.sin(a) * 2.6)), 0.8, z=0.2, dome=0.2, mat=4)
+    em = (cv.mat == 3) & (cv.id > 0)
+    return _prop(cv, [BUOY_RED, BUOY_WHITE, ramp('#5a5e60', dark=0.4, light=1.5), LAMP,
+                      ramp('#9ac0c8', dark=0.5, light=1.2)], relief=1.0, cavity=0.35, shadow=0.4, em=em * 1.0)
+
+
+def spr_alien_egg():
+    """A leathery alien egg standing on end: mottled and veined, a wet sheen on its upper side, and
+    at its crown the slit of its four lips parting on a green glow. Something is nearly ready."""
+    rng = np.random.default_rng(175)
+    w, h = 32, 40
+    cx = 16
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    _lathe(cv, cx, [(4, 6), (8, 11), (18, 14), (30, 13.5), (37, 10), (40, 6)], z=0.0, dome=1.6, mat=0)
+    for _ in range(9):                                                          # veins
+        x, y = cx + rng.normal(0, 6), rng.uniform(10, 36)
+        pts = [(x, y)]
+        for _ in range(4):
+            pts.append((pts[-1][0] + rng.normal(0, 2), pts[-1][1] + rng.uniform(-4, 1)))
+        cv.stroke(pts, 0.8, z=1.7, dome=0.5, taper=(1.0, 0.4), mat=1)
+    mott = smooth_noise(w, h, 4, rng, wrap=False) > 0.6
+    cv.tone[mott & (cv.mat == 0)] -= 0.08
+    for k in range(4):                                                          # the four lips at the crown
+        a = k * np.pi / 2 + np.pi / 4
+        cv.stroke([(cx, 7), (cx + np.cos(a) * 4.5, 7 + np.sin(a) * 2.6)], 1.0, z=1.9, dome=0.4, mat=1)
+    cv.ellipse(cx, 7.5, 3.6, 2.4, z=1.8, dome=0.3, mat=2)                            # the glow between them
+    light = cv.light(relief=1.0, cavity=0.35, shadow=0.45)
+    sheen = (light > np.percentile(light[cv.id > 0], 92)) & (cv.mat == 0)          # wet highlights
+    cv.tone[sheen] += 0.3
+    em = ((cv.mat == 2) & (cv.id > 0)) * 1.0 + ((cv.mat == 1) & (cv.id > 0)) * 0.4   # the veins glow faintly
+    return _prop(cv, [EGG, EGG_VEIN, EGG_GLOW], relief=1.0, cavity=0.35, shadow=0.45, em=em)
+
+
 TEXTURES = {
     'grass': lambda n: (tex_grass(n), None),
     'hedge': lambda n: (tex_hedge(n), None),
@@ -691,4 +869,6 @@ TEXTURES = {
     'ivy': lambda n: (tex_ivy(n), None),
 }
 SPRITES = {'barrel': spr_barrel, 'broken_barrel': spr_broken_barrel, 'crate': spr_crate, 'fountain': spr_fountain,
-           'rowboat': spr_rowboat, 'bench': spr_bench, 'flowers': spr_flowers, 'statue': spr_statue}
+           'rowboat': spr_rowboat, 'bench': spr_bench, 'flowers': spr_flowers, 'statue': spr_statue,
+           'bed': spr_bed, 'wheelchair': spr_wheelchair, 'table': spr_table, 'chest': spr_chest,
+           'glowshroom': spr_glowshroom, 'buoy': spr_buoy, 'alien_egg': spr_alien_egg}

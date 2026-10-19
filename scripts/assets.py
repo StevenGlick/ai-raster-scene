@@ -1185,32 +1185,6 @@ def spr_candles():
     return _finish(im, em, w, h)
 
 
-def spr_bed():
-    w, h = 40, 20
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.rectangle([2 * S, 6 * S, 38 * S, 12 * S], fill='#c8c4b4')
-    d.rectangle([2 * S, 4 * S, 12 * S, 8 * S], fill='#e0dccc')
-    for x in (1, 39):
-        d.rectangle([(x - 1) * S, 0, (x + 1) * S, 20 * S], fill='#5a5e60')
-    d.rectangle([0, 12 * S, 40 * S, 14 * S], fill='#4a4e50')
-    for x in (4, 36):
-        d.rectangle([(x - 1) * S, 14 * S, (x + 1) * S, 20 * S], fill='#3a3e40')
-    d.line([(0, 2 * S), (40 * S, 2 * S)], fill='#5a5e60', width=S)
-    return _finish(im, em, w, h)
-
-
-def spr_wheelchair():
-    w, h = 20, 24
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.ellipse([1 * S, 10 * S, 19 * S, 24 * S], outline='#3a3a3a', width=S)
-    d.rectangle([4 * S, 2 * S, 16 * S, 14 * S], fill='#4a3a2a')
-    d.rectangle([4 * S, 2 * S, 16 * S, 4 * S], fill='#2a2a2a')
-    d.line([(10 * S, 10 * S), (10 * S, 24 * S)], fill='#3a3a3a', width=S // 2)
-    return _finish(im, em, w, h)
-
-
 def spr_mushrooms():
     w, h = 20, 14
     im, d, em, de = _canvas(w, h)
@@ -1287,19 +1261,6 @@ def spr_console():
     for y in (32, 35):
         for x in range(7, 25, 3):
             d.rectangle([x * S, y * S, (x + 2) * S, (y + 2) * S], fill='#6a7074')
-    return _finish(im, em, w, h)
-
-
-def spr_buoy():
-    w, h = 20, 32
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.rectangle([8 * S, 2 * S, 12 * S, 18 * S], fill='#6a6a66')
-    d.ellipse([2 * S, 14 * S, 18 * S, 32 * S], fill='#a03028')
-    d.ellipse([2 * S, 14 * S, 18 * S, 22 * S], fill='#c04038')
-    d.rectangle([4 * S, 23 * S, 16 * S, 26 * S], fill='#d8d4c0')
-    d.ellipse([7 * S, 0, 13 * S, 5 * S], fill='#ffd060')
-    de.ellipse([7 * S, 0, 13 * S, 5 * S], fill=255)
     return _finish(im, em, w, h)
 
 
@@ -1586,32 +1547,6 @@ def spr_chains():
     return _finish(im, em, w, h)
 
 
-def spr_chest():
-    w, h = 24, 18
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.rectangle([1 * S, 7 * S, 23 * S, 18 * S], fill='#6a4428')
-    d.chord([1 * S, 0, 23 * S, 12 * S], 180, 360, fill='#7a5030')
-    for x in (4, 18):
-        d.rectangle([x * S, 1 * S, (x + 2) * S, 18 * S], fill='#3a3a3e')
-    d.line([(1 * S, 7 * S), (23 * S, 7 * S)], fill='#3a3a3e', width=S)
-    d.rectangle([10 * S, 6 * S, 14 * S, 11 * S], fill='#c8a040')
-    d.rectangle([11 * S, 8 * S, 13 * S, 10 * S], fill='#2a2014')
-    return _finish(im, em, w, h)
-
-
-def spr_table():
-    w, h = 40, 20
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.rectangle([0, 4 * S, 40 * S, 8 * S], fill='#6a4a2c')
-    d.rectangle([0, 4 * S, 40 * S, 5 * S], fill='#8a6a44')
-    for x in (2, 35):
-        d.rectangle([x * S, 8 * S, (x + 3) * S, 20 * S], fill='#4a3220')
-    d.rectangle([5 * S, 8 * S, 35 * S, 10 * S], fill='#4a3220')
-    return _finish(im, em, w, h)
-
-
 def spr_pew():
     """A long church bench with a back, seen from the aisle."""
     w, h = 52, 24
@@ -1648,18 +1583,6 @@ def spr_crystal():
         d.polygon(poly, fill=c)
         de.polygon(poly, fill=230)
     d.rectangle([1 * S, 23 * S, 21 * S, 26 * S], fill='#3a3440')
-    return _finish(im, em, w, h)
-
-
-def spr_glowshroom():
-    w, h = 22, 14
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    for (x, y, r) in ((5, 7, 4), (12, 5, 5), (18, 9, 3)):
-        d.rectangle([(x - 1) * S, y * S, (x + 1) * S, 14 * S], fill='#c8d8c0')
-        cap = [(x - r) * S, (y - r) * S, (x + r) * S, (y + r // 2) * S]
-        d.ellipse(cap, fill='#4af0c8')
-        de.ellipse(cap, fill=255)
     return _finish(im, em, w, h)
 
 
@@ -1883,21 +1806,6 @@ def spr_orb():
         box = [(7 - r) * S, (7 - r) * S, (7 + r) * S, (7 + r) * S]
         d.ellipse(box, fill=c)
         de.ellipse(box, fill=e)
-    return _finish(im, em, w, h)
-
-
-def spr_alien_egg():
-    """A leathery egg with a glowing slit (emissive). Something inside is nearly ready."""
-    w, h = 16, 20
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    d.ellipse([1 * S, 2 * S, 15 * S, 20 * S], fill='#5a4a3a')
-    d.ellipse([3 * S, 4 * S, 10 * S, 13 * S], fill='#76664e')
-    for (x0, y0, x1, y1) in ((4, 8, 6, 18), (11, 6, 12, 17), (8, 12, 9, 19)):
-        d.line([(x0 * S, y0 * S), (x1 * S, y1 * S)], fill='#3a2a20', width=S // 2)
-    slit = [(8 * S, 2 * S), (10 * S, 5 * S), (8 * S, 8 * S), (6 * S, 5 * S)]
-    d.polygon(slit, fill='#a0ff60')
-    de.polygon(slit, fill=220)
     return _finish(im, em, w, h)
 
 
@@ -2138,22 +2046,22 @@ def spr_orrery():
 SPRITES = {
     'lamp_post': spr_lamp_post, 
     'lantern': spr_lantern,
-    'candles': spr_candles, 'bed': spr_bed, 'wheelchair': spr_wheelchair, 
+    'candles': spr_candles, 
     'mushrooms': spr_mushrooms, 'signpost': spr_signpost,
-    'campfire': spr_campfire, 'locker': spr_locker, 'console': spr_console, 'buoy': spr_buoy,
+    'campfire': spr_campfire, 'locker': spr_locker, 'console': spr_console, 
     'gravestone': spr_gravestone,
     'sconce': spr_sconce, 'ceiling_lamp': spr_ceiling_lamp, 'chandelier': spr_chandelier,
     'brazier': spr_brazier, 'painting': spr_painting, 'banner': spr_banner,
     'wall_clock': spr_wall_clock, 'pipe_valve': spr_pipe_valve, 'rubble': spr_rubble,
     'bones': spr_bones, 'sack': spr_sack, 'bucket': spr_bucket,
     'reeds': spr_reeds, 'ivy_hang': spr_ivy_hang,
-    'throne': spr_throne, 'armor': spr_armor, 'chains': spr_chains, 'chest': spr_chest,
-    'table': spr_table, 'pew': spr_pew, 'stalagmite': spr_stalagmite, 'crystal': spr_crystal,
-    'glowshroom': spr_glowshroom, 'snowman': spr_snowman,
+    'throne': spr_throne, 'armor': spr_armor, 'chains': spr_chains, 
+    'pew': spr_pew, 'stalagmite': spr_stalagmite, 'crystal': spr_crystal,
+    'snowman': spr_snowman,
     'grave_cross': spr_grave_cross, 'ladder': spr_ladder, 'lectern': spr_lectern,
     'stasis_pod': spr_stasis_pod, 'hologram': spr_hologram, 'sci_crate': spr_sci_crate,
     'drone': spr_drone, 'lander': spr_lander, 'antenna': spr_antenna,
-    'alien_plant': spr_alien_plant, 'monolith': spr_monolith, 'orb': spr_orb, 'alien_egg': spr_alien_egg,
+    'alien_plant': spr_alien_plant, 'monolith': spr_monolith, 'orb': spr_orb, 
     'floating_rock': spr_floating_rock,
     'door_frame': spr_door_frame, 'sky_whale': spr_sky_whale, 'koi': spr_koi,
     'pocket_watch': spr_pocket_watch,
