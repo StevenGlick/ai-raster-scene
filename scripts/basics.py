@@ -618,6 +618,80 @@ def tex_alien_ground(name):
                  ambient=0.32, diffuse=0.62)
 
 
+def tex_menhir(name, top=False):
+    """The face of a standing stone, one weathered surface: broad swells and hollows, runnels worn
+    down it by the rain, two or three long cracks, rosettes of pale lichen, moss gathered at its
+    foot - or (`top`) the upper courses, greyer and more lichened, without the moss."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=0.0, mat=0)
+    swell = smooth_noise(T, T, 2, rng) * 0.6 + smooth_noise(T, T, 4, rng) * 0.4
+    cv.z += (2.4 * swell).astype(np.float32)
+    cv.noise(0.3, cells=12, rng=rng, octaves=3)                        # pitting
+    for _ in range(9):                                                   # runnels down the face
+        x = rng.random() * T
+        pts = [(x, -2)]
+        for _ in range(6):
+            pts.append((pts[-1][0] + rng.normal(0, 1.0), pts[-1][1] + rng.uniform(8, 14)))
+        cv.stroke(pts, rng.uniform(1.0, 2.2), dome=0.5, mode='carve')
+    for _ in range(2):                                                   # long cracks
+        x, y = rng.random() * T, rng.random() * T
+        a = np.radians(rng.uniform(60, 120))
+        pts = [(x, y)]
+        for _ in range(5):
+            a += rng.normal(0, 0.3)
+            pts.append((pts[-1][0] + np.cos(a) * 6, pts[-1][1] + np.sin(a) * 6))
+        cv.stroke(pts, 0.9, dome=0.8, mode='carve')
+    for _ in range(26 if top else 14):                                   # lichen rosettes
+        x, y = rng.random() * T, rng.random() * T
+        r = rng.uniform(1.2, 3.2)
+        m = 1 if rng.random() < 0.6 else 2
+        for _ in range(6):
+            cv.ellipse(x + rng.normal(0, r * 0.4), y + rng.normal(0, r * 0.4), r * 0.45, r * 0.4, z=0.0, dome=0.2,
+                       mode='add', mat=m, tone=rng.normal(0, 0.04))
+            cv.mat[int(y) % T, int(x) % T] = m
+    lich = np.zeros((T, T), bool)
+    for _ in range(26 if top else 14):
+        x, y, r = rng.random() * T, rng.random() * T, rng.uniform(1.2, 3.0)
+        yy, xx = np.mgrid[0:T, 0:T]
+        d = np.hypot((xx - x + T / 2) % T - T / 2, (yy - y + T / 2) % T - T / 2)
+        lich |= d < r * (0.7 + 0.3 * rng.random((T, T)))
+    cv.mat[lich] = np.where(rng.random(int(lich.sum())) < 0.6, 1, 2)
+    if not top:                                                          # moss at the foot
+        foot = (np.arange(T)[:, None] > T - 14 + 6 * smooth_noise(T, 1, 5, rng)[0][None, :])
+        cv.mat[foot & (rng.random((T, T)) < 0.75)] = 3
+    cv.tone += (0.08 * (smooth_noise(T, T, 3, rng) - 0.5)).astype(np.float32)
+    return _tile(cv, [ramp('#8a8a84', dark=0.32, light=1.3), ramp('#b8b48a', dark=0.45, light=1.12),
+                      ramp('#9aa49a', dark=0.45, light=1.15), ramp('#4e6a34', dark=0.35, light=1.25)],
+                 relief=1.0, cavity=0.4, shadow=0.4, ambient=0.3, diffuse=0.62)
+
+
+def spr_stone_cap():
+    """The weathered top of a standing stone: a slanted, chipped crown of grey stone with lichen on
+    it, high on one side, the corners knocked off - to set on a wall block one cell wide (`z` a
+    little under the block's height; `flip` half of them) so the stones' outline against the sky
+    is not a row of flat-topped boxes."""
+    rng = np.random.default_rng(191)
+    w, h = 64, 28
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    xs = np.arange(w) + 0.5
+    u = xs / w
+    rise = 0.25 + 0.75 * u                                              # a slanted top, high on one side,
+    shoulder = np.clip(np.minimum(u, 1 - u) / 0.12, 0, 1) ** 0.5         # the corners knocked off,
+    top = h - (h - 3) * rise * shoulder
+    top += 4.0 * (smooth_noise(w, 1, 9, rng, wrap=False)[0] - 0.5)      # and chipped along its edge
+    top = np.minimum(top, h - 1)
+    yy = np.arange(h)[:, None] + 0.5
+    body = yy >= top[None, :]
+    cv.put(np.arange(h), np.arange(w), body, (1.0 * shoulder)[None, :].repeat(h, 0), mat=0)
+    cv.noise(0.25, cells=8, rng=rng)
+    for _ in range(9):                                                   # lichen
+        x, y = rng.uniform(8, w - 8), rng.uniform(h * 0.35, h - 2)
+        if body[int(y), int(x)]:
+            cv.ellipse(x, y, rng.uniform(1.2, 2.6), rng.uniform(1.0, 2.0), z=1.6, dome=0.2, mode='max', mat=1)
+    return _prop(cv, [ramp('#8a8a84', dark=0.32, light=1.3), ramp('#b8b48a', dark=0.45, light=1.12)], outline=False,
+                 relief=1.0, cavity=0.35, shadow=0.35, ambient=0.3, diffuse=0.62)
+
+
 def spr_jaguar():
     """A jaguar prowling, side on, facing left: a long, low, heavy body, the shoulders working, a
     broad head with round ears, the tail curving down and up at the tip; a golden coat in black
@@ -1061,9 +1135,13 @@ TEXTURES = {
     'corrugated': lambda n: (tex_corrugated(n), None),
     'marble_dark': lambda n: (tex_marble_dark(n), None),
     'alien_rock': tex_alien_rock,
+    'menhir': lambda n: (tex_menhir(n), None),
+    'menhir_top': lambda n: (tex_menhir(n, top=True), None),
     'alien_ground': lambda n: (tex_alien_ground(n), None),
 }
 SPRITES = {'barrel': spr_barrel, 'broken_barrel': spr_broken_barrel, 'crate': spr_crate, 'fountain': spr_fountain,
            'rowboat': spr_rowboat, 'bench': spr_bench, 'flowers': spr_flowers, 'statue': spr_statue,
            'bed': spr_bed, 'wheelchair': spr_wheelchair, 'table': spr_table, 'chest': spr_chest,
-           'glowshroom': spr_glowshroom, 'buoy': spr_buoy, 'alien_egg': spr_alien_egg, 'jaguar': spr_jaguar}
+           'glowshroom': spr_glowshroom, 'buoy': spr_buoy, 'alien_egg': spr_alien_egg, 'jaguar': spr_jaguar,
+           'stone_cap': spr_stone_cap}
+SPRITE_HEIGHT = {'stone_cap': 0.44}

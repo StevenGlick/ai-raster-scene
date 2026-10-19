@@ -2233,7 +2233,7 @@ TEXTURE_NOISE = {
     'slime_brick': 1.4, 'door_wood': 1.0,
     'hull': 0.6, 'hull_lit': 0.5, 'hull_red': 0.6, 'hull_dark': 0.6, 'tech_panel': 0.5, 'server': 0.4,
     'blast_door': 0.7, 'hazard': 1.2, 'deck': 1.0, 'grid_floor': 0.2, 'hex_panel': 0.8,
-    'alien_rock': 1.8, 'alien_ground': 2.0, 'organic': 1.6, 'sky_wall': 0.3, 'cloud_floor': 0.5,
+    'menhir': 1.0, 'menhir_top': 1.0, 'alien_rock': 1.8, 'alien_ground': 2.0, 'organic': 1.6, 'sky_wall': 0.3, 'cloud_floor': 0.5,
     'obsidian': 0.6, 'fireplace': 0.6, 'star_chart': 0.4, 'viewport': 0.6,
 }
 
@@ -2554,6 +2554,7 @@ import basics  # noqa: E402
 
 TEXTURES.update(basics.TEXTURES)
 SPRITES.update(basics.SPRITES)
+SPRITE_HEIGHT.update(basics.SPRITE_HEIGHT)
 
 # ---------------------------------------------------------------- the countryside
 # A scarecrow, pumpkins, hay bales and crows, drawn with the toolkit in village.py.

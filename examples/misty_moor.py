@@ -1,7 +1,7 @@
 """Misty moor: a stone circle at dawn, mist lying in the hollows, the low sun cutting through.
 
 Shows volumetric fog (a ground layer that thins with height and drifts in banks), shafts of
-sunlight between the stones, long dawn shadows, and a character seen from behind (`facing`).
+sunlight between the stones (weathered `menhir` blocks of different heights from a `heights` layer), long dawn shadows, and a character seen from behind (`facing`).
 Run:  python misty_moor.py  -> writes misty_moor.json
 """
 import math
@@ -20,16 +20,23 @@ g.put(cx, cy, 'A')                                    # ...round a low altar sto
 for (x, y) in ((8, 30), (33, 31), (36, 9), (6, 8)):
     g.put(x, y, 'S')                                  # a few strays out on the moor
 heights = [list('.' * 44) for _ in range(44)]
-heights[cy][cx] = '4'
+heights[cy][cx] = '2'                                 # the altar, low (0.5)
+caps = []
+for k, (x, y) in enumerate([(x, y) for y in range(44) for x in range(44) if g.get(x, y) == 'S']):
+    d = '6789'[(k * 7 + x) % 4]
+    heights[y][x] = d                                 # each stone its own height, 1.5 to 2.25,
+    caps.append({'x': x + 0.5, 'y': y + 0.5, 'type': 'stone_cap', 'z': int(d) * 0.25 - 0.03,   # with a weathered top
+                 'flip': k % 2 == 1, 'shadow': False})
 
 s = scene(
     g,
     title='Misty moor - the stone circle at dawn',
     heights=[''.join(r) for r in heights],
+    height_unit=0.25,
     legend={
         ',': {'floor': 'grass'},
-        'S': {'wall': 'moss_stone', 'h': 1.9},
-        'A': {'wall': 'stone_dark', 'top': 'moss_stone'},
+        'S': {'wall': ['menhir', 'menhir_top'], 'top': 'menhir_top'},
+        'A': {'wall': 'menhir', 'top': 'moss_stone'},
     },
     sky='dusk',
     skyline={'type': 'hills', 'height': 0.8},
@@ -38,7 +45,7 @@ s = scene(
              'disc_size': 3.2}],
     fog={'color': [0.58, 0.55, 0.62], 'density': 0.01, 'ground': 0.4, 'height': 0.3, 'noise': 0.6, 'scale': 3.0,
          'shafts': 0.8},
-    sprites=[
+    sprites=caps + [
         {'id': 'wanderer', 'x': 22.3, 'y': 27.0, 'type': 'knight', 'facing': 280},
         {'x': 12.0, 'y': 25.0, 'type': 'dead_tree', 'scale': 2.4}, {'x': 31.0, 'y': 24.0, 'type': 'dead_tree', 'flip': True},
     ],
