@@ -21,8 +21,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 155 | 152 | 3 | 0 | 0 |
-| Props | 241 | 239 | 2 | 0 | 0 |
+| Textures | 156 | 153 | 3 | 0 | 0 |
+| Props | 249 | 247 | 2 | 0 | 0 |
 | Characters | 27 | 25 | 2 | 0 | 0 |
 | Decals | 25 | 20 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
@@ -38,8 +38,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 16 | 16 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 50 | 50 | 0 | 0 | 0 |
-| **all** | **647** | **627** | **20** | **0** | **0** |
+| Example scenes | 51 | 51 | 0 | 0 | 0 |
+| **all** | **657** | **637** | **20** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -53,7 +53,7 @@ Weakest first, and in the order the new scenes need them.
 5. **Small things.** The hands on the held items, the `stain`, `stain_rust` and `moss_patch` decals, the `child` and `dreamer` characters, the `city` skyline, `alien_rock`, `alien_ground`, and the `glowshroom` and `alien_egg` props.
 6. **Second look.** Every asset marked good, checked again on the review sheets and in its scenes, with fresh eyes and the new techniques in hand.
 
-## Textures (155)
+## Textures (156)
 
 64x64 tiles, drawn in code. "glows" means the texture lights itself (windows, screens, runes), "see-through" that the map shows through its holes, "mirror" that floors made of it reflect.
 
@@ -62,7 +62,7 @@ Weakest first, and in the order the new scenes need them.
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
 | `brick` | good |  | rainy_street |  |
-| `brick_dark` | good |  | neon_street, night_market, rain_alley |  |
+| `brick_dark` | good |  | neon_bar, neon_street, night_market, rain_alley |  |
 | `brick_yellow` | good |  | - |  |
 | `stone` | good |  | claude_study, garden_encounter, gui_menus, hospital_garden, post_presets | Even block sizes; a few varied heights would help on long walls. |
 | `stone_dark` | good |  | cathedral_ruin, garden_encounter, gui_menus, gui_themes, gui_trade, haunted_house, hospital_garden, library_medium, mansion_library, post_presets, rainy_street |  |
@@ -76,7 +76,7 @@ Weakest first, and in the order the new scenes need them.
 | `plaster_white` | good |  | garden_encounter, gui_menus, hospital_garden, post_presets | Redrawn with the toolkit in basics.py: the same render in white. |
 | `hospital_wall` | good |  | ghost_corridor, gui_hud, hospital_corridor |  |
 | `ivy` | good |  | rainy_street | Redrawn with the toolkit in basics.py: red brick with woody stems climbing and branching and clusters of dark leaves, the newest brighter. |
-| `concrete` | good |  | aquarium, bunker_lab, garden_encounter, gui_lantern, gui_menus, hospital_garden, post_presets, sewer_tunnels, tunnel_encounter, underground_waterway |  |
+| `concrete` | good |  | aquarium, bunker_lab, garden_encounter, gui_lantern, gui_menus, hospital_garden, neon_bar, post_presets, sewer_tunnels, tunnel_encounter, underground_waterway |  |
 | `marble` | good |  | cathedral_ruin, chapel_graveyard, dream_chess, dream_world, gui_themes, gui_trade, library_medium, mansion_library |  |
 | `marble_dark` | good |  | aquarium | Redrawn with the toolkit in basics.py: dark slabs with long, thin, continuous veins of white and grey drifting across them. |
 | `rock` | good |  | castle_keep, coast_lighthouse, crystal_cave, garden_encounter, gui_lantern, gui_menus, hospital_garden, kelp_forest, moon_base, post_presets, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: masses of every size, each a facet tilted to the light, split by crevices that wander, widen and close; finer cracks, grain. |
@@ -126,6 +126,7 @@ Weakest first, and in the order the new scenes need them.
 | `screen_wall` | good | glows | orbital_hangar | Drawn with the toolkit in scifi.py: monitors four to a unit, each with a trace, readouts, a radar or a wireframe, in cyan, green or amber; glows. |
 | `tunnel_roof` | good | glows | aquarium | Drawn with the toolkit in aquarium.py: deep blue water with the rippled surface far above and its net of light; a dark acrylic seam at every tile; glows. |
 | `jelly_backdrop` | good | glows | aquarium | Drawn with the toolkit in aquarium.py: an even glowing deep blue, faintly mottled, so jellies stand out in front of it. |
+| `bar_shelves` | good | glows | neon_bar | Drawn with the toolkit in bar.py: two glass shelves of bottles in a dark mirrored recess, each bottle lit from below by a magenta strip; glows. |
 
 ### Nature
 
@@ -149,9 +150,9 @@ Weakest first, and in the order the new scenes need them.
 | `ice` | good | mirror 0.38 | winter_lake, winter_woods | Redrawn with the toolkit in basics.py: clear blue with gentle depth, straight fractures with a branch each and a dark side, strings of bubbles, frost. |
 | `water` | good | mirror 0.5 | alien_world, coast_lighthouse, crystal_cave, drowned_library, gui_lantern, sewer_tunnels, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: a deep teal in slow swells and a broken net of light where the ripples gather it; kept dark, so reflections read. |
 | `swamp_water` | good | mirror 0.42 | bayou | Drawn with the toolkit in swamp.py: black-brown water with a skin of duckweed drifting in patches and a few floating leaves; mirror 0.42. |
-| `seabed` | good |  | aquarium, kelp_forest | Drawn with the toolkit in sea.py: pale sand in gentle ripples, shell and pebble, and a broken net of caustic light over it. |
-| `water_surface` | good | glows | aquarium | Drawn with the toolkit in sea.py: the surface from below, rippled and glowing with a net of brighter lines; for an underwater roof. |
-| `reef_wall` | good |  | aquarium | Drawn with the toolkit in aquarium.py: lumps of live rock, patches of pink coralline, coral heads, algae tufts and polyps, dark crevices. |
+| `seabed` | good |  | aquarium, kelp_forest, neon_bar | Drawn with the toolkit in sea.py: pale sand in gentle ripples, shell and pebble, and a broken net of caustic light over it. |
+| `water_surface` | good | glows | aquarium, neon_bar | Drawn with the toolkit in sea.py: the surface from below, rippled and glowing with a net of brighter lines; for an underwater roof. |
+| `reef_wall` | good |  | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: lumps of live rock, patches of pink coralline, coral heads, algae tufts and polyps, dark crevices. |
 | `pine_needles` | good |  | woodland_night | Redrawn with the toolkit in forest.py: criss-crossed needle litter over dark soil, a few green needles, cones and twigs. |
 | `leaves_fallen` | good |  | autumn_lane | Drawn with the toolkit in forest.py: leaves lying flat over dark earth, each its own colour - orange, gold, rust, brown, a few green - grass where they lie thin. |
 | `alien_ground` | good |  | alien_world | Redrawn with the toolkit in basics.py: violet dust drifting over teal grit, the edge broken grain by grain, crystal shards of pink, cyan and white. |
@@ -176,8 +177,8 @@ Weakest first, and in the order the new scenes need them.
 | `carpet` | good |  | castle_keep, chapel_graveyard, claude_study, gui_themes, gui_trade, haunted_house, library_medium, mansion_library |  |
 | `carpet_green` | good |  | - |  |
 | `flagstone` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, haunted_house, neon_street, night_market, rain_alley |  |
-| `obsidian` | good | mirror 0.45 | dream_world, space_station |  |
-| `concrete_floor` | good |  | 50 scenes |  |
+| `obsidian` | good | mirror 0.45 | dream_world, neon_bar, space_station |  |
+| `concrete_floor` | good |  | 51 scenes |  |
 | `rock_floor` | good |  | crystal_cave, gui_lantern, kelp_forest, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: flatter, smaller masses in brown with grit in the cracks. |
 
 ### Ceilings
@@ -272,7 +273,7 @@ Weakest first, and in the order the new scenes need them.
 | `bamboo` | polish |  | tropical_beach | The nodes still line up into a grid across the poles. |
 | `thatch` | polish |  | tropical_beach | The rows could be clearer, each with a shadow under its fringe. |
 
-## Props (241)
+## Props (249)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -283,6 +284,12 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `armchair` | good | 0.6 tall | claude_study, haunted_house, mansion_library |  |
 | `bed` | good | 0.4 tall | bunker_lab, ghost_corridor, gui_hud, hospital_corridor | Redrawn with the toolkit in basics.py: an iron bedstead with uprights, a mattress in white sheets, a pillow, a grey blanket turned back, castors. |
 | `bench` | good | 0.35 tall | aquarium, coast_lighthouse, garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, village_green | Redrawn with the toolkit in basics.py: three backrest slats and two in the seat, held in cast-iron ends with scrolled armrests and curving legs. |
+| `arcade_cabinet` | good | 0.68 tall, glows, aura | neon_bar | Drawn with the toolkit in bar.py: a dark cabinet with neon side art, a lit marquee in pseudo-letters, a space shooter on a scanlined screen, joystick and buttons, a coin door. |
+| `bar_counter` | good | 0.35 tall, glows, no shadow | neon_bar | Drawn with the toolkit in bar.py: dark raised panels, a chrome rail, the black lip of the top, a magenta light strip along the foot; a card that repeats along its length. |
+| `bar_stool` | good | 0.27 tall | neon_bar | Drawn with the toolkit in bar.py: a red vinyl seat on a chrome pole with a foot ring and a weighted base. |
+| `booth` | good | 0.5 tall, glows | neon_bar | Drawn with the toolkit in bar.py: a high back buttoned in teal vinyl, the seat, a formica table on a chrome leg with a glowing lamp. |
+| `jukebox` | good | 0.56 tall, glows, aura | neon_bar | Drawn with the toolkit in bar.py: bands of red, gold and blue light round its arch, bubble tubes up both sides, the records in a window, a grille. |
+| `bottles` | good | 0.12 tall | neon_bar | Drawn with the toolkit in bar.py: green, amber and clear bottles at different heights with labels and glints. |
 | `info_plaque` | good | 0.42 tall, glows | aquarium | Drawn with the toolkit in aquarium.py: a slanted panel on a post, lit blue from behind, a fish outline and lines of text too small to read. |
 | `book_stack` | good | 0.22 tall | claude_study, drowned_library, mansion_library |  |
 | `chest` | good | 0.3 tall | castle_keep, kelp_forest | Redrawn with the toolkit in basics.py: oak planks under a rounded lid, iron straps studded with rivets, iron corners, a brass lock plate. |
@@ -353,12 +360,12 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `cypress_knees` | good | 0.3 tall | bayou | Drawn with the toolkit in swamp.py: knobbly cones of root standing out of the water. |
 | `cattails` | good | 1 tall | bayou | Drawn with the toolkit in swamp.py: long blades and stems with brown velvet heads. |
 | `kelp` | good | 5 tall | kelp_forest | Drawn with the toolkit in sea.py: a swaying stipe from its holdfast, long golden blades streaming off small floats, a tangle at the top. |
-| `brain_coral` | good | 0.3 tall | aquarium | Drawn with the toolkit in aquarium.py: a dome lit on its crown, its surface all meandering ridges (ochre) and grooves (green-brown). |
-| `staghorn_coral` | good | 0.42 tall | aquarium | Drawn with the toolkit in aquarium.py: a thicket of golden-brown branches forking like antlers, lilac-white growing tips. |
-| `sea_fan` | good | 0.62 tall | aquarium | Drawn with the toolkit in aquarium.py: a flat purple lace: thicker branches fanning from a short trunk with a fine net of little cells between them. |
-| `anemone` | good | 0.26 tall | aquarium | Drawn with the toolkit in aquarium.py: a bubble-tip anemone: a red foot, salmon tentacles swollen to magenta bulbs, its pair of clownfish nestled among them. |
-| `tube_sponge` | good | 0.36 tall | aquarium | Drawn with the toolkit in aquarium.py: violet tubes from a shared base, each with its lip and dark open mouth. |
-| `reef_rock` | good | 0.6 tall | aquarium | Drawn with the toolkit in aquarium.py: a mound of live rock in coralline and algae, with a sea fan, staghorn, a tube sponge and brain corals grown on it. |
+| `brain_coral` | good | 0.3 tall | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: a dome lit on its crown, its surface all meandering ridges (ochre) and grooves (green-brown). |
+| `staghorn_coral` | good | 0.42 tall | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: a thicket of golden-brown branches forking like antlers, lilac-white growing tips. |
+| `sea_fan` | good | 0.62 tall | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: a flat purple lace: thicker branches fanning from a short trunk with a fine net of little cells between them. |
+| `anemone` | good | 0.26 tall | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: a bubble-tip anemone: a red foot, salmon tentacles swollen to magenta bulbs, its pair of clownfish nestled among them. |
+| `tube_sponge` | good | 0.36 tall | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: violet tubes from a shared base, each with its lip and dark open mouth. |
+| `reef_rock` | good | 0.6 tall | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: a mound of live rock in coralline and algae, with a sea fan, staghorn, a tube sponge and brain corals grown on it. |
 | `rocks` | good | 0.22 tall | alien_world, ancient_ruins, bunker_lab, cathedral_ruin, chapel_graveyard, coast_lighthouse, crystal_cave, derelict_ship, ghost_town, kelp_forest, misty_moor, moon_base, rainy_street, red_canyon, sewer_tunnels, tropical_beach, winter_lake, winter_woods, woodland_night | Redrawn: half-sunk stones with lit tops and the odd crack. |
 | `snowy_pine` | good | 3.4 tall | winter_lake, winter_woods | Drawn with the toolkit in forest.py: the new spruce with snow lying in clumps along every tier's shoulders, crumbs on the hems and a small cap on the leader; dark needles between, so it still reads at a distance. |
 | `boulder_snow` | good | 0.55 tall | winter_lake, winter_woods | Drawn with the toolkit in forest.py: the boulder under a cushion of snow, deep where the top is flat and thin down the steep sides; in the `snow` scatter set. |
@@ -437,6 +444,8 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `red_lantern` | good | 0.16 tall, glows, no shadow | night_market | Drawn with the toolkit in market.py: ribbed red paper glowing from inside, black bands, a gold tassel, a painted pseudo-letter. |
 | `lantern_span` | good | 0.6 tall, glows, no shadow | night_market | Drawn with the toolkit in market.py: a sagging rope hung with big red lanterns, a card to sling across a lane. |
 | `neon_sign` | good | 1.5 tall, glows, aura | night_market | Drawn with the toolkit in market.py: a standing lightbox on a steel post, edged in pink tube and lettered top to bottom. |
+| `neon_cocktail` | good | 0.4 tall, glows, no shadow | neon_bar | Drawn with the toolkit in bar.py: a cocktail glass in pink tube with an olive on a stick in green; additive. |
+| `neon_fish` | good | 0.32 tall, glows, no shadow | neon_bar | Drawn with the toolkit in bar.py: a fish outline in cyan tube with scales, an eye and bubbles rising; additive. |
 | `umbrella` | good | 0.42 tall, glows, no shadow | night_market | Drawn with the toolkit in market.py: a clear canopy beaded with rain, its ribs showing, a glowing shaft from tip to handle. |
 | `scooter` | good | 0.42 tall, glows | night_market | Drawn with the toolkit in market.py: mint body panels, a dark seat, the front shield with its headlight lit, small fat wheels, a kickstand. |
 | `stools_table` | good | 0.26 tall | night_market | Drawn with the toolkit in market.py: a low folding table with two bowls and chopsticks, a red and a blue plastic stool. |
@@ -539,11 +548,11 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `reef_shark` | good | 0.25 tall, no shadow | aquarium | Drawn with the toolkit in aquarium.py: a blacktip: sleek bronze-grey body, pointed snout, gill slits, white belly, black tips on the dorsal, pectoral and tail. |
 | `sea_turtle` | good | 0.3 tall, no shadow | aquarium | Drawn with the toolkit in aquarium.py: a green turtle from a little above: amber scutes and a rim of small plates, the head reaching forward, long front flippers swept back. |
 | `clownfish` | good | 0.07 tall, no shadow | aquarium | Drawn with the toolkit in aquarium.py: a pair: orange with three black-edged white bands and black-edged fins. |
-| `angelfish` | good | 0.13 tall, no shadow | aquarium | Drawn with the toolkit in aquarium.py: an emperor angelfish: clean diagonal stripes of yellow and blue, a black mask edged pale blue, a blue face, a yellow tail. |
-| `blue_tang` | good | 0.08 tall, no shadow | aquarium | Drawn with the toolkit in aquarium.py: royal blue with the black palette loop, black-edged fins and a yellow tail. |
-| `reef_shoal` | good | 0.5 tall, no shadow | aquarium | Drawn with the toolkit in aquarium.py: three dozen anthias, orange-pink with a few purple and gold, spaced so they never clump. |
+| `angelfish` | good | 0.13 tall, no shadow | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: an emperor angelfish: clean diagonal stripes of yellow and blue, a black mask edged pale blue, a blue face, a yellow tail. |
+| `blue_tang` | good | 0.08 tall, no shadow | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: royal blue with the black palette loop, black-edged fins and a yellow tail. |
+| `reef_shoal` | good | 0.5 tall, no shadow | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: three dozen anthias, orange-pink with a few purple and gold, spaced so they never clump. |
 | `sea_nettle` | good | 0.45 tall, glows, no shadow | aquarium | Drawn with the toolkit in aquarium.py: a golden bell striped rust to its scalloped rim, long maroon tentacles, four pale frilled arms twisting; half see-through. |
-| `moon_jelly` | good | 0.12 tall, glows, no shadow | aquarium | Drawn with the toolkit in aquarium.py: a clear saucer with the four lilac crescents in a ring, a fringe of short tentacles; additive and glowing. |
+| `moon_jelly` | good | 0.12 tall, glows, no shadow | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: a clear saucer with the four lilac crescents in a ring, a fringe of short tentacles; additive and glowing. |
 | `bubbles` | good | 1.2 tall, no shadow | aquarium, kelp_forest | Drawn with the toolkit in sea.py: a column of bubbles swelling as they rise, bright rings with a glint; additive. |
 | `crow` | good | 0.2 tall | autumn_lane, haunted_house, red_canyon, village_green | Drawn with the toolkit in village.py: glossy black with a blue sheen, the head up, a heavy beak. |
 | `bats` | good | 0.6 tall, no shadow | haunted_house | Drawn with the toolkit in haunted.py: black bat silhouettes, wings spread or beating, at different sizes. |
@@ -575,7 +584,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `kelp_card_2` | good | 5.8 tall | kelp_forest | The back: a dense stand of kelp. |
 | `palm_trunk` | good | 3.2 tall | tropical_beach | The palm without its crown, for palm_3d. |
 | `palm_crown` | good | 3.2 tall, no shadow | tropical_beach | The palm's crown alone, in the same frame as the trunk. |
-| `glass_pane` | good | 1 tall | aquarium, orbital_hangar | A plain pane for the glass pass. |
+| `glass_pane` | good | 1 tall | aquarium, neon_bar, orbital_hangar | A plain pane for the glass pass. |
 
 ## Characters (27)
 
@@ -584,7 +593,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | character | status | used in | notes |
 |---|---|---|---|
 | `cultist` | good | garden_encounter, gui_lantern, gui_menus, neon_street, post_presets, tunnel_encounter, woodland_night |  |
-| `scientist` | good | aquarium, bunker_lab, coast_lighthouse, gui_lantern, night_market, orbital_hangar, tunnel_encounter |  |
+| `scientist` | good | aquarium, bunker_lab, coast_lighthouse, gui_lantern, neon_bar, night_market, orbital_hangar, tunnel_encounter |  |
 | `guard` | good | garden_encounter, gui_menus, post_presets, rain_alley, rainy_street |  |
 | `nurse` | good | ghost_corridor, gui_hud |  |
 | `spiritualist` | good | cathedral_ruin, chapel_graveyard, gui_themes, gui_trade, library_medium, mansion_library |  |
@@ -597,7 +606,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `robot` | good | crystal_cave |  |
 | `shopkeeper` | good | ghost_town, neon_street, night_market, village_green |  |
 | `astronaut` | good | alien_world, moon_base, orbital_hangar, space_station |  |
-| `android` | good | neon_street, orbital_hangar, space_station |  |
+| `android` | good | neon_bar, neon_street, orbital_hangar, space_station |  |
 | `alien` | good | alien_world, derelict_ship | A familiar archetype; could be made stranger. |
 | `dreamer` | polish | dream_chess, dream_world, drowned_library, hall_of_doors | The face reads as open-eyed; a sleepwalker wants closed eyes. |
 | `claude` | good | claude_study | Claude's own avatar. |
@@ -605,9 +614,9 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `hoplite` | good | ancient_ruins |  |
 | `castaway` | good | tropical_beach |  |
 | `diver` | good | aquarium, kelp_forest | A brass diving helmet with a round faceplate and an air hose, a canvas suit, a weight belt, heavy boots. |
-| `runner` | good | neon_street, night_market | A cyberpunk: dark hair with a pink streak, a lit cyan visor, a black jacket striped in neon. |
-| `cowboy` | good | ghost_town, night_market, red_canyon | A wide-brimmed hat, moustache, red bandana, a vest over a tan shirt, a gun belt, jeans and boots; for the canyon. |
-| `witch` | good | autumn_lane | A crooked pointed hat banded in purple, green skin, glowing yellow eyes, a robe, a lit lantern at her side. |
+| `runner` | good | neon_bar, neon_street, night_market | A cyberpunk: dark hair with a pink streak, a lit cyan visor, a black jacket striped in neon. |
+| `cowboy` | good | ghost_town, neon_bar, night_market, red_canyon | A wide-brimmed hat, moustache, red bandana, a vest over a tan shirt, a gun belt, jeans and boots; for the canyon. |
+| `witch` | good | autumn_lane, neon_bar | A crooked pointed hat banded in purple, green skin, glowing yellow eyes, a robe, a lit lantern at her side. |
 | `farmer` | good | village_green | A straw hat, plaid shirt and blue overalls, a pitchfork taller than him. |
 | `pirate` | good | bayou | A gold-edged tricorn, an eye patch and beard, a red coat with gold buttons, a cutlass. |
 
@@ -632,7 +641,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `cobweb` | good | bunker_lab, castle_keep |  |
 | `rune_mark` | good | - |  |
 | `drain` | good | bunker_lab, neon_street, night_market, rainy_street, sewer_tunnels |  |
-| `contact_shadow` | good | 50 scenes |  |
+| `contact_shadow` | good | 51 scenes |  |
 | `pad_marking` | good | moon_base, orbital_hangar | A painted landing ring with an H and a dashed outer ring, worn in patches. |
 | `rover_tracks` | good | moon_base | Drawn with the toolkit in moon.py: two tracks of chevron treads pressed into dust. |
 | `hazard_stripe` | good | orbital_hangar | A band of yellow and black diagonal stripes, worn through in places. |
@@ -804,7 +813,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 
 | theme | status | used in | notes |
 |---|---|---|---|
-| `classic` | good | 43 scenes |  |
+| `classic` | good | 44 scenes |  |
 | `parchment` | good | gui_themes, gui_trade |  |
 | `terminal` | good | bunker_lab, gui_themes, orbital_hangar, space_station |  |
 | `blood` | good | gui_themes |  |
@@ -815,8 +824,8 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | widget | status | used in | notes |
 |---|---|---|---|
 | `bubble` | good | alien_world, autumn_lane, castle_keep, claude_study, crystal_cave, garden_encounter, ghost_corridor, ghost_town, gui_menus, gui_trade, haunted_house, neon_street, night_market, rainy_street, tunnel_encounter, village_green, winter_lake, winter_woods, woodland_night |  |
-| `dialog` | good | bunker_lab, chapel_graveyard, claude_study, coast_lighthouse, ghost_corridor, library_medium, orbital_hangar, space_station |  |
-| `caption` | good | 36 scenes |  |
+| `dialog` | good | bunker_lab, chapel_graveyard, claude_study, coast_lighthouse, ghost_corridor, library_medium, neon_bar, orbital_hangar, space_station |  |
+| `caption` | good | 37 scenes |  |
 | `choice` | good | gui_menus, gui_themes, gui_trade |  |
 | `title` | good | gui_menus |  |
 | `panel` | good | bunker_lab, gui_lantern |  |
@@ -870,7 +879,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `mono` | good | - |  |
 | `bone` | good | - |  |
 
-## Example scenes (50)
+## Example scenes (51)
 
 The environments, judged on their gallery images and shots.
 
@@ -904,6 +913,7 @@ The environments, judged on their gallery images and shots.
 | `rain_alley` | good | 4 | alley_street, alley_rain, alley_glass, alley_storm |  |
 | `neon_street` | good | 4 | neon_street, neon_stall, neon_signs, neon_runner | The neon facade style in the rain: signs, blade signs, lantern wires, a hologram koi, a noodle stall, vending machines, steam, the runner; bloom on the neon. |
 | `night_market` | good | 4 | market_lane, market_cart, market_puddle, market_runner | A lane of stalls between neon fronts in the rain: lantern strings overhead, food carts, fruit and gadget stalls, a crowd; the cart close up; the lanterns in the wet; the runner under a lit umbrella. |
+| `neon_bar` | good | 4 | bar_room, bar_tank, bar_arcade, bar_bartender | A small smoky bar: glowing shelves, the counter and stools, a jukebox and booths, a reef tank in the back wall, the arcade row mirrored in the floor, the bartender. |
 | `village_green` | good | 4 | village_market, village_stall, village_well, village_night | A cobbled street of timber-framed houses to a green: a market stall and its keeper, the inn sign, a cart, the well; the inn lit after closing. |
 | `ghost_town` | good | 4 | western_noon, western_saloon, western_ghost, western_windpump | A frontier main street: a cowboy at high noon, the saloon and its barkeep, sundown with lanterns and a ghost, a windpump in the desert. |
 | `misty_moor` | good | 3 | moor_dawn, moor_circle | Stones of varied heights with weathered menhir faces and slanted, chipped stone_cap tops in dawn mist. |
@@ -962,6 +972,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the neon bar.** `scripts/bar.py`: `arcade_cabinet`, `bar_counter`, `bar_stool`, `booth`, `jukebox`, `neon_cocktail`, `neon_fish`, `bottles` and the `bar_shelves` texture. `examples/neon_bar.py` (a reef tank in the back wall, with fog behind its glass) with four gallery shots.
 - **2026-10-19, the night market.** `scripts/market.py`: 11 props (a food cart, fruit and gadget stalls, red lanterns and a string of them, a standing neon sign, a lit umbrella, a scooter, stools and a table, a utility pole, a crowd). buildings.py: a face too narrow for a door or a window gets none instead of crashing (the existing facade scenes render byte-identical). `examples/night_market.py` with four gallery shots.
 - **2026-10-19, the aquarium.** `scripts/aquarium.py`: 17 props (a whale shark, a manta, a reef shark, a turtle, reef fish, corals, jellies, a plaque) and `reef_wall`, `tunnel_roof`, `jelly_backdrop`, `tank_window`. Glass takes `fog`, so volumetric fog carries on behind a pane (existing scenes render byte-identical). `examples/aquarium.py` with five gallery shots.
 - **2026-10-19, the occult library.** mansion_library: raised to 2 units under a panelled ceiling, shelves two storeys high, and furnished - a reading desk with the spiritualist at it, an armchair, a globe, a telescope, the grandfather clock, lit candelabras, a portrait, cobwebs, books flying. Every example scene is now rated good.

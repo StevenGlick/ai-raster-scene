@@ -33,6 +33,13 @@ After dark a lane of the same city fills with a night market: food carts with th
 | ![A night market in the rain, strings of red lanterns down the lane](docs/gallery/market_lane.png) | ![A food cart's wok over the flame, a customer at the counter](docs/gallery/market_cart.png) |
 | ![Down in the wet: the lanterns mirrored in the flagstones](docs/gallery/market_puddle.png) | ![The runner under a clear umbrella with a lit shaft: two bowls, extra chilli](docs/gallery/market_runner.png) |
 
+And off the market, a bar: smoke in the air, bottles glowing on their shelves, a reef tank let into the back wall, a row of arcade cabinets with a shooter on every screen, booths, a jukebox, neon on the walls.
+
+| | |
+|---|---|
+| ![A neon bar in the small hours: the bar, a jukebox, a booth, smoke](docs/gallery/bar_room.png) | ![The reef tank in the bar's back wall](docs/gallery/bar_tank.png) |
+| ![The arcade row, a runner at a cabinet, all of it mirrored in the floor](docs/gallery/bar_arcade.png) | ![The bartender: your man was in an hour ago](docs/gallery/bar_bartender.png) |
+
 The `timber` style builds a village instead: timber-framed houses in limewash and ochre, oak posts, rails and braces, leaded casements and plank doors, and a roof on every house - a gable end over the street, or thatch or tiles with a chimney.
 
 | | |
@@ -201,7 +208,7 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **Volumetric fog**: mist that lies low and drifts in banks, halos round every lamp, and beams of sun or moonlight through windows, doorways, standing stones and trees; sunlight finds its way into roofed rooms through their doorways, windows and skylights
 - **Reflections**: water, ice, wet streets and puddles mirror the lamps, windows and figures beyond them
 - **The 90s look**: 320x200 framebuffer, Bayer-dithered 256-colour palette, chunky nearest-neighbour upscale, optional scanlines and 2x supersampling
-- **Sprites**: 241 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 27-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
+- **Sprites**: 249 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 27-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
 - **Planar sprites**: a plant can stand as fixed planes in the world instead of a billboard - a cross of two, or a star of three that cuts the ground round it into sixths - so it has body as the camera moves; the low plants do by default, and a prefab can mix billboards and planes (a billboard palm trunk under a star of fronds)
 - **Layered forest edges**: give the walls of a jungle or a wood a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
@@ -220,7 +227,7 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **Post-processing**: colour grading, bloom, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
 - **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
 - **Pixel art drawn in code**: the jungle, ruins and beach are built from shapes - leaves, stones, planks, blades of grass, carved glyphs - stamped into a height field, lit from one direction, and snapped onto hue-shifted colour ramps with dark edges on their shadow sides (`scripts/pixelart.py`), so they read as pixel art rather than noise
-- **No assets to download**: all 155 textures, 241 props, 27 characters, 25 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
+- **No assets to download**: all 156 textures, 249 props, 27 characters, 25 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
 
 ![Character cast](docs/gallery/cast.png)
 

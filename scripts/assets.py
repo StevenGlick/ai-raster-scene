@@ -2650,6 +2650,18 @@ SPRITE_HEIGHT.update(market.SPRITE_HEIGHT)
 PROP_DEFAULTS.update(market.PROP_DEFAULTS)
 NO_CONTACT_SHADOW |= market.NO_CONTACT_SHADOW
 
+# ---------------------------------------------------------------- the neon bar
+# An arcade cabinet, a bar counter's front, bar stools, a booth, a jukebox, neon wall art, bottles
+# and the back bar's lit shelves - drawn with the toolkit in bar.py.
+import bar  # noqa: E402
+
+TEXTURES.update(bar.TEXTURES)
+TEXTURE_NOISE.update(bar.TEXTURE_NOISE)
+SPRITES.update(bar.SPRITES)
+SPRITE_HEIGHT.update(bar.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(bar.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= bar.NO_CONTACT_SHADOW
+
 _dcache = {}
 
 
