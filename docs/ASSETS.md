@@ -23,7 +23,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 |---|---|---|---|---|---|
 | Textures | 158 | 155 | 3 | 0 | 0 |
 | Props | 254 | 254 | 0 | 0 | 0 |
-| Characters | 29 | 28 | 1 | 0 | 0 |
+| Characters | 29 | 29 | 0 | 0 | 0 |
 | Decals | 25 | 20 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
 | Skylines | 6 | 5 | 1 | 0 | 0 |
@@ -39,7 +39,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 53 | 53 | 0 | 0 | 0 |
-| **all** | **668** | **651** | **17** | **0** | **0** |
+| **all** | **668** | **652** | **16** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -608,7 +608,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `hybrid` | good | gui_lantern, sewer_tunnels, tunnel_encounter |  |
 | `soldier` | good | castle_keep |  |
 | `knight` | good | castle_keep, misty_moor, village_green |  |
-| `child` | polish | aquarium, autumn_lane, night_market, village_green, winter_lake, winter_woods | Head reads large and round; check the proportions. |
+| `child` | good | aquarium, autumn_lane, night_market, village_green, winter_lake, winter_woods | The head narrowed to ten pixels with a fringe, the eyes closer together, a small mouth and a tapered chin, so it reads as a child rather than a round mask; back view. |
 | `creature` | good | castle_keep, crystal_cave |  |
 | `robot` | good | crystal_cave |  |
 | `shopkeeper` | good | ghost_town, neon_street, night_market, village_green |  |
@@ -983,6 +983,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the child.** A narrower head with a fringe, eyes closer, a small mouth, a tapered chin; the galleries of the six scenes the child appears in rebuilt. Rated good.
 - **2026-10-19, the column drum.** Flutes along its length, a lit end face on a shadowed rim; the ruins' and the cathedral's images rebuilt. Rated good.
 - **2026-10-19, the goat.** Redrawn with the toolkit in basics.py (it overrides the old grid), short-legged and piebald; the ancient ruins' images rebuilt. Rated good.
 - **2026-10-19, the sleepwalker's eyes.** `dreamer`: closed eyes; the galleries she appears in are rebuilt. Rated good.
