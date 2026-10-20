@@ -139,6 +139,8 @@ SHOTS = {
     'bar_tank': ('neon_bar', 2),
     'bar_arcade': ('neon_bar', 3),
     'bar_bartender': ('neon_bar', 4),
+    'market_samurai': ('night_market', 5),
+    'bar_hacker': ('neon_bar', 5),
     'rooftop_canyon': ('neon_rooftop', 1),
     'rooftop_down': ('neon_rooftop', 2),
     'rooftop_train': ('neon_rooftop', 3),

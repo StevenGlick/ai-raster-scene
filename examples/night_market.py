@@ -4,8 +4,8 @@ Shows the market kit (scripts/market.py) between `neon` facades: a `food_cart` w
 the flame and `steam` over its pots, `stools_table`s pulled up to it, a `fruit_stall` and a
 `gadget_stall` under their tarps, `lantern_span`s of red paper lanterns slung across the lane and
 single `red_lantern`s at the stalls, `power_pole`s hung with cables, `scooter`s parked along the
-fronts, a standing `neon_sign` at the mouth of a side alley, a `crowd` filling the far end and the
-`runner` under a clear `umbrella` with a lit shaft. Every stall carries a warm light of its own,
+fronts, a standing `neon_sign` at the mouth of a side alley, a `crowd` filling the far end, the
+`runner` under a clear `umbrella` with a lit shaft and a `samurai` under another. Every stall carries a warm light of its own,
 so the wet flagstones mirror the market back.
 Run:  python night_market.py  -> writes night_market.json
 """
@@ -59,8 +59,8 @@ sprites += [
     {'x': 15.2, 'y': 37.15, 'type': 'umbrella', 'z': 0.33},
     {'x': 14.1, 'y': 41.3, 'type': 'cowboy', 'facing': 250},
     {'x': 16.0, 'y': 26.2, 'type': 'crowd', 'scale': 0.62}, {'x': 14.6, 'y': 19.8, 'type': 'crowd', 'scale': 0.62, 'flip': True},
-    {'x': 16.8, 'y': 31.6, 'type': 'explorer', 'facing': 280},
-    {'x': 17.1, 'y': 31.55, 'type': 'umbrella', 'z': 0.33, 'scale': 0.4},
+    {'id': 'samurai', 'x': 16.8, 'y': 31.6, 'type': 'samurai', 'facing': 100},
+    {'x': 16.82, 'y': 31.55, 'type': 'umbrella', 'z': 0.35, 'scale': 0.4},
     {'x': 14.0, 'y': 24.0, 'type': 'child', 'facing': 260},
     {'x': 17.6, 'y': 20.5, 'type': 'scientist', 'facing': 90},
     {'x': 17.65, 'y': 20.45, 'type': 'umbrella', 'z': 0.33, 'scale': 0.4},
@@ -70,7 +70,8 @@ glows = [(12.2, 43.0, PINK), (19.8, 39.5, CYAN), (12.2, 31.0, VIOLET), (19.8, 27
          (19.8, 16.0, GOLD), (12.2, 12.0, PINK), (19.8, 8.0, VIOLET), (24.0, 23.0, PINK)]
 lights += [{'x': x, 'y': y, 'z': 2.2, 'radius': 4.0, 'color': c, 'intensity': 1.0} for x, y, c in glows]
 lights += [{'x': 20.6, 'y': y, 'z': 1.0, 'radius': 2.5, 'color': PINK, 'intensity': 1.0} for y in (22.3, 23.7)]
-lights += [{'x': 15.2, 'y': 37.3, 'z': 0.7, 'radius': 1.4, 'color': [0.5, 1.0, 0.95], 'intensity': 1.2}]     # the umbrella
+lights += [{'x': 15.2, 'y': 37.3, 'z': 0.7, 'radius': 1.4, 'color': [0.5, 1.0, 0.95], 'intensity': 1.2},    # the umbrellas
+           {'x': 17.0, 'y': 31.9, 'z': 0.7, 'radius': 1.3, 'color': [0.5, 1.0, 0.95], 'intensity': 1.1}]
 
 s = scene(
     g,
@@ -100,6 +101,7 @@ s = scene(
         {'x': 16.6, 'y': 39.4, 'look_at': 'runner', 'fov': 56, 'post': RAIN,
          'overlays': [{'type': 'bubble', 'anchor': 'runner', 'name': 'Runner',
                        'text': 'Two bowls, extra chilli. Then we find your man.'}]},
+        {'x': 16.3, 'y': 33.1, 'look_at': 'samurai', 'fov': 48, 'post': RAIN},
     ],
     contact_shadows=0.5,
     supersample=2,

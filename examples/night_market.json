@@ -439,6 +439,18 @@
     0.95
    ],
    "intensity": 1.2
+  },
+  {
+   "x": 17.0,
+   "y": 31.9,
+   "z": 0.7,
+   "radius": 1.3,
+   "color": [
+    0.5,
+    1.0,
+    0.95
+   ],
+   "intensity": 1.1
   }
  ],
  "sprites": [
@@ -771,16 +783,17 @@
    "flip": true
   },
   {
+   "id": "samurai",
    "x": 16.8,
    "y": 31.6,
-   "type": "explorer",
-   "facing": 280
+   "type": "samurai",
+   "facing": 100
   },
   {
-   "x": 17.1,
+   "x": 16.82,
    "y": 31.55,
    "type": "umbrella",
-   "z": 0.33,
+   "z": 0.35,
    "scale": 0.4
   },
   {
@@ -1027,6 +1040,40 @@
      "anchor": "runner",
      "name": "Runner",
      "text": "Two bowls, extra chilli. Then we find your man."
+    }
+   ]
+  },
+  {
+   "x": 16.3,
+   "y": 33.1,
+   "look_at": "samurai",
+   "fov": 48,
+   "post": [
+    {
+     "fx": "rain",
+     "density": 0.75,
+     "length": 8,
+     "opacity": 0.24,
+     "angle": 8
+    },
+    {
+     "fx": "splashes",
+     "density": 0.25
+    },
+    {
+     "fx": "bloom",
+     "threshold": 0.55,
+     "strength": 0.75,
+     "radius": 6
+    },
+    {
+     "fx": "grade",
+     "saturation": 1.12,
+     "tint": [
+      1.03,
+      0.95,
+      1.04
+     ]
     }
    ]
   }

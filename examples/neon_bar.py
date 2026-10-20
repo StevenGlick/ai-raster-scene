@@ -3,7 +3,7 @@ back wall, a row of arcade cabinets, booths, a jukebox, neon on the walls and sm
 
 Shows the bar kit (scripts/bar.py) with the aquarium's: `bar_shelves` on the wall behind the bar,
 the bar itself a `bar_counter` card standing along it with `bar_stool`s in front and `bottles`
-on top, `arcade_cabinet`s with a shooter on every screen, `booth`s, a `jukebox`, `neon_cocktail`
+on top, `arcade_cabinet`s with a shooter on every screen, `booth`s, a `jukebox`, the `hacker` by the arcade row, `neon_cocktail`
 and `neon_fish` on the walls (additive); and a tank of `reef_rock`, corals and reef fish behind
 a `glass_pane` whose glass has `fog`, so the haze glows blue inside it. A thick, glowing
 volumetric fog is the smoke: every screen, tube and lamp gets a halo in it.
@@ -37,7 +37,7 @@ sprites = [
                                  (7.65, [0.9, 1.05, 0.9])))] + [
     {'id': 'player', 'x': 6.05, 'y': 6.0, 'type': 'runner', 'facing': 0},
     {'x': 1.45, 'y': 6.6, 'type': 'booth'}, {'x': 1.45, 'y': 7.9, 'type': 'booth'},
-    {'id': 'regular', 'x': 1.5, 'y': 6.52, 'type': 'scientist', 'facing': 0},
+    {'id': 'regular', 'x': 5.75, 'y': 7.15, 'type': 'hacker', 'facing': 120},
     {'x': 1.3, 'y': 5.6, 'type': 'jukebox'},
     {'x': 1.05, 'y': 6.0, 'type': 'neon_cocktail', 'z': 0.62},
     {'x': 6.95, 'y': 4.5, 'type': 'neon_fish', 'z': 0.8},
@@ -89,6 +89,9 @@ s = scene(
         {'x': 2.6, 'y': 6.3, 'look_at': 'bartender', 'fov': 56, 'post': BLOOM,
          'overlays': [{'type': 'dialog', 'portrait': 'android', 'name': 'Bartender',
                        'text': 'Your man was in an hour ago. Sat by the fish. Paid in real money.'}]},
+        {'x': 4.85, 'y': 8.45, 'look_at': 'regular', 'fov': 52, 'post': BLOOM,
+         'overlays': [{'type': 'bubble', 'anchor': 'regular', 'name': 'Hacker',
+                       'text': "Don't look at the screen. It looks back."}]},
     ],
     contact_shadows=0.5,
     supersample=2,
