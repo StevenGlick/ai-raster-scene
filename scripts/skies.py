@@ -95,7 +95,12 @@ def draw_skyline(sky, spec, proj, seed=0):
                 half = (1.5 + 4.5 * rng.random()) * px_deg
                 top = (0.5 + 1.6 * rng.random()) * k
                 d = _wrapdist(w, cx)
-                elev = np.maximum(elev, top * np.clip(1 - (d / half) ** 2, 0, 1) ** 0.6)
+                lean = ((cx * 7.31) % 1.0 - 0.5) * 0.7 * half            # the peak off-centre (from where
+                # the island is, not the generator, so the islands stay where they were)
+                dd_ = _wrapdist(w, cx + lean)
+                body = top * np.clip(1 - (dd_ / half) ** 3, 0, 1) ** 0.5
+                shoulder = 0.22 * top * (d < half * 1.45)                # a low strip of beach either side
+                elev = np.maximum(elev, np.maximum(body, shoulder))
                 for _ in range(int(rng.integers(1, 4)) if top > 0.8 * k else 0):
                     px = cx + (rng.random() - 0.5) * half
                     ph = top + (0.5 + 0.6 * rng.random()) * k

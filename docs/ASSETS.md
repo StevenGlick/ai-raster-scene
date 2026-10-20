@@ -21,25 +21,25 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 186 | 183 | 3 | 0 | 0 |
+| Textures | 186 | 186 | 0 | 0 | 0 |
 | Props | 289 | 289 | 0 | 0 | 0 |
 | Characters | 29 | 29 | 0 | 0 | 0 |
-| Decals | 26 | 21 | 5 | 0 | 0 |
+| Decals | 26 | 26 | 0 | 0 | 0 |
 | Skies | 13 | 13 | 0 | 0 | 0 |
-| Skylines | 6 | 5 | 1 | 0 | 0 |
+| Skylines | 6 | 6 | 0 | 0 | 0 |
 | Sky objects | 7 | 7 | 0 | 0 | 0 |
 | Scatter sets | 18 | 18 | 0 | 0 | 0 |
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
-| Facade styles | 6 | 5 | 1 | 0 | 0 |
+| Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Held items | 8 | 2 | 6 | 0 | 0 |
+| Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
 | GUI widgets | 18 | 18 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 60 | 60 | 0 | 0 | 0 |
-| **all** | **747** | **731** | **16** | **0** | **0** |
+| **all** | **747** | **747** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -264,7 +264,7 @@ Weakest first, and in the order the new scenes need them.
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
 | `jungle_leaves` | good |  | jungle_temple, tropical_beach | Drawn with the pixel-art toolkit. |
-| `canopy` | polish | glows | jungle_temple | From below it can still read a little like camouflage; more depth between the layers. |
+| `canopy` | good | glows | jungle_temple | Leaves at three depths - lit far ones, a middle layer, near silhouettes - with sky in the gaps. |
 | `canopy_top` | good |  | glow_jungle, jungle_temple, tropical_beach | Use as the top of jungle walls. |
 | `jungle_floor` | good |  | jungle_temple |  |
 | `jungle_bark` | good |  | jungle_temple |  |
@@ -300,8 +300,8 @@ Weakest first, and in the order the new scenes need them.
 | `wet_sand` | good | mirror 0.28 | tropical_beach |  |
 | `shallows` | good | mirror 0.3 | jungle_temple, sky_islands, tropical_beach |  |
 | `sea` | good | mirror 0.45 | ancient_ruins, tropical_beach |  |
-| `bamboo` | polish |  | tropical_beach | The nodes still line up into a grid across the poles. |
-| `thatch` | polish |  | tropical_beach | The rows could be clearer, each with a shadow under its fringe. |
+| `bamboo` | good |  | tropical_beach | A node in each third of every pole, so they stagger from pole to pole instead of lining up across them. |
+| `thatch` | good |  | tropical_beach | Each row stands out over the one under it and shades its top, so the rows read. |
 
 ## Props (289)
 
@@ -701,12 +701,12 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `puddle` | good | coast_lighthouse, rainy_street, woodland_night |  |
 | `puddle_dark` | good | bunker_lab, castle_keep, cathedral_ruin, derelict_ship, sewer_tunnels, woodland_night |  |
 | `puddle_shine` | good | coast_lighthouse, neon_street, night_market, rain_alley, rainy_street, sewer_tunnels |  |
-| `stain` | polish | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, sewer_tunnels, woodland_night | A plain blob; uneven edge, drip marks. |
-| `stain_rust` | polish | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, orbital_hangar, rainy_street, sewer_tunnels | Same as stain. |
+| `stain` | good | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, sewer_tunnels, woodland_night | A ragged edge, darker along the tide line where it dried, blotchy inside, drops round it and short runs from its foot. |
+| `stain_rust` | good | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, orbital_hangar, rainy_street, sewer_tunnels | As stain, in rust. |
 | `splatter` | good | doomed |  |
 | `splatter_dark` | good | bunker_lab, castle_keep, cathedral_ruin, derelict_ship, sewer_tunnels |  |
 | `vines` | good | jungle_temple, rainy_street |  |
-| `moss_patch` | polish | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, jungle_temple, rainy_street, sewer_tunnels, woodland_night | Blob; give it clumps and a soft edge. |
+| `moss_patch` | good | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, jungle_temple, rainy_street, sewer_tunnels, woodland_night | A cushion of rounded clumps lit along their tops and dark under them, speckled, a few stray tufts round it. |
 | `crack` | good | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, rainy_street, sewer_tunnels |  |
 | `scorch` | good | bunker_lab, cathedral_ruin, derelict_ship, sewer_tunnels, tropical_beach |  |
 | `leak` | good | bunker_lab, castle_keep, cathedral_ruin, derelict_ship, rainy_street, sewer_tunnels |  |
@@ -723,8 +723,8 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 
 | decal | status | used in | notes |
 |---|---|---|---|
-| `foam` | polish | tropical_beach | Edge-on from eye height: pair with the surf props. |
-| `foam_glow` | polish | tropical_beach | As foam. |
+| `foam` | good | tropical_beach | Edge-on from eye height: pair it with the surf props. |
+| `foam_glow` | good | tropical_beach | As foam. |
 | `starfish` | good | kelp_forest, tropical_beach |  |
 | `shells` | good | kelp_forest, tropical_beach |  |
 | `seaweed` | good | kelp_forest, tropical_beach |  |
@@ -756,7 +756,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `hills` | good | misty_moor |  |
 | `treeline` | good | chapel_graveyard |  |
 | `city` | good | neon_rooftop, neon_street, night_market | Window grid is regular; vary building tops (spires, water towers). |
-| `islands` | polish | ancient_ruins, tropical_beach | In haze an island and its reflection can read as a saucer floating on the horizon. |
+| `islands` | good | ancient_ruins, tropical_beach | Flat-topped and lopsided with a low strip of beach either side, so an island and its reflection read as land on the water, not a saucer. |
 | `jungle` | good | jungle_temple |  |
 
 ## Sky objects (7)
@@ -818,7 +818,7 @@ The looks a `facade` can give its buildings (`scripts/buildings.py`); each build
 |---|---|---|---|
 | `brick` | good | rain_alley | Red and brown brick, painted sash windows, curtains and blinds, shops. |
 | `sooty` | good | rain_alley | Soot-blackened tenements, dark frames. |
-| `plaster` | polish | - | Washed plaster; only seen on the review sheets so far, no scene uses it. |
+| `plaster` | good | - | Washed plaster; fine on the review sheet, though no example uses it yet. |
 | `neon` | good | neon_rooftop, neon_street, night_market | Concrete panels with form-tie holes, neon signs over the shops and up the walls, blade signs on their own cards, roller shutters, air conditioners, rooms lit pink, blue and green. |
 | `timber` | good | village_green | Timber framing over limewash and ochre - posts at the bays and jambs, rails at the floors, sills and heads, braces or close studding - leaded casements, plank doors, and a roof layer: a gable end, or thatch or tiles set back behind the eave, chimneys. Other styles unchanged. |
 | `western` | good | ghost_town | Clapboard in faded paint peeling to grey, false fronts (flat, stepped, curved, pediment) with painted signs from the pixel font, never repeated along a street, a saloon with batwing doors and a lit room, porch posts and fascia for a roofed boardwalk. |
@@ -847,12 +847,12 @@ Named groups placed with one line (`scripts/prefabs.py`).
 
 | item | status | used in | notes |
 |---|---|---|---|
-| `revolver` | polish | gui_hud, rainy_street | The hand and sleeve are blocky; shade the knuckles and cuff. |
-| `lantern` | polish | gui_lantern, woodland_night | The hand and sleeve are blocky; shade the knuckles and cuff. |
-| `flashlight` | polish | bunker_lab, derelict_ship, sewer_tunnels | The hand and sleeve are blocky; shade the knuckles and cuff. |
-| `axe` | polish | - | The hand and sleeve are blocky; shade the knuckles and cuff. |
-| `crowbar` | polish | - | The hand and sleeve are blocky; shade the knuckles and cuff. |
-| `torch` | polish | - | The hand and sleeve are blocky; shade the knuckles and cuff. |
+| `revolver` | good | gui_hud, rainy_street | Redrawn in held.py with the pixel-art toolkit: four fingers wrapped round it, light on the knuckles, a thumb laid over, out of a dark coat sleeve with a shirt cuff. |
+| `lantern` | good | gui_lantern, woodland_night | Redrawn in held.py with the pixel-art toolkit: four fingers wrapped round it, light on the knuckles, a thumb laid over, out of a dark coat sleeve with a shirt cuff. |
+| `flashlight` | good | bunker_lab, derelict_ship, sewer_tunnels | Redrawn in held.py with the pixel-art toolkit: four fingers wrapped round it, light on the knuckles, a thumb laid over, out of a dark coat sleeve with a shirt cuff. |
+| `axe` | good | - | Redrawn in held.py with the pixel-art toolkit: four fingers wrapped round it, light on the knuckles, a thumb laid over, out of a dark coat sleeve with a shirt cuff. |
+| `crowbar` | good | - | Redrawn in held.py with the pixel-art toolkit: four fingers wrapped round it, light on the knuckles, a thumb laid over, out of a dark coat sleeve with a shirt cuff. |
+| `torch` | good | - | Redrawn in held.py with the pixel-art toolkit: four fingers wrapped round it, light on the knuckles, a thumb laid over, out of a dark coat sleeve with a shirt cuff. |
 | `pistol` | good | doomed | Drawn in doomed.py: held out in the middle of the view: a fist round the grip, the slide from behind with its sights; `fire` adds a muzzle flash. |
 | `shotgun` | good | doomed | Drawn in doomed.py: a pump shotgun in the middle: the receiver, the barrel running away to its bead, a hand on the wooden pump; `fire` adds a flash. |
 
@@ -1062,6 +1062,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-20, the polish list.** The six held items redrawn in held.py (a shaded hand of four fingers, knuckles and a thumb, out of a coat sleeve); `stain`, `stain_rust` and `moss_patch` redrawn; `bamboo`, `thatch`, `canopy` and the `islands` skyline touched up; `foam`, `foam_glow` and the `plaster` facade style judged fine. Nothing is left on the polish list.
 - **2026-10-20, salt piles and the aurora.** `salt_mound` redrawn round-topped and smaller (0.22), with `salt_heap`, `salt_pile` and `salt_clods` beside it - the salt flat's rows now mix them, no two the same size. The `aurora` varied: rays of every width and height in bundles, a pleated ribbon, red-tipped rays, a high arc. Reflections: a still mirror (`smear` under 1) now mirrors each thing about its own foot.
 - **2026-10-20, second passes.** `aurora_shore` re-shot from the lake's western shore: the palace and its spires under the aurora, a pine and the ice edge framing it (it was a dark view with the palace small on the horizon).
 - **2026-10-20, the clockwork city.** `scripts/clockwork.py`: `brass_plate`, `copper_pipes`, `clock_face`, `brass_gear`, `great_clock`. `examples/clockwork_city.py` with four gallery shots; its orrery is brass wireframes.

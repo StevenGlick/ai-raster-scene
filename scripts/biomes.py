@@ -87,10 +87,12 @@ def tex_canopy(name):
         y0, k, a = rng.random() * T, int(rng.integers(1, 3)), rng.uniform(2, 6)
         pts = [(t, y0 + a * np.sin(2 * np.pi * k * t / T)) for t in range(0, T + 1, 4)]
         cv.stroke(pts, rng.uniform(2.2, 3.4), z=0.5, dome=0.6, mat=2)
+    _leaf_layers(cv, rng, [(0.6, 60, 0.0, (8, 12))], [3], angles=(0, 360), bend=0.15)   # a middle layer
     _leaf_layers(cv, rng, [(1.0, 38, 0.0, (9, 14))], [0], angles=(0, 360), bend=0.15)
     shape = cv.light(sun=(0.0, 0.0, 1.0), ambient=0.2, diffuse=0.8, cavity=0.4, shadow=0.0)
-    # against the light: what is in front is dark, what the light comes through is bright
-    L = np.where(cv.mat == 1, 0.26 + 0.42 * shape, 0.04 + 0.24 * shape)
+    # against the light: what is in front is dark, what the light comes through is bright, and the
+    # middle layer in between, so the leaves stand at three depths
+    L = np.where(cv.mat == 1, 0.26 + 0.42 * shape, np.where(cv.mat == 3, 0.13 + 0.32 * shape, 0.04 + 0.24 * shape))
     rgb = _paint_light(L, LEAF_SUN)
     near = cv.mat != 1
     rgb[near] = _paint_light(L, LEAF)[near]
@@ -558,7 +560,8 @@ def tex_bamboo(name):
         cx = x + w / 2
         mat = int(rng.choice([0, 0, 0, 1, 2]))
         cv.stroke([(cx, -2), (cx, T + 2)], w - 0.9, z=0.0, dome=1.0, mat=mat, tone=rng.normal(0, 0.05))
-        for ny in rng.uniform(0, T, 2) + [0, 0]:      # nodes: a ridge with a dark ring under it
+        for ny in (np.arange(3) + rng.uniform(0.15, 0.85, 3)) * T / 3:   # nodes, one in each third of the
+            # pole so they stagger from pole to pole: a ridge with a dark ring under it
             cv.stroke([(cx - w / 2, ny), (cx + w / 2, ny)], 1.8, dome=0.45, mat=mat, mode='add')
             cv.stroke([(cx - w / 2, ny + 1.5), (cx + w / 2, ny + 1.5)], 0.9, dome=0.3, mat=mat, mode='carve')
         x += w
@@ -578,9 +581,9 @@ def tex_thatch(name):
             x = (i + rng.random()) * T / 30
             L = rng.uniform(10, 13)
             a = np.radians(90 + rng.normal(0, 4))
-            cv.stroke([(x, y0), (x + np.cos(a) * L, y0 + np.sin(a) * L)], 2.2, z=row * 0.6 + rng.random() * 0.15,
+            cv.stroke([(x, y0), (x + np.cos(a) * L, y0 + np.sin(a) * L)], 2.2, z=row * 1.2 + rng.random() * 0.15,
                       dome=0.5, taper=(1.0, 0.6), mat=int(rng.random() < 0.18), tone=rng.normal(0, 0.05))
-    return _tile(cv, [STRAW, ramp('#8a7040')], relief=0.7, cavity=0.25, shadow=0.55, reach=4, dither=0.25)
+    return _tile(cv, [STRAW, ramp('#8a7040')], relief=0.7, cavity=0.3, shadow=0.75, reach=6, dither=0.25)
 
 
 TEXTURES = {

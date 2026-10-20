@@ -6,6 +6,8 @@ Draw op format: (kind, coords, colour, [width])
   colour: '#rrggbb'; prefix with '!' to make those pixels emissive (glow regardless of lighting)
 New icons can be defined in a scene under "icon_defs": {"name": {"size": 16, "ops": [...]}}.
 """
+import importlib
+
 import numpy as np
 from PIL import Image, ImageDraw
 
@@ -140,69 +142,21 @@ def get_icon(name, defs=None):
 # the canvas hugs. 'light' (optional) adds a point light at the camera when the item is shown.
 
 VIEWMODELS = {
-    'revolver': {'size': (84, 78), 'anchor': 'right', 'ops': [
-        ('poly', [(52, 78), (84, 78), (84, 46), (64, 40)], COAT), ('poly', [(66, 78), (84, 78), (84, 56)], COAT_D),
-        ('poly', [(30, 78), (60, 78), (63, 54), (54, 46), (36, 50)], SKIN),
-        ('poly', [(32, 70), (40, 58), (48, 62), (42, 78)], SKIN_D),
-        ('poly', [(38, 49), (52, 46), (50, 36), (41, 37)], WOOD), ('line', [41, 39, 49, 38], WOOD_L),
-        ('rect', [36, 26, 54, 38], METAL_D), ('ellipse', [37, 18, 53, 34], METAL), ('ring', [37, 18, 53, 34], METAL_D, 1),
-        ('line', [41, 21, 44, 19], METAL_L),
-        ('px', [(45, 21), (41, 24), (49, 24), (41, 29), (49, 29), (45, 32)], IRON_D),
-        ('px', [(45, 22), (42, 24), (48, 24)], IRON_D),
-        ('poly', [(41, 22), (49, 22), (48, 4), (42, 4)], METAL), ('line', [43, 21, 43, 5], METAL_L),
-        ('ellipse', [41, 1, 49, 7], IRON), ('ellipse', [43, 2, 47, 6], '#0a0a0c'), ('px', [(45, 0)], METAL_L),
-        ('poly', [(34, 54), (38, 42), (44, 43), (42, 56)], SKIN_L),
-    ]},
-    'lantern': {'size': (60, 96), 'anchor': 'left', 'light': {'radius': 4.5, 'color': [1.0, 0.72, 0.38], 'intensity': 1.2},
-                'ops': [
-        ('poly', [(0, 96), (24, 96), (30, 70), (10, 62), (0, 66)], COAT), ('poly', [(0, 96), (10, 96), (8, 70), (0, 68)], COAT_D),
-        ('line', [23, 56, 23, 44], IRON, 2), ('line', [14, 44, 32, 44], IRON, 2),
-        ('poly', [(12, 58), (34, 56), (36, 66), (30, 74), (14, 74), (10, 66)], SKIN),
-        ('line', [13, 61, 33, 59], SKIN_D), ('line', [13, 65, 34, 63], SKIN_D), ('line', [14, 69, 33, 68], SKIN_D),
-        ('poly', [(28, 55), (36, 54), (37, 60), (31, 61)], SKIN_L),
-        ('poly', [(12, 14), (34, 14), (30, 8), (16, 8)], IRON), ('rect', [21, 4, 25, 8], IRON_D),
-        ('rect', [13, 15, 33, 37], GLOW), ('ellipse', [18, 20, 28, 34], GLOW_W),
-        ('line', [13, 15, 13, 37], IRON_D, 2), ('line', [33, 15, 33, 37], IRON_D, 2), ('line', [23, 15, 23, 37], IRON_D),
-        ('rect', [11, 37, 35, 42], IRON), ('line', [12, 38, 34, 38], METAL),
-    ]},
-    'flashlight': {'size': (70, 80), 'anchor': 'right', 'flashlight': True, 'ops': [
-        ('poly', [(40, 80), (70, 80), (70, 50), (52, 46)], COAT), ('poly', [(56, 80), (70, 80), (70, 60)], COAT_D),
-        ('poly', [(30, 44), (42, 44), (50, 80), (34, 80)], IRON), ('line', [33, 46, 38, 78], METAL),
-        ('poly', [(27, 34), (45, 34), (43, 46), (29, 46)], METAL_D),
-        ('ellipse', [26, 26, 46, 40], METAL_L), ('ellipse', [29, 28, 43, 38], GLOW_W),
-        ('poly', [(28, 80), (36, 56), (50, 54), (56, 72), (52, 80)], SKIN), ('poly', [(34, 62), (48, 58), (50, 64), (36, 68)], SKIN_D),
-        ('line', [36, 60, 48, 57], SKIN_L),
-    ]},
-    'axe': {'size': (90, 96), 'anchor': 'right', 'ops': [
-        ('poly', [(60, 96), (90, 96), (90, 64), (70, 60)], COAT), ('poly', [(74, 96), (90, 96), (90, 76)], COAT_D),
-        ('line', [62, 92, 34, 18], WOOD, 6), ('line', [60, 88, 34, 22], WOOD_L, 2),
-        ('poly', [(28, 10), (14, 2), (6, 22), (18, 30), (36, 26)], METAL), ('line', [14, 3, 6, 21], METAL_L, 2),
-        ('rect', [30, 12, 40, 26], IRON),
-        ('poly', [(46, 96), (70, 96), (72, 72), (60, 64), (48, 70)], SKIN), ('poly', [(48, 80), (66, 76), (66, 84), (50, 88)], SKIN_D),
-    ]},
-    'crowbar': {'size': (80, 92), 'anchor': 'right', 'ops': [
-        ('poly', [(52, 92), (80, 92), (80, 62), (62, 58)], COAT), ('poly', [(66, 92), (80, 92), (80, 74)], COAT_D),
-        ('line', [56, 90, 30, 14], RED_D, 5), ('line', [54, 86, 30, 18], RED, 2),
-        ('line', [30, 14, 26, 6], RED_D, 5), ('line', [26, 6, 16, 6], RED_D, 5), ('line', [16, 6, 14, 12], RED_D, 4),
-        ('poly', [(40, 92), (64, 92), (66, 70), (54, 62), (42, 68)], SKIN), ('poly', [(42, 78), (60, 74), (60, 82), (44, 86)], SKIN_D),
-    ]},
-    'torch': {'size': (56, 96), 'anchor': 'left', 'light': {'radius': 5.0, 'color': [1.0, 0.6, 0.25], 'intensity': 1.4},
-              'ops': [
-        ('poly', [(0, 96), (26, 96), (32, 72), (10, 64), (0, 68)], COAT),
-        ('line', [22, 70, 28, 22], WOOD_D, 6), ('line', [23, 66, 28, 26], WOOD, 2),
-        ('poly', [(20, 26), (36, 26), (34, 18), (22, 18)], '#3a2a1a'),
-        ('poly', [(18, 20), (28, 0), (40, 20), (34, 12), (29, 22), (24, 10)], '!#ff8a20'),
-        ('poly', [(23, 20), (29, 6), (35, 20)], '!#ffd060'), ('poly', [(26, 20), (29, 12), (32, 20)], '!#fff4c0'),
-        ('poly', [(12, 62), (34, 60), (36, 70), (30, 80), (14, 80), (10, 70)], SKIN),
-        ('line', [13, 65, 33, 63], SKIN_D), ('line', [13, 69, 34, 67], SKIN_D), ('line', [14, 73, 33, 72], SKIN_D),
-    ]},
+    # drawn with the pixel-art toolkit in held.py: a shaded hand round each, out of a coat sleeve
+    'revolver': {'size': (84, 78), 'anchor': 'right', 'draw': 'held.vm_revolver'},
+    'lantern': {'size': (60, 96), 'anchor': 'left', 'draw': 'held.vm_lantern',
+                'light': {'radius': 4.5, 'color': [1.0, 0.72, 0.38], 'intensity': 1.2}},
+    'flashlight': {'size': (70, 80), 'anchor': 'right', 'draw': 'held.vm_flashlight', 'flashlight': True},
+    'axe': {'size': (90, 96), 'anchor': 'right', 'draw': 'held.vm_axe'},
+    'crowbar': {'size': (80, 92), 'anchor': 'right', 'draw': 'held.vm_crowbar'},
+    'torch': {'size': (56, 96), 'anchor': 'left', 'draw': 'held.vm_torch',
+              'light': {'radius': 5.0, 'color': [1.0, 0.6, 0.25], 'intensity': 1.4}},
 }
 
-
 # the guns of the doomed mode are drawn with the pixel-art toolkit in doomed.py, held in the middle
-VIEWMODELS['pistol'] = {'size': (56, 66), 'anchor': 'center', 'draw': 'vm_pistol',
+VIEWMODELS['pistol'] = {'size': (56, 66), 'anchor': 'center', 'draw': 'doomed.vm_pistol',
                         'fire_light': {'radius': 3.5, 'color': [1.0, 0.72, 0.36], 'intensity': 1.6}}
-VIEWMODELS['shotgun'] = {'size': (84, 78), 'anchor': 'center', 'draw': 'vm_shotgun',
+VIEWMODELS['shotgun'] = {'size': (84, 78), 'anchor': 'center', 'draw': 'doomed.vm_shotgun',
                          'fire_light': {'radius': 4.5, 'color': [1.0, 0.72, 0.36], 'intensity': 2.0}}
 
 
@@ -212,9 +166,9 @@ def get_viewmodel(name, defs=None, fire=False):
     if v is None:
         raise KeyError(f"unknown viewmodel item '{name}'. Built-in: {', '.join(VIEWMODELS)}; "
                        f"define new ones under viewmodel_defs")
-    if 'draw' in v:
-        import doomed
-        rgba, em = getattr(doomed, v['draw'])(fire=bool(fire))
+    if 'draw' in v:                          # drawn by a function: 'module.function'
+        module, _, fn = v['draw'].rpartition('.')
+        rgba, em = getattr(importlib.import_module(module), fn)(fire=bool(fire))
         return rgba, em, v
     rgba, em = draw_ops(v['ops'], v['size'], v.get('outline', OUTLINE))
     return rgba, em, v

@@ -2050,17 +2050,66 @@ def dec_puddle(c='#1a2630', rim='#4a5a60', a=190):
     return _finish_soft(im, em, w, h)
 
 
-def dec_stain(c='#2e2418', a=150):
-    w = h = 32
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    rng = np.random.default_rng(11)
-    for i in range(14):
-        r = rng.random() * 7 + 3
-        cx, cy = rng.random() * 16 + 8, rng.random() * 16 + 8
-        d.ellipse([(cx - r) * S, (cy - r) * S, (cx + r) * S, (cy + r) * S],
-                  fill=col_hex(c, int(a * (0.4 + 0.6 * rng.random()))))
-    return _finish_soft(im, em, w, h)
+def _ragged(rng, cx, cy, r0, wobble, n=32, aspect=1.0):
+    """Distance from a ragged outline (negative inside) over an n x n grid, and the angle."""
+    yy, xx = np.mgrid[0:n, 0:n].astype(np.float32) + 0.5
+    th = np.arctan2(yy - cy, (xx - cx) / aspect)
+    r = np.hypot((xx - cx) / aspect, yy - cy)
+    edge = r0 + sum(rng.uniform(0.3, 1.0) * wobble * np.sin(k * th + rng.uniform(0, 6.3)) for k in (2, 3, 5, 8))
+    return r - edge, yy, xx
+
+
+def dec_stain(c='#2e2418', a=150, seed=11):
+    """A stain soaked into a surface and dried: a ragged edge, darker along its tide line where it dried
+    last, blotchy inside, a few drops round it and a run or two down from its foot (on a wall)."""
+    rng = np.random.default_rng(seed)
+    d, yy, xx = _ragged(rng, 16.0, 14.5, 9.0, 1.6, aspect=1.15)
+    mott = vnoise(32, 5, rng)
+    body = np.clip(-d / 2.5, 0, 1)                                # fades in over its last pixels
+    tide = np.clip(1 - np.abs(d + 0.6) / 1.4, 0, 1)              # the darker ring it dried to
+    alpha = body * (0.5 + 0.38 * mott) + tide * 0.55
+    for _ in range(5):                                            # drops round it
+        ang, dist = rng.uniform(0, 6.3), rng.uniform(11.5, 14.5)
+        px, py = 16 + np.cos(ang) * dist, 14.5 + np.sin(ang) * dist * 0.85
+        rr = rng.uniform(0.7, 1.4)
+        alpha = np.maximum(alpha, np.clip(1.2 - np.hypot(xx - px, yy - py) / rr, 0, 1) * 0.7)
+    for x0, length in ((rng.uniform(11, 14), rng.uniform(5, 8)), (rng.uniform(17, 21), rng.uniform(3, 6))):
+        y0 = 14.5 + 8.0                                           # from the foot of the stain
+        run = (np.abs(xx - x0 - 0.3 * np.sin(yy * 0.6)) < 0.85) & (yy > y0 - 2) & (yy < y0 + length)
+        fade = np.clip(1 - (yy - y0) / length, 0.15, 1)
+        alpha = np.where(run, np.maximum(alpha, 0.7 * fade), alpha)
+    rgba = np.zeros((32, 32, 4), np.float32)
+    shade = 1.0 - 0.35 * tide - 0.12 * (mott - 0.5)               # the tide line darker still
+    rgba[..., :3] = np.clip(col(c)[None, None, :] * shade[..., None], 0, 1)
+    rgba[..., 3] = np.clip(alpha, 0, 1) * a / 255
+    return rgba, np.zeros((32, 32), np.float32)
+
+
+
+
+def dec_moss_patch(c='#2c4a26', hi='#3e6a30', a=205, seed=13):
+    """A cushion of moss grown in clumps: each clump rounded, lit along its upper edge and dark under
+    it, finely speckled, with a few small tufts strayed round the patch."""
+    rng = np.random.default_rng(seed)
+    yy, xx = np.mgrid[0:32, 0:32].astype(np.float32) + 0.5
+    height = np.full((32, 32), -1.0, np.float32)
+    clumps = [(16 + rng.uniform(-6, 6), 16 + rng.uniform(-5, 5), rng.uniform(3.5, 6.0)) for _ in range(7)]
+    clumps += [(16 + np.cos(t) * rng.uniform(11, 13.5), 16 + np.sin(t) * rng.uniform(10, 13), rng.uniform(1.0, 1.8))
+               for t in rng.uniform(0, 6.3, 5)]
+    for cx, cy, r in clumps:
+        wob = 1 + 0.12 * np.sin(np.arctan2(yy - cy, xx - cx) * 5 + cx)
+        d = np.hypot(xx - cx, yy - cy) / (r * wob)
+        height = np.maximum(height, np.where(d < 1, np.sqrt(np.clip(1 - d * d, 0, 1)), -1.0))
+    m = height > 0
+    gy, gx = np.gradient(height)
+    lit = np.clip(0.55 - 1.4 * gy - 0.7 * gx, 0, 1)            # light from the upper left
+    speck = vnoise(32, 16, rng)
+    base, light = col(c), col(hi)
+    rgb = base[None, None, :] * (0.55 + 0.5 * lit[..., None]) + (light - base)[None, None, :] * (speck[..., None] > 0.62)
+    rgba = np.zeros((32, 32, 4), np.float32)
+    rgba[..., :3] = np.clip(rgb, 0, 1)
+    rgba[..., 3] = m * np.clip(0.55 + height, 0, 1) * a / 255
+    return rgba, np.zeros((32, 32), np.float32)
 
 
 def dec_splatter(c='#5a1012', a=225):
@@ -2094,20 +2143,6 @@ def dec_vines(c='#1e3a1e', leaf='#2e5a2a', a=255):
                 s = 1.6 + rng.random()
                 sx = x + (1.4 if y % 8 == 2 else -s)
                 d.ellipse([sx * S, (y - 0.4) * S, (sx + s) * S, (y + 1.4) * S], fill=col_hex(leaf, a))
-    return _finish_soft(im, em, w, h)
-
-
-def dec_moss_patch(c='#2c4a26', hi='#3e6a30', a=205):
-    w = h = 32
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    rng = np.random.default_rng(13)
-    for _ in range(40):
-        r = rng.random() * 4.5 + 1.5
-        cx, cy = rng.random() * 20 + 6, rng.random() * 20 + 6
-        fill = hi if rng.random() > 0.65 else c
-        d.ellipse([(cx - r) * S, (cy - r) * S, (cx + r) * S, (cy + r) * S],
-                  fill=col_hex(fill, int(a * (0.5 + 0.5 * rng.random()))))
     return _finish_soft(im, em, w, h)
 
 
@@ -2226,7 +2261,7 @@ DECALS = {
     'puddle_dark': lambda: dec_puddle('#0c1216', '#2a3a40', 215),
     'puddle_shine': lambda: dec_puddle('#6a7a88', '#c6d2de', 150),
     'stain': dec_stain,
-    'stain_rust': lambda: dec_stain('#6a3a18', 150),
+    'stain_rust': lambda: dec_stain('#6a3a18', 150, seed=12),
     'splatter': dec_splatter,
     'splatter_dark': lambda: dec_splatter('#24100f', 235),
     'vines': dec_vines,
