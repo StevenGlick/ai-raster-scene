@@ -1,0 +1,789 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "                                                            ",
+  "                                                            ",
+  "                                                            ",
+  "                                                  fffff     ",
+  "                                                 fffffff    ",
+  "                                                fffffffff   ",
+  "                                               fffffffffff  ",
+  "                                               fffffffffff  ",
+  "        fffff                                  fffffffffff  ",
+  "       fffffff                                 fffffffffff  ",
+  "      fffffffff                                fffffffffff  ",
+  "      fffffffff                                 fffffffff   ",
+  "      fffffffff                                  fffffff    ",
+  "      fffffffff                                   fffff     ",
+  "      fffffffff                                             ",
+  "       fffffff                                              ",
+  "        fffff                TTT                            ",
+  "                           TTTTTTT                          ",
+  "                          TTTTTTTTT                         ",
+  "                         TTTTTTTTTTT                        ",
+  "                         TTTTTTTTTTT                        ",
+  "                        TTTTTTTTTTTTT                       ",
+  "                        TTTTTTTTTTTTT                       ",
+  "                        TTTTTTTTTTTTT                       ",
+  "                         TTTTTTTTTTT                        ",
+  "                         TTTTTSTTTTT                        ",
+  "                          TTTTSTTTT                         ",
+  "                           TTTSTTT                          ",
+  "                             TST              ddddd         ",
+  "                                              ddddd         ",
+  "                                              ddddd         ",
+  "                                              ddddd         ",
+  "                                              ddddd         ",
+  "                                                            ",
+  "                                                            ",
+  "                                                            ",
+  "                                                            ",
+  "                                                            ",
+  "                                                            ",
+  "                                                            ",
+  "                                                            ",
+  "                            aaaaa                           ",
+  "                          aaaaaaaaa                         ",
+  "                         aaaaaaaaaaa                        ",
+  "                        aaaaaaaaaaaaa                       ",
+  "            ccc         aaaaaaaaaaaaa                       ",
+  "           ccccc       aaaaaaaaaaaaaaa                      ",
+  "          ccccccc      aaaaaaaaaaaaaaa                      ",
+  "          ccccccc======aaaaaaaaaaaaaaa                      ",
+  "          ccccccc      aaaaaaaaaaaaaaa                      ",
+  "           ccccc       aaaaaaaaaaaaaaa                      ",
+  "            ccc         aaaaaaaaaaaaa                       ",
+  "                        aaaaaaaaaaaaa        ccc            ",
+  "                         aaaaaaaaaaa        ccccc           ",
+  "                          aaaaaaaaa         ccccc           ",
+  "                            aaaaa           ccccc           ",
+  "                                             ccc            ",
+  "                                                            ",
+  "                                                            ",
+  "                                                            ",
+  "                                                            ",
+  "                                                            ",
+  "                                                            ",
+  "                                                            "
+ ],
+ "legend": {
+  " ": {
+   "floor": "void"
+  },
+  "a": {
+   "side": "island_rock",
+   "floor": "meadow",
+   "cliff": 2.6
+  },
+  "c": {
+   "side": "island_rock",
+   "floor": "meadow",
+   "cliff": 2.0
+  },
+  "f": {
+   "side": "island_rock",
+   "floor": "meadow",
+   "cliff": 2.4
+  },
+  "T": {
+   "side": "island_rock",
+   "wall": "island_rock",
+   "h": 1.4,
+   "top": "meadow",
+   "cliff": 3.0
+  },
+  "S": {
+   "side": "island_rock",
+   "wall": "island_rock",
+   "h": 1.4,
+   "top": "shallows",
+   "cliff": 3.0
+  },
+  "d": {
+   "side": "island_rock",
+   "wall": "island_rock",
+   "h": 1.2,
+   "top": "meadow",
+   "cliff": 2.0
+  },
+  "=": {
+   "floor": "planks",
+   "side": "planks",
+   "cliff": 0.12
+  }
+ },
+ "camera": {
+  "x": 30.6,
+  "y": 45.0,
+  "look_at": [
+   30.5,
+   24.0,
+   2.0
+  ],
+  "fov": 70
+ },
+ "title": "Sky islands - meadows adrift over the clouds",
+ "sky": "day",
+ "ambient": [
+  0.42,
+  0.44,
+  0.5
+ ],
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 250,
+   "elevation": 28,
+   "intensity": 0.9
+  }
+ ],
+ "fog": {
+  "color": [
+   0.74,
+   0.82,
+   0.92
+  ],
+  "density": 0.012
+ },
+ "sprites": [
+  {
+   "x": 32.902086784529345,
+   "y": 23.494976924149235,
+   "type": "column",
+   "z": 1.4,
+   "scale": 1.6
+  },
+  {
+   "x": 31.494976924149235,
+   "y": 24.902086784529345,
+   "type": "column",
+   "z": 1.4,
+   "scale": 1.6
+  },
+  {
+   "x": 29.505023075850765,
+   "y": 24.902086784529345,
+   "type": "column",
+   "z": 1.4,
+   "scale": 1.6
+  },
+  {
+   "x": 28.097913215470655,
+   "y": 23.494976924149235,
+   "type": "column",
+   "z": 1.4,
+   "scale": 1.6
+  },
+  {
+   "x": 28.097913215470655,
+   "y": 21.505023075850765,
+   "type": "column",
+   "z": 1.4,
+   "scale": 1.6
+  },
+  {
+   "x": 29.50502307585077,
+   "y": 20.097913215470655,
+   "type": "column",
+   "z": 1.4,
+   "scale": 1.6
+  },
+  {
+   "x": 31.494976924149235,
+   "y": 20.097913215470655,
+   "type": "column",
+   "z": 1.4,
+   "scale": 1.6
+  },
+  {
+   "x": 32.902086784529345,
+   "y": 21.50502307585077,
+   "type": "column",
+   "z": 1.4,
+   "scale": 1.6
+  },
+  {
+   "id": "statue",
+   "x": 30.5,
+   "y": 22.5,
+   "type": "statue",
+   "z": 1.4,
+   "scale": 1.4
+  },
+  {
+   "id": "falls",
+   "x": 30.5,
+   "y": 29.04,
+   "type": "waterfall",
+   "angle": 0,
+   "length": 1.1,
+   "z": -10.6,
+   "scale": 12.0
+  },
+  {
+   "x": 30.5,
+   "y": 48.5,
+   "type": "island_keel",
+   "scale": 12.0,
+   "z": -14.299999999999999,
+   "flip": true
+  },
+  {
+   "x": 30.5,
+   "y": 22.5,
+   "type": "island_keel",
+   "scale": 9.920000000000002,
+   "z": -12.620000000000001,
+   "flip": true
+  },
+  {
+   "x": 13.5,
+   "y": 48.5,
+   "type": "island_keel",
+   "scale": 5.760000000000001,
+   "z": -7.460000000000001,
+   "flip": false
+  },
+  {
+   "x": 48.5,
+   "y": 30.5,
+   "type": "island_keel",
+   "scale": 4.800000000000001,
+   "z": -6.500000000000001,
+   "flip": true
+  },
+  {
+   "x": 10.5,
+   "y": 12.5,
+   "type": "island_keel",
+   "scale": 7.2,
+   "z": -9.299999999999999,
+   "flip": false
+  },
+  {
+   "x": 52.5,
+   "y": 8.5,
+   "type": "island_keel",
+   "scale": 8.8,
+   "z": -10.9,
+   "flip": true
+  },
+  {
+   "x": 46.5,
+   "y": 54.5,
+   "type": "island_keel",
+   "scale": 4.16,
+   "z": -6.260000000000001,
+   "flip": true
+  },
+  {
+   "x": 36.31036574277203,
+   "y": 23.52452424823489,
+   "type": "island_roots",
+   "angle": 100.0,
+   "length": 2.2,
+   "z": -4.6,
+   "scale": 2.2
+  },
+  {
+   "x": 34.59848438570808,
+   "y": 26.744104821998043,
+   "type": "island_roots",
+   "angle": 136.0,
+   "length": 2.2,
+   "z": -4.6,
+   "scale": 2.2
+  },
+  {
+   "x": 31.321121295664387,
+   "y": 28.342581605575266,
+   "type": "island_roots",
+   "angle": 172.0,
+   "length": 2.2,
+   "z": -4.6,
+   "scale": 2.2
+  },
+  {
+   "x": 27.730117779563244,
+   "y": 27.70939079786767,
+   "type": "island_roots",
+   "angle": 208.0,
+   "length": 2.2,
+   "z": -4.6,
+   "scale": 2.2
+  },
+  {
+   "x": 25.197115126834916,
+   "y": 25.086389766055557,
+   "type": "island_roots",
+   "angle": 244.0,
+   "length": 2.2,
+   "z": -4.6,
+   "scale": 2.2
+  },
+  {
+   "x": 24.689634257227972,
+   "y": 21.47547575176511,
+   "type": "island_roots",
+   "angle": 280.0,
+   "length": 2.2,
+   "z": -4.6,
+   "scale": 2.2
+  },
+  {
+   "x": 26.401515614291917,
+   "y": 18.255895178001957,
+   "type": "island_roots",
+   "angle": 316.0,
+   "length": 2.2,
+   "z": -4.6,
+   "scale": 2.2
+  },
+  {
+   "x": 29.678878704335613,
+   "y": 16.657418394424734,
+   "type": "island_roots",
+   "angle": 352.0,
+   "length": 2.2,
+   "z": -4.6,
+   "scale": 2.2
+  },
+  {
+   "x": 33.269882220436756,
+   "y": 17.29060920213233,
+   "type": "island_roots",
+   "angle": 388.0,
+   "length": 2.2,
+   "z": -4.6,
+   "scale": 2.2
+  },
+  {
+   "x": 35.802884873165084,
+   "y": 19.91361023394444,
+   "type": "island_roots",
+   "angle": 424.0,
+   "length": 2.2,
+   "z": -4.6,
+   "scale": 2.2
+  },
+  {
+   "x": 37.5906158216879,
+   "y": 49.750266879201895,
+   "type": "island_roots",
+   "angle": 100.0,
+   "length": 2.2,
+   "z": -4.2,
+   "scale": 2.2
+  },
+  {
+   "x": 35.50154026730478,
+   "y": 53.67924656243829,
+   "type": "island_roots",
+   "angle": 136.0,
+   "length": 2.2,
+   "z": -4.2,
+   "scale": 2.2
+  },
+  {
+   "x": 31.50204632691247,
+   "y": 55.629930094939304,
+   "type": "island_roots",
+   "angle": 172.0,
+   "length": 2.2,
+   "z": -4.2,
+   "scale": 2.2
+  },
+  {
+   "x": 27.119804747941586,
+   "y": 54.85722266858427,
+   "type": "island_roots",
+   "angle": 208.0,
+   "length": 2.2,
+   "z": -4.2,
+   "scale": 2.2
+  },
+  {
+   "x": 24.028682866645998,
+   "y": 51.65627225688136,
+   "type": "island_roots",
+   "angle": 244.0,
+   "length": 2.2,
+   "z": -4.2,
+   "scale": 2.2
+  },
+  {
+   "x": 23.409384178312102,
+   "y": 47.2497331207981,
+   "type": "island_roots",
+   "angle": 280.0,
+   "length": 2.2,
+   "z": -4.2,
+   "scale": 2.2
+  },
+  {
+   "x": 25.49845973269522,
+   "y": 43.32075343756171,
+   "type": "island_roots",
+   "angle": 316.0,
+   "length": 2.2,
+   "z": -4.2,
+   "scale": 2.2
+  },
+  {
+   "x": 29.497953673087526,
+   "y": 41.370069905060696,
+   "type": "island_roots",
+   "angle": 352.0,
+   "length": 2.2,
+   "z": -4.2,
+   "scale": 2.2
+  },
+  {
+   "x": 33.880195252058414,
+   "y": 42.14277733141572,
+   "type": "island_roots",
+   "angle": 388.0,
+   "length": 2.2,
+   "z": -4.2,
+   "scale": 2.2
+  },
+  {
+   "x": 36.971317133354,
+   "y": 45.34372774311864,
+   "type": "island_roots",
+   "angle": 424.0,
+   "length": 2.2,
+   "z": -4.2,
+   "scale": 2.2
+  },
+  {
+   "x": 16.749865584940288,
+   "y": 49.07303898630087,
+   "type": "island_roots",
+   "angle": 100.0,
+   "length": 2.2,
+   "z": -3.6,
+   "scale": 2.2
+  },
+  {
+   "x": 15.79237262251469,
+   "y": 50.87382134111755,
+   "type": "island_roots",
+   "angle": 136.0,
+   "length": 2.2,
+   "z": -3.6,
+   "scale": 2.2
+  },
+  {
+   "x": 13.959271233168216,
+   "y": 51.767884626847184,
+   "type": "island_roots",
+   "angle": 172.0,
+   "length": 2.2,
+   "z": -3.6,
+   "scale": 2.2
+  },
+  {
+   "x": 11.95074384280656,
+   "y": 51.41372705643446,
+   "type": "island_roots",
+   "angle": 208.0,
+   "length": 2.2,
+   "z": -3.6,
+   "scale": 2.2
+  },
+  {
+   "x": 10.53397964721275,
+   "y": 49.94662478440396,
+   "type": "island_roots",
+   "angle": 244.0,
+   "length": 2.2,
+   "z": -3.6,
+   "scale": 2.2
+  },
+  {
+   "x": 10.250134415059714,
+   "y": 47.92696101369913,
+   "type": "island_roots",
+   "angle": 280.0,
+   "length": 2.2,
+   "z": -3.6,
+   "scale": 2.2
+  },
+  {
+   "x": 11.20762737748531,
+   "y": 46.12617865888245,
+   "type": "island_roots",
+   "angle": 316.0,
+   "length": 2.2,
+   "z": -3.6,
+   "scale": 2.2
+  },
+  {
+   "x": 13.040728766831784,
+   "y": 45.232115373152816,
+   "type": "island_roots",
+   "angle": 352.0,
+   "length": 2.2,
+   "z": -3.6,
+   "scale": 2.2
+  },
+  {
+   "x": 15.049256157193438,
+   "y": 45.58627294356554,
+   "type": "island_roots",
+   "angle": 388.0,
+   "length": 2.2,
+   "z": -3.6,
+   "scale": 2.2
+  },
+  {
+   "x": 16.46602035278725,
+   "y": 47.05337521559604,
+   "type": "island_roots",
+   "angle": 424.0,
+   "length": 2.2,
+   "z": -3.6,
+   "scale": 2.2
+  },
+  {
+   "x": 20.0,
+   "y": 47.96,
+   "type": "rope_rail",
+   "angle": 0,
+   "length": 6.0
+  },
+  {
+   "x": 20.0,
+   "y": 49.04,
+   "type": "rope_rail",
+   "angle": 0,
+   "length": 6.0
+  },
+  {
+   "x": 12.4,
+   "y": 47.2,
+   "type": "tree"
+  },
+  {
+   "x": 14.8,
+   "y": 49.6,
+   "type": "birch"
+  },
+  {
+   "x": 11.8,
+   "y": 50.2,
+   "type": "tree",
+   "flip": true
+  },
+  {
+   "x": 46.6,
+   "y": 54.2,
+   "type": "pine"
+  },
+  {
+   "x": 48.4,
+   "y": 30.4,
+   "type": "tree",
+   "z": 1.2
+  },
+  {
+   "x": 10.5,
+   "y": 12.0,
+   "type": "tree"
+  },
+  {
+   "x": 52.2,
+   "y": 8.6,
+   "type": "pine"
+  },
+  {
+   "x": 50.8,
+   "y": 7.2,
+   "type": "pine"
+  },
+  {
+   "x": 25.0,
+   "y": 51.0,
+   "type": "flowers"
+  },
+  {
+   "x": 27.6,
+   "y": 52.1,
+   "type": "flowers"
+  },
+  {
+   "x": 30.2,
+   "y": 53.2,
+   "type": "flowers"
+  },
+  {
+   "x": 32.8,
+   "y": 51.0,
+   "type": "flowers"
+  },
+  {
+   "x": 35.4,
+   "y": 52.1,
+   "type": "flowers"
+  },
+  {
+   "x": 22.0,
+   "y": 34.0,
+   "type": "floating_rock",
+   "z": 1.8,
+   "scale": 0.8
+  },
+  {
+   "x": 39.5,
+   "y": 37.0,
+   "type": "floating_rock",
+   "z": 3.2,
+   "scale": 1.1
+  },
+  {
+   "x": 19.0,
+   "y": 26.0,
+   "type": "floating_rock",
+   "z": 4.0,
+   "scale": 0.7
+  },
+  {
+   "x": 41.0,
+   "y": 18.0,
+   "type": "floating_rock",
+   "z": 1.0,
+   "scale": 1.4
+  },
+  {
+   "x": 36.5,
+   "y": 41.0,
+   "type": "floating_rock",
+   "z": -1.2,
+   "scale": 0.6
+  },
+  {
+   "x": 27.0,
+   "y": 33.0,
+   "type": "seagull",
+   "z": 2.6
+  },
+  {
+   "x": 34.5,
+   "y": 30.0,
+   "type": "seagull",
+   "z": 3.4
+  },
+  {
+   "x": 24.0,
+   "y": 28.0,
+   "type": "seagull",
+   "z": 3.9
+  },
+  {
+   "id": "explorer",
+   "x": 28.4,
+   "y": 41.6,
+   "type": "explorer",
+   "facing": 270
+  }
+ ],
+ "shots": [
+  {
+   "x": 30.9,
+   "y": 43.4,
+   "height": 0.62,
+   "look_at": [
+    30.5,
+    24.0,
+    0.2
+   ],
+   "fov": 72,
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "The sky islands",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 23.0,
+   "y": 48.5,
+   "look_at": [
+    13.0,
+    48.5,
+    0.6
+   ],
+   "fov": 72
+  },
+  {
+   "x": 27.6,
+   "y": 25.4,
+   "height": 1.9,
+   "look_at": [
+    13.0,
+    48.0,
+    0.0
+   ],
+   "fov": 72
+  },
+  {
+   "x": 13.0,
+   "y": 46.0,
+   "look_at": [
+    30.5,
+    30.0,
+    1.0
+   ],
+   "fov": 72,
+   "overrides": {
+    "sky": "golden",
+    "ambient": [
+     0.4,
+     0.36,
+     0.38
+    ],
+    "lights": [
+     {
+      "type": "sun",
+      "azimuth": 300,
+      "elevation": 9,
+      "intensity": 0.9,
+      "color": [
+       1.0,
+       0.78,
+       0.55
+      ]
+     }
+    ],
+    "fog": {
+     "color": [
+      0.94,
+      0.78,
+      0.62
+     ],
+     "density": 0.012
+    }
+   }
+  },
+  {
+   "x": 26.2,
+   "y": 41.4,
+   "height": 0.6,
+   "look_at": [
+    30.5,
+    29.0,
+    -2.6
+   ],
+   "fov": 66
+  }
+ ],
+ "contact_shadows": 0.4,
+ "supersample": 2
+}

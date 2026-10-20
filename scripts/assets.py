@@ -2711,6 +2711,18 @@ SPRITE_HEIGHT.update(saltflat.SPRITE_HEIGHT)
 PROP_DEFAULTS.update(saltflat.PROP_DEFAULTS)
 NO_CONTACT_SHADOW |= saltflat.NO_CONTACT_SHADOW
 
+# ---------------------------------------------------------------- skyisles
+# Sky islands: meadows adrift over a sea of cloud, layered rock under them, waterfalls, roots and
+# rope rails - in skyisles.py.
+import skyisles  # noqa: E402
+
+TEXTURES.update(skyisles.TEXTURES)
+TEXTURE_NOISE.update(skyisles.TEXTURE_NOISE)
+SPRITES.update(skyisles.SPRITES)
+SPRITE_HEIGHT.update(skyisles.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(skyisles.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= skyisles.NO_CONTACT_SHADOW
+
 _dcache = {}
 
 

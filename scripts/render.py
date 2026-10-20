@@ -121,6 +121,7 @@ class World:
         self.void = np.zeros((self.mh, self.mw), bool)           # no ground: the sky shows below
         self.glazed = np.zeros((self.mh, self.mw), bool)         # a roof the sun shines through
         self.side_tid = np.full((self.mh, self.mw), -1, np.int32)  # texture of a cell's sunken edge
+        self.cliff = np.full((self.mh, self.mw), VOID_DEPTH, np.float32)  # how deep its edge drops into a void
         self.tex = []
         self.tex_key = []    # the material name each texture id came from
         self.tex_noise = []  # its relative surface-noise multiplier
@@ -136,6 +137,8 @@ class World:
             row = row.ljust(self.mw)
             for x, ch in enumerate(row):
                 spec = legend.get(ch, default)
+                if 'cliff' in spec:
+                    self.cliff[y, x] = max(0.05, float(spec['cliff']))
                 if 'wall' in spec:
                     self.height[y, x] = float(spec.get('h', 1.0))
                     stack = spec['wall'] if isinstance(spec['wall'], list) else [spec['wall']]
@@ -1825,7 +1828,8 @@ class Renderer:
                 jag = 0.6 + 0.4 * (0.5 + 0.5 * math.sin(wallx * 5.3 + mx * 1.7 + my * 2.9)
                                    * math.cos(wallx * 2.2 - my * 0.7))
                 top = horizon + (camz + lvl) * proj / dist
-                bot = horizon + (camz + VOID_DEPTH * jag) * proj / dist
+                deep = float(w.cliff[my, mx])
+                bot = horizon + (camz + deep * jag) * proj / dist
                 y0, y1 = max(0, int(math.ceil(top - 0.5))), min(H, int(math.ceil(bot - 0.5)))
                 tid = w.side_tid[my, mx] if w.side_tid[my, mx] >= 0 else w.floor_tid[my, mx]
                 if y1 <= y0 or tid < 0:
@@ -1838,7 +1842,7 @@ class Renderer:
                 rgb, em = w.tex[tid]
                 u = min(T - 1, int((wallx - math.floor(wallx)) * T))
                 v = ((1 - (z % 1.0)) * T).astype(int).clip(0, T - 1)
-                alb = rgb[v, u] * (0.85 - 0.55 * np.clip(-z / VOID_DEPTH, 0, 1))[:, None]
+                alb = rgb[v, u] * (0.85 - 0.55 * np.clip(-z / deep, 0, 1))[:, None]
                 if side == 1:
                     alb = alb * 0.78
                 hx = px + rdx[c] * dist - rdx[c] / rlen[c] * 0.04
@@ -2578,7 +2582,7 @@ SCENE_KEYS = {
 SHOT_KEYS = {'x', 'y', 'angle', 'look_at', 'fov', 'height', 'pitch', 'flashlight', 'overlays', 'overrides',
              'post', 'scanlines', 'seed', 'supersample', 'extra_sprites', 'extra_wireframes', 'title',
              'description', 'notes'}
-CELL_KEYS = {'wall', 'h', 'top', 'floor', 'ceil', 'drop', 'reflect', 'side', 'fringe', 'facade', 'glazed'}
+CELL_KEYS = {'wall', 'h', 'top', 'floor', 'ceil', 'drop', 'reflect', 'side', 'fringe', 'facade', 'glazed', 'cliff'}
 ASSET_EXTS = ('.png', '.ttf', '.otf')
 
 
