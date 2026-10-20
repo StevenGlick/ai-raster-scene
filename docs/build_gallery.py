@@ -222,7 +222,7 @@ def scene(name):
 
 def build_shot(out, example, shot):
     sc, base = scene(example)
-    render.render_shot(sc, shot - 1, base).save(out)
+    render.save_png(render.render_shot(sc, shot - 1, base), out)
 
 
 def build_sheet(out, example, gutter=4):
@@ -236,7 +236,7 @@ def build_sheet(out, example, gutter=4):
     sheet = Image.new('RGB', (w * 2 + gutter, h * rows + gutter * (rows - 1)), (0, 0, 0))
     for k, f in enumerate(frames):
         sheet.paste(f, ((k % 2) * (w + gutter), (k // 2) * (h + gutter)))
-    sheet.save(out)
+    render.save_png(sheet, out)
 
 
 def build_map(out, example):
@@ -254,7 +254,7 @@ def build_cast(out, zoom=6, slot=112, top=20, bg=(28, 26, 34)):
         im = Image.fromarray((rgba.clip(0, 1) * 255).astype('uint8'), 'RGBA')
         im = im.resize((im.width * zoom, im.height * zoom), Image.NEAREST)
         sheet.paste(im, (i * slot + (slot - im.width) // 2, top + 32 * zoom - im.height), im)
-    sheet.save(out)
+    render.save_png(sheet, out)
 
 
 def build(name):
@@ -269,6 +269,7 @@ def build(name):
         build_cast(out)
     elif name == 'catalog':
         assets.catalog(out)
+        render.save_png(Image.open(out), out)
     return out
 
 
