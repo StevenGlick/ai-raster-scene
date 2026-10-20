@@ -991,14 +991,24 @@ def spr_column_drum():
     rng = np.random.default_rng(8)
     w, h = 72, 44
     cv = Canvas(w, h, wrap=False, ground=-9)
-    cv.stroke([(22, 26), (60, 22)], 34, z=0.0, dome=1.2, taper=(1.0, 0.96), mat=0, tone=-0.06)  # the body
+    cv.stroke([(22, 26), (60, 22)], 34, z=0.0, dome=1.2, taper=(1.0, 0.96), mat=0, tone=-0.1)   # the body
+    for k in range(-4, 5):                  # flutes running back along it
+        dy = k * 3.5
+        cv.stroke([(26, 26 + dy), (60, 22 + dy * 0.96)], 1.1, z=0, dome=0.55, mode='carve')
     end, cut = cv.layer(), cv.layer()
-    end.ellipse(20, 26, 14, 17, z=1.4, dome=0.5, mat=0, power=0.9)                             # the end face
+    end.ellipse(20, 26, 14, 17, z=1.6, dome=0.5, mat=0, power=0.9, tone=0.1)                   # the end face, lit
     for k in range(20):                     # flutes scallop the rim
         a = 2 * np.pi * k / 20
-        cut.ellipse(20 + np.cos(a) * 14.5, 26 + np.sin(a) * 17.5, 1.5, 1.8)
-    end.ellipse(20, 26, 3, 3.5, dome=0.4, mode='carve')                                        # the dowel hole
+        cut.ellipse(20 + np.cos(a) * 14.5, 26 + np.sin(a) * 17.5, 1.7, 2.0)
+    end.ellipse(20, 26, 3, 3.5, dome=0.5, mode='carve')                                        # the dowel hole
+    a = np.linspace(0, 2 * np.pi, 48)
+    end.stroke(list(zip(20 + np.cos(a) * 11.5, 26 + np.sin(a) * 14)), 0.9, z=0, dome=0.3, mode='carve')  # a worn ring
     cv.paste(end, cut)
+    rim = np.zeros(cv.id.shape, bool)       # the body darkens where the face stands proud of it
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32) + 0.5
+    d = ((xx - 20) / 15.5) ** 2 + ((yy - 26) / 18.5) ** 2
+    rim[(d >= 1.0) & (d < 1.5) & (xx > 20)] = True
+    cv.tone[rim & (cv.id > 0)] -= 0.12
     _ruin_finish(cv, rng, lichen=5)
     return _prop(cv, [MARBLE, OCHRE], relief=1.2, cavity=0.45, shadow=0.5, dither=0.2)
 

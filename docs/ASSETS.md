@@ -22,7 +22,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
 | Textures | 158 | 155 | 3 | 0 | 0 |
-| Props | 254 | 253 | 1 | 0 | 0 |
+| Props | 254 | 254 | 0 | 0 | 0 |
 | Characters | 29 | 28 | 1 | 0 | 0 |
 | Decals | 25 | 20 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
@@ -39,7 +39,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 53 | 53 | 0 | 0 | 0 |
-| **all** | **668** | **650** | **18** | **0** | **0** |
+| **all** | **668** | **651** | **17** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -506,7 +506,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
 | `broken_column` | good | 1 tall | ancient_ruins, cathedral_ruin |  |
-| `column_drum` | polish | 0.42 tall | ancient_ruins, cathedral_ruin | The fluted end face could stand out more from the body. |
+| `column_drum` | good | 0.42 tall | ancient_ruins, cathedral_ruin | Flutes now run back along the drum, so it reads as a column; the end face is lit and stands proud of the body on a shadowed rim, scalloped by the flutes, a worn ring and the dowel hole. |
 | `marble_head` | good | 1.1 tall | ancient_ruins |  |
 | `amphora` | good | 0.36 tall | ancient_ruins |  |
 | `cow_skull` | good | 0.2 tall | ghost_town, red_canyon | Drawn with the toolkit in desert.py: a bleached longhorn skull: dark sockets and nose, horns curving out and up. |
@@ -983,6 +983,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the column drum.** Flutes along its length, a lit end face on a shadowed rim; the ruins' and the cathedral's images rebuilt. Rated good.
 - **2026-10-19, the goat.** Redrawn with the toolkit in basics.py (it overrides the old grid), short-legged and piebald; the ancient ruins' images rebuilt. Rated good.
 - **2026-10-19, the sleepwalker's eyes.** `dreamer`: closed eyes; the galleries she appears in are rebuilt. Rated good.
 - **2026-10-19, the capsule hotel.** bar.py: `capsules` and `capsules_lit`. `examples/capsule_hotel.py`: a corridor one cell wide between walls of berths, with four gallery shots.
