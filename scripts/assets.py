@@ -2686,6 +2686,19 @@ PROP_DEFAULTS.update(doomed.PROP_DEFAULTS)
 NO_CONTACT_SHADOW |= doomed.NO_CONTACT_SHADOW
 DECALS.update(doomed.DECALS)
 
+# ---------------------------------------------------------------- vector world
+# A world drawn in lines of light on black: grid walls and floors, circuits, towers of window
+# outlines, data; a figure traced in light, light trails and beams, glints - in vector.py. The
+# shapes are wireframes (wires.py) and the sky is `vector`.
+import vector  # noqa: E402
+
+TEXTURES.update(vector.TEXTURES)
+TEXTURE_NOISE.update(vector.TEXTURE_NOISE)
+SPRITES.update(vector.SPRITES)
+SPRITE_HEIGHT.update(vector.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(vector.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= vector.NO_CONTACT_SHADOW
+
 _dcache = {}
 
 
@@ -2851,9 +2864,11 @@ def draw_skyline(sky, spec, proj, seed=0):
     return sky
 
 
-def draw_disc(sky, az_deg, el_deg, proj, colour, radius_deg=2.2, glow=0.35, hrow=None):
+def draw_disc(sky, az_deg, el_deg, proj, colour, radius_deg=2.2, glow=0.35, hrow=None, style=None):
     """A sun or moon at an azimuth/elevation, with a soft additive halo. Wraps around 360.
-    `hrow` is the panorama row of the horizon (the last row, unless the sky continues below)."""
+    `hrow` is the panorama row of the horizon (the last row, unless the sky continues below).
+    `style` "stripes" draws a synthwave sun: yellow at the top through orange to pink, its lower
+    half cut by gaps that widen toward the bottom (`colour` then tints only its halo)."""
     h, w = sky.shape[:2]
     hrow = h - 1 if hrow is None else hrow
     cx = (az_deg % 360) / 360.0 * w
@@ -2866,6 +2881,18 @@ def draw_disc(sky, az_deg, el_deg, proj, colour, radius_deg=2.2, glow=0.35, hrow
     halo = np.clip(1 - d / (r * 4.5), 0, 1) ** 2 * glow
     sky += halo[..., None] * c[None, None, :]
     disc = d <= r
+    if style == 'stripes':
+        rows = np.arange(h, dtype=np.float32)
+        rel = np.clip((rows - (cy - r)) / (2 * r), 0, 1)
+        top, mid, bot = (np.array(x, np.float32) for x in ([1.0, 0.95, 0.45], [1.0, 0.55, 0.28], [1.0, 0.2, 0.62]))
+        up = (rel < 0.5)[:, None]
+        grad = np.where(up, top + (mid - top) * (rel / 0.5)[:, None], mid + (bot - mid) * ((rel - 0.5) / 0.5)[:, None])
+        period = max(3.0, r * 0.2)
+        f = np.clip((rel - 0.42) / 0.58, 0, 1)
+        cut = (rel > 0.42) & (((rows - cy) % period) / period < 0.14 + 0.46 * f)
+        disc = disc & ~cut[:, None]
+        sky[disc] = np.broadcast_to(grad[:, None, :], sky.shape)[disc]
+        return sky
     sky[disc] = c * (0.92 + 0.08 * np.clip(1 - d[disc] / r, 0, 1))[:, None]
     return sky
 
@@ -3047,18 +3074,20 @@ SKY_PRESETS = {
     'dream': ('#6a86d6', '#d6a2cc', '#ffdcae'),
     'sunset': ('#2a2c5a', '#c8607a', '#ffb860'),
     'golden': ('#3a6aa8', '#a0bcd2', '#f2d8a0'),
+    'vector': ('#020108', '#0c0522', '#3c1046'),       # black to violet, a magenta glow at the horizon
 }
 _CLOUD_COVER = {'night': 0.62, 'dusk': 0.55, 'storm': 0.42, 'day': 0.6, 'overcast': 0.3, 'blood': 0.55,
-                'alien': 0.5, 'dream': 0.5, 'sunset': 0.56, 'golden': 0.64}
+                'alien': 0.5, 'dream': 0.5, 'sunset': 0.56, 'golden': 0.64, 'vector': 9.0}
 _CLOUD_COLOUR = {'night': '#2a3245', 'dusk': '#5a3a4a', 'storm': '#1c2028', 'day': '#e8eef4',
                  'overcast': '#6a7078', 'blood': '#2a0a0c', 'alien': '#7a3a6a', 'dream': '#fff2f6',
-                 'sunset': '#e8806a', 'golden': '#fff0d8'}
+                 'sunset': '#e8806a', 'golden': '#fff0d8', 'vector': '#100820'}
 # the sea of cloud seen from above, under a void floor: sunlit tops, shadowed hollows
 _CLOUD_SEA = {'night': ('#4a5672', '#121828'), 'dusk': ('#d89880', '#3a2c48'),
               'storm': ('#3e4652', '#141820'), 'day': ('#f2f5fa', '#9aaccc'),
               'overcast': ('#a0a6ae', '#5a6068'), 'blood': ('#7a2a1e', '#1e0608'),
               'alien': ('#9ae0c0', '#2a3a5a'), 'dream': ('#fff6fa', '#c0a0d8'),
-              'sunset': ('#ffc890', '#5a3a6a'), 'golden': ('#fff0d8', '#a89aa8')}
+              'sunset': ('#ffc890', '#5a3a6a'), 'golden': ('#fff0d8', '#a89aa8'),
+              'vector': ('#3a1a5a', '#0a0418')}
 
 
 def _wrapnoise(w, h, cx, cy, rng):
@@ -3170,7 +3199,7 @@ def make_sky(preset, w, h, seed=3, skyline=None, proj=None, discs=(), objects=()
         cn /= 1.75
         mask = np.clip((cn - _CLOUD_COVER[preset]) * 4, 0, 1) * (t < 0.85)
         sky = sky * (1 - mask[..., None] * 0.85) + col(_CLOUD_COLOUR[preset]) * mask[..., None] * 0.85
-        if preset in ('night', 'storm', 'blood', 'dusk', 'alien'):
+        if preset in ('night', 'storm', 'blood', 'dusk', 'alien', 'vector'):
             stars = (rng.random((h, w)) > 0.997) & (t[:, 0][:, None] < 0.6) & (mask < 0.2)
             sky[stars] = col('#c8c8d0') * (0.5 if preset != 'night' else 1)
         if preset in ('night', 'blood') and not discs and not objects:
@@ -3185,7 +3214,7 @@ def make_sky(preset, w, h, seed=3, skyline=None, proj=None, discs=(), objects=()
         draw_sky_object(sky, o, proj, h - 1, seed + i)
     for d in discs:
         draw_disc(sky, d['azimuth'], d['elevation'], proj, d['color'], d.get('radius', 2.2),
-                  d.get('glow', 0.35), h - 1)
+                  d.get('glow', 0.35), h - 1, d.get('style'))
     if skyline:
         draw_skyline(sky[:h], skyline, proj, seed)
     return np.clip(sky, 0, 1).astype(np.float32)

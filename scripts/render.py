@@ -30,6 +30,7 @@ import icons  # noqa: E402
 import post  # noqa: E402
 import prefabs  # noqa: E402
 import buildings  # noqa: E402
+import wires  # noqa: E402
 
 T = assets.T
 
@@ -37,9 +38,12 @@ T = assets.T
 # ------------------------------------------------------------------ cameras
 
 def find_sprite(scene, sid, cam=None):
-    """The sprite with this `id`, from the scene (its prefabs included) or the shot's extra_sprites."""
+    """The sprite with this `id`, from the scene (its prefabs included) or the shot's extra_sprites -
+    or the wireframe with it."""
     scene = prefabs.expand(scene)
-    for sp in list(scene.get('sprites', [])) + list((cam or {}).get('extra_sprites', [])):
+    cam = cam or {}
+    for sp in (list(scene.get('sprites', [])) + list(cam.get('extra_sprites', []))
+               + list(scene.get('wireframes', [])) + list(cam.get('extra_wireframes', []))):
         if sp.get('id') == sid:
             return sp
     return None
@@ -896,7 +900,8 @@ def build_sun(world, L, res=4):
     disc = None
     if L.get('disc', True):
         disc = {'azimuth': math.degrees(az), 'elevation': math.degrees(el),
-                'color': L.get('disc_color', disc_c), 'radius': float(L.get('disc_size', disc_r)), 'glow': glow}
+                'color': L.get('disc_color', disc_c), 'radius': float(L.get('disc_size', disc_r)), 'glow': glow,
+                'style': L.get('disc_style')}
     return {'ux': ux, 'uy': uy, 'sin': math.sin(el), 'cos': math.cos(el), 'rgb': rgb, 'zlit': zlit,
             'zroof': zroof, 'zsky': zsky, 'ceil_h': world.ceil_h, 'res': res, 'disc': disc, 'kind': kind}
 
@@ -1337,7 +1342,7 @@ class Renderer:
         measured the way the depth buffer measures, or None when it looks nowhere in particular."""
         look = cam.get('look_at')
         if isinstance(look, str):
-            sp = next((q for q in self.s.get('sprites', []) if q.get('id') == look), None)
+            sp = find_sprite(self.s, look, cam)
             look = None if sp is None else [sp['x'], sp['y']]
         if not isinstance(look, (list, tuple)) or len(look) < 2:
             return None
@@ -1961,11 +1966,16 @@ class Renderer:
         trans = sorted([p for p in placed if translucent(p[2])], key=lambda s: -s[0])
         self._named = {}
         rays = (rdx, rdy, rlen)
-        for ty, tx, sp in opaque + trans:
+        wired = list(self.s.get('wireframes', [])) + list(cam.get('extra_wireframes', []))
+        for k, (ty, tx, sp) in enumerate(opaque + trans):
+            if k == len(opaque) and wired:
+                self._wire_pass(img, depth, wired, px, py, dx, dy, camz, horizon, proj, rlen)
             if int(sp.get('planes', 0)) > 0:
                 self._draw_planes(img, depth, ty, tx, sp, defs, horizon, proj, camz, flash, translucent(sp), rays)
             else:
                 self._draw_sprite(img, depth, ty, tx, sp, defs, horizon, proj, camz, pl, flash, translucent(sp))
+        if wired and not trans:
+            self._wire_pass(img, depth, wired, px, py, dx, dy, camz, horizon, proj, rlen)
         self.sprite_stats = {}
         for sid, n in self._named.items():
             vis, lum = 0.0, 0.0
@@ -1988,6 +1998,13 @@ class Renderer:
         self.rays = {'px': px, 'py': py, 'rdx': rdx, 'rdy': rdy, 'rlen': rlen, 'horizon': horizon,
                      'proj': proj, 'camz': camz}
         return np.clip(img, 0, 1)
+
+    def _wire_pass(self, img, depth, wired, px, py, dx, dy, camz, horizon, proj, rlen):
+        """The scene's wireframes (scripts/wires.py), drawn after the opaque sprites so that what is
+        nearer hides them, and before the translucent ones, glass and reflections."""
+        view = wires.View(px, py, dx, dy, camz, horizon, proj, self.W, self.H, rlen)
+        wires.draw(img, depth, self._emis, view, wired, ss=self._ss,
+                   fog_c=self.fog_c if self.vol is None else None, fog_d=self.fog_d, anchors=self.anchors)
 
     def _reflect(self, img, depth, refl, refl_depth):
         """Mirror the frame into reflective floor pixels, column by column.
@@ -2504,6 +2521,11 @@ def draw_map(world, scene, cams, path, cell=24):
         planes(sp, (80, 200, 120))
         sx, sy = sp['x'] * cell, sp['y'] * cell
         d.rectangle([sx - 2, sy - 2, sx + 2, sy + 2], fill=(80, 200, 120))
+    for spec in scene.get('wireframes', []):
+        v, e, _ = wires.build(spec)
+        col = tuple(int(min(1, x) * 255) for x in spec.get('color', wires.DEFAULT_COLOR))
+        for a, b in e:
+            d.line([v[a, 0] * cell, v[a, 1] * cell, v[b, 0] * cell, v[b, 1] * cell], fill=col)
     for i, c in enumerate(cams):
         cx, cy = c['x'] * cell, c['y'] * cell
         a = math.radians(c.get('angle', 0))
@@ -2528,11 +2550,12 @@ SCENE_KEYS = {
     'palette', 'auto_levels', 'dither', 'scanlines', 'overbright', 'lightmap_res', 'max_distance',
     'supersample', 'overlays', 'ui', 'post', 'icon_defs', 'viewmodel_defs', 'seed',
     'skyline', 'contact_shadows', 'heights', 'height_unit', 'reflections', 'sky_objects', 'wet',
-    'prefabs', 'prefab_defs',
+    'prefabs', 'prefab_defs', 'wireframes',
     'title', 'description', 'notes',  # free-form metadata, never read
 }
 SHOT_KEYS = {'x', 'y', 'angle', 'look_at', 'fov', 'height', 'pitch', 'flashlight', 'overlays', 'overrides',
-             'post', 'scanlines', 'seed', 'supersample', 'extra_sprites', 'title', 'description', 'notes'}
+             'post', 'scanlines', 'seed', 'supersample', 'extra_sprites', 'extra_wireframes', 'title',
+             'description', 'notes'}
 CELL_KEYS = {'wall', 'h', 'top', 'floor', 'ceil', 'drop', 'reflect', 'side', 'fringe', 'facade', 'glazed'}
 ASSET_EXTS = ('.png', '.ttf', '.otf')
 
@@ -2561,6 +2584,11 @@ def lint_scene(scene):
         check(spec, CELL_KEYS, f'legend {ch!r}')
     for i, pl in enumerate(scene.get('prefabs') or []):
         check(pl, prefabs.PLACEMENT_KEYS, f'prefab {i + 1}')
+    for i, wf in enumerate(scene.get('wireframes') or []):
+        check(wf, wires.SPEC_KEYS, f'wireframe {i + 1}')
+    for i, shot in enumerate(scene.get('shots') or []):
+        for j, wf in enumerate((shot.get('extra_wireframes') or []) if isinstance(shot, dict) else []):
+            check(wf, wires.SPEC_KEYS, f'shot {i + 1} wireframe {j + 1}')
     return out
 
 

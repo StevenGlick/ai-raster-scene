@@ -1048,6 +1048,86 @@ def check_light_and_lens():
     print('ok light falloff by height and on roofs, palette under depth of field, streaks, flare, glowing particles')
 
 
+def check_wireframes():
+    """Wireframes are drawn in true 3D: lines where the mesh is, hidden behind a wall and behind a
+    solid mesh, found by look_at; every built-in mesh is sound; Vector World's textures glow and
+    its striped sun has gaps."""
+    sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+    import assets
+    import render as R
+    import vector
+    import wires
+
+    # 1. every built-in mesh: finite, about a unit across, standing on z 0, its edges and faces valid
+    for name in wires.MESHES:
+        v, e, f = wires.build({'mesh': name})
+        assert np.isfinite(v).all() and len(e), name
+        assert 0.5 <= float(np.ptp(v, axis=0).max()) <= 1.6, (name, np.ptp(v, axis=0))
+        assert abs(float(v[:, 2].min())) < 1e-6, (name, v[:, 2].min())
+        assert e.min() >= 0 and e.max() < len(v) and all(0 <= i < len(v) for face in f for i in face), name
+    v, e, _ = wires.build({'mesh': {'vertices': [[0, 0, 0], [1, 0, 0], [0, 1, 0]], 'faces': [[0, 1, 2]]},
+                           'x': 5.0, 'y': 2.0, 'angle': 90})
+    assert len(e) == 3 and abs(v[:, 0].min() - 5.0) < 1e-9, 'an inline mesh, turned round its middle and placed'
+    try:
+        wires.build({'mesh': 'teapot'})
+        raise AssertionError('an unknown mesh must be refused')
+    except KeyError:
+        pass
+
+    # 2. a cube in front of the camera draws thin lines of light; behind a wall it is hidden
+    room = {'map': ['#' * 12] + ['#' + '.' * 10 + '#'] * 10 + ['#' * 12], 'sky': None, 'ambient': [0.0] * 3,
+            'legend': {'#': {'wall': 'brick', 'h': 1.0}, '.': {'floor': 'obsidian', 'reflect': 0}},
+            'surface_noise': 0, 'light_levels': 0, 'camera': {'x': 6.0, 'y': 9.5, 'angle': 270, 'fov': 60}}
+    cube = {'id': 'box', 'mesh': 'cube', 'x': 6.0, 'y': 5.0, 'size': 1.5, 'angle': 30, 'color': [0.0, 1.0, 0.0]}
+
+    def frame(scene):
+        r = R.Renderer(R.World(scene), scene)
+        return r, r.render(R.prepare_shot(scene, R.merge_camera(scene, scene['camera'])))
+    _, bare = frame(room)
+    r, lit = frame(dict(room, wireframes=[cube]))
+    lines = (lit - bare)[..., 1] > 0.3
+    assert 60 < lines.sum() < 3000, lines.sum()
+    assert (lit - bare)[..., 0].max() < 0.05, 'only the green lines were added'
+    assert 'box' in r.anchors and r.anchors['box']['visible']
+    walled = dict(room, map=room['map'][:7] + ['#' * 12] + room['map'][8:])
+    _, a = frame(walled)
+    _, b = frame(dict(walled, wireframes=[cube]))
+    assert np.abs(a - b).max() < 1e-6, 'a wall hides a wireframe behind it'
+
+    # 3. a solid mesh hides what is behind it - another mesh, and its own far edges
+    far = dict(cube, id='far', y=3.5, color=[1.0, 0.0, 0.0], size=1.2)
+    _, only = frame(dict(room, wireframes=[far]))
+    near = dict(cube, solid=True, size=2.2, y=6.0, color=[0.0, 0.0, 1.0])
+    _, both = frame(dict(room, wireframes=[far, near]))
+    red = (only[..., 0] > 0.3) & (only[..., 1] < 0.1)
+    assert red.any() and (both[..., 0][red] > 0.3).mean() < 0.5, 'the solid cube covers most of the far one'
+    _, wire = frame(dict(room, wireframes=[dict(near, solid=False)]))
+    _, solid = frame(dict(room, wireframes=[near]))
+    assert ((solid[..., 2] > 0.3).sum()) < 0.85 * ((wire[..., 2] > 0.3).sum()), 'a solid mesh hides its far edges'
+
+    # 4. look_at finds a wireframe by its id
+    cam = R.resolve_camera(dict(room, wireframes=[cube]), {'x': 2.0, 'y': 9.0, 'look_at': 'box'})
+    assert abs(cam['angle'] - math.degrees(math.atan2(5.0 - 9.0, 6.0 - 2.0)) % 360) < 1e-6
+
+    # 5. Vector World: its textures are black ruled in light, and its striped sun has gaps below
+    for name in vector.TEXTURES:
+        rgb, em = assets.get_texture(name)
+        assert em is not None and em.max() > 0.9 and float(np.median(rgb)) < 0.05, name
+    sun = {'azimuth': 90.0, 'elevation': 10.0, 'color': [1, 0.3, 0.6], 'radius': 8.0, 'glow': 0.0}
+    plain = assets.make_sky('vector', 720, 200, proj=160, discs=[sun])
+    stripes = assets.make_sky('vector', 720, 200, proj=160, discs=[dict(sun, style='stripes')])
+    col = 180
+    cy = 199 - 160 * math.tan(math.radians(10))
+    r_ = 160 * math.tan(math.radians(8))
+    rows = np.arange(int(cy + 0.5 * r_), min(199, int(cy + 0.95 * r_)))
+    lum = lambda im: im[rows, col].sum(-1)   # noqa: E731
+    assert lum(plain).min() > 1.5 and lum(stripes).min() < 1.0, 'the striped sun is cut by gaps'
+    top = int(cy - 0.85 * r_)
+    assert stripes[top, col, 1] > 0.8 and stripes[int(cy + 0.4 * r_), col, 1] < stripes[top, col, 1] - 0.2, \
+        'yellow at the top, pinker toward the foot'
+    print(f'ok wireframes ({len(wires.MESHES)} meshes, depth, solid fill, look_at), Vector World textures and sun')
+
+
 def check_docs():
     """The docs name assets, keys and counts by hand: fail as soon as they and the code disagree."""
     sys.path.insert(0, os.path.join(ROOT, 'scripts'))
@@ -1060,6 +1140,7 @@ def check_docs():
     import post
     import prefabs
     import render as R
+    import wires
     from characters import CHARACTERS
 
     def read(*parts):
@@ -1082,6 +1163,7 @@ def check_docs():
 
     need('reference/Sprites', section(ref, '## Sprites'), list(assets.SPRITES) + list(CHARACTERS))
     need('reference/Decals', section(ref, '## Decals'), assets.DECALS)
+    need('reference/Wireframes', section(ref, '## Wireframes'), wires.MESHES)
     need('reference/GUI', section(ref, '## GUI'),
          list(icons.ICONS) + list(icons.VIEWMODELS) + list(gui.THEMES) + list(gui.WIDGETS))
     need('reference/Post-processing', section(ref, '## Post-processing'),
@@ -1160,6 +1242,7 @@ def main():
         check_planes_prefabs()
         check_glass_facades()
         check_light_and_lens()
+        check_wireframes()
         check_docs()
         gs = os.path.join(tmp, 'gui_post.json')
         with open(gs, 'w') as f:
