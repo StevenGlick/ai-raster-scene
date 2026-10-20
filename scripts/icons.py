@@ -199,11 +199,22 @@ VIEWMODELS = {
 }
 
 
-def get_viewmodel(name, defs=None):
+# the guns of the doomed mode are drawn with the pixel-art toolkit in doomed.py, held in the middle
+VIEWMODELS['pistol'] = {'size': (56, 66), 'anchor': 'center', 'draw': 'vm_pistol',
+                        'fire_light': {'radius': 3.5, 'color': [1.0, 0.72, 0.36], 'intensity': 1.6}}
+VIEWMODELS['shotgun'] = {'size': (84, 78), 'anchor': 'center', 'draw': 'vm_shotgun',
+                         'fire_light': {'radius': 4.5, 'color': [1.0, 0.72, 0.36], 'intensity': 2.0}}
+
+
+def get_viewmodel(name, defs=None, fire=False):
     defs = defs or {}
     v = defs.get(name) or VIEWMODELS.get(name)
     if v is None:
         raise KeyError(f"unknown viewmodel item '{name}'. Built-in: {', '.join(VIEWMODELS)}; "
                        f"define new ones under viewmodel_defs")
+    if 'draw' in v:
+        import doomed
+        rgba, em = getattr(doomed, v['draw'])(fire=bool(fire))
+        return rgba, em, v
     rgba, em = draw_ops(v['ops'], v['size'], v.get('outline', OUTLINE))
     return rgba, em, v

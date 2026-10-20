@@ -21,10 +21,10 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 158 | 155 | 3 | 0 | 0 |
-| Props | 254 | 254 | 0 | 0 | 0 |
+| Textures | 165 | 162 | 3 | 0 | 0 |
+| Props | 260 | 260 | 0 | 0 | 0 |
 | Characters | 29 | 29 | 0 | 0 | 0 |
-| Decals | 25 | 20 | 5 | 0 | 0 |
+| Decals | 26 | 21 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
 | Skylines | 6 | 5 | 1 | 0 | 0 |
 | Sky objects | 7 | 7 | 0 | 0 | 0 |
@@ -32,14 +32,14 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 6 | 6 | 0 | 0 | 0 |
 | Facade styles | 6 | 5 | 1 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Held items | 6 | 0 | 6 | 0 | 0 |
+| Held items | 8 | 2 | 6 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
-| GUI themes | 5 | 5 | 0 | 0 | 0 |
-| GUI widgets | 16 | 16 | 0 | 0 | 0 |
+| GUI themes | 6 | 6 | 0 | 0 | 0 |
+| GUI widgets | 18 | 18 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 53 | 53 | 0 | 0 | 0 |
-| **all** | **668** | **652** | **16** | **0** | **0** |
+| Example scenes | 54 | 54 | 0 | 0 | 0 |
+| **all** | **688** | **672** | **16** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -53,7 +53,7 @@ Weakest first, and in the order the new scenes need them.
 5. **Small things.** The hands on the held items, the `stain`, `stain_rust` and `moss_patch` decals, the `child` and `dreamer` characters, the `city` skyline, `alien_rock`, `alien_ground`, and the `glowshroom` and `alien_egg` props.
 6. **Second look.** Every asset marked good, checked again on the review sheets and in its scenes, with fresh eyes and the new techniques in hand.
 
-## Textures (158)
+## Textures (165)
 
 64x64 tiles, drawn in code. "glows" means the texture lights itself (windows, screens, runes), "see-through" that the map shows through its holes, "mirror" that floors made of it reflect.
 
@@ -79,7 +79,7 @@ Weakest first, and in the order the new scenes need them.
 | `concrete` | good |  | aquarium, bunker_lab, capsule_hotel, garden_encounter, gui_lantern, gui_menus, hospital_garden, neon_bar, neon_rooftop, post_presets, sewer_tunnels, tunnel_encounter, underground_waterway |  |
 | `marble` | good |  | cathedral_ruin, chapel_graveyard, dream_chess, dream_world, gui_themes, gui_trade, library_medium, mansion_library |  |
 | `marble_dark` | good |  | aquarium | Redrawn with the toolkit in basics.py: dark slabs with long, thin, continuous veins of white and grey drifting across them. |
-| `rock` | good |  | castle_keep, coast_lighthouse, crystal_cave, garden_encounter, gui_lantern, gui_menus, hospital_garden, kelp_forest, moon_base, post_presets, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: masses of every size, each a facet tilted to the light, split by crevices that wander, widen and close; finer cracks, grain. |
+| `rock` | good |  | castle_keep, coast_lighthouse, crystal_cave, doomed, garden_encounter, gui_lantern, gui_menus, hospital_garden, kelp_forest, moon_base, post_presets, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: masses of every size, each a facet tilted to the light, split by crevices that wander, widen and close; finer cracks, grain. |
 | `rock_wet` | good |  | crystal_cave, gui_lantern, kelp_forest, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: the same rock darker and blue-grey, with glints of water where the faces catch the light. |
 | `snow_rock` | good |  | winter_lake | Redrawn with the toolkit in basics.py: faceted rock with snow lying on the top of every mass, thick on the flats, and drifted in the crevices. |
 | `sky_wall` | good |  | dream_chess, dream_world, hall_of_doors |  |
@@ -121,6 +121,11 @@ Weakest first, and in the order the new scenes need them.
 | `grate` | good |  | bunker_lab, derelict_ship, orbital_hangar |  |
 | `grid_floor` | good | glows, mirror 0.3 | - |  |
 | `hex_panel` | good |  | alien_world |  |
+| `hex_floor` | good |  | doomed | Drawn in doomed.py: brown hexagonal tiles, each its own shade, worn at the edges, dark grout. |
+| `green_tech` | good |  | - | Drawn in doomed.py: green plating in vertical strakes of different shades, panel seams, grime running down. |
+| `green_trim` | good |  | doomed | Drawn in doomed.py: the green plating under a band of brown metal with a row of pale teeth; stack it storey on storey. |
+| `tech_ceiling` | good |  | doomed | Drawn in doomed.py: grey-brown ceiling tiles in a grid, each a shade of its own. |
+| `slime_edge` | good |  | doomed | Drawn in doomed.py: brown metal plates stained green toward the bottom: the side of a slime pit. |
 | `hangar_floor` | good |  | orbital_hangar | Drawn with the toolkit in scifi.py: heavy plates four to a unit, corner bolts, tread, a tie-down ring at each crossing, wear and oil. |
 | `conduit` | good | glows | orbital_hangar | Drawn with the toolkit in scifi.py: cable bundles in four colours and pipes up the wall, steel clamps, a junction box with lit LEDs. |
 | `screen_wall` | good | glows | orbital_hangar | Drawn with the toolkit in scifi.py: monitors four to a unit, each with a trace, readouts, a radar or a wireframe, in cyan, green or amber; glows. |
@@ -129,6 +134,7 @@ Weakest first, and in the order the new scenes need them.
 | `bar_shelves` | good | glows | neon_bar | Drawn with the toolkit in bar.py: two glass shelves of bottles in a dark mirrored recess, each bottle lit from below by a magenta strip; glows. |
 | `capsules` | good | glows | capsule_hotel | Drawn in bar.py: four berths to a unit in white moulded plastic, each with a glowing number plate; lamp-lit bedding, a drawn blind, a screen or dark inside; glows. |
 | `capsules_lit` | good | glows | capsule_hotel | The same berths with more of them occupied and lit; alternate it with `capsules` so the pattern does not march. |
+| `nukage` | good | glows | doomed | Drawn in doomed.py: bright green sludge in slow swirls with paler veins and darker clots; glows - sink it with `drop`. |
 
 ### Nature
 
@@ -180,8 +186,8 @@ Weakest first, and in the order the new scenes need them.
 | `carpet_green` | good |  | - |  |
 | `flagstone` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, haunted_house, neon_street, night_market, rain_alley |  |
 | `obsidian` | good | mirror 0.45 | dream_world, neon_bar, space_station |  |
-| `concrete_floor` | good |  | 53 scenes |  |
-| `rock_floor` | good |  | crystal_cave, gui_lantern, kelp_forest, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: flatter, smaller masses in brown with grit in the cracks. |
+| `concrete_floor` | good |  | 54 scenes |  |
+| `rock_floor` | good |  | crystal_cave, doomed, gui_lantern, kelp_forest, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: flatter, smaller masses in brown with grit in the cracks. |
 
 ### Ceilings
 
@@ -230,6 +236,7 @@ Weakest first, and in the order the new scenes need them.
 | `lattice` | good | see-through | tropical_beach |  |
 | `viewport` | good | see-through | space_station |  |
 | `tank_window` | good | see-through | aquarium | Drawn with the toolkit in aquarium.py: a rounded opening in a deep frame of dark painted steel, bolt heads top and bottom. |
+| `green_window` | good | see-through | doomed | Drawn in doomed.py: the trimmed green plating with a window cut through it in a deep dark frame; see-through. |
 
 ### Jungle
 
@@ -275,7 +282,7 @@ Weakest first, and in the order the new scenes need them.
 | `bamboo` | polish |  | tropical_beach | The nodes still line up into a grid across the poles. |
 | `thatch` | polish |  | tropical_beach | The rows could be clearer, each with a shadow under its fringe. |
 
-## Props (254)
+## Props (260)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -427,6 +434,12 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `solar_array` | good | 1.4 tall | moon_base | Drawn with the toolkit in moon.py: dark-blue cells in a silver frame tilted on a mast, a cable down. |
 | `rover` | good | 0.8 tall | moon_base | Drawn with the toolkit in moon.py: a white chassis on six wire-mesh wheels, two seats, a dish on a mast, a foil-wrapped box. |
 | `sci_crate` | good | 0.35 tall, glows | derelict_ship, moon_base, neon_street, night_market, orbital_hangar, space_station |  |
+| `toxic_barrel` | good | 0.4 tall, glows, aura | doomed | Drawn in doomed.py: a ribbed, dented drum brimming with glowing green sludge that runs down its sides. |
+| `corpse` | good | 0.13 tall | doomed | Drawn in doomed.py: a fallen soldier on his side in a pool of blood, an arm flung out, the helmet rolled off. |
+| `medkit` | good | 0.1 tall | doomed | Drawn in doomed.py: a white kit with a red cross on its lid and a handle. |
+| `ammo_clip` | good | 0.07 tall | doomed | Drawn in doomed.py: a magazine with the brass of its top round showing. |
+| `armor_vest` | good | 0.12 tall | doomed | Drawn in doomed.py: a green combat vest laid flat: chest plates and a strap. |
+| `fireball` | good | 0.22 tall, glows, no shadow | doomed | Drawn in doomed.py: a white-hot core in orange flame with a ragged tail; additive. |
 | `stasis_pod` | good | 1 tall, glows | derelict_ship |  |
 | `shuttle` | good | 2.2 tall, glows | orbital_hangar | Drawn with the toolkit in scifi.py: nose-on wedge hull in white and orange, lit cockpit and engine pods, landing legs, panel lines and vents. |
 | `cargo_container` | good | 1.2 tall | orbital_hangar | Drawn with the toolkit in scifi.py: corrugated orange steel, corner castings, door rods, rust streaking down the ribs. Tint for other colours. |
@@ -606,7 +619,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `spiritualist` | good | cathedral_ruin, chapel_graveyard, gui_themes, gui_trade, library_medium, mansion_library |  |
 | `ghost` | good | chapel_graveyard, garden_encounter, ghost_corridor, ghost_town, gui_hud, gui_menus, haunted_house, post_presets, woodland_night |  |
 | `hybrid` | good | gui_lantern, sewer_tunnels, tunnel_encounter |  |
-| `soldier` | good | castle_keep |  |
+| `soldier` | good | castle_keep, doomed |  |
 | `knight` | good | castle_keep, misty_moor, village_green |  |
 | `child` | good | aquarium, autumn_lane, night_market, village_green, winter_lake, winter_woods | The head narrowed to ten pixels with a fringe, the eyes closer together, a small mouth and a tapered chin, so it reads as a child rather than a round mask; back view. |
 | `creature` | good | castle_keep, crystal_cave |  |
@@ -629,7 +642,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `farmer` | good | village_green | A straw hat, plaid shirt and blue overalls, a pitchfork taller than him. |
 | `pirate` | good | bayou | A gold-edged tricorn, an eye patch and beard, a red coat with gold buttons, a cutlass. |
 
-## Decals (25)
+## Decals (26)
 
 Stamps blended into floors, walls and ceilings. `grime` stamps some of them on its own, and `contact_shadow` goes under every prop that stands on the ground.
 
@@ -640,7 +653,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `puddle_shine` | good | coast_lighthouse, neon_street, night_market, rain_alley, rainy_street, sewer_tunnels |  |
 | `stain` | polish | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, sewer_tunnels, woodland_night | A plain blob; uneven edge, drip marks. |
 | `stain_rust` | polish | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, orbital_hangar, rainy_street, sewer_tunnels | Same as stain. |
-| `splatter` | good | - |  |
+| `splatter` | good | doomed |  |
 | `splatter_dark` | good | bunker_lab, castle_keep, cathedral_ruin, derelict_ship, sewer_tunnels |  |
 | `vines` | good | jungle_temple, rainy_street |  |
 | `moss_patch` | polish | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, jungle_temple, rainy_street, sewer_tunnels, woodland_night | Blob; give it clumps and a soft edge. |
@@ -650,10 +663,11 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `cobweb` | good | bunker_lab, castle_keep |  |
 | `rune_mark` | good | - |  |
 | `drain` | good | bunker_lab, neon_street, night_market, rainy_street, sewer_tunnels |  |
-| `contact_shadow` | good | 53 scenes |  |
+| `contact_shadow` | good | 54 scenes |  |
 | `pad_marking` | good | moon_base, orbital_hangar | A painted landing ring with an H and a dashed outer ring, worn in patches. |
 | `rover_tracks` | good | moon_base | Drawn with the toolkit in moon.py: two tracks of chevron treads pressed into dust. |
 | `hazard_stripe` | good | orbital_hangar | A band of yellow and black diagonal stripes, worn through in places. |
+| `toxic_sign` | good | doomed | Drawn in doomed.py: a yellow triangle edged in black with a skull, TOXIC on a plate below. |
 
 ### Shore and pool
 
@@ -674,7 +688,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `dusk` | good | autumn_lane, coast_lighthouse, misty_moor |  |
 | `storm` | good | coast_lighthouse, rain_alley, rainy_street | Could use darker cloud masses. |
 | `day` | good | aquarium, cathedral_ruin, ghost_town, jungle_temple, kelp_forest, red_canyon, tropical_beach, village_green, winter_lake, winter_woods |  |
-| `overcast` | good | winter_woods |  |
+| `overcast` | good | doomed, winter_woods |  |
 | `blood` | good | - |  |
 | `space` | good | moon_base, orbital_hangar, space_station |  |
 | `alien` | good | alien_world |  |
@@ -776,7 +790,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
-## Held items (6)
+## Held items (8)
 
 | item | status | used in | notes |
 |---|---|---|---|
@@ -786,6 +800,8 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `axe` | polish | - | The hand and sleeve are blocky; shade the knuckles and cuff. |
 | `crowbar` | polish | - | The hand and sleeve are blocky; shade the knuckles and cuff. |
 | `torch` | polish | - | The hand and sleeve are blocky; shade the knuckles and cuff. |
+| `pistol` | good | doomed | Drawn in doomed.py: held out in the middle of the view: a fist round the grip, the slide from behind with its sights; `fire` adds a muzzle flash. |
+| `shotgun` | good | doomed | Drawn in doomed.py: a pump shotgun in the middle: the receiver, the barrel running away to its bead, a hand on the wooden pump; `fire` adds a flash. |
 
 ## Icons (26)
 
@@ -818,7 +834,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `pointer` | good | - |  |
 | `hand_pointer` | good | gui_menus |  |
 
-## GUI themes (5)
+## GUI themes (6)
 
 | theme | status | used in | notes |
 |---|---|---|---|
@@ -827,8 +843,9 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `terminal` | good | bunker_lab, gui_themes, orbital_hangar, space_station |  |
 | `blood` | good | gui_themes |  |
 | `steel` | good | gui_themes |  |
+| `doomed` | good | doomed | Stone grey panels, red text, yellow accents, a bevel - to match the status bar. |
 
-## GUI widgets (16)
+## GUI widgets (18)
 
 | widget | status | used in | notes |
 |---|---|---|---|
@@ -847,6 +864,8 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `crosshair` | good | bunker_lab, gui_hud, rainy_street |  |
 | `compass` | good | gui_hud |  |
 | `automap` | good | bunker_lab, gui_hud |  |
+| `statusbar` | good | doomed | The stone status bar of a 1993 shooter: big red gradient numbers, labels, the arms grid, a face that bloodies as health falls (grin, ouch, dead), keys, the ammo table. |
+| `message` | good | doomed | A plain message at the top left, no box. |
 | `image` | good | - |  |
 
 ## Post presets (20)
@@ -888,7 +907,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `mono` | good | - |  |
 | `bone` | good | - |  |
 
-## Example scenes (53)
+## Example scenes (54)
 
 The environments, judged on their gallery images and shots.
 
@@ -925,6 +944,7 @@ The environments, judged on their gallery images and shots.
 | `neon_bar` | good | 5 | bar_room, bar_tank, bar_arcade, bar_bartender, bar_hacker | A small smoky bar: glowing shelves, the counter and stools, a jukebox and booths, a reef tank in the back wall, the arcade row mirrored in the floor, the bartender. |
 | `neon_rooftop` | good | 4 | rooftop_canyon, rooftop_down, rooftop_train, rooftop_cat | From a roof five storeys up: the neon canyon below with lanterns and a holo koi, the runner and a black cat on the ledge; straight down past the blade signs; the elevated train from the street. |
 | `capsule_hotel` | good | 4 | capsule_corridor, capsule_berths, capsule_sleepwalker, capsule_vending | A corridor between two walls of berths at 4 a.m.: the berths up close, the sleepwalker with her candle, the hacker at the vending machine. |
+| `doomed` | good | 4 | doomed_pit, doomed_overview, doomed_fight, doomed_window | The slime pit: a walkway zigzagging over glowing sludge, green banded walls, barrels, zombified soldiers; the HUD with a pistol; the pit from above; a shotgun going off and a fireball coming in; the window onto the rock. |
 | `village_green` | good | 4 | village_market, village_stall, village_well, village_night | A cobbled street of timber-framed houses to a green: a market stall and its keeper, the inn sign, a cart, the well; the inn lit after closing. |
 | `ghost_town` | good | 4 | western_noon, western_saloon, western_ghost, western_windpump | A frontier main street: a cowboy at high noon, the saloon and its barkeep, sundown with lanterns and a ghost, a windpump in the desert. |
 | `misty_moor` | good | 3 | moor_dawn, moor_circle | Stones of varied heights with weathered menhir faces and slanted, chipped stone_cap tops in dawn mist. |
@@ -983,6 +1003,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-20, doomed.** `scripts/doomed.py`: a 1993 shooter's status bar (`statusbar` widget: stone, red digits, arms, a face that bloodies with health, keys, ammo table), a `message` line, the `pistol` and `shotgun` held in the middle with `fire`, the `doomed` theme; the slime pit's textures and props. `examples/doomed.py`, an homage to the first level, with four gallery shots.
 - **2026-10-19, glow and focus.** The renderer keeps an emission buffer beside the frame; `bloom` takes `source: light` (only what gives off light, with a wide halo) and the neon scenes use it; a new `dof` effect (depth of field) on the close shots of the samurai, the hacker, the cat, the sleepwalker and the diver. Scenes that do not opt in render byte-identical.
 - **2026-10-19, the child.** A narrower head with a fringe, eyes closer, a small mouth, a tapered chin; the galleries of the six scenes the child appears in rebuilt. Rated good.
 - **2026-10-19, the column drum.** Flutes along its length, a lit end face on a shadowed rim; the ruins' and the cathedral's images rebuilt. Rated good.

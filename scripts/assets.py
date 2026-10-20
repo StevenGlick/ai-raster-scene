@@ -2672,6 +2672,20 @@ SPRITE_HEIGHT.update(rooftop.SPRITE_HEIGHT)
 PROP_DEFAULTS.update(rooftop.PROP_DEFAULTS)
 NO_CONTACT_SHADOW |= rooftop.NO_CONTACT_SHADOW
 
+# ---------------------------------------------------------------- doomed
+# A 1993 shooter's base: toxic slime, hex floors, green tech walls with a trim, a window, tiled
+# ceilings; toxic barrels, a corpse, pickups and a fireball - drawn with the toolkit in doomed.py,
+# which also draws the status bar and the guns for the GUI.
+import doomed  # noqa: E402
+
+TEXTURES.update(doomed.TEXTURES)
+TEXTURE_NOISE.update(doomed.TEXTURE_NOISE)
+SPRITES.update(doomed.SPRITES)
+SPRITE_HEIGHT.update(doomed.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(doomed.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= doomed.NO_CONTACT_SHADOW
+DECALS.update(doomed.DECALS)
+
 _dcache = {}
 
 

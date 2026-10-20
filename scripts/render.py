@@ -2314,6 +2314,10 @@ def prepare_shot(scene, cam):
             extra.append(L)
         if v.get('flashlight') and 'flashlight' not in cam:
             cam['flashlight'] = True
+        if ov.get('fire') and v.get('fire_light'):        # a shot lights the room for an instant
+            a = math.radians(float(cam.get('angle', 0)))
+            extra.append({'x': cam['x'] + 0.4 * math.cos(a), 'y': cam['y'] + 0.4 * math.sin(a), 'z': 0.5,
+                          'shadows': False, **v['fire_light']})
     if extra:
         ovr = dict(cam.get('overrides', {}))
         ovr['lights'] = list(ovr.get('lights', scene.get('lights', []))) + extra

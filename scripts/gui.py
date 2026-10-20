@@ -3,11 +3,11 @@
 Every widget is an entry in a scene's (or shot's) "overlays" list with a "type". Most accept placement:
   "at": top-left | top | top-right | left | center | right | bottom-left | bottom | bottom-right
   "x"/"y": explicit pixels (negative = from the right/bottom edge), "margin": edge gap (default 6)
-Styling comes from scene["ui"]: {"theme": "classic" | "parchment" | "terminal" | "blood" | "steel"}
+Styling comes from scene["ui"]: {"theme": "classic" | "parchment" | "terminal" | "blood" | "steel" | "doomed"}
 plus any colour override (fill, border, border_dark, text, accent, dim, shadow, select).
 
 Widgets: bubble, dialog, caption, choice, title, panel, toast, prompt, bars, counter, hotbar, inventory,
-crosshair, compass, automap, viewmodel, image.
+crosshair, compass, automap, statusbar, message, viewmodel, image.
 """
 import math
 
@@ -36,6 +36,9 @@ THEMES = {
     'steel': {'fill': [186, 186, 180, 255], 'border': [250, 250, 244, 255], 'border_dark': [64, 64, 64, 255],
               'text': [18, 18, 18, 255], 'accent': [16, 40, 140, 255], 'dim': [110, 110, 110, 255],
               'shadow': [0, 0, 0, 0], 'select': [16, 40, 140, 255], 'select_text': [255, 255, 255, 255], 'frame': 'bevel'},
+    'doomed': {'fill': [52, 50, 48, 240], 'border': [150, 146, 140, 255], 'border_dark': [22, 20, 20, 255],
+               'text': [236, 64, 44, 255], 'accent': [250, 210, 64, 255], 'dim': [150, 140, 130, 255],
+               'shadow': [0, 0, 0, 220], 'select': [96, 20, 14, 240], 'frame': 'bevel'},
 }
 
 
@@ -613,6 +616,29 @@ def w_automap(ctx, ov):
         text(ctx, (x0 + 5, y0 + 4), ov['title'], ctx.t['accent'])
 
 
+def w_statusbar(ctx, ov):
+    """The stone status bar of a 1993 shooter along the bottom of the screen (scripts/doomed.py): ammo,
+    health %, the arms owned (2-7), a face that bloodies as health falls, armour %, keys and the
+    ammo table. {"ammo": 26, "health": 28, "armor": 75, "arms": [2, 3], "keys": ["blue"],
+    "ammo_table": [[26, 200], [8, 50], [0, 50], [0, 300]], "face": "auto"|"grin"|"ouch"|"dead",
+    "look": -1|0|1}. It takes the bottom sixth of the frame; aim the camera with that in mind."""
+    import doomed
+    bh = int(round(ctx.H * float(ov.get('height', 0.16))))
+    rgb = doomed.statusbar(ctx.W, bh, ov)
+    im = Image.fromarray((rgb * 255).astype(np.uint8), 'RGB').convert('RGBA')
+    ctx.layer.alpha_composite(im, (0, ctx.H - bh))
+
+
+def w_message(ctx, ov):
+    """A game message at the top left, plain text with no box, as a pickup was reported in 1993:
+    {"text": "Picked up a clip."}; `color` (the theme's text colour by default)."""
+    m = int(ov.get('margin', 2))
+    y = m
+    for s in str(ov['text']).splitlines():
+        text(ctx, (m, y), s, ov.get('color'))
+        y += ctx.lh
+
+
 def w_image(ctx, ov):
     """Any icon or sprite placed on screen, e.g. a logo, a held note, a portrait."""
     rgba, _ = icons.get_icon(ov['name'], ctx.any_icon)
@@ -624,7 +650,7 @@ def w_image(ctx, ov):
 
 # viewmodels draw straight into the float frame (before post effects) so they are lit and graded
 def draw_viewmodel(img, ov, ctx):
-    rgba, em, v = icons.get_viewmodel(ov['item'], ctx.scene.get('viewmodel_defs', {}))
+    rgba, em, v = icons.get_viewmodel(ov['item'], ctx.scene.get('viewmodel_defs', {}), fire=ov.get('fire', False))
     scale = float(ov.get('scale', 1.0))
     if scale != 1:
         im = Image.fromarray((rgba * 255).astype(np.uint8), 'RGBA').resize(
@@ -654,8 +680,13 @@ WIDGETS = {k[2:]: v for k, v in list(globals().items()) if k.startswith('w_')}
 
 
 def draw_world_layer(img, overlays, ctx):
+    # a status bar takes the bottom of the screen: whatever is held is held up above it
+    bar = next((o for o in overlays if o.get('type') == 'statusbar'), None)
+    lift = int(round(img.shape[0] * float(bar.get('height', 0.16)))) if bar else 0
     for ov in overlays:
         if ov.get('type') == 'viewmodel':
+            if lift:
+                ov = dict(ov, y_offset=int(ov.get('y_offset', 0)) - lift)
             img = draw_viewmodel(img, ov, ctx)
     return img
 

@@ -1,0 +1,584 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "GGGGGGGGGGGGGGGGGGGGRR",
+  "GGGGGGGGGGGGGGGGGGGGRR",
+  "GGGfffffffffffffGoooRR",
+  "GGG~f~~~~~~~~~~~GoooRR",
+  "GGG~f~~~~~~~~~~~GoooRR",
+  "GGG~ffffffff~~~~woooRR",
+  "GGG~~~~~~~~f~~~~woooRR",
+  "GGG~~~~~~~~f~~~~woooRR",
+  "GGG~~~~fffff~~~~GoooRR",
+  "GGG~~~~f~~~~~~~~GoooRR",
+  "GGG~~~~f~~~~~~~~GoooRR",
+  "GGGfffffffffffffGoooRR",
+  "GGGGGGGGffGGGGGGGGGGRR",
+  "GGGGGGGGccGGGGGGGGGGRR",
+  "GGGGGGGGccGGGGGGGGGGRR",
+  "GGGGGGGGccGGGGGGGGGGRR",
+  "GGGGGGGGccGGGGGGGGGGRR",
+  "GGGGGGGGccGGGGGGGGGGRR",
+  "GGGGGccccccccGGGGGGGRR",
+  "GGGGGccccccccGGGGGGGRR",
+  "GGGGGGGGGGGGGGGGGGGGRR"
+ ],
+ "legend": {
+  "G": {
+   "wall": [
+    "green_trim",
+    "green_trim",
+    "green_trim"
+   ],
+   "h": 2.2
+  },
+  "R": {
+   "wall": "rock",
+   "h": 3.0
+  },
+  "w": {
+   "wall": [
+    "green_window",
+    "green_trim",
+    "green_trim"
+   ],
+   "h": 2.2
+  },
+  "f": {
+   "floor": "hex_floor",
+   "ceil": "tech_ceiling"
+  },
+  "~": {
+   "floor": "nukage",
+   "ceil": "tech_ceiling",
+   "drop": 0.14,
+   "side": "slime_edge"
+  },
+  "c": {
+   "floor": "hex_floor",
+   "ceil": "tech_ceiling"
+  },
+  "o": {
+   "floor": "rock_floor"
+  }
+ },
+ "camera": {
+  "x": 8.5,
+  "y": 11.7,
+  "look_at": [
+   8.5,
+   4.0
+  ],
+  "pitch": -0.08,
+  "fov": 80
+ },
+ "title": "Doomed - the slime pit",
+ "ceiling_height": 2.2,
+ "sky": "overcast",
+ "ambient": [
+  0.3,
+  0.31,
+  0.27
+ ],
+ "light_levels": 16,
+ "fog": {
+  "color": [
+   0.01,
+   0.01,
+   0.01
+  ],
+  "density": 0.04
+ },
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 200,
+   "elevation": 50,
+   "intensity": 0.9
+  },
+  {
+   "x": 4,
+   "y": 7.5,
+   "z": 0.15,
+   "radius": 3.2,
+   "color": [
+    0.42,
+    1.0,
+    0.3
+   ],
+   "intensity": 0.7
+  },
+  {
+   "x": 6,
+   "y": 3.6,
+   "z": 0.15,
+   "radius": 3.2,
+   "color": [
+    0.42,
+    1.0,
+    0.3
+   ],
+   "intensity": 0.7
+  },
+  {
+   "x": 10,
+   "y": 4,
+   "z": 0.15,
+   "radius": 3.2,
+   "color": [
+    0.42,
+    1.0,
+    0.3
+   ],
+   "intensity": 0.7
+  },
+  {
+   "x": 14,
+   "y": 4.5,
+   "z": 0.15,
+   "radius": 3.2,
+   "color": [
+    0.42,
+    1.0,
+    0.3
+   ],
+   "intensity": 0.7
+  },
+  {
+   "x": 5.5,
+   "y": 9.5,
+   "z": 0.15,
+   "radius": 3.2,
+   "color": [
+    0.42,
+    1.0,
+    0.3
+   ],
+   "intensity": 0.7
+  },
+  {
+   "x": 10,
+   "y": 10,
+   "z": 0.15,
+   "radius": 3.2,
+   "color": [
+    0.42,
+    1.0,
+    0.3
+   ],
+   "intensity": 0.7
+  },
+  {
+   "x": 14,
+   "y": 9,
+   "z": 0.15,
+   "radius": 3.2,
+   "color": [
+    0.42,
+    1.0,
+    0.3
+   ],
+   "intensity": 0.7
+  },
+  {
+   "x": 9.5,
+   "y": 6.5,
+   "z": 0.15,
+   "radius": 3.2,
+   "color": [
+    0.42,
+    1.0,
+    0.3
+   ],
+   "intensity": 0.7
+  },
+  {
+   "x": 5,
+   "y": 3,
+   "z": 2.0,
+   "radius": 6.5,
+   "color": [
+    1.0,
+    0.92,
+    0.78
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 13,
+   "y": 3,
+   "z": 2.0,
+   "radius": 6.5,
+   "color": [
+    1.0,
+    0.92,
+    0.78
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 5,
+   "y": 10.5,
+   "z": 2.0,
+   "radius": 6.5,
+   "color": [
+    1.0,
+    0.92,
+    0.78
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 13,
+   "y": 10.5,
+   "z": 2.0,
+   "radius": 6.5,
+   "color": [
+    1.0,
+    0.92,
+    0.78
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 9,
+   "y": 6.5,
+   "z": 2.0,
+   "radius": 6.5,
+   "color": [
+    1.0,
+    0.92,
+    0.78
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 8.5,
+   "y": 15.0,
+   "z": 1.4,
+   "radius": 3.0,
+   "color": [
+    1.0,
+    0.92,
+    0.78
+   ],
+   "intensity": 0.7
+  },
+  {
+   "x": 8.5,
+   "y": 18.8,
+   "z": 1.4,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.92,
+    0.78
+   ],
+   "intensity": 0.8
+  }
+ ],
+ "sprites": [
+  {
+   "x": 3.6,
+   "y": 2.5,
+   "type": "toxic_barrel"
+  },
+  {
+   "x": 15.4,
+   "y": 2.5,
+   "type": "toxic_barrel"
+  },
+  {
+   "x": 15.4,
+   "y": 11.5,
+   "type": "toxic_barrel"
+  },
+  {
+   "x": 3.6,
+   "y": 11.4,
+   "type": "toxic_barrel"
+  },
+  {
+   "x": 10.6,
+   "y": 5.5,
+   "type": "toxic_barrel"
+  },
+  {
+   "id": "zombie",
+   "x": 10.9,
+   "y": 7.7,
+   "type": "soldier",
+   "facing": 140,
+   "tint": [
+    0.78,
+    0.92,
+    0.66
+   ]
+  },
+  {
+   "id": "zombie2",
+   "x": 8.6,
+   "y": 2.6,
+   "type": "soldier",
+   "facing": 90,
+   "tint": [
+    0.78,
+    0.92,
+    0.66
+   ]
+  },
+  {
+   "x": 4.5,
+   "y": 5.4,
+   "type": "soldier",
+   "facing": 60,
+   "tint": [
+    0.78,
+    0.92,
+    0.66
+   ]
+  },
+  {
+   "x": 9.4,
+   "y": 8.5,
+   "type": "corpse"
+  },
+  {
+   "x": 5.6,
+   "y": 11.6,
+   "type": "corpse",
+   "flip": true
+  },
+  {
+   "x": 10.8,
+   "y": 8.4,
+   "type": "ammo_clip"
+  },
+  {
+   "x": 12.0,
+   "y": 2.5,
+   "type": "armor_vest"
+  },
+  {
+   "x": 4.4,
+   "y": 3.6,
+   "type": "medkit"
+  }
+ ],
+ "decals": [
+  {
+   "tex": "toxic_sign",
+   "surface": "wall",
+   "cell": [
+    6,
+    1
+   ],
+   "face": "south",
+   "u": 0.5,
+   "z": 1.25,
+   "size": 0.5
+  },
+  {
+   "tex": "toxic_sign",
+   "surface": "wall",
+   "cell": [
+    13,
+    1
+   ],
+   "face": "south",
+   "u": 0.5,
+   "z": 1.25,
+   "size": 0.5
+  },
+  {
+   "tex": "splatter",
+   "surface": "floor",
+   "x": 9.5,
+   "y": 8.6,
+   "size": 1.0,
+   "opacity": 0.8
+  },
+  {
+   "tex": "splatter",
+   "surface": "floor",
+   "x": 5.4,
+   "y": 11.7,
+   "size": 0.9,
+   "opacity": 0.8
+  }
+ ],
+ "ui": {
+  "theme": "doomed"
+ },
+ "shots": [
+  {
+   "x": 8.5,
+   "y": 11.7,
+   "look_at": [
+    8.5,
+    4.0
+   ],
+   "pitch": -0.08,
+   "fov": 80,
+   "overlays": [
+    {
+     "type": "viewmodel",
+     "item": "pistol"
+    },
+    {
+     "type": "statusbar",
+     "ammo": 26,
+     "health": 100,
+     "armor": 0,
+     "arms": [
+      2
+     ],
+     "ammo_table": [
+      [
+       26,
+       200
+      ],
+      [
+       0,
+       50
+      ],
+      [
+       0,
+       50
+      ],
+      [
+       0,
+       300
+      ]
+     ]
+    },
+    {
+     "type": "message",
+     "text": "Picked up a clip."
+    }
+   ]
+  },
+  {
+   "x": 3.4,
+   "y": 11.6,
+   "height": 1.9,
+   "look_at": [
+    10.0,
+    5.0,
+    0.0
+   ],
+   "fov": 80
+  },
+  {
+   "x": 7.5,
+   "y": 10.2,
+   "look_at": [
+    12.2,
+    8.5
+   ],
+   "pitch": -0.08,
+   "fov": 76,
+   "extra_sprites": [
+    {
+     "x": 9.9,
+     "y": 9.9,
+     "type": "fireball",
+     "z": 0.42,
+     "flip": true
+    }
+   ],
+   "overlays": [
+    {
+     "type": "viewmodel",
+     "item": "shotgun",
+     "fire": true
+    },
+    {
+     "type": "statusbar",
+     "ammo": 8,
+     "health": 28,
+     "armor": 75,
+     "arms": [
+      2,
+      3
+     ],
+     "ammo_table": [
+      [
+       51,
+       200
+      ],
+      [
+       8,
+       50
+      ],
+      [
+       0,
+       50
+      ],
+      [
+       0,
+       300
+      ]
+     ],
+     "keys": [
+      "blue"
+     ],
+     "face": "ouch"
+    },
+    {
+     "type": "message",
+     "text": "You got the shotgun!"
+    }
+   ]
+  },
+  {
+   "x": 12.6,
+   "y": 10.6,
+   "look_at": [
+    16.5,
+    6.0
+   ],
+   "pitch": -0.08,
+   "fov": 76,
+   "overlays": [
+    {
+     "type": "viewmodel",
+     "item": "pistol"
+    },
+    {
+     "type": "statusbar",
+     "ammo": 25,
+     "health": 64,
+     "armor": 84,
+     "arms": [
+      2,
+      3
+     ],
+     "ammo_table": [
+      [
+       25,
+       200
+      ],
+      [
+       12,
+       50
+      ],
+      [
+       0,
+       50
+      ],
+      [
+       0,
+       300
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "contact_shadows": 0.4
+}
