@@ -198,12 +198,14 @@ def _plan(key):
             cx = int((b + 0.5) * bay_w)
             if st == 0 and b == door_bay:
                 dw, dh = int(PX * (0.58 if batwing else 0.42)), int(PX * 0.8)
-                door = (cx - dw // 2, floor_y - dh, cx + dw // 2, floor_y)
+                if cx - dw // 2 + 3 >= 0 and cx + dw // 2 - 3 <= W:      # a face too narrow has none
+                    door = (cx - dw // 2, floor_y - dh, cx + dw // 2, floor_y)
                 continue
             if st == 0 and shop:
                 continue
             y1 = floor_y - int(PX * 0.28)
-            windows.append({'box': (cx - win_w // 2, y1 - win_h, cx + win_w // 2, y1), 'storey': st})
+            if win_w > 0:                                                  # nor a window
+                windows.append({'box': (cx - win_w // 2, y1 - win_h, cx + win_w // 2, y1), 'storey': st})
     if shop and door is not None:
         x0 = 6 if door[0] > W / 2 else door[2] + 6
         x1 = door[0] - 6 if door[0] > W / 2 else W - 6
@@ -462,6 +464,8 @@ def _drape(plan):
         x0, y0, x1, y1 = wnd['box']
         kind, c = wnd['drape'], wnd['drape_color']
         w, h = x1 - x0, y1 - y0
+        if w <= 0 or h <= 0:                                                # squeezed out by its storey
+            continue
         if kind == 'curtains':
             for side in (0, 1):
                 cw = max(3, int(w * wnd['split']))

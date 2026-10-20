@@ -2639,6 +2639,17 @@ SPRITE_HEIGHT.update(aquarium.SPRITE_HEIGHT)
 PROP_DEFAULTS.update(aquarium.PROP_DEFAULTS)
 NO_CONTACT_SHADOW |= aquarium.NO_CONTACT_SHADOW
 
+# ---------------------------------------------------------------- the night market
+# A food cart, fruit and gadget stalls, red lanterns and a string of them, a standing neon sign,
+# a lit umbrella, a scooter, stools and a table, a utility pole and a crowd - drawn with the
+# toolkit in market.py.
+import market  # noqa: E402
+
+SPRITES.update(market.SPRITES)
+SPRITE_HEIGHT.update(market.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(market.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= market.NO_CONTACT_SHADOW
+
 _dcache = {}
 
 
