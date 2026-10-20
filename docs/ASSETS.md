@@ -671,7 +671,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `night` | good | ancient_ruins, bayou, chapel_graveyard, claude_study, garden_encounter, gui_menus, haunted_house, hospital_garden, kelp_forest, neon_rooftop, neon_street, night_market, post_presets, tropical_beach, village_green, winter_lake, winter_woods, woodland_night |  |
 | `dusk` | good | autumn_lane, coast_lighthouse, misty_moor |  |
 | `storm` | good | coast_lighthouse, rain_alley, rainy_street | Could use darker cloud masses. |
-| `day` | good | cathedral_ruin, ghost_town, jungle_temple, kelp_forest, red_canyon, tropical_beach, village_green, winter_lake, winter_woods |  |
+| `day` | good | aquarium, cathedral_ruin, ghost_town, jungle_temple, kelp_forest, red_canyon, tropical_beach, village_green, winter_lake, winter_woods |  |
 | `overcast` | good | winter_woods |  |
 | `blood` | good | - |  |
 | `space` | good | moon_base, orbital_hangar, space_station |  |
@@ -980,6 +980,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, sunbeams in the tank.** A `glazed` cell key: the roof is drawn but the sun and moon shine through it (existing scenes unchanged: none glaze). The aquarium glazes a few cells of its water surface, and the sun comes down into the big tank in beams.
 - **2026-10-19, two for the neon city.** Characters `samurai` and `hacker` (16x32, with back views): the samurai walks the night market under an umbrella, the hacker works in a booth of the neon bar.
 - **2026-10-19, the rooftops.** `scripts/rooftop.py`: `water_tower`, `ac_unit`, `rooftop_sign`, `sky_train`, `black_cat`. `examples/neon_rooftop.py`: the camera on a tower 5 tall at the end of a neon street, with four gallery shots. Noted: point lights fade with absolute height, so a high roof is lit by ambient and emission only.
 - **2026-10-19, the neon bar.** `scripts/bar.py`: `arcade_cabinet`, `bar_counter`, `bar_stool`, `booth`, `jukebox`, `neon_cocktail`, `neon_fish`, `bottles` and the `bar_shelves` texture. `examples/neon_bar.py` (a reef tank in the back wall, with fog behind its glass) with four gallery shots.

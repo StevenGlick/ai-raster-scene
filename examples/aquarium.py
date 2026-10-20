@@ -2,8 +2,8 @@
 jellyfish and a reef tank at child height.
 
 Shows the aquarium kit (scripts/aquarium.py) and glass that holds water. The ocean tank is a room
-of `seabed` under a glowing `water_surface` roof, walled in `reef_wall` rockwork, with a few cells
-of the roof left open so the sun comes down through it in shafts; its window is one long
+of `seabed` under a glowing `water_surface` roof, walled in `reef_wall` rockwork, a few cells of
+the roof `glazed` so the sun comes down through the surface in shafts; its window is one long
 `glass_pane`, floor to ceiling, whose glass has `fog` - the scene's fog carries on behind the
 pane, so the water glows blue round the lamps in the tank and the shafts show, while the air in
 the dark hall stays clear. A `whale_shark` and a `manta_ray` glide past, a `diver` cleans the
@@ -23,6 +23,8 @@ W, H = 38, 37
 g = Grid(W, H, fill='#')
 g.rect(1, 0, 36, 12, 'R')                            # the ocean tank, walled in rockwork
 g.rect(2, 3, 35, 11, 'O')
+for x, y in ((8, 5), (9, 5), (15, 4), (16, 4), (16, 5), (22, 6), (23, 6), (29, 4), (30, 4)):
+    g.put(x, y, 'o')                                 # glazed: the sun comes down through the surface here
 g.rect(10, 12, 27, 12, 'O')                          # the window bay: the pane stands at y = 13
 g.rect(2, 13, 35, 20, 'H')                           # the hall
 g.rect(4, 22, 10, 31, 'J')                           # the jelly gallery, off the hall
@@ -138,6 +140,7 @@ s = scene(
         '#': {'wall': 'concrete', 'h': 2.0},
         'R': {'wall': 'reef_wall', 'h': 2.0},
         'O': {'floor': 'seabed', 'ceil': surface},
+        'o': {'floor': 'seabed', 'ceil': surface, 'glazed': True},
         'S': {'floor': 'seabed', 'ceil': surface},
         'r': {'floor': 'seabed', 'ceil': surface},
         'H': {'floor': 'marble_dark', 'ceil': 'concrete', 'reflect': 0.4},
@@ -149,11 +152,12 @@ s = scene(
         'v': {'wall': ['tank_window', 'concrete'], 'h': 2.0},
     },
     ceiling_height=2.0,
-    sky=None,
+    sky='day',
     ambient=[0.06, 0.08, 0.11],
-    fog={'color': [0.02, 0.1, 0.17], 'density': 0.03, 'glow': 0.5},
+    fog={'color': [0.02, 0.1, 0.17], 'density': 0.03, 'glow': 0.5, 'shafts': 5.0},
     lights=(
-        [{'x': x, 'y': y, 'z': 1.8, 'radius': 7.0, 'color': lamp, 'intensity': 1.2}
+        [{'type': 'sun', 'azimuth': 270, 'elevation': 62, 'intensity': 1.3}]
+        + [{'x': x, 'y': y, 'z': 1.8, 'radius': 7.0, 'color': lamp, 'intensity': 1.2}
            for x, y in ((6, 5), (13, 5), (20, 5), (27, 5), (33, 5), (9, 9.5), (17, 9.5), (25, 9.5), (32, 9.5))]
         + [{'x': x, 'y': 3.6, 'z': 0.9, 'radius': 3.5, 'color': [0.45, 0.75, 1.0], 'intensity': 0.7}
            for x in (5, 12, 19, 26, 33)]

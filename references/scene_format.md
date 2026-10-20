@@ -75,6 +75,7 @@ Open cell:
 ```
 - `reflect` (0-1) makes a floor mirror-like (see Reflections). `water` (0.5), `swamp_water` (0.42), `ice` (0.38), `obsidian` (0.45) and `grid_floor` (0.3) reflect by default; set `"reflect": 0` to stop them.
 - `"floor": "void"` means no ground at all (see Void floors): the sky carries on below the horizon, so the cell is open air, deep space or the drop off the edge of a floating island.
+- `glazed: true` on a roofed cell keeps its `ceil` but lets the sun and moon shine through it, as through glass - or, under a `water_surface` roof, the light coming down into the sea. Glaze a few cells of a roof and the sun comes down through them in beams (with volumetric fog), with no hole in the ceiling to show for it. Rain still stops at it.
 - `side` is the texture of a cell's edge where it drops away: the bank under the waterline beside a `drop`, or the cliff under an island beside a void. Without it the cell's floor texture is used.
 - `drop` (0 to 0.9) sinks a cell's floor below `z=0`. This is what stops water sitting flush with the bank: the sunken surface is rendered as its own plane, a wall standing in the water carries on down to the surface, and sprites placed in a sunken cell rest on the lower surface (so a `rowboat` floats on the water rather than hovering over it). Keep drops small - 0.1 to 0.25 reads as water, more reads as a pit. Where a sunken cell meets an ordinary *floor* cell, the bank face between them is approximated by a darkened strip rather than modelled.
 

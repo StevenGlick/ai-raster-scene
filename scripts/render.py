@@ -115,6 +115,7 @@ class World:
         self.drop = np.zeros((self.mh, self.mw), np.float32)  # how far this floor sits below z=0
         self.reflect = np.zeros((self.mh, self.mw), np.float32)  # how mirror-like each floor is
         self.void = np.zeros((self.mh, self.mw), bool)           # no ground: the sky shows below
+        self.glazed = np.zeros((self.mh, self.mw), bool)         # a roof the sun shines through
         self.side_tid = np.full((self.mh, self.mw), -1, np.int32)  # texture of a cell's sunken edge
         self.tex = []
         self.tex_key = []    # the material name each texture id came from
@@ -160,6 +161,7 @@ class World:
                     floor = spec.get('floor', default.get('floor', 'concrete_floor'))
                     if spec.get('ceil'):
                         self.ceil_tid[y, x] = self.tid(spec['ceil'])
+                        self.glazed[y, x] = bool(spec.get('glazed', False))
                     if spec.get('side'):
                         self.side_tid[y, x] = self.tid(spec['side'])
                     if floor == 'void':
@@ -834,7 +836,7 @@ def build_sun(world, L, res=4):
             hb = np.where(inb, world.solid_h[np.clip(qy, 0, world.mh - 1), np.clip(qx, 0, world.mw - 1)], 0)
             cand = np.where((qx == own_x) & (qy == own_y), -1.0, hb - t * tan_el)
             np.maximum(zlit, cand, out=zlit)
-    roof = world.ceil_tid >= 0
+    roof = (world.ceil_tid >= 0) & ~world.glazed      # a glazed roof lets the light through
     zroof = np.full((H, W), np.inf, np.float32)
     zsky = np.full((2, H, W), -np.inf, np.float32)     # the band of heights lit down through a skylight
     if roof.any() and L.get('shadows', True):
@@ -2366,7 +2368,7 @@ SCENE_KEYS = {
 }
 SHOT_KEYS = {'x', 'y', 'angle', 'look_at', 'fov', 'height', 'pitch', 'flashlight', 'overlays', 'overrides',
              'post', 'scanlines', 'seed', 'supersample', 'extra_sprites', 'title', 'description', 'notes'}
-CELL_KEYS = {'wall', 'h', 'top', 'floor', 'ceil', 'drop', 'reflect', 'side', 'fringe', 'facade'}
+CELL_KEYS = {'wall', 'h', 'top', 'floor', 'ceil', 'drop', 'reflect', 'side', 'fringe', 'facade', 'glazed'}
 ASSET_EXTS = ('.png', '.ttf', '.otf')
 
 
