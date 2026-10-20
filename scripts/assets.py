@@ -2662,6 +2662,16 @@ SPRITE_HEIGHT.update(bar.SPRITE_HEIGHT)
 PROP_DEFAULTS.update(bar.PROP_DEFAULTS)
 NO_CONTACT_SHADOW |= bar.NO_CONTACT_SHADOW
 
+# ---------------------------------------------------------------- the rooftops
+# A water tower, an air-conditioning unit, a giant rooftop sign, an elevated train and a black cat,
+# drawn with the toolkit in rooftop.py.
+import rooftop  # noqa: E402
+
+SPRITES.update(rooftop.SPRITES)
+SPRITE_HEIGHT.update(rooftop.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(rooftop.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= rooftop.NO_CONTACT_SHADOW
+
 _dcache = {}
 
 

@@ -1,0 +1,766 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "ssssssssssGGGGGGGJJJJJGGGGGGGsssssssssss",
+  "ssssssssssGGGGGGGJJJJJGGGGGGGsssssssssss",
+  "sAAAAAAAsssssssssssssssssssssssDDDDDDDDs",
+  "sAAAAAAAsssssssssssssssssssssssDDDDDDDDs",
+  "sAAAAAAAssLLLLLLLsssssRRRRRRRssDDDDDDDDs",
+  "sAAAAAAAssLLLLLLLsssssRRRRRRRssDDDDDDDDs",
+  "sAAAAAAAssLLLLLLLsssssRRRRRRRssDDDDDDDDs",
+  "sAAAAAAAssLLLLLLLsssssRRRRRRRssDDDDDDDDs",
+  "sAAAAAAAssLLLLLLLsssssRRRRRRRssDDDDDDDDs",
+  "sAAAAAAAssLLLLLLLsssssRRRRRRRssDDDDDDDDs",
+  "sAAAAAAAssLLLLLLLsssssRRRRRRRssDDDDDDDDs",
+  "sAAAAAAAssLLLLLLLsssssRRRRRRRssDDDDDDDDs",
+  "sAAAAAAAssLLLLLLLsssssRRRRRRRssDDDDDDDDs",
+  "ssssssssssLLLLLLLsssssRRRRRRRssDDDDDDDDs",
+  "ssssssssssLLLLLLLsssssRRRRRRRsssssssssss",
+  "sBBBBBBBssLLLLLLLsssssRRRRRRRsssssssssss",
+  "sBBBBBBBssLLLLLLLsssssRRRRRRRssEEEEEEEEs",
+  "sBBBBBBBssLLLLLLLsssssRRRRRRRssEEEEEEEEs",
+  "sBBBBBBBsssssssssssssssssssssssEEEEEEEEs",
+  "sBBBBBBBsssssssssssssssssssssssEEEEEEEEs",
+  "sBBBBBBBssLLLLLLLsssssRRRRRRRssEEEEEEEEs",
+  "sBBBBBBBssLLLLLLLsssssRRRRRRRssEEEEEEEEs",
+  "sBBBBBBBssLLLLLLLsssssRRRRRRRssEEEEEEEEs",
+  "sBBBBBBBssLLLLLLLsssssRRRRRRRssEEEEEEEEs",
+  "sBBBBBBBssLLLLLLLsssssRRRRRRRssEEEEEEEEs",
+  "sBBBBBBBssLLLLLLLsssssRRRRRRRssEEEEEEEEs",
+  "ssssssssssLLLLLLLsssssRRRRRRRssEEEEEEEEs",
+  "ssssssssssLLLLLLLsssssRRRRRRRsssssssssss",
+  "sCCCCCCCssLLLLLLLsssssRRRRRRRsssssssssss",
+  "sCCCCCCCssLLLLLLLsssssRRRRRRRssFFFFFFFFs",
+  "sCCCCCCCssLLLLLLLsssssRRRRRRRssFFFFFFFFs",
+  "sCCCCCCCssLLLLLLLsssssRRRRRRRssFFFFFFFFs",
+  "sCCCCCCCssLLLLLLLsssssRRRRRRRssFFFFFFFFs",
+  "sCCCCCCCssLLLLLLLsssssRRRRRRRssFFFFFFFFs",
+  "sCCCCCCCsssssspppppppppppssssssFFFFFFFFs",
+  "sCCCCCCCsssssspPPPPPPPPPpssssssFFFFFFFFs",
+  "sCCCCCCCsssssspPPPPPPPPPpssssssFFFFFFFFs",
+  "sCCCCCCCsssssspPPPPPPPPPpssssssFFFFFFFFs",
+  "sCCCCCCCsssssspPPPPPPPPPpssssssFFFFFFFFs",
+  "sCCCCCCCsssssspPPPPPPPPPpssssssFFFFFFFFs",
+  "sCCCCCCCsssssspPPPPPPPPPpssssssFFFFFFFFs",
+  "sssssssssssssspPPPPPPPPPpssssssFFFFFFFFs",
+  "ssssssssssssssssssssssssssssssssssssssss",
+  "ssssssssHHHHHHssssssssssssIIIIIIIIssssss",
+  "ssssssssHHHHHHssssssssssssIIIIIIIIssssss",
+  "ssssssssHHHHHHssssssssssssIIIIIIIIssssss"
+ ],
+ "legend": {
+  "s": {
+   "floor": "asphalt"
+  },
+  "L": {
+   "wall": [
+    "brick_dark",
+    "window_dark",
+    "window_lit",
+    "window_dark",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_lit",
+    "window_dark"
+   ],
+   "h": 9.0,
+   "top": "concrete_floor",
+   "facade": {
+    "style": "neon",
+    "storeys": [
+     4,
+     8
+    ],
+    "widths": [
+     2,
+     4
+    ],
+    "lit": 0.6,
+    "shops": 0.85,
+    "seed": 41
+   }
+  },
+  "R": {
+   "wall": [
+    "brick_dark",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_lit",
+    "window_dark",
+    "window_lit",
+    "window_dark",
+    "window_dark"
+   ],
+   "h": 9.0,
+   "top": "concrete_floor",
+   "facade": {
+    "style": "neon",
+    "storeys": [
+     4,
+     8
+    ],
+    "widths": [
+     2,
+     4
+    ],
+    "lit": 0.6,
+    "shops": 0.85,
+    "seed": 43
+   }
+  },
+  "P": {
+   "wall": [
+    "brick_dark",
+    "window_dark",
+    "window_lit",
+    "window_dark",
+    "window_dark"
+   ],
+   "h": 5.0,
+   "top": "concrete_floor"
+  },
+  "p": {
+   "wall": [
+    "brick_dark",
+    "window_dark",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "concrete"
+   ],
+   "h": 5.15,
+   "top": "concrete"
+  },
+  "A": {
+   "wall": [
+    "brick_dark",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_lit",
+    "window_lit",
+    "window_lit",
+    "window_dark",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_lit",
+    "window_lit"
+   ],
+   "h": 14.0,
+   "top": "concrete_floor"
+  },
+  "B": {
+   "wall": [
+    "brick_dark",
+    "window_lit",
+    "window_lit",
+    "window_lit",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_lit"
+   ],
+   "h": 13.0,
+   "top": "concrete_floor"
+  },
+  "C": {
+   "wall": [
+    "brick_dark",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_lit",
+    "window_lit",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_dark"
+   ],
+   "h": 11.0,
+   "top": "concrete_floor"
+  },
+  "D": {
+   "wall": [
+    "brick_dark",
+    "window_lit",
+    "window_lit",
+    "window_lit",
+    "window_lit",
+    "window_dark",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_lit",
+    "window_lit",
+    "window_lit"
+   ],
+   "h": 11.0,
+   "top": "concrete_floor"
+  },
+  "E": {
+   "wall": [
+    "brick_dark",
+    "window_lit",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_lit",
+    "window_dark"
+   ],
+   "h": 14.0,
+   "top": "concrete_floor"
+  },
+  "F": {
+   "wall": [
+    "brick_dark",
+    "window_dark",
+    "window_lit",
+    "window_dark",
+    "window_lit",
+    "window_dark",
+    "window_lit",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_lit",
+    "window_lit"
+   ],
+   "h": 11.0,
+   "top": "concrete_floor"
+  },
+  "G": {
+   "wall": [
+    "brick_dark",
+    "window_dark",
+    "window_lit",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_lit"
+   ],
+   "h": 10.0,
+   "top": "concrete_floor"
+  },
+  "H": {
+   "wall": [
+    "brick_dark",
+    "window_dark",
+    "window_dark",
+    "window_lit",
+    "window_lit",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_lit",
+    "window_dark",
+    "window_lit"
+   ],
+   "h": 11.0,
+   "top": "concrete_floor"
+  },
+  "I": {
+   "wall": [
+    "brick_dark",
+    "window_dark",
+    "window_lit",
+    "window_lit",
+    "window_lit",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_lit",
+    "window_lit",
+    "window_dark",
+    "window_lit",
+    "window_lit"
+   ],
+   "h": 12.0,
+   "top": "concrete_floor"
+  },
+  "J": {
+   "wall": [
+    "brick_dark",
+    "window_lit",
+    "window_dark",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_dark",
+    "window_lit",
+    "window_dark",
+    "window_dark",
+    "window_lit",
+    "window_lit",
+    "window_lit",
+    "window_lit"
+   ],
+   "h": 13.0,
+   "top": "concrete_floor"
+  }
+ },
+ "camera": {
+  "x": 19.3,
+  "y": 35.6,
+  "height": 6.25,
+  "look_at": [
+   19.0,
+   17.0,
+   2.2
+  ],
+  "fov": 72
+ },
+ "title": "Neon rooftop - over the street, the train going by",
+ "sky": "night",
+ "skyline": "city",
+ "ambient": [
+  0.13,
+  0.11,
+  0.16
+ ],
+ "wet": 0.7,
+ "fog": {
+  "color": [
+   0.07,
+   0.05,
+   0.1
+  ],
+  "density": 0.02,
+  "glow": 1.1
+ },
+ "lights": [
+  {
+   "x": 17.2,
+   "y": 31.0,
+   "z": 2.6,
+   "radius": 4.5,
+   "color": [
+    1.0,
+    0.3,
+    0.7
+   ],
+   "intensity": 1.2
+  },
+  {
+   "x": 21.8,
+   "y": 28.0,
+   "z": 2.6,
+   "radius": 4.5,
+   "color": [
+    0.3,
+    0.9,
+    1.0
+   ],
+   "intensity": 1.2
+  },
+  {
+   "x": 17.2,
+   "y": 24.0,
+   "z": 2.6,
+   "radius": 4.5,
+   "color": [
+    0.7,
+    0.45,
+    1.0
+   ],
+   "intensity": 1.2
+  },
+  {
+   "x": 21.8,
+   "y": 21.0,
+   "z": 2.6,
+   "radius": 4.5,
+   "color": [
+    1.0,
+    0.3,
+    0.7
+   ],
+   "intensity": 1.2
+  },
+  {
+   "x": 17.2,
+   "y": 15.0,
+   "z": 2.6,
+   "radius": 4.5,
+   "color": [
+    0.3,
+    0.9,
+    1.0
+   ],
+   "intensity": 1.2
+  },
+  {
+   "x": 21.8,
+   "y": 12.0,
+   "z": 2.6,
+   "radius": 4.5,
+   "color": [
+    1.0,
+    0.75,
+    0.3
+   ],
+   "intensity": 1.2
+  },
+  {
+   "x": 17.2,
+   "y": 8.0,
+   "z": 2.6,
+   "radius": 4.5,
+   "color": [
+    1.0,
+    0.3,
+    0.7
+   ],
+   "intensity": 1.2
+  },
+  {
+   "x": 21.8,
+   "y": 6.0,
+   "z": 2.6,
+   "radius": 4.5,
+   "color": [
+    0.7,
+    0.45,
+    1.0
+   ],
+   "intensity": 1.2
+  },
+  {
+   "x": 19.0,
+   "y": 18.5,
+   "z": 4.0,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.9,
+    0.7
+   ],
+   "intensity": 0.6
+  },
+  {
+   "x": 17.6,
+   "y": 38.4,
+   "z": 5.6,
+   "radius": 3.5,
+   "color": [
+    1.0,
+    0.75,
+    0.45
+   ],
+   "intensity": 0.7
+  },
+  {
+   "x": 19.0,
+   "y": 33.7,
+   "z": 5.0,
+   "radius": 2.2,
+   "color": [
+    0.3,
+    0.9,
+    1.0
+   ],
+   "intensity": 1.0
+  },
+  {
+   "x": 18.4,
+   "y": 33.7,
+   "z": 4.8,
+   "radius": 1.8,
+   "color": [
+    1.0,
+    0.3,
+    0.7
+   ],
+   "intensity": 0.8
+  },
+  {
+   "x": 23.2,
+   "y": 36.2,
+   "z": 5.8,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.3,
+    0.7
+   ],
+   "intensity": 1.0
+  },
+  {
+   "x": 19.0,
+   "y": 12.0,
+   "z": 6.0,
+   "radius": 6.0,
+   "color": [
+    0.3,
+    0.9,
+    1.0
+   ],
+   "intensity": 0.8
+  }
+ ],
+ "sprites": [
+  {
+   "x": 19.0,
+   "y": 18.5,
+   "type": "sky_train",
+   "angle": 0,
+   "length": 30.0,
+   "scale": 4.6
+  },
+  {
+   "x": 19.0,
+   "y": 12.0,
+   "type": "holo_ad",
+   "z": 5.2,
+   "scale": 3.0
+  },
+  {
+   "x": 19.4,
+   "y": 27.0,
+   "type": "holo_ad",
+   "z": 3.0,
+   "scale": 1.6,
+   "flip": true
+  },
+  {
+   "x": 16.8,
+   "y": 37.0,
+   "type": "water_tower",
+   "z": 5.0
+  },
+  {
+   "x": 22.6,
+   "y": 39.4,
+   "type": "ac_unit",
+   "z": 5.0
+  },
+  {
+   "x": 21.4,
+   "y": 40.4,
+   "type": "ac_unit",
+   "z": 5.0,
+   "flip": true
+  },
+  {
+   "x": 17.2,
+   "y": 40.6,
+   "type": "antenna",
+   "z": 5.0
+  },
+  {
+   "x": 23.0,
+   "y": 36.4,
+   "type": "rooftop_sign",
+   "z": 5.0
+  },
+  {
+   "id": "runner",
+   "x": 18.7,
+   "y": 34.22,
+   "type": "runner",
+   "z": 5.15,
+   "facing": 268,
+   "tint": [
+    2.2,
+    2.1,
+    2.5
+   ]
+  },
+  {
+   "id": "cat",
+   "x": 19.45,
+   "y": 34.12,
+   "type": "black_cat",
+   "z": 5.15
+  },
+  {
+   "x": 19.0,
+   "y": 31.0,
+   "type": "lantern_span",
+   "angle": 0,
+   "length": 6.0,
+   "z": 3.4,
+   "scale": 0.6
+  },
+  {
+   "x": 19.0,
+   "y": 25.0,
+   "type": "wires_span",
+   "angle": 0,
+   "length": 6.0,
+   "z": 4.2,
+   "scale": 0.75
+  },
+  {
+   "x": 19.0,
+   "y": 22.0,
+   "type": "lantern_span",
+   "angle": 0,
+   "length": 6.0,
+   "z": 3.0,
+   "scale": 0.6
+  },
+  {
+   "x": 19.0,
+   "y": 13.0,
+   "type": "wires_span",
+   "angle": 0,
+   "length": 6.0,
+   "z": 3.6,
+   "scale": 0.75
+  },
+  {
+   "x": 19.0,
+   "y": 9.0,
+   "type": "lantern_span",
+   "angle": 0,
+   "length": 6.0,
+   "z": 3.2,
+   "scale": 0.6
+  },
+  {
+   "x": 17.6,
+   "y": 29.0,
+   "type": "crowd",
+   "scale": 0.66
+  },
+  {
+   "x": 20.4,
+   "y": 24.5,
+   "type": "crowd",
+   "flip": true
+  },
+  {
+   "x": 18.6,
+   "y": 15.0,
+   "type": "crowd"
+  },
+  {
+   "x": 17.8,
+   "y": 31.5,
+   "type": "food_cart"
+  },
+  {
+   "x": 20.8,
+   "y": 30.2,
+   "type": "scooter"
+  }
+ ],
+ "shots": [
+  {
+   "x": 19.3,
+   "y": 35.6,
+   "height": 6.25,
+   "look_at": [
+    19.0,
+    17.0,
+    2.2
+   ],
+   "fov": 72,
+   "post": [
+    {
+     "fx": "bloom",
+     "threshold": 0.55,
+     "strength": 0.7,
+     "radius": 6
+    }
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Five storeys over the lower city",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 18.4,
+   "y": 34.1,
+   "height": 5.75,
+   "look_at": [
+    19.0,
+    27.5,
+    0.0
+   ],
+   "fov": 74,
+   "post": [
+    {
+     "fx": "bloom",
+     "threshold": 0.55,
+     "strength": 0.7,
+     "radius": 6
+    }
+   ]
+  },
+  {
+   "x": 19.6,
+   "y": 23.4,
+   "height": 0.45,
+   "look_at": [
+    19.0,
+    18.5,
+    4.2
+   ],
+   "fov": 74,
+   "post": [
+    {
+     "fx": "bloom",
+     "threshold": 0.55,
+     "strength": 0.7,
+     "radius": 6
+    }
+   ]
+  },
+  {
+   "x": 19.75,
+   "y": 34.9,
+   "height": 5.42,
+   "look_at": [
+    19.45,
+    30.0,
+    4.6
+   ],
+   "fov": 56,
+   "post": [
+    {
+     "fx": "bloom",
+     "threshold": 0.55,
+     "strength": 0.7,
+     "radius": 6
+    }
+   ]
+  }
+ ],
+ "contact_shadows": 0.5,
+ "supersample": 2
+}
