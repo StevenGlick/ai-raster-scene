@@ -10,7 +10,7 @@ and the level's textures and props merge into the asset tables like any other mo
 import numpy as np
 
 from biomes import T, _prop, _rng, _tile
-from pixelart import Canvas, outline_sprite, ramp, smooth_noise
+from pixelart import Canvas, dither, outline_sprite, ramp, smooth_noise
 
 # ---------------------------------------------------------------- bitmap fonts
 
@@ -343,20 +343,12 @@ def vm_shotgun(fire=False):
 
 # ---------------------------------------------------------------- the level: textures
 
-BAYER = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]) / 16.0
 SLIME = ramp('#38a02a', dark=0.32, light=1.6, cool=0.0)
 HEX_BROWN = ramp('#7a5434', dark=0.34, light=1.32, warm=0.12)
 GREEN_PANEL = ramp('#4e6634', dark=0.32, light=1.38)
 TRIM_BROWN = ramp('#6e4c2c', dark=0.32, light=1.4, warm=0.12)
 CEIL_GREY = ramp('#6e685c', dark=0.38, light=1.3)
 EDGE_BROWN = ramp('#5e4a34', dark=0.34, light=1.35)
-
-
-def _dithered(v, pal, amount=0.5):
-    pal = np.asarray(pal, np.float32)
-    bay = np.tile(BAYER, (v.shape[0] // 4 + 1, v.shape[1] // 4 + 1))[:v.shape[0], :v.shape[1]]
-    idx = np.clip(np.round(v * (len(pal) - 1) + (bay - 0.5) * amount), 0, len(pal) - 1).astype(int)
-    return pal[idx]
 
 
 def tex_nukage(name):
@@ -367,7 +359,7 @@ def tex_nukage(name):
     veins = np.exp(-(((swirl * 6.0) % 1.0) - 0.5) ** 2 / 0.012)
     clots = smooth_noise(T, T, 9, rng) > 0.7
     v = np.clip(0.42 + 0.35 * (swirl - 0.5) + 0.42 * veins - 0.25 * clots, 0, 1)
-    return _dithered(v, SLIME, 0.6), (0.5 + 0.45 * v).astype(np.float32)
+    return dither(v, SLIME, 0.6), (0.5 + 0.45 * v).astype(np.float32)
 
 
 def tex_hex_floor(name):
@@ -388,7 +380,7 @@ def tex_hex_floor(name):
     wear = 0.08 * (smooth_noise(T, T, 8, rng) - 0.5)
     v = 0.56 + tone + wear + 0.1 * np.clip((edge - 1.0) / 6.0, 0, 1)
     v = np.where(edge < 1.1, 0.12, v)
-    return _dithered(np.clip(v, 0, 1), HEX_BROWN, 0.5)
+    return dither(np.clip(v, 0, 1), HEX_BROWN, 0.5)
 
 
 def _green_panel(rng):
@@ -418,7 +410,7 @@ def tex_green_tech(name):
     """Tech walls in green plating: vertical strakes of different shades, panel seams, streaks of
     grime running down."""
     rng = _rng(name)
-    return _dithered(np.clip(_green_panel(rng), 0, 1), GREEN_PANEL, 0.5)
+    return dither(np.clip(_green_panel(rng), 0, 1), GREEN_PANEL, 0.5)
 
 
 def tex_green_trim(name):
@@ -426,7 +418,7 @@ def tex_green_trim(name):
     along the band - stack it storey on storey for walls banded like a 1993 tech base."""
     rng = _rng(name)
     v = np.clip(_green_panel(rng), 0, 1)
-    rgb = _dithered(v, GREEN_PANEL, 0.5)
+    rgb = dither(v, GREEN_PANEL, 0.5)
     yy, xx = np.mgrid[0:16, 0:T].astype(np.float32) + 0.5
     band = np.full((16, T), 0.5, np.float32)
     band[0:2] = 0.82
@@ -435,7 +427,7 @@ def tex_green_trim(name):
     teeth = (yy > 4) & (yy < 12) & (np.abs(tooth) < (12 - yy) * 0.55)
     band[teeth] = 0.78
     band[(yy > 4) & (yy < 12) & (np.abs(tooth) >= (12 - yy) * 0.55) & (np.abs(tooth) < (12 - yy) * 0.55 + 1)] = 0.3
-    rgb[:16] = _dithered(np.clip(band + 0.04 * (rng.random((16, T)) - 0.5), 0, 1), TRIM_BROWN, 0.4)
+    rgb[:16] = dither(np.clip(band + 0.04 * (rng.random((16, T)) - 0.5), 0, 1), TRIM_BROWN, 0.4)
     return rgb
 
 
@@ -460,7 +452,7 @@ def tex_tech_ceiling(name):
     v = 0.55 + tone + 0.06 * (smooth_noise(T, T, 8, rng) - 0.5)
     v = np.where((yy % 16 == 0) | (xx % 16 == 0), 0.2, v)
     v = np.where((yy % 16 == 1) | (xx % 16 == 1), v + 0.12, v)
-    return _dithered(np.clip(v, 0, 1), CEIL_GREY, 0.5)
+    return dither(np.clip(v, 0, 1), CEIL_GREY, 0.5)
 
 
 def tex_slime_edge(name):
@@ -470,7 +462,7 @@ def tex_slime_edge(name):
     yy, xx = np.mgrid[0:T, 0:T]
     v = 0.5 + 0.06 * (smooth_noise(T, T, 8, rng) - 0.5) + 0.03 * (rng.random((T, T)) - 0.5)
     v = np.where(xx % 32 == 0, 0.2, v)
-    rgb = _dithered(np.clip(v, 0, 1), EDGE_BROWN, 0.5)
+    rgb = dither(np.clip(v, 0, 1), EDGE_BROWN, 0.5)
     stain = (yy / T) ** 2 * (0.7 + 0.3 * smooth_noise(T, T, 6, rng))
     rgb = rgb * (1 - stain[..., None] * 0.6) + np.array([0.25, 0.6, 0.15], np.float32) * stain[..., None] * 0.6
     return np.clip(rgb, 0, 1)

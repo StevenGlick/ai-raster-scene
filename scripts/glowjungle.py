@@ -14,9 +14,8 @@ import numpy as np
 
 import biomes
 from biomes import T, _prop, _rng
-from pixelart import Canvas, ramp, smooth_noise
+from pixelart import Canvas, dither, ramp, smooth_noise
 
-BAYER = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]], np.float32) / 16
 NIGHT = np.array([0.05, 0.11, 0.13], np.float32)          # the jungle's own green, sunk into the night
 
 
@@ -81,12 +80,6 @@ def spr_glow_pods():
     return rgba, np.where(m, np.maximum(em, 0.85), em).astype(np.float32)
 
 
-def _dither(v, pal, amount=0.6):
-    bay = np.tile(BAYER, (v.shape[0] // 4 + 1, v.shape[1] // 4 + 1))[:v.shape[0], :v.shape[1]]
-    idx = np.clip(np.round(v * (len(pal) - 1) + (bay - 0.5) * amount), 0, len(pal) - 1).astype(int)
-    return pal[idx].astype(np.float32)
-
-
 def tex_glow_leaves(name):
     """A wall of rainforest at night: the leaves dark blue-green, ribs and tips of them glowing."""
     rgb = biomes.TEXTURES['jungle_leaves']('jungle_leaves')
@@ -101,7 +94,7 @@ def tex_lumen_floor(name):
     """The jungle floor at night: dark leaf litter, glowing moss in patches and fungus in specks."""
     rng = _rng(name)
     litter = smooth_noise(T, T, 16, rng) * 0.6 + smooth_noise(T, T, 5, rng) * 0.4
-    rgb = _dither(np.clip(0.3 + 0.5 * (litter - 0.5), 0, 1),
+    rgb = dither(np.clip(0.3 + 0.5 * (litter - 0.5), 0, 1),
                   ramp(['#06100e', '#0b1a16', '#11251f', '#183128', '#203e32']), 0.6)
     moss = _smooth(0.66, 0.8, smooth_noise(T, T, 9, rng)) * (rng.random((T, T)) < 0.35)
     specks = rng.random((T, T)) < 0.012

@@ -15,16 +15,9 @@ import math
 import numpy as np
 
 from biomes import T, _prop, _rng
-from pixelart import Canvas, ramp, smooth_noise
+from pixelart import Canvas, dither, ramp, smooth_noise
 
-BAYER = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]], np.float32) / 16
 ICE = ramp(['#1d3550', '#2c5476', '#46789c', '#6c9cbc', '#9cc2da', '#d2e8f4', '#f6fcff'])
-
-
-def _dither(v, pal, amount=0.6):
-    bay = np.tile(BAYER, (v.shape[0] // 4 + 1, v.shape[1] // 4 + 1))[:v.shape[0], :v.shape[1]]
-    idx = np.clip(np.round(v * (len(pal) - 1) + (bay - 0.5) * amount), 0, len(pal) - 1).astype(int)
-    return pal[idx].astype(np.float32)
 
 
 GREEN = np.array([0.35, 1.0, 0.55], np.float32)
@@ -143,7 +136,7 @@ def tex_ice_block(name):
             y += math.sin(a) + rng.uniform(-0.4, 0.4)
             crack[int(y) % T, int(x) % T] = True
     v = np.where(crack & ~joint, v + 0.28, v)
-    return _dither(np.clip(v, 0, 1), ICE, 0.6)
+    return dither(np.clip(v, 0, 1), ICE, 0.6)
 
 
 def tex_frost_wall(name):
@@ -165,7 +158,7 @@ def tex_frost_wall(name):
                         m[int(y + math.sin(b) * s) % T, int(x + math.cos(b) * s) % T] = 0.8
             a += rng.uniform(-0.12, 0.12)
     v = v + 0.5 * m
-    return _dither(np.clip(v, 0, 1), ICE, 0.5)
+    return dither(np.clip(v, 0, 1), ICE, 0.5)
 
 
 def tex_ice_floor(name):
@@ -182,7 +175,7 @@ def tex_ice_floor(name):
             v[int(y) % T, int(x) % T] = 0.75
     bubbles = rng.random((T, T)) < 0.01
     v = np.where(bubbles, 0.6, v)
-    return _dither(np.clip(v, 0, 1), ICE, 0.5)
+    return dither(np.clip(v, 0, 1), ICE, 0.5)
 
 
 def spr_ice_spire():

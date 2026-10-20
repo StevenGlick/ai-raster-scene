@@ -12,19 +12,12 @@ rows), `salt_heap` (two slumped together, long and low), `salt_pile` (a small ro
 import numpy as np
 
 from biomes import T, _rng
-from pixelart import Canvas, outline_sprite, ramp, smooth_noise
+from pixelart import Canvas, dither, outline_sprite, ramp, smooth_noise
 
-BAYER = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]], np.float32) / 16
 
 CRUST = ramp(['#9d9aa2', '#b8b4b8', '#cfcbcb', '#e2dedb', '#efece8', '#fbfaf6'])
 UNDER = ramp(['#4f5a66', '#5f6b77', '#707c87', '#828d97', '#98a2aa', '#b2bac0'])
 BRICK = ramp(['#8e8578', '#a89e8e', '#c0b6a5', '#d4cbbb', '#e4dccd', '#f0eadf'])
-
-
-def _dither(v, pal, amount=0.6):
-    bay = np.tile(BAYER, (v.shape[0] // 4 + 1, v.shape[1] // 4 + 1))[:v.shape[0], :v.shape[1]]
-    idx = np.clip(np.round(v * (len(pal) - 1) + (bay - 0.5) * amount), 0, len(pal) - 1).astype(int)
-    return pal[idx].astype(np.float32)
 
 
 def _plates(rng, n=10):
@@ -59,7 +52,7 @@ def tex_salt_flat(name):
     rim = np.clip(1.6 - gap, 0, 1)                      # the ridge along each edge
     lee = np.clip(3.2 - gap, 0, 1) * (1 - rim)          # a faint shadow at its foot
     v = 0.62 + tone + 0.12 * grain - 0.16 * lee + 0.38 * rim
-    return _dither(np.clip(v, 0, 1), CRUST, 0.55)
+    return dither(np.clip(v, 0, 1), CRUST, 0.55)
 
 
 def tex_salt_water(name):
@@ -69,7 +62,7 @@ def tex_salt_water(name):
     tone = rng.uniform(-0.06, 0.06, owner.max() + 1)[owner]
     rim = np.clip(1.6 - gap, 0, 1)
     v = 0.48 + tone + 0.06 * (smooth_noise(T, T, 8, rng) - 0.5) + 0.22 * rim
-    return _dither(np.clip(v, 0, 1), UNDER, 0.45)
+    return dither(np.clip(v, 0, 1), UNDER, 0.45)
 
 
 def tex_salt_brick(name):
@@ -88,7 +81,7 @@ def tex_salt_brick(name):
     edge = ((yy % 16 == 2) | ((xx + shift) % 32 == 2)) & ~joint
     v = 0.66 + tone + bands + rough + 0.1 * edge
     v = np.where(joint, 0.12, v)
-    return _dither(np.clip(v, 0, 1), BRICK, 0.5)
+    return dither(np.clip(v, 0, 1), BRICK, 0.5)
 
 
 SALT = ramp(['#8a91a0', '#a6adba', '#c0c5ce', '#d7dadf', '#e9eaea', '#f6f6f3', '#ffffff'])

@@ -13,18 +13,11 @@ import math
 import numpy as np
 
 from biomes import T, _prop, _rng
-from pixelart import Canvas, ramp, smooth_noise
+from pixelart import Canvas, dither, ramp, smooth_noise
 
-BAYER = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]], np.float32) / 16
 BRASS = ramp(['#3a2610', '#5c3e18', '#7e5a22', '#a37a2c', '#c79c3e', '#e6c264', '#fbe7a0'])
 COPPER = ramp(['#3a1c10', '#5e2e18', '#874424', '#ad5e34', '#cf7f4c', '#eba574'])
 PATINA = np.array([0.36, 0.62, 0.52], np.float32)
-
-
-def _dither(v, pal, amount=0.6):
-    bay = np.tile(BAYER, (v.shape[0] // 4 + 1, v.shape[1] // 4 + 1))[:v.shape[0], :v.shape[1]]
-    idx = np.clip(np.round(v * (len(pal) - 1) + (bay - 0.5) * amount), 0, len(pal) - 1).astype(int)
-    return pal[idx].astype(np.float32)
 
 
 def tex_brass_plate(name):
@@ -39,7 +32,7 @@ def tex_brass_plate(name):
     rivet = ((lx - 3) % 6 == 0) & ((ly < 4) & (ly >= 2) | (ly > 27) & (ly <= 29)) | \
             ((ly - 3) % 6 == 0) & ((lx < 4) & (lx >= 2) | (lx > 27) & (lx <= 29))
     v = np.where(rivet, 0.95, v)
-    return _dither(np.clip(v, 0, 1), BRASS, 0.55)
+    return dither(np.clip(v, 0, 1), BRASS, 0.55)
 
 
 def tex_copper_pipes(name):
@@ -61,7 +54,7 @@ def tex_copper_pipes(name):
         pipe |= on
     flange = ((np.abs(yy - 20) < 6) & (np.abs(xx - 31) < 8)) & ~((np.abs(yy - 20) < 4.5) & (np.abs(xx - 31) < 6.5))
     v = np.where(flange, 0.75, v)
-    rgb = _dither(np.clip(v, 0, 1), COPPER, 0.5)
+    rgb = dither(np.clip(v, 0, 1), COPPER, 0.5)
     weep = pipe & (smooth_noise(T, T, 10, rng) > 0.72)
     rgb[weep] = rgb[weep] * 0.4 + PATINA * 0.6
     r = np.hypot(yy - 46, xx - 18)                            # a valve wheel on the lower pipe
@@ -106,7 +99,7 @@ def spr_brass_gear():
     solid = rim | spokes | hub
     light = 0.55 + 0.35 * (-dy / np.maximum(r, 1)) * 0.6 - 0.15 * (r / 32)
     v = np.where(hub & (r < 3), 0.2, light + 0.15 * (rim & (r > teeth - 2.5)))
-    rgb = _dither(np.clip(v, 0, 1), BRASS, 0.55)
+    rgb = dither(np.clip(v, 0, 1), BRASS, 0.55)
     edge = solid & ~(np.roll(solid, 1, 0) & np.roll(solid, -1, 0) & np.roll(solid, 1, 1) & np.roll(solid, -1, 1))
     rgb[edge] = rgb[edge] * 0.55
     rgba = np.concatenate([rgb, solid[..., None].astype(np.float32)], -1)

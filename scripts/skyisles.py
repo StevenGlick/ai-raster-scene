@@ -13,19 +13,12 @@ cliff so it reads as a floating mountain from every side.
 import numpy as np
 
 from biomes import T, _prop, _rng
-from pixelart import Canvas, ramp, smooth_noise
+from pixelart import Canvas, dither, ramp, smooth_noise
 
-BAYER = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]], np.float32) / 16
 GRASS = ramp(['#24461f', '#2f5a26', '#3d722d', '#4f8a35', '#66a343', '#86bc58'])
 ROCK = ramp(['#4a4450', '#605862', '#786e70', '#908480', '#a89c94', '#c2b6aa'])
 WATER = ramp(['#4f7896', '#6f98b6', '#94b8d2', '#bcd6e8', '#e2eff7', '#ffffff'])
 ROOT = ramp(['#2e2016', '#45301f', '#5e432b', '#7a5a3b'])
-
-
-def _dither(v, pal, amount=0.6):
-    bay = np.tile(BAYER, (v.shape[0] // 4 + 1, v.shape[1] // 4 + 1))[:v.shape[0], :v.shape[1]]
-    idx = np.clip(np.round(v * (len(pal) - 1) + (bay - 0.5) * amount), 0, len(pal) - 1).astype(int)
-    return pal[idx].astype(np.float32)
 
 
 def tex_meadow(name):
@@ -35,7 +28,7 @@ def tex_meadow(name):
     blades = rng.random((T, T)) < 0.18
     v = np.where(blades, v + 0.22, v)
     v = np.where(np.roll(blades, 1, 0) & ~blades, v - 0.15, v)    # a shadow under each tip
-    rgb = _dither(np.clip(v, 0, 1), GRASS, 0.6)
+    rgb = dither(np.clip(v, 0, 1), GRASS, 0.6)
     for colour, n in (([0.96, 0.95, 0.88], 14), ([1.0, 0.86, 0.3], 10), ([0.95, 0.55, 0.7], 8), ([0.7, 0.62, 0.95], 5)):
         for _ in range(n):
             y, x = rng.integers(0, T, 2)
@@ -55,7 +48,7 @@ def tex_island_rock(name):
     v = 0.5 + tone + 0.18 * (smooth_noise(T, T, 10, rng) - 0.5)
     seam = ((yy + wave) % 9.0) < 1.0
     v = np.where(seam, v - 0.28, v)
-    rgb = _dither(np.clip(v, 0, 1), ROCK, 0.6)
+    rgb = dither(np.clip(v, 0, 1), ROCK, 0.6)
     for _ in range(5):                                   # roots threading down through it
         x = float(rng.integers(0, T))
         y0 = int(rng.integers(0, T))
@@ -77,7 +70,7 @@ def spr_waterfall():
     streak = smooth_noise(w, h, 8, rng, cells_y=3) * 0.6 + smooth_noise(w, h, 16, rng, cells_y=5) * 0.4
     v = 0.45 + 0.5 * (streak - 0.5) + 0.25 * t                  # paler as it breaks up
     v = np.where(yy < 3, 0.98, v)                                 # the lip
-    rgb = _dither(np.clip(v, 0, 1), WATER, 0.7)
+    rgb = dither(np.clip(v, 0, 1), WATER, 0.7)
     mist = np.clip((t - 0.55) / 0.45, 0, 1)
     rgb = rgb * (1 - mist[..., None] * 0.6) + np.array([0.94, 0.97, 1.0], np.float32) * mist[..., None] * 0.6
     a = np.clip(0.92 - 0.25 * (streak < 0.35) * t, 0, 1) * (1 - mist ** 1.3)

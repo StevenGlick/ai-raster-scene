@@ -1175,4 +1175,4 @@ SPRITES = {'barrel': spr_barrel, 'broken_barrel': spr_broken_barrel, 'crate': sp
            'bed': spr_bed, 'wheelchair': spr_wheelchair, 'table': spr_table, 'chest': spr_chest,
            'glowshroom': spr_glowshroom, 'buoy': spr_buoy, 'alien_egg': spr_alien_egg, 'jaguar': spr_jaguar, 'goat': spr_goat,
            'stone_cap': spr_stone_cap}
-SPRITE_HEIGHT = {'stone_cap': 0.44}
+SPRITE_HEIGHT = {'stone_cap': 0.44, 'jaguar': 0.34, 'goat': 0.34}

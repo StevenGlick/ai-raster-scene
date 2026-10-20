@@ -71,6 +71,18 @@ def ramp(base, n=6, dark=0.3, light=1.35, warm=0.12, cool=0.16, sat=0.3):
     return np.array(out, np.float32)
 
 
+BAYER = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]], np.float32) / 16
+
+
+def dither(v, pal, amount=0.6):
+    """Values in 0..1 (an array h x w) as colours of the ramp `pal` (n x 3), ordered-dithered across
+    the steps between them: `amount` 0 bands hard, 1 spreads the pattern over a whole step. For the
+    flat, banded pixel-art look of the newer kits' textures."""
+    bay = np.tile(BAYER, (v.shape[0] // 4 + 1, v.shape[1] // 4 + 1))[:v.shape[0], :v.shape[1]]
+    idx = np.clip(np.round(v * (len(pal) - 1) + (bay - 0.5) * amount), 0, len(pal) - 1).astype(int)
+    return pal[idx].astype(np.float32)
+
+
 def smooth_noise(w, h, cells, rng, wrap=True, cells_y=None):
     """Value noise 0..1 that tiles when `wrap`: `cells` across the width, and down the height
     either as many as keep the cells square or `cells_y` (fewer for vertical streaks)."""
