@@ -914,7 +914,7 @@ The environments, judged on their gallery images and shots.
 | `autumn_lane` | good | 4 | autumn_lane, autumn_scarecrow, autumn_dusk, autumn_walk | A lane through an autumn wood under a low sun, a field with a scarecrow, pumpkins and hay bales behind a wall; jack-o'-lanterns at dusk. |
 | `bayou` | good | 4 | bayou_dusk, bayou_night, bayou_gator, bayou_heron | A shack on an island in black water between mossy cypresses: sundown, fireflies at night, an alligator, a heron in mist. |
 | `kelp_forest` | good | 4 | sea_kelp, sea_diver, sea_shoal, sea_night | A kelp forest in teal water: a wreck with its mast, a diver with bubbles rising, a shoal; a night dive by flashlight with jellyfish. |
-| `aquarium` | good | 5 | aquarium_hall, aquarium_manta, aquarium_tunnel, aquarium_jellies, aquarium_reef | A dark hall before the great window (whale shark, manta, a diver cleaning the glass, silhouettes, the floor mirroring it); the manta from below; the tunnel; sea nettles against blue; the reef tank. |
+| `aquarium` | good | 7 | aquarium_hall, aquarium_manta, aquarium_tunnel, aquarium_jellies, aquarium_reef, aquarium_moon, aquarium_diver | A dark hall before the great window (whale shark, manta, a diver cleaning the glass, silhouettes, the floor mirroring it); the manta from below; the tunnel; sea nettles against blue; the reef tank. |
 | `coast_lighthouse` | good | 4 | coast_tower, coast_jetty | The shore rocks are the redrawn boulders now, not grey lumps; sand and water redrawn too. |
 | `rainy_street` | good | 4 | street_rain, street_lightning |  |
 | `rain_alley` | good | 4 | alley_street, alley_rain, alley_glass, alley_storm |  |
@@ -980,6 +980,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the moon jellies and the diver.** Two more aquarium shots: moon jellies glowing in a tank lit low and violet (a tinted `jelly_backdrop`), and the diver behind the glass with a sunbeam on the sand. A sprite behind glass no longer counts as hidden in the render report.
 - **2026-10-19, sunbeams in the tank.** A `glazed` cell key: the roof is drawn but the sun and moon shine through it (existing scenes unchanged: none glaze). The aquarium glazes a few cells of its water surface, and the sun comes down into the big tank in beams.
 - **2026-10-19, two for the neon city.** Characters `samurai` and `hacker` (16x32, with back views): the samurai walks the night market under an umbrella, the hacker works in a booth of the neon bar.
 - **2026-10-19, the rooftops.** `scripts/rooftop.py`: `water_tower`, `ac_unit`, `rooftop_sign`, `sky_train`, `black_cat`. `examples/neon_rooftop.py`: the camera on a tower 5 tall at the end of a neon street, with four gallery shots. Noted: point lights fade with absolute height, so a high roof is lit by ambient and emission only.

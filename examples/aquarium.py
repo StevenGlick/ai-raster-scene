@@ -33,6 +33,8 @@ for y0 in (23, 27):                                  # two jelly tanks in its we
     g.rect(1, y0, 2, y0 + 3, 'b')
     g.rect(2, y0 + 1, 2, y0 + 2, 'B')
     g.rect(3, y0 + 1, 3, y0 + 2, 'w')
+g.rect(1, 27, 2, 30, 'd')                            # the second is the moon jellies', lit violet
+g.rect(2, 28, 2, 29, 'D')
 g.rect(12, 25, 13, 28, 'b')                          # and one in its east wall
 g.rect(12, 26, 12, 27, 'B')
 g.rect(11, 26, 11, 27, 'w')
@@ -49,6 +51,7 @@ water = {'tint': [0.62, 0.88, 1.0], 'opacity': 0.07, 'blur': 0, 'fog': True}
 clear = {'tint': [0.9, 0.95, 1.0], 'opacity': 0.05, 'blur': 0, 'fog': True}
 dark = [0.16, 0.2, 0.28]
 surface = {'base': 'water_surface', 'tint': [0.55, 0.72, 0.82]}
+violet = {'base': 'jelly_backdrop', 'tint': [0.3, 0.22, 0.5]}
 panes = [
     {'x': 19.0, 'y': 13.0, 'type': 'glass_pane', 'angle': 0, 'length': 18.0, 'scale': 2.0, 'glass': water},
     {'x': 29.0, 'y': 27.5, 'type': 'glass_pane', 'angle': 90, 'length': 11.0, 'scale': 2.0, 'glass': water},
@@ -96,10 +99,11 @@ jellies = [
     {'x': 2.5, 'y': 24.6, 'type': 'sea_nettle', 'z': 0.14, 'scale': 0.74},
     {'x': 2.3, 'y': 25.5, 'type': 'sea_nettle', 'z': 0.1, 'scale': 0.6},
     {'x': 2.7, 'y': 25.15, 'type': 'sea_nettle', 'z': 0.42, 'scale': 0.44, 'flip': True},
-    {'x': 2.5, 'y': 28.3, 'type': 'moon_jelly', 'z': 0.66},
-    {'x': 2.4, 'y': 29.1, 'type': 'moon_jelly', 'z': 0.36, 'scale': 0.1},
-    {'x': 2.6, 'y': 29.6, 'type': 'moon_jelly', 'z': 0.75, 'scale': 0.09},
-    {'x': 2.5, 'y': 28.8, 'type': 'moon_jelly', 'z': 0.18, 'scale': 0.11},
+    {'x': 2.5, 'y': 28.4, 'type': 'moon_jelly', 'z': 0.62, 'scale': 0.2},
+    {'x': 2.4, 'y': 29.2, 'type': 'moon_jelly', 'z': 0.36, 'scale': 0.17},
+    {'x': 2.6, 'y': 29.6, 'type': 'moon_jelly', 'z': 0.72, 'scale': 0.14},
+    {'x': 2.5, 'y': 28.8, 'type': 'moon_jelly', 'z': 0.14, 'scale': 0.15},
+    {'x': 2.55, 'y': 28.3, 'type': 'moon_jelly', 'z': 0.3, 'scale': 0.11},
     {'x': 12.5, 'y': 26.6, 'type': 'sea_nettle', 'z': 0.4, 'scale': 0.4, 'flip': True},
     {'x': 12.5, 'y': 27.4, 'type': 'sea_nettle', 'z': 0.25, 'scale': 0.32},
     {'id': 'gazer', 'x': 4.45, 'y': 24.55, 'type': 'child', 'facing': 180, 'tint': dark},
@@ -148,6 +152,8 @@ s = scene(
         'T': {'floor': 'marble_dark', 'ceil': 'tunnel_roof', 'reflect': 0.2},
         'b': {'wall': 'jelly_backdrop', 'h': 2.0},
         'B': {'floor': 'jelly_backdrop', 'ceil': 'jelly_backdrop'},
+        'd': {'wall': violet, 'h': 2.0},
+        'D': {'floor': violet, 'ceil': violet},
         'w': {'wall': ['tank_window', 'concrete'], 'h': 2.0},
         'v': {'wall': ['tank_window', 'concrete'], 'h': 2.0},
     },
@@ -177,6 +183,11 @@ s = scene(
         {'x': 29.95, 'y': 21.4, 'look_at': [30.0, 33.0, 0.7], 'fov': 74},
         {'x': 5.3, 'y': 25.6, 'look_at': [2.5, 25.0, 0.5], 'fov': 66},
         {'x': 6.5, 'y': 31.2, 'look_at': [6.5, 33.8, 0.36], 'fov': 64, 'height': 0.36},
+        {'x': 4.9, 'y': 29.0, 'look_at': [2.5, 29.0, 0.48], 'fov': 64, 'height': 0.45,
+         'overrides': {'ambient': [0.02, 0.02, 0.04],
+                       'lights': [{'x': 2.5, 'y': 29.0, 'z': 0.9, 'radius': 1.4, 'color': [0.55, 0.45, 1.0],
+                                   'intensity': 0.7}]}},
+        {'x': 15.2, 'y': 14.4, 'look_at': [15.9, 12.45, 0.95], 'fov': 60, 'height': 0.55},
     ],
     contact_shadows=0.5,
     supersample=2,

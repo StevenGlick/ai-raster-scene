@@ -32,10 +32,10 @@
   "#bBwJJJJJJJ#############RSSSSTTSSSSR##",
   "#bBwJJJJJJJ#bb##########RSSSSTTSSSSR##",
   "#bb#JJJJJJJwBb##########RSSSSTTSSSSR##",
-  "#bb#JJJJJJJwBb##########RSSSSTTSSSSR##",
-  "#bBwJJJJJJJ#bb##########RSSSSTTSSSSR##",
-  "#bBwJJJJJJJ#############RSSSSTTSSSSR##",
-  "#bb#JJJJJJJ#############RSSSSTTSSSSR##",
+  "#dd#JJJJJJJwBb##########RSSSSTTSSSSR##",
+  "#dDwJJJJJJJ#bb##########RSSSSTTSSSSR##",
+  "#dDwJJJJJJJ#############RSSSSTTSSSSR##",
+  "#dd#JJJJJJJ#############RSSSSTTSSSSR##",
   "####JJJJJJJ#############RSSSSTTSSSSR##",
   "#####vvv################RSSSSTTSSSSR##",
   "###RrrrrrR##############RSSSSSSSSSSR##",
@@ -119,6 +119,35 @@
   "B": {
    "floor": "jelly_backdrop",
    "ceil": "jelly_backdrop"
+  },
+  "d": {
+   "wall": {
+    "base": "jelly_backdrop",
+    "tint": [
+     0.3,
+     0.22,
+     0.5
+    ]
+   },
+   "h": 2.0
+  },
+  "D": {
+   "floor": {
+    "base": "jelly_backdrop",
+    "tint": [
+     0.3,
+     0.22,
+     0.5
+    ]
+   },
+   "ceil": {
+    "base": "jelly_backdrop",
+    "tint": [
+     0.3,
+     0.22,
+     0.5
+    ]
+   }
   },
   "w": {
    "wall": [
@@ -910,29 +939,37 @@
   },
   {
    "x": 2.5,
-   "y": 28.3,
+   "y": 28.4,
    "type": "moon_jelly",
-   "z": 0.66
+   "z": 0.62,
+   "scale": 0.2
   },
   {
    "x": 2.4,
-   "y": 29.1,
+   "y": 29.2,
    "type": "moon_jelly",
    "z": 0.36,
-   "scale": 0.1
+   "scale": 0.17
   },
   {
    "x": 2.6,
    "y": 29.6,
    "type": "moon_jelly",
-   "z": 0.75,
-   "scale": 0.09
+   "z": 0.72,
+   "scale": 0.14
   },
   {
    "x": 2.5,
    "y": 28.8,
    "type": "moon_jelly",
-   "z": 0.18,
+   "z": 0.14,
+   "scale": 0.15
+  },
+  {
+   "x": 2.55,
+   "y": 28.3,
+   "type": "moon_jelly",
+   "z": 0.3,
    "scale": 0.11
   },
   {
@@ -1208,6 +1245,49 @@
    ],
    "fov": 64,
    "height": 0.36
+  },
+  {
+   "x": 4.9,
+   "y": 29.0,
+   "look_at": [
+    2.5,
+    29.0,
+    0.48
+   ],
+   "fov": 64,
+   "height": 0.45,
+   "overrides": {
+    "ambient": [
+     0.02,
+     0.02,
+     0.04
+    ],
+    "lights": [
+     {
+      "x": 2.5,
+      "y": 29.0,
+      "z": 0.9,
+      "radius": 1.4,
+      "color": [
+       0.55,
+       0.45,
+       1.0
+      ],
+      "intensity": 0.7
+     }
+    ]
+   }
+  },
+  {
+   "x": 15.2,
+   "y": 14.4,
+   "look_at": [
+    15.9,
+    12.45,
+    0.95
+   ],
+   "fov": 60,
+   "height": 0.55
   }
  ],
  "contact_shadows": 0.5,

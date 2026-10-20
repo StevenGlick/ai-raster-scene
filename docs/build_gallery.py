@@ -63,6 +63,8 @@ SHOTS = {
     'aquarium_tunnel': ('aquarium', 3),
     'aquarium_jellies': ('aquarium', 4),
     'aquarium_reef': ('aquarium', 5),
+    'aquarium_moon': ('aquarium', 6),
+    'aquarium_diver': ('aquarium', 7),
     'western_noon': ('ghost_town', 1),
     'western_saloon': ('ghost_town', 2),
     'western_ghost': ('ghost_town', 3),

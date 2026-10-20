@@ -1823,20 +1823,20 @@ class Renderer:
                 self._draw_planes(img, depth, ty, tx, sp, defs, horizon, proj, camz, flash, translucent(sp), rays)
             else:
                 self._draw_sprite(img, depth, ty, tx, sp, defs, horizon, proj, camz, pl, flash, translucent(sp))
-        if glass:
-            self.rays = {'px': px, 'py': py, 'rdx': rdx, 'rdy': rdy, 'rlen': rlen, 'horizon': horizon,
-                         'proj': proj, 'camz': camz}
-            self._glass_pass(img, depth, glass, defs, horizon, proj, camz, flash, rays)
         self.sprite_stats = {}
         for sid, n in self._named.items():
             vis, lum = 0.0, 0.0
             if n['box'] is not None:                 # what is left once everything nearer is drawn
-                y0_, y1_, x0_, x1_, solid = n['box']
+                y0_, y1_, x0_, x1_, solid = n['box']   # (glass comes after: a fish in a tank is seen)
                 seen = solid & (depth[y0_:y1_, x0_:x1_] >= n['ty'] - 1e-3)
                 vis = float(seen.sum())
                 if vis:
                     lum = float(img[y0_:y1_, x0_:x1_][seen].mean())
             self.sprite_stats[sid] = {'visible': vis, 'area': n['area'], 'height': n['h'], 'brightness': lum}
+        if glass:
+            self.rays = {'px': px, 'py': py, 'rdx': rdx, 'rdy': rdy, 'rlen': rlen, 'horizon': horizon,
+                         'proj': proj, 'camz': camz}
+            self._glass_pass(img, depth, glass, defs, horizon, proj, camz, flash, rays)
 
         if refl.any():
             img = self._reflect(img, depth, refl, refl_depth)

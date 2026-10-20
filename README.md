@@ -143,6 +143,7 @@ A dark hall in front of a great ocean tank, a whale shark and a manta gliding pa
 |---|---|
 | ![Looking up through the glass at a manta against the bright surface](docs/gallery/aquarium_manta.png) | ![The tunnel: glass down both sides, the water over the roof](docs/gallery/aquarium_tunnel.png) |
 | ![Sea nettles drifting in front of the glowing blue of their tank](docs/gallery/aquarium_jellies.png) | ![The reef tank: an anemone and its clownfish, corals, an angelfish, a shoal](docs/gallery/aquarium_reef.png) |
+| ![Moon jellies glowing in a dark tank](docs/gallery/aquarium_moon.png) | ![A diver behind the glass, bubbles rising, a sunbeam on the sand](docs/gallery/aquarium_diver.png) |
 
 ## More settings
 
