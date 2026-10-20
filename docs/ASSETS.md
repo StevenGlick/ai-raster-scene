@@ -21,7 +21,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 150 | 147 | 3 | 0 | 0 |
+| Textures | 151 | 148 | 3 | 0 | 0 |
 | Props | 213 | 211 | 2 | 0 | 0 |
 | Characters | 27 | 25 | 2 | 0 | 0 |
 | Decals | 25 | 20 | 5 | 0 | 0 |
@@ -38,8 +38,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 16 | 16 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 47 | 46 | 1 | 0 | 0 |
-| **all** | **611** | **590** | **21** | **0** | **0** |
+| Example scenes | 48 | 47 | 1 | 0 | 0 |
+| **all** | **613** | **592** | **21** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -53,7 +53,7 @@ Weakest first, and in the order the new scenes need them.
 5. **Small things.** The hands on the held items, the `stain`, `stain_rust` and `moss_patch` decals, the `child` and `dreamer` characters, the `city` skyline, `alien_rock`, `alien_ground`, and the `glowshroom` and `alien_egg` props.
 6. **Second look.** Every asset marked good, checked again on the review sheets and in its scenes, with fresh eyes and the new techniques in hand.
 
-## Textures (150)
+## Textures (151)
 
 64x64 tiles, drawn in code. "glows" means the texture lights itself (windows, screens, runes), "see-through" that the map shows through its holes, "mirror" that floors made of it reflect.
 
@@ -82,7 +82,7 @@ Weakest first, and in the order the new scenes need them.
 | `rock` | good |  | castle_keep, coast_lighthouse, crystal_cave, garden_encounter, gui_lantern, gui_menus, hospital_garden, kelp_forest, moon_base, post_presets, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: masses of every size, each a facet tilted to the light, split by crevices that wander, widen and close; finer cracks, grain. |
 | `rock_wet` | good |  | crystal_cave, gui_lantern, kelp_forest, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: the same rock darker and blue-grey, with glints of water where the faces catch the light. |
 | `snow_rock` | good |  | winter_lake | Redrawn with the toolkit in basics.py: faceted rock with snow lying on the top of every mass, thick on the flats, and drifted in the crevices. |
-| `sky_wall` | good |  | dream_chess, dream_world |  |
+| `sky_wall` | good |  | dream_chess, dream_world, hall_of_doors |  |
 
 ### Wood
 
@@ -162,7 +162,8 @@ Weakest first, and in the order the new scenes need them.
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
 | `checker` | good |  | dream_world |  |
-| `checker_marble` | good | mirror 0.35 | dream_chess | Drawn with the toolkit in dream.py: black and white marble squares, veined, fine joints; mirror 0.35. |
+| `checker_marble` | good | mirror 0.35 | dream_chess, hall_of_doors | Drawn with the toolkit in dream.py: black and white marble squares, veined, fine joints; mirror 0.35. |
+| `door_hall` | good |  | hall_of_doors | Drawn with the toolkit in dream.py: a pale four-panelled door with a brass knob and number plate in a moulded frame on striped paper; tint it. |
 | `linoleum` | good |  | ghost_corridor, gui_hud, hospital_corridor |  |
 | `tile_floor` | good |  | bunker_lab, derelict_ship, neon_street |  |
 | `tile_white` | good |  | - |  |
@@ -173,7 +174,7 @@ Weakest first, and in the order the new scenes need them.
 | `carpet_green` | good |  | - |  |
 | `flagstone` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, haunted_house, neon_street, rain_alley |  |
 | `obsidian` | good | mirror 0.45 | dream_world, space_station |  |
-| `concrete_floor` | good |  | 47 scenes |  |
+| `concrete_floor` | good |  | 48 scenes |  |
 | `rock_floor` | good |  | crystal_cave, gui_lantern, kelp_forest, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: flatter, smaller masses in brown with grit in the cracks. |
 
 ### Ceilings
@@ -190,7 +191,7 @@ Weakest first, and in the order the new scenes need them.
 |---|---|---|---|---|
 | `curtain` | good |  | gui_themes, gui_trade, library_medium, mansion_library | Redrawn with the toolkit in basics.py: velvet folds of every width, each a rounded column lit on its left, deep shadow between. |
 | `curtain_black` | good |  | - | Redrawn with the toolkit in basics.py: the same folds in black velvet. |
-| `wallpaper` | good |  | gui_themes, gui_trade, haunted_house, library_medium, mansion_library |  |
+| `wallpaper` | good |  | gui_themes, gui_trade, hall_of_doors, haunted_house, library_medium, mansion_library |  |
 | `wallpaper_green` | good |  | - |  |
 
 ### Light sources
@@ -295,7 +296,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `orrery` | good | 0.6 tall, glows | claude_study |  |
 | `telescope` | good | 0.8 tall | claude_study |  |
 | `painting` | good | 0.45 tall, no shadow | - |  |
-| `wall_clock` | good | 0.28 tall, no shadow | bunker_lab, rainy_street |  |
+| `wall_clock` | good | 0.28 tall, no shadow | bunker_lab, hall_of_doors, rainy_street |  |
 | `banner` | good | 0.95 tall, no shadow | castle_keep, rainy_street |  |
 | `chains` | good | 0.6 tall, no shadow | castle_keep |  |
 | `ladder` | good | 1 tall, no shadow | drowned_library, red_canyon, sewer_tunnels |  |
@@ -432,18 +433,18 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `chess_knight` | good | 1.2 tall | dream_chess | Drawn with the toolkit in dream.py: a horse head and neck on a turned foot, ridged mane, eye and ear. |
 | `chess_bishop` | good | 1.3 tall | dream_chess | Drawn with the toolkit in dream.py: a slender stem and a mitre with its slit, a bead on top. |
 | `chess_queen` | good | 1.45 tall | dream_chess | Drawn with the toolkit in dream.py: a tall stem and a beaded coronet with an orb. |
-| `melting_clock` | good | 0.6 tall, no shadow | dream_chess | Drawn with the toolkit in dream.py: a clock face warped over a ledge, the hanging part stretched and dripping. |
+| `melting_clock` | good | 0.6 tall, no shadow | dream_chess, hall_of_doors | Drawn with the toolkit in dream.py: a clock face warped over a ledge, the hanging part stretched and dripping. |
 | `hourglass` | good | 0.6 tall | dream_chess | Drawn with the toolkit in dream.py: glass bulbs in a wooden frame, sand running into a heap, a gleam. |
 | `stone_arch` | good | 2.4 tall | dream_chess | Drawn with the toolkit in dream.py: coursed piers and a round arch of voussoirs with a keystone, open in the middle. |
-| `stair_float` | good | 2 tall | dream_chess | Drawn with the toolkit in dream.py: a flight of stairs on a soffit, broken off at both ends, stones falling. |
-| `paper_boat` | good | 0.3 tall | dream_chess | Drawn with the toolkit in dream.py: folded planes, a peak and a crease. |
+| `stair_float` | good | 2 tall | dream_chess, hall_of_doors | Drawn with the toolkit in dream.py: a flight of stairs on a soffit, broken off at both ends, stones falling. |
+| `paper_boat` | good | 0.3 tall | dream_chess, hall_of_doors | Drawn with the toolkit in dream.py: folded planes, a peak and a crease. |
 | `jellyfish` | good | 0.9 tall, glows, no shadow | drowned_library, kelp_forest | A bell of light frilled at the rim, oral arms and tentacles; additive and glowing, no shadow. |
-| `sky_lantern` | good | 0.34 tall, glows, aura, no shadow | drowned_library | Drawn with the toolkit in dream.py: a tapering paper shade lit from inside, the flame at its foot, a wire ring; aura. |
-| `book_fly` | good | 0.3 tall, no shadow | drowned_library | Drawn with the toolkit in dream.py: an open book with its covers raised as wings and its pages fanned. |
+| `sky_lantern` | good | 0.34 tall, glows, aura, no shadow | drowned_library, hall_of_doors | Drawn with the toolkit in dream.py: a tapering paper shade lit from inside, the flame at its foot, a wire ring; aura. |
+| `book_fly` | good | 0.3 tall, no shadow | drowned_library, hall_of_doors | Drawn with the toolkit in dream.py: an open book with its covers raised as wings and its pages fanned. |
 | `chess_pawn` | good | 0.9 tall | dream_chess, dream_world | Drawn with the toolkit in dream.py: a turned marble pawn (lathe profile), faint veins. Tint dark for the other side. |
-| `door_frame` | good | 1.1 tall | dream_chess, dream_world |  |
+| `door_frame` | good | 1.1 tall | dream_chess, dream_world, hall_of_doors |  |
 | `floating_rock` | good | 1.6 tall, no shadow | dream_world |  |
-| `koi` | good | 0.35 tall, no shadow | dream_chess, dream_world, drowned_library |  |
+| `koi` | good | 0.35 tall, no shadow | dream_chess, dream_world, drowned_library, hall_of_doors |  |
 | `orb` | good | 0.2 tall, glows, aura, no shadow | dream_world |  |
 | `pocket_watch` | good | 0.8 tall, no shadow | dream_world |  |
 | `sky_whale` | good | 2 tall, glows, no shadow | dream_world, drowned_library |  |
@@ -566,7 +567,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `astronaut` | good | alien_world, moon_base, orbital_hangar, space_station |  |
 | `android` | good | neon_street, orbital_hangar, space_station |  |
 | `alien` | good | alien_world, derelict_ship | A familiar archetype; could be made stranger. |
-| `dreamer` | polish | dream_chess, dream_world, drowned_library | The face reads as open-eyed; a sleepwalker wants closed eyes. |
+| `dreamer` | polish | dream_chess, dream_world, drowned_library, hall_of_doors | The face reads as open-eyed; a sleepwalker wants closed eyes. |
 | `claude` | good | claude_study | Claude's own avatar. |
 | `explorer` | good | jungle_temple, red_canyon |  |
 | `hoplite` | good | ancient_ruins |  |
@@ -599,7 +600,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `cobweb` | good | bunker_lab, castle_keep |  |
 | `rune_mark` | good | - |  |
 | `drain` | good | bunker_lab, neon_street, rainy_street, sewer_tunnels |  |
-| `contact_shadow` | good | 47 scenes |  |
+| `contact_shadow` | good | 48 scenes |  |
 | `pad_marking` | good | moon_base, orbital_hangar | A painted landing ring with an H and a dashed outer ring, worn in patches. |
 | `rover_tracks` | good | moon_base | Drawn with the toolkit in moon.py: two tracks of chevron treads pressed into dust. |
 | `hazard_stripe` | good | orbital_hangar | A band of yellow and black diagonal stripes, worn through in places. |
@@ -627,7 +628,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `blood` | good | - |  |
 | `space` | good | moon_base, orbital_hangar, space_station |  |
 | `alien` | good | alien_world |  |
-| `dream` | good | dream_chess, dream_world, drowned_library |  |
+| `dream` | good | dream_chess, dream_world, drowned_library, hall_of_doors |  |
 | `sunset` | good | bayou, ghost_town, red_canyon, tropical_beach |  |
 | `golden` | good | ancient_ruins, autumn_lane, bayou, woodland_night |  |
 
@@ -771,7 +772,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 
 | theme | status | used in | notes |
 |---|---|---|---|
-| `classic` | good | 41 scenes |  |
+| `classic` | good | 42 scenes |  |
 | `parchment` | good | gui_themes, gui_trade |  |
 | `terminal` | good | bunker_lab, gui_themes, orbital_hangar, space_station |  |
 | `blood` | good | gui_themes |  |
@@ -783,7 +784,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 |---|---|---|---|
 | `bubble` | good | alien_world, autumn_lane, castle_keep, claude_study, crystal_cave, garden_encounter, ghost_corridor, ghost_town, gui_menus, gui_trade, haunted_house, neon_street, rainy_street, tunnel_encounter, village_green, winter_lake, winter_woods, woodland_night |  |
 | `dialog` | good | bunker_lab, chapel_graveyard, claude_study, coast_lighthouse, ghost_corridor, library_medium, orbital_hangar, space_station |  |
-| `caption` | good | 34 scenes |  |
+| `caption` | good | 35 scenes |  |
 | `choice` | good | gui_menus, gui_themes, gui_trade |  |
 | `title` | good | gui_menus |  |
 | `panel` | good | bunker_lab, gui_lantern |  |
@@ -837,7 +838,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `mono` | good | - |  |
 | `bone` | good | - |  |
 
-## Example scenes (47)
+## Example scenes (48)
 
 The environments, judged on their gallery images and shots.
 
@@ -896,6 +897,7 @@ The environments, judged on their gallery images and shots.
 | `dream_world` | good | 3 | dream_stair, dream_mirror |  |
 | `dream_chess` | good | 4 | dream_plain, dream_door, dream_hole, dream_clock | A giant marble chess game on a floating plain of checker_marble under a melting sky clock: arches and stairs in the air, a stair up to a lone door, a hole onto the sky. |
 | `drowned_library` | good | 4 | library_hall, library_reader, library_beams, library_water | Bookshelves three storeys high in still water under tall windows and skylights: beams in dark fog, jellyfish, lanterns, flying books, koi and a whale. |
+| `hall_of_doors` | good | 4 | doors_hall, doors_stair, doors_sky, doors_up | An endless corridor of doors in every colour, three storeys and the ceiling; a door onto the sky, a stair to a door in the air, the sleepwalker. |
 
 ### Claude
 
@@ -926,6 +928,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the hall of doors.** dream.py: `door_hall`. `examples/hall_of_doors.py`: doors in every wall at every storey and in the ceiling, tinted per cell, a few open onto the sky, with four gallery shots.
 - **2026-10-19, the waterway.** underground_waterway: a thinner fog with `glow`, lanterns at the far end, so the channel reads in depth. winter_lake and coast_lighthouse re-rated good: their ice, snow, sand, water and rocks were all redrawn earlier today.
 - **2026-10-19, the fallen roof.** cathedral_ruin: rafters across the hole in the roof (`log` cards at the ceiling) with ivy hanging from its edges, column drums, a broken column and rubble under it, grass in the light, and the beam shot moved out of the pews into the aisle.
 - **2026-10-19, the throne hall.** castle_keep: the camera closer, a larger throne under a great stained-glass window, banners and candelabras on the dais, guards at the foot of the steps, the knight to one side.

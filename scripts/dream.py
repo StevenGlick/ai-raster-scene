@@ -388,6 +388,27 @@ def tex_tall_window(name, top=False):
     return rgb, None, alpha
 
 
+def tex_door_hall(name):
+    """A door in a papered wall, as in a hotel corridor: a pale painted door of four raised panels in
+    a moulded frame, a brass knob and a brass number plate, the wallpaper striped either side.
+    Tint it for doors of other colours; tile a ceiling with it and the doors go overhead."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=0.0, mat=0)
+    for x in range(0, T, 8):                                             # striped wallpaper
+        cv.stroke([(x + 0.5, 0), (x + 0.5, T)], 1.4, dome=0.2, mode='carve')
+    cv.noise(0.1, cells=8, rng=rng)
+    cv.box(13, 4, 38, 60, z=0.3, top=1.2, bevel=2.0, mat=1)              # the frame (architrave)
+    cv.box(17, 8, 30, 56, z=0.6, top=0.6, bevel=1.0, mat=2)              # the door
+    for px, py, pw, ph in ((20, 11, 11, 19), (33, 11, 11, 19), (20, 34, 11, 26), (33, 34, 11, 26)):
+        cv.box(px, py, pw, ph, z=0.9, top=0.8, bevel=2.0, mat=2, tone=0.03)   # raised panels
+    cv.ellipse(43, 37, 1.6, 1.6, z=1.8, dome=0.8, mat=3)                 # the knob
+    cv.box(29, 5.5, 6, 2.4, z=1.6, top=0.3, bevel=0.6, mat=3)            # the number plate
+    cv.tone[62:, :] -= 0.15                                              # the skirting's shadow
+    return _tile(cv, [ramp('#b8a88a', dark=0.45, light=1.12), ramp('#e0dccc', dark=0.5, light=1.06),
+                      ramp('#e8e2d2', dark=0.5, light=1.05), ramp('#d8b048', dark=0.45, light=1.2)],
+                 cavity=0.4, shadow=0.4)
+
+
 def tex_checker_marble(name):
     """Chequered marble, black and white squares two to a side per unit, each square veined,
     polished, with fine joints between them."""
@@ -407,10 +428,10 @@ def tex_checker_marble(name):
     return _tile(cv, [MARBLE_W, MARBLE_B], dither=0.12, cavity=0.3, shadow=0.2)
 
 
-TEXTURES = {'checker_marble': lambda n: (tex_checker_marble(n), None),
+TEXTURES = {'checker_marble': lambda n: (tex_checker_marble(n), None), 'door_hall': lambda n: (tex_door_hall(n), None),
             'tall_window': lambda n: tex_tall_window(n), 'tall_window_top': lambda n: tex_tall_window(n, top=True)}
 TEXTURE_REFLECT = {'checker_marble': 0.35}
-TEXTURE_NOISE = {'checker_marble': 0.3, 'tall_window': 0.5, 'tall_window_top': 0.5}
+TEXTURE_NOISE = {'checker_marble': 0.3, 'tall_window': 0.5, 'tall_window_top': 0.5, 'door_hall': 0.4}
 SPRITES = {
     'chess_pawn': spr_chess_pawn, 'chess_rook': spr_chess_rook, 'chess_bishop': spr_chess_bishop,
     'chess_knight': spr_chess_knight, 'chess_queen': spr_chess_queen, 'chess_king': spr_chess_king,

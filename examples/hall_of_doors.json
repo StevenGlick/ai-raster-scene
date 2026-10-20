@@ -1,0 +1,491 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "##EEEEE##",
+  "#B.....Y#",
+  "#Y.....R#",
+  "#D.....G#",
+  "#G.....G#",
+  "#G.....G#",
+  "#Y.....Y#",
+  "#Y.....Y#",
+  "#G.....Y#",
+  "#D.....D#",
+  "#G.....B#",
+  "#G.....B#",
+  "#S.....D#",
+  "#G.....D#",
+  "#D.....Y#",
+  "#R.....Y#",
+  "#R.....G#",
+  "#Y.....R#",
+  "#Y.....G#",
+  "#Y.....R#",
+  "#B.....G#",
+  "#Y.....S#",
+  "#B.....G#",
+  "#Y.....Y#",
+  "#R.....Y#",
+  "#D.....Y#",
+  "#Y.....Y#",
+  "#Y.....G#",
+  "#B.....B#",
+  "#D.....Y#",
+  "#S.....D#",
+  "#B.....R#",
+  "#G.....G#",
+  "#B.....B#",
+  "#D.....G#",
+  "#Y.....D#",
+  "#B.....D#",
+  "#B.....D#",
+  "#B.....Y#",
+  "#D.....D#",
+  "#G.....R#",
+  "#D.....R#",
+  "#D.....G#",
+  "#B.....G#",
+  "#G.....D#",
+  "#########"
+ ],
+ "legend": {
+  "D": {
+   "wall": [
+    "door_hall",
+    "door_hall",
+    "door_hall"
+   ],
+   "h": 3.0
+  },
+  "R": {
+   "wall": [
+    {
+     "base": "door_hall",
+     "tint": [
+      1.05,
+      0.62,
+      0.6
+     ]
+    },
+    {
+     "base": "door_hall",
+     "tint": [
+      1.05,
+      0.62,
+      0.6
+     ]
+    },
+    {
+     "base": "door_hall",
+     "tint": [
+      1.05,
+      0.62,
+      0.6
+     ]
+    }
+   ],
+   "h": 3.0
+  },
+  "B": {
+   "wall": [
+    {
+     "base": "door_hall",
+     "tint": [
+      0.62,
+      0.78,
+      1.08
+     ]
+    },
+    {
+     "base": "door_hall",
+     "tint": [
+      0.62,
+      0.78,
+      1.08
+     ]
+    },
+    {
+     "base": "door_hall",
+     "tint": [
+      0.62,
+      0.78,
+      1.08
+     ]
+    }
+   ],
+   "h": 3.0
+  },
+  "G": {
+   "wall": [
+    {
+     "base": "door_hall",
+     "tint": [
+      0.7,
+      0.98,
+      0.76
+     ]
+    },
+    {
+     "base": "door_hall",
+     "tint": [
+      0.7,
+      0.98,
+      0.76
+     ]
+    },
+    {
+     "base": "door_hall",
+     "tint": [
+      0.7,
+      0.98,
+      0.76
+     ]
+    }
+   ],
+   "h": 3.0
+  },
+  "Y": {
+   "wall": [
+    {
+     "base": "door_hall",
+     "tint": [
+      1.1,
+      0.98,
+      0.62
+     ]
+    },
+    {
+     "base": "door_hall",
+     "tint": [
+      1.1,
+      0.98,
+      0.62
+     ]
+    },
+    {
+     "base": "door_hall",
+     "tint": [
+      1.1,
+      0.98,
+      0.62
+     ]
+    }
+   ],
+   "h": 3.0
+  },
+  "S": {
+   "wall": [
+    "sky_wall",
+    "door_hall",
+    "door_hall"
+   ],
+   "h": 3.0
+  },
+  "#": {
+   "wall": "wallpaper",
+   "h": 3.0
+  },
+  "E": {
+   "wall": "sky_wall",
+   "h": 3.0
+  },
+  ".": {
+   "floor": "checker_marble",
+   "ceil": "door_hall"
+  }
+ },
+ "camera": {
+  "x": 4.5,
+  "y": 43.8,
+  "angle": 270,
+  "fov": 62,
+  "height": 0.5
+ },
+ "title": "Hall of doors - a corridor that does not end",
+ "sky": "dream",
+ "ceiling_height": 3.0,
+ "ambient": [
+  0.34,
+  0.32,
+  0.38
+ ],
+ "fog": {
+  "color": [
+   0.8,
+   0.76,
+   0.88
+  ],
+  "density": 0.03,
+  "glow": 0.25
+ },
+ "lights": [
+  {
+   "x": 4.5,
+   "y": 40.0,
+   "z": 2.6,
+   "radius": 7.0,
+   "color": [
+    1.0,
+    0.86,
+    0.7
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 4.5,
+   "y": 32.0,
+   "z": 2.6,
+   "radius": 7.0,
+   "color": [
+    1.0,
+    0.86,
+    0.7
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 4.5,
+   "y": 24.0,
+   "z": 2.6,
+   "radius": 7.0,
+   "color": [
+    1.0,
+    0.86,
+    0.7
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 4.5,
+   "y": 16.0,
+   "z": 2.6,
+   "radius": 7.0,
+   "color": [
+    1.0,
+    0.86,
+    0.7
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 4.5,
+   "y": 8.0,
+   "z": 2.6,
+   "radius": 7.0,
+   "color": [
+    1.0,
+    0.86,
+    0.7
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 4.5,
+   "y": 1.5,
+   "z": 1.5,
+   "radius": 6.0,
+   "color": [
+    0.8,
+    0.88,
+    1.0
+   ],
+   "intensity": 0.5
+  },
+  {
+   "x": 4.4,
+   "y": 32.6,
+   "z": 0.5,
+   "radius": 2.6,
+   "color": [
+    1.0,
+    0.7,
+    0.35
+   ],
+   "intensity": 1.0
+  }
+ ],
+ "sprites": [
+  {
+   "id": "dreamer",
+   "x": 4.4,
+   "y": 33.0,
+   "type": "dreamer",
+   "facing": 270
+  },
+  {
+   "x": 3.2,
+   "y": 25.4,
+   "type": "stair_float",
+   "z": 0.0,
+   "scale": 1.6
+  },
+  {
+   "x": 3.0,
+   "y": 23.9,
+   "type": "door_frame",
+   "z": 1.55
+  },
+  {
+   "x": 5.4,
+   "y": 16.0,
+   "type": "door_frame",
+   "flip": true
+  },
+  {
+   "x": 5.6,
+   "y": 8.0,
+   "type": "door_frame",
+   "z": 0.9
+  },
+  {
+   "x": 4.6,
+   "y": 28.0,
+   "type": "koi",
+   "z": 1.9
+  },
+  {
+   "x": 3.4,
+   "y": 19.0,
+   "type": "koi",
+   "z": 2.2,
+   "flip": true
+  },
+  {
+   "x": 5.4,
+   "y": 12.0,
+   "type": "koi",
+   "z": 1.4
+  },
+  {
+   "x": 4.0,
+   "y": 22.0,
+   "type": "book_fly",
+   "z": 1.6
+  },
+  {
+   "x": 5.2,
+   "y": 26.6,
+   "type": "book_fly",
+   "z": 2.3
+  },
+  {
+   "x": 2.6,
+   "y": 15.0,
+   "type": "sky_lantern",
+   "z": 2.0
+  },
+  {
+   "x": 5.8,
+   "y": 31.0,
+   "type": "sky_lantern",
+   "z": 2.4
+  },
+  {
+   "x": 1.25,
+   "y": 35.5,
+   "type": "wall_clock",
+   "z": 1.6,
+   "planes": 1,
+   "angle": 90,
+   "length": 0.4
+  },
+  {
+   "x": 6.7,
+   "y": 39.0,
+   "type": "melting_clock",
+   "z": 0.9,
+   "planes": 1,
+   "angle": 90,
+   "length": 0.7
+  },
+  {
+   "x": 2.6,
+   "y": 38.0,
+   "type": "paper_boat"
+  }
+ ],
+ "shots": [
+  {
+   "x": 4.5,
+   "y": 43.8,
+   "angle": 270,
+   "post": [
+    {
+     "fx": "bloom",
+     "threshold": 0.7,
+     "strength": 0.4,
+     "radius": 6
+    }
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Every door is the right one",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 5.2,
+   "y": 29.6,
+   "look_at": [
+    3.0,
+    23.9,
+    2.0
+   ],
+   "fov": 66,
+   "post": [
+    {
+     "fx": "bloom",
+     "threshold": 0.7,
+     "strength": 0.4,
+     "radius": 6
+    }
+   ]
+  },
+  {
+   "x": 2.6,
+   "y": 21.0,
+   "look_at": [
+    7.0,
+    21.5,
+    0.9
+   ],
+   "fov": 66,
+   "post": [
+    {
+     "fx": "bloom",
+     "threshold": 0.7,
+     "strength": 0.4,
+     "radius": 6
+    }
+   ]
+  },
+  {
+   "x": 4.5,
+   "y": 36.0,
+   "look_at": [
+    4.5,
+    28.0,
+    3.0
+   ],
+   "fov": 70,
+   "height": 0.4,
+   "post": [
+    {
+     "fx": "bloom",
+     "threshold": 0.7,
+     "strength": 0.4,
+     "radius": 6
+    }
+   ]
+  }
+ ],
+ "contact_shadows": 0.4,
+ "supersample": 2
+}
