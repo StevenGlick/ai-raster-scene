@@ -145,112 +145,325 @@
  },
  "sprites": [
   {
-   "x": 40.0,
-   "y": 32.0,
+   "x": 39.1,
+   "y": 31.38,
    "type": "salt_mound",
-   "flip": false
-  },
-  {
-   "x": 41.3,
-   "y": 32.0,
-   "type": "salt_mound",
+   "scale": 0.188,
    "flip": true
   },
   {
-   "x": 42.6,
-   "y": 32.0,
-   "type": "salt_mound",
+   "x": 40.29,
+   "y": 31.46,
+   "type": "salt_pile",
+   "scale": 0.105,
    "flip": false
   },
   {
-   "x": 43.9,
-   "y": 32.0,
+   "x": 41.11,
+   "y": 31.33,
    "type": "salt_mound",
-   "flip": true
-  },
-  {
-   "x": 45.2,
-   "y": 32.0,
-   "type": "salt_mound",
+   "scale": 0.247,
    "flip": false
   },
   {
-   "x": 46.5,
-   "y": 32.0,
-   "type": "salt_mound",
-   "flip": true
-  },
-  {
-   "x": 40.4,
-   "y": 33.4,
-   "type": "salt_mound",
-   "flip": true
-  },
-  {
-   "x": 41.699999999999996,
-   "y": 33.4,
-   "type": "salt_mound",
+   "x": 42.27,
+   "y": 31.35,
+   "type": "salt_heap",
+   "scale": 0.153,
    "flip": false
   },
   {
-   "x": 43.0,
-   "y": 33.4,
-   "type": "salt_mound",
-   "flip": true
-  },
-  {
-   "x": 44.3,
-   "y": 33.4,
-   "type": "salt_mound",
+   "x": 43.4,
+   "y": 31.43,
+   "type": "salt_heap",
+   "scale": 0.155,
    "flip": false
   },
   {
-   "x": 45.6,
-   "y": 33.4,
+   "x": 44.36,
+   "y": 31.5,
    "type": "salt_mound",
-   "flip": true
-  },
-  {
-   "x": 46.9,
-   "y": 33.4,
-   "type": "salt_mound",
+   "scale": 0.243,
    "flip": false
   },
   {
-   "x": 40.0,
-   "y": 34.8,
-   "type": "salt_mound",
+   "x": 45.46,
+   "y": 31.49,
+   "type": "salt_pile",
+   "scale": 0.132,
    "flip": false
   },
   {
-   "x": 41.3,
-   "y": 34.8,
+   "x": 46.45,
+   "y": 31.32,
    "type": "salt_mound",
-   "flip": true
-  },
-  {
-   "x": 42.6,
-   "y": 34.8,
-   "type": "salt_mound",
+   "scale": 0.199,
    "flip": false
   },
   {
-   "x": 43.9,
-   "y": 34.8,
+   "x": 47.41,
+   "y": 31.35,
    "type": "salt_mound",
+   "scale": 0.217,
    "flip": true
   },
   {
-   "x": 45.2,
-   "y": 34.8,
-   "type": "salt_mound",
+   "x": 48.31,
+   "y": 31.38,
+   "type": "salt_pile",
+   "scale": 0.105,
    "flip": false
   },
   {
-   "x": 46.5,
-   "y": 34.8,
+   "x": 39.76,
+   "y": 32.51,
    "type": "salt_mound",
+   "scale": 0.219,
+   "flip": false
+  },
+  {
+   "x": 40.57,
+   "y": 32.61,
+   "type": "salt_mound",
+   "scale": 0.223,
    "flip": true
+  },
+  {
+   "x": 41.62,
+   "y": 32.44,
+   "type": "salt_mound",
+   "scale": 0.23,
+   "flip": false
+  },
+  {
+   "x": 42.93,
+   "y": 32.43,
+   "type": "salt_mound",
+   "scale": 0.198,
+   "flip": false
+  },
+  {
+   "x": 44.06,
+   "y": 32.58,
+   "type": "salt_mound",
+   "scale": 0.239,
+   "flip": true
+  },
+  {
+   "x": 44.82,
+   "y": 32.52,
+   "type": "salt_mound",
+   "scale": 0.25,
+   "flip": true
+  },
+  {
+   "x": 45.73,
+   "y": 32.62,
+   "type": "salt_mound",
+   "scale": 0.204,
+   "flip": true
+  },
+  {
+   "x": 46.72,
+   "y": 32.48,
+   "type": "salt_pile",
+   "scale": 0.098,
+   "flip": true
+  },
+  {
+   "x": 47.6,
+   "y": 32.44,
+   "type": "salt_mound",
+   "scale": 0.214,
+   "flip": true
+  },
+  {
+   "x": 48.89,
+   "y": 32.62,
+   "type": "salt_mound",
+   "scale": 0.208,
+   "flip": false
+  },
+  {
+   "x": 39.18,
+   "y": 33.59,
+   "type": "salt_mound",
+   "scale": 0.208,
+   "flip": true
+  },
+  {
+   "x": 40.37,
+   "y": 33.59,
+   "type": "salt_heap",
+   "scale": 0.133,
+   "flip": true
+  },
+  {
+   "x": 41.42,
+   "y": 33.61,
+   "type": "salt_mound",
+   "scale": 0.18,
+   "flip": false
+  },
+  {
+   "x": 42.38,
+   "y": 33.8,
+   "type": "salt_pile",
+   "scale": 0.123,
+   "flip": false
+  },
+  {
+   "x": 43.42,
+   "y": 33.63,
+   "type": "salt_mound",
+   "scale": 0.243,
+   "flip": false
+  },
+  {
+   "x": 44.74,
+   "y": 33.77,
+   "type": "salt_mound",
+   "scale": 0.225,
+   "flip": false
+  },
+  {
+   "x": 45.8,
+   "y": 33.64,
+   "type": "salt_mound",
+   "scale": 0.247,
+   "flip": false
+  },
+  {
+   "x": 46.79,
+   "y": 33.74,
+   "type": "salt_pile",
+   "scale": 0.098,
+   "flip": false
+  },
+  {
+   "x": 47.66,
+   "y": 33.59,
+   "type": "salt_pile",
+   "scale": 0.103,
+   "flip": false
+  },
+  {
+   "x": 48.79,
+   "y": 33.63,
+   "type": "salt_mound",
+   "scale": 0.176,
+   "flip": false
+  },
+  {
+   "x": 39.61,
+   "y": 34.92,
+   "type": "salt_heap",
+   "scale": 0.161,
+   "flip": false
+  },
+  {
+   "x": 40.69,
+   "y": 34.89,
+   "type": "salt_heap",
+   "scale": 0.137,
+   "flip": false
+  },
+  {
+   "x": 41.9,
+   "y": 34.74,
+   "type": "salt_mound",
+   "scale": 0.179,
+   "flip": false
+  },
+  {
+   "x": 42.97,
+   "y": 34.76,
+   "type": "salt_heap",
+   "scale": 0.139,
+   "flip": false
+  },
+  {
+   "x": 44.08,
+   "y": 34.93,
+   "type": "salt_mound",
+   "scale": 0.183,
+   "flip": false
+  },
+  {
+   "x": 44.97,
+   "y": 34.79,
+   "type": "salt_heap",
+   "scale": 0.146,
+   "flip": false
+  },
+  {
+   "x": 45.97,
+   "y": 34.94,
+   "type": "salt_mound",
+   "scale": 0.215,
+   "flip": true
+  },
+  {
+   "x": 47.0,
+   "y": 34.94,
+   "type": "salt_mound",
+   "scale": 0.191,
+   "flip": true
+  },
+  {
+   "x": 48.32,
+   "y": 34.77,
+   "type": "salt_mound",
+   "scale": 0.243,
+   "flip": true
+  },
+  {
+   "x": 43.7,
+   "y": 32.43,
+   "type": "salt_clods",
+   "flip": false
+  },
+  {
+   "x": 47.59,
+   "y": 34.21,
+   "type": "salt_clods",
+   "flip": true
+  },
+  {
+   "x": 41.96,
+   "y": 33.42,
+   "type": "salt_clods",
+   "flip": true
+  },
+  {
+   "x": 45.8,
+   "y": 33.12,
+   "type": "salt_clods",
+   "flip": true
+  },
+  {
+   "x": 41.33,
+   "y": 34.87,
+   "type": "salt_clods",
+   "flip": true
+  },
+  {
+   "x": 46.28,
+   "y": 35.53,
+   "type": "salt_clods",
+   "flip": false
+  },
+  {
+   "x": 45.43,
+   "y": 33.73,
+   "type": "salt_clods",
+   "flip": true
+  },
+  {
+   "x": 47.67,
+   "y": 33.04,
+   "type": "salt_clods",
+   "flip": false
   },
   {
    "id": "walker",
@@ -304,13 +517,13 @@
    "fov": 60
   },
   {
-   "x": 37.0,
-   "y": 36.5,
-   "height": 0.5,
+   "x": 40.5,
+   "y": 36.6,
+   "height": 0.28,
    "look_at": [
-    45.0,
+    44.0,
     31.0,
-    0.3
+    0.12
    ],
    "fov": 66,
    "overrides": {

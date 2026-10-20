@@ -1,16 +1,19 @@
 """The salt flat: a dry lake bed of salt after rain, the crust under a film of still water that
 mirrors the whole sky out to the horizon, so ground and sky become one - with islands of dry crust
-cracked into white-rimmed plates, salt raked into mounds, a house built of salt blocks, and a few
-things that have no business being there: a door standing on its own, an armchair, a clock.
+cracked into white-rimmed plates, salt raked up into rows of mounds and heaps, a house built of salt
+blocks, and a few things that have no business being there: a door standing on its own, an armchair,
+a clock.
 
 Shows the salt flat kit (scripts/saltflat.py): `salt_water` (the crust under water) with `reflect`
 0.9 and `"reflections": {"ripple": 0, "smear": 0}` - a still mirror instead of a rippled one -
 `salt_flat` (the dry crust: pale plates with raised rims) in islands, `salt_brick` for the house, and
-`salt_mound`s; the sky doubled at sunset, at noon, at night and in a dream, with the `sky_whale`.
+rows of `salt_mound`s with a `salt_heap` or a `salt_pile` among them and `salt_clods` lying about, no
+two the same size; the sky doubled at sunset, at noon, at night and in a dream, with the `sky_whale`.
 Run:  python salt_flat.py  -> writes salt_flat.json
 """
 import math
 import os
+import random
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scripts'))
@@ -30,9 +33,23 @@ g.put(47, 27, 'D')
 
 SUNSET = {'type': 'sun', 'azimuth': 270, 'elevation': 7, 'intensity': 0.9, 'color': [1.0, 0.72, 0.5],
           'disc_color': [1.0, 0.85, 0.6]}
-mounds = [{'x': 40.0 + 1.3 * k + (0.4 if j % 2 else 0), 'y': 32.0 + 1.4 * j, 'type': 'salt_mound',
-           'flip': (k + j) % 2 == 1} for j in range(3) for k in range(6)]
-sprites = mounds + [
+rnd = random.Random(4)
+SIZE = {'salt_mound': 0.22, 'salt_heap': 0.15, 'salt_pile': 0.12, 'salt_clods': 0.08}
+salt = []
+for j in range(4):                                   # rows of salt raked up to dry, no two alike
+    x, y = 39.2 + 0.5 * (j % 2), 31.4 + 1.15 * j
+    while x < 49.0:
+        kind = rnd.choices(['salt_mound', 'salt_heap', 'salt_pile'], [7, 1, 1])[0]
+        if g.get(int(x), int(y)) == 'd':
+            salt.append({'x': round(x + rnd.uniform(-0.12, 0.12), 2), 'y': round(y + rnd.uniform(-0.12, 0.12), 2),
+                         'type': kind, 'scale': round(SIZE[kind] * rnd.uniform(0.8, 1.15), 3),
+                         'flip': rnd.random() < 0.5})
+        x += rnd.uniform(0.9, 1.2)
+for _ in range(8):                                   # and clods lying about between them
+    x, y = rnd.uniform(39.0, 48.5), rnd.uniform(30.8, 35.6)
+    if g.get(int(x), int(y)) == 'd':
+        salt.append({'x': round(x, 2), 'y': round(y, 2), 'type': 'salt_clods', 'flip': rnd.random() < 0.5})
+sprites = salt + [
     {'id': 'walker', 'x': 31.4, 'y': 43.2, 'type': 'dreamer'},
     {'id': 'door', 'x': 26.5, 'y': 30.0, 'type': 'door_frame'},
     {'x': 22.0, 'y': 26.5, 'type': 'armchair', 'flip': True},
@@ -59,7 +76,7 @@ s = scene(
         {'x': 32.4, 'y': 47.0, 'height': 0.32, 'look_at': [30.0, 20.0, 0.7], 'fov': 70,
          'overlays': [{'type': 'caption', 'text': 'The salt flat', 'at': 'top', 'box': True}]},
         {'x': 27.0, 'y': 35.0, 'height': 0.3, 'look_at': 'door', 'fov': 60},
-        {'x': 37.0, 'y': 36.5, 'height': 0.5, 'look_at': [45.0, 31.0, 0.3], 'fov': 66,
+        {'x': 40.5, 'y': 36.6, 'height': 0.28, 'look_at': [44.0, 31.0, 0.12], 'fov': 66,
          'overrides': {'sky': 'day', 'ambient': [0.34, 0.35, 0.4],
                        'lights': [{'type': 'sun', 'azimuth': 120, 'elevation': 55, 'intensity': 0.6}],
                        'fog': {'color': [0.78, 0.84, 0.92], 'density': 0.004}}},

@@ -1,8 +1,9 @@
 """The ice palace: a palace of ice on a frozen lake, under the aurora.
 
-The `aurora` sky (drawn here for assets.make_sky): a clear night with curtains of green light hanging
-across it, bright along their lower hems, rayed upward and fading through violet into the dark; they
-glow, so a light bloom takes them up and a frozen lake doubles them. Textures: `ice_block` (blocks of
+The `aurora` sky (drawn here for assets.make_sky): a clear night with the aurora hanging across it, no
+two stretches alike - a great curtain of rays of every width and height, a pleated ribbon, red-tipped
+rays and a faint arc high over them - bright along their lower hems and fading through violet into
+the dark; they glow, so a light bloom takes them up and a frozen lake doubles them. Textures: `ice_block` (blocks of
 blue ice with frosted faces and bright edges), `frost_wall` (ice covered in fern-like frost),
 `ice_floor` (polished ice over dark water, cracked; it reflects). Props: `ice_spire` (a tower's
 crystal spire: stand it on a tower top with `z`), `ice_throne` (a throne cut from the ice), `icicles`
@@ -26,36 +27,96 @@ def _dither(v, pal, amount=0.6):
     return pal[idx].astype(np.float32)
 
 
+GREEN = np.array([0.35, 1.0, 0.55], np.float32)
+TEAL = np.array([0.3, 0.95, 0.8], np.float32)
+VIOLET = np.array([0.55, 0.3, 0.85], np.float32)
+RED = np.array([0.85, 0.28, 0.38], np.float32)
+PINK = np.array([1.0, 0.4, 0.7], np.float32)
+
+
+def _wave(x, rng, terms):
+    """A seamless wobble round the panorama: (frequency, amplitude) terms, whole-number frequencies at
+    random phases."""
+    out = np.zeros_like(x)
+    for f, a in terms:
+        out += a * np.sin(f * x + rng.uniform(0, 2 * math.pi))
+    return out
+
+
+def _rays(x, rng, n, width, clump):
+    """`n` rays at random places round the sky, gathered in bundles (about `clump` of them) with gaps
+    between, each `width` degrees across at random within that range, a few bright and many faint, each
+    climbing to a height of its own: for every column their summed brightness and the height they
+    reach (relative, weighted by brightness). Seamless round 360 degrees."""
+    dens = np.clip(0.8 + _wave(x, rng, ((clump, 0.45), (clump * 2 + 1, 0.25))), 0, None)
+    at = np.interp(rng.random(n), np.cumsum(dens) / dens.sum(), x)
+    sig = np.radians(rng.uniform(*width, n)) / 2.355
+    b = rng.uniform(0.15, 1.0, n) ** 1.7
+    hk = rng.uniform(0.55, 1.7, n)
+    bright = np.zeros_like(x)
+    tall = np.zeros_like(x)
+    for a, s_, bb, hh in zip(at, sig, b, hk):
+        g = bb * np.exp(-0.5 * (np.abs((x - a + math.pi) % (2 * math.pi) - math.pi) / s_) ** 2)
+        bright += g
+        tall += g * hh
+    return bright, np.where(bright > 1e-4, tall / np.maximum(bright, 1e-4), 1.0)
+
+
+def _curtain(light, rows, hem, top, strength, rays, low, high, decay=3.0, pink=0.0, soft=1.0):
+    """Add one curtain to `light`: brightest at its hem (a row per column; sharp below it, softer with
+    `soft`), fading up toward `top`, coloured `low` near the hem and `high` toward the top, its
+    brightness `strength * rays` per column; `pink` fringes the hem where the curtain is strongest."""
+    tall = np.maximum(hem - top, 1.0)
+    up = (hem[None, :] - rows) / tall[None, :]
+    below = (rows - hem[None, :]) / (2.5 * soft)
+    body = np.where(up >= 0, np.exp(-decay * up) * np.clip(1.6 - up, 0, 1), np.exp(-below * below))
+    mix = np.clip(up * 1.2, 0, 1)[..., None]
+    light += (body * (strength * rays)[None, :])[..., None] * (low * (1 - mix) + high * mix)
+    if pink:
+        fringe = np.exp(-((rows - hem[None, :] - 0.5) / 1.2) ** 2) * np.clip(strength * rays - 0.4, 0, None)[None, :]
+        light += (fringe * pink)[..., None] * (PINK - low * 0.5)
+
+
 def draw_aurora(sky, rng, hrow, proj):
-    """Paint curtains of the aurora into a sky panorama (h x w x 3, horizon at row `hrow`), seamless
-    round 360 degrees: three curtains, each a wavering hem of bright green with rays climbing from it,
-    fading through violet into the dark."""
+    """Paint the aurora into a sky panorama (h x w x 3, horizon at row `hrow`), seamless round 360
+    degrees, no two stretches of it alike: a great rayed curtain low in the north, rays of every width
+    gathered in bundles and climbing to different heights, violet at their tips and fringed pink along
+    the hem where it burns brightest; a softly pleated teal ribbon above and behind it; a fainter curtain
+    of tall thin rays to the west, red at their tops; and a quiet arc glowing high over them all. Each
+    is brightest over an azimuth of its own - the great curtain due north (270), so a view toward the
+    north always has the aurora over it."""
     h, w = sky.shape[:2]
-    x = np.arange(w, dtype=np.float32) / w * 2 * math.pi          # angle round the panorama
+    x = np.arange(w, dtype=np.float32) / w * 2 * math.pi           # angle round the panorama
     rows = np.arange(h, dtype=np.float32)[:, None]
     light = np.zeros((h, w, 3), np.float32)
-    # each curtain's brightest arc is set over an azimuth: the strongest due north (270), so a view
-    # toward the north always has the aurora over it
-    for k, (el, amp, height, power, peak, n1) in enumerate(((14, 5, 22, 1.0, 270, 2), (24, 7, 26, 0.75, 305, 3),
-                                                             (34, 6, 18, 0.5, 235, 2))):
-        p = rng.uniform(0, 2 * math.pi, 4)
-        p[2] = math.pi / 2 - n1 * math.radians(peak)
-        n2 = int(rng.integers(5, 8))
-        el_x = el + amp * np.sin(n1 * x + p[0]) + 0.4 * amp * np.sin(n2 * x + p[1])     # the hem's elevation
-        hem = hrow - proj * np.tan(np.radians(el_x))                                  # its panorama row
-        tall = proj * (np.tan(np.radians(el_x + height)) - np.tan(np.radians(el_x)))    # how high its rays go
-        # patchy: arcs here and there with the dark between them, not a wall of light all round
-        strength = power * np.clip(0.1 + 1.0 * np.sin(n1 * x + p[2]) + 0.35 * np.sin(5 * x + p[1]), 0, 1) ** 1.3
-        rays = 0.55 + 0.45 * np.sin(x * (60 + 20 * k) + 3 * np.sin(x * 7 + p[3]))     # vertical streaks
-        up = (hem[None, :] - rows) / np.maximum(tall[None, :], 1.0)                   # 0 at the hem, 1 at the top
-        below = (rows - hem[None, :]) / 3.0
-        body = np.where(up >= 0, np.exp(-3.2 * up) * (up <= 1.4), np.exp(-below * below))
-        a = body * (strength * rays)[None, :]
-        green = np.array([0.35, 1.0, 0.55], np.float32)
-        violet = np.array([0.55, 0.3, 0.85], np.float32)
-        mix = np.clip(up, 0, 1)[..., None]
-        light += a[..., None] * (green * (1 - mix) + violet * mix)
-    return sky + light * 1.25
+
+    def row_of(el):
+        return hrow - proj * np.tan(np.radians(np.clip(el, -5, 80)))
+
+    def over(peak, n1, spread):
+        """How strong a curtain is round the sky: `n1` arcs, the brightest over azimuth `peak`, patchy -
+        dark between the arcs, uneven along them."""
+        ph = math.pi / 2 - n1 * math.radians(peak)
+        base = np.clip(0.1 + np.sin(n1 * x + ph) + spread * _wave(x, rng, ((5, 0.35), (9, 0.2))), 0, 1) ** 1.3
+        return base * np.clip(1 + _wave(x, rng, ((13, 0.25), (23, 0.15), (37, 0.1))), 0.3, None)
+
+    el = 12 + 4 * np.sin(2 * x + rng.uniform(0, 6.3)) + _wave(x, rng, ((6, 1.6), (11, 0.8), (17, 0.4)))
+    bright, hk = _rays(x, rng, 320, (0.3, 2.0), 7)
+    _curtain(light, rows, row_of(el), row_of(el + 22 * hk), over(270, 2, 1.0),
+             0.3 + 0.6 * np.clip(bright, 0, 1.3), GREEN, VIOLET, decay=2.6, pink=0.35)
+    el = 20 + 3 * np.sin(3 * x + rng.uniform(0, 6.3)) + _wave(x, rng, ((5, 1.4), (8, 0.9), (13, 0.5)))
+    pleat, hk = _rays(x, rng, 90, (0.5, 2.2), 5)
+    _curtain(light, rows, row_of(el), row_of(el + 8 + 5 * hk), 0.9 * over(305, 3, 0.8),
+             0.35 + 0.65 * np.clip(pleat, 0, 1.4), TEAL, GREEN * 0.6 + VIOLET * 0.4, decay=3.0, soft=3.0)
+    el = 16 + 3 * np.sin(2 * x + rng.uniform(0, 6.3)) + _wave(x, rng, ((7, 1.0), (13, 0.5)))
+    bright, hk = _rays(x, rng, 140, (0.25, 0.9), 9)
+    _curtain(light, rows, row_of(el), row_of(el + 18 * hk), 0.45 * over(228, 2, 1.0),
+             0.15 + 0.85 * np.clip(bright, 0, 1.4), GREEN, RED, decay=1.8)
+    el = 27 + 3 * np.sin(x + rng.uniform(0, 6.3)) + _wave(x, rng, ((3, 1.2),))
+    arc = 0.12 * np.clip(0.3 + np.sin(x - math.radians(255) + math.pi / 2), 0, 1)
+    band = np.exp(-0.5 * ((rows - row_of(el)[None, :]) / max(proj * 0.035, 2.0)) ** 2)
+    light += (band * arc[None, :])[..., None] * (GREEN * 0.8 + 0.2)
+    return sky + light * 1.4
 
 
 def tex_ice_block(name):

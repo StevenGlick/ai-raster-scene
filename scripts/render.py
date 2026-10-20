@@ -1537,6 +1537,7 @@ class Renderer:
         W, H = self.W, self.H
         w = self.w
         self._marched, self._glass_fix = False, None
+        self._sky_layer = None
         px, py = float(cam['x']), float(cam['y'])
         self._px, self._py = px, py
         ang = math.radians(float(cam.get('angle', 0)))
@@ -1545,6 +1546,7 @@ class Renderer:
         horizon = H / 2 + float(cam.get('pitch', 0)) * H
         self._horizon = horizon
         proj = (W / 2) / math.tan(fov / 2)
+        self._proj = proj
         dx, dy = math.cos(ang), math.sin(ang)
         self._fx, self._fy = dx, dy
         pl = math.tan(fov / 2)
@@ -1616,6 +1618,8 @@ class Renderer:
                 k = float(self.s['fog'].get('sky_mix', 0.35))
                 img[rows] = img[rows] * (1 - k) + self.fog_c * k
                 emis[rows] = emis[rows] * (1 - k)
+            if self.smear < 1.0:                # a still mirror shows the sky behind what floats over it
+                self._sky_layer = (img.copy(), emis.copy())
         else:
             img[:] = 0
 
@@ -1999,8 +2003,9 @@ class Renderer:
             self._glass_pass(img, depth, glass, defs, horizon, proj, camz, flash, rays)
 
         if refl.any():
-            img = self._reflect(img, depth, refl, refl_depth)
-            self._emis = self._reflect(self._emis, depth, refl, refl_depth)
+            sky = self._sky_layer or (None, None)
+            img = self._reflect(img, depth, refl, refl_depth, sky[0])
+            self._emis = self._reflect(self._emis, depth, refl, refl_depth, sky[1])
         self.depth = depth
         self.rays = {'px': px, 'py': py, 'rdx': rdx, 'rdy': rdy, 'rlen': rlen, 'horizon': horizon,
                      'proj': proj, 'camz': camz}
@@ -2013,13 +2018,15 @@ class Renderer:
         wires.draw(img, depth, self._emis, view, wired, ss=self._ss,
                    fog_c=self.fog_c if self.vol is None else None, fog_d=self.fog_d, anchors=self.anchors)
 
-    def _reflect(self, img, depth, refl, refl_depth):
+    def _reflect(self, img, depth, refl, refl_depth, sky=None):
         """Mirror the frame into reflective floor pixels, column by column.
 
         A pixel that still shows the reflective floor it was drawn as (nothing nearer covered it)
         mirrors whatever stands just above its run in that column: a wall base, a boat on the
         water, a lamp post's foot, or the horizon for open water. Screen-space, so it can only
         mirror what is on screen - which at a grazing angle across water is nearly everything.
+        A still mirror (`smear` under 1) is exact instead: see _still_mirror; `sky` is the frame's
+        sky before anything was drawn over it, for the sky it mirrors from behind a floating thing.
         """
         H, W = depth.shape
         ss = max(1, W // self.W) if self.W else 1
@@ -2030,20 +2037,11 @@ class Renderer:
         # the last row above each pixel that is not part of its reflective run: the mirror line
         last = np.maximum.accumulate(np.where(mask, -1, rows * np.ones((1, W), int)), axis=0)
         src = 2 * last + 1 - rows
+        behind = None
         if self.smear < 1.0:
-            # a still mirror: past the top of whatever stands on it the sky is mirrored about the
-            # horizon, as it is everywhere else - not about that thing's foot, which would hang a
-            # pale streak of the wrong sky under every figure
-            c_ = np.arange(W)[None, :]
-
-            def flat(rr):
-                # bare ground the floor pass left, below the horizon: flat, so never what a mirror
-                # shows above it - water ending at a bank of dry crust mirrors the sky past it
-                dd = depth[rr, c_]
-                return np.isfinite(dd) & (dd == self._plane_depth[rr, c_]) & (rr + 0.5 > self._horizon)
-            s_ = np.clip(src, 0, H - 1)
-            past = (src < 0) | np.isinf(depth[s_, c_]) | flat(s_) | flat(np.clip(last, 0, H - 1))
-            src = np.where(past, np.round(2 * self._horizon - 1 - rows).astype(int), src)
+            src, behind = self._still_mirror(depth, mask, refl_depth)
+            if sky is None:
+                behind = None
         # a ripple: rows shimmer sideways a pixel or two, more toward the camera
         amp = self.ripple * ss * (0.6 + 1.4 * np.clip((rows - H / 2) / (H / 2), 0, 1))
         cols = np.arange(W)[None, :]
@@ -2057,8 +2055,12 @@ class Renderer:
                         + 0.25 * img[np.clip(s0 + 2 * ss, 0, H - 1), sc])
         else:
             sm = min(2.0, max(0.0, self.smear)) * 0.25
-            mirrored = ((1 - 2 * sm) * img[s0, sc] + sm * img[np.clip(s0 - 2 * ss, 0, H - 1), sc]
-                        + sm * img[np.clip(s0 + 2 * ss, 0, H - 1), sc])
+
+            def at(r_):
+                v = img[r_, sc]
+                return v if behind is None else np.where(behind[..., None], sky[r_, sc], v)
+            mirrored = ((1 - 2 * sm) * at(s0) + sm * at(np.clip(s0 - 2 * ss, 0, H - 1))
+                        + sm * at(np.clip(s0 + 2 * ss, 0, H - 1)))
         # stronger at a grazing angle (far away), weaker looking straight down
         k = refl * (0.55 + 0.45 * (1 - np.exp(-np.maximum(refl_depth, 0) / 4.0)))
         # close to the camera the mirrored point is above the top of the frame; what is up there
@@ -2068,6 +2070,53 @@ class Renderer:
         # lights glint: anything bright in the reflection comes through harder than the rest
         glint = np.maximum(mirrored - 0.45, 0) * 0.9
         return img * (1 - k) + (mirrored * 0.85 + glint) * k
+
+    def _still_mirror(self, depth, mask, refl_depth):
+        """The row each pixel of a still mirror shows. A mirror shows every point at its own depth as
+        far below the water as it stands above it, so each thing is mirrored about its own foot - a
+        figure wading, a mound on a dry bank past the water, a palace across the ice - and where
+        nothing stands, the sky about the horizon. Each thing on screen is cast down into the water
+        and the nearest kept; like the rest, it can only mirror what is on screen. Also returns where
+        the sky so mirrored is hidden on screen by something standing in front of it (a whale over the
+        flat): there the sky behind it is wanted."""
+        if getattr(self, '_still_for', None) is depth:            # the emission pass reuses it
+            return self._still_src
+        H, W = depth.shape
+        rows = np.arange(H)[:, None]
+        src = np.repeat(np.round(2 * self._horizon - 1 - rows).astype(int), W, axis=1)
+        hit = np.zeros((H, W), bool)
+        # how high the eye stands over the water, from where the water is seen (it may lie sunken)
+        lift = ((rows + 0.5 - self._horizon) * refl_depth / self._proj)[mask]
+        if lift.size:
+            lift = float(np.median(lift))
+            ground = np.isfinite(depth) & (depth == self._plane_depth) & (rows + 0.5 > self._horizon)
+            sy, sx = np.nonzero(np.isfinite(depth) & ~mask & ~ground)    # bare ground mirrors nothing
+            d = depth[sy, sx]
+            ty = np.floor(2 * (self._horizon + lift * self._proj / d) - sy - 0.5).astype(int)
+            ok = (ty >= 0) & (ty < H)
+            sy, sx, d, ty = sy[ok], sx[ok], d[ok], ty[ok]
+            ok = mask[ty, sx] & (d >= refl_depth[ty, sx] * 0.999)    # only what stands past that water
+            sy, sx, d, ty = sy[ok], sx[ok], d[ok], ty[ok]
+            key = ty * W + sx
+            order = np.lexsort((d, key))                             # by water pixel, the nearest first
+            first = np.ones(len(order), bool)
+            first[1:] = key[order][1:] != key[order][:-1]
+            pick = order[first]
+            src[ty[pick], sx[pick]] = sy[pick]
+            hit[ty[pick], sx[pick]] = True
+            # something sloping away in depth (a ceiling, a block's top) stretches as it is cast down,
+            # leaving gaps a row or two high: they take the row between their neighbours'
+            for gap in (1, 2):
+                up, dn = np.zeros_like(hit), np.zeros_like(hit)
+                up[gap:], dn[:-gap] = hit[:-gap], hit[gap:]
+                su, sd = np.zeros_like(src), np.zeros_like(src)
+                su[gap:], sd[:-gap] = src[:-gap], src[gap:]
+                fill = mask & ~hit & up & dn & (np.abs(su - sd) <= 2 * gap + 2)
+                src = np.where(fill, (su + sd) // 2, src)
+                hit |= fill
+        behind = mask & ~hit & np.isfinite(depth[np.clip(src, 0, H - 1), np.arange(W)[None, :]])
+        self._still_for, self._still_src = depth, (src, behind)
+        return src, behind
 
     def sprite_view(self, sp):
         """'back' when a sprite with a `facing` has its back to the camera (or `view` says so)."""

@@ -22,7 +22,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
 | Textures | 186 | 183 | 3 | 0 | 0 |
-| Props | 286 | 286 | 0 | 0 | 0 |
+| Props | 289 | 289 | 0 | 0 | 0 |
 | Characters | 29 | 29 | 0 | 0 | 0 |
 | Decals | 26 | 21 | 5 | 0 | 0 |
 | Skies | 13 | 13 | 0 | 0 | 0 |
@@ -39,7 +39,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 60 | 60 | 0 | 0 | 0 |
-| **all** | **744** | **728** | **16** | **0** | **0** |
+| **all** | **747** | **731** | **16** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -303,7 +303,7 @@ Weakest first, and in the order the new scenes need them.
 | `bamboo` | polish |  | tropical_beach | The nodes still line up into a grid across the poles. |
 | `thatch` | polish |  | tropical_beach | The rows could be clearer, each with a shadow under its fringe. |
 
-## Props (286)
+## Props (289)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -465,7 +465,10 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `light_trail` | good | 0.22 tall, glows, no shadow | vector_world | Drawn in vector.py: a ribbon of light, brightest at its top edge; a card laid behind a racer, additive. |
 | `light_beam` | good | 3 tall, glows, no shadow | vector_world | Drawn in vector.py: a column of light rising from the floor, bright at its foot and core; additive. |
 | `glint` | good | 0.09 tall, glows, no shadow | vector_world | Drawn in vector.py: a white-hot point in a soft halo - a headlight, a beacon; it streaks and flares. |
-| `salt_mound` | good | 0.32 tall | salt_flat | Drawn in saltflat.py: a cone of raked salt, its slopes ribbed by the rake. |
+| `salt_mound` | good | 0.22 tall | salt_flat | Drawn in saltflat.py: a round-topped mound of raked salt, lumpy, damp at its foot; set out in rows, each `scale` a little different. |
+| `salt_heap` | good | 0.15 tall | salt_flat | Drawn in saltflat.py: two mounds of salt slumped together, long and low. |
+| `salt_pile` | good | 0.12 tall | salt_flat | Drawn in saltflat.py: a small rough shovelful of salt, a clod rolled off its side. |
+| `salt_clods` | good | 0.08 tall | salt_flat | Drawn in saltflat.py: a few lumps of salt left lying, of different sizes. |
 | `waterfall` | good | 6 tall, no shadow | sky_islands | Drawn in skyisles.py: a sheet of falling water, white at its lip, breaking into mist toward its foot; a card. |
 | `island_roots` | good | 2 tall, no shadow | sky_islands | Drawn in skyisles.py: roots and vines dangling under an island's edge; a card. |
 | `island_keel` | good | 6 tall, no shadow | sky_islands | Drawn in skyisles.py: the rock under a floating island tapering to a ragged point, banded, roots trailing; a billboard. |
@@ -743,7 +746,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `sunset` | good | bayou, clockwork_city, ghost_town, red_canyon, salt_flat, tropical_beach |  |
 | `golden` | good | ancient_ruins, autumn_lane, bayou, sky_islands, woodland_night |  |
 | `vector` | good | vector_world | Black to violet with a magenta glow at the horizon and a few stars; pair it with a striped sun. |
-| `aurora` | good | aurora_palace | A clear arctic night with patchy curtains of green light, brightest due north, fading violet at their tops; they glow. |
+| `aurora` | good | aurora_palace | A clear arctic night with the aurora across it, no two stretches alike: a curtain of green rays of every width and height fringed pink, a pleated teal ribbon, red-tipped rays to the west, a faint high arc; brightest due north; they glow. |
 
 ## Skylines (6)
 
@@ -1059,6 +1062,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-20, salt piles and the aurora.** `salt_mound` redrawn round-topped and smaller (0.22), with `salt_heap`, `salt_pile` and `salt_clods` beside it - the salt flat's rows now mix them, no two the same size. The `aurora` varied: rays of every width and height in bundles, a pleated ribbon, red-tipped rays, a high arc. Reflections: a still mirror (`smear` under 1) now mirrors each thing about its own foot.
 - **2026-10-20, second passes.** `aurora_shore` re-shot from the lake's western shore: the palace and its spires under the aurora, a pine and the ice edge framing it (it was a dark view with the palace small on the horizon).
 - **2026-10-20, the clockwork city.** `scripts/clockwork.py`: `brass_plate`, `copper_pipes`, `clock_face`, `brass_gear`, `great_clock`. `examples/clockwork_city.py` with four gallery shots; its orrery is brass wireframes.
 - **2026-10-20, the aurora palace.** `scripts/icepalace.py`: the `aurora` sky (drawn into the panorama by `draw_aurora`), `ice_block`, `frost_wall`, `ice_floor`, `ice_spire`, `ice_throne`, `icicles`, `ice_shards`. `examples/aurora_palace.py` with four gallery shots.
