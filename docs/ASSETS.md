@@ -23,7 +23,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 |---|---|---|---|---|---|
 | Textures | 158 | 155 | 3 | 0 | 0 |
 | Props | 254 | 252 | 2 | 0 | 0 |
-| Characters | 29 | 27 | 2 | 0 | 0 |
+| Characters | 29 | 28 | 1 | 0 | 0 |
 | Decals | 25 | 20 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
 | Skylines | 6 | 5 | 1 | 0 | 0 |
@@ -39,7 +39,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 53 | 53 | 0 | 0 | 0 |
-| **all** | **668** | **648** | **20** | **0** | **0** |
+| **all** | **668** | **649** | **19** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -615,7 +615,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `astronaut` | good | alien_world, moon_base, orbital_hangar, space_station |  |
 | `android` | good | neon_bar, neon_street, orbital_hangar, space_station |  |
 | `alien` | good | alien_world, derelict_ship | A familiar archetype; could be made stranger. |
-| `dreamer` | polish | capsule_hotel, dream_chess, dream_world, drowned_library, hall_of_doors | The face reads as open-eyed; a sleepwalker wants closed eyes. |
+| `dreamer` | good | capsule_hotel, dream_chess, dream_world, drowned_library, hall_of_doors | Eyes closed now (two soft lines, not dark pupils), so she reads as a sleepwalker; nightgown and candle. |
 | `claude` | good | claude_study | Claude's own avatar. |
 | `explorer` | good | aquarium, jungle_temple, red_canyon |  |
 | `hoplite` | good | ancient_ruins |  |
@@ -983,6 +983,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the sleepwalker's eyes.** `dreamer`: closed eyes; the galleries she appears in are rebuilt. Rated good.
 - **2026-10-19, the capsule hotel.** bar.py: `capsules` and `capsules_lit`. `examples/capsule_hotel.py`: a corridor one cell wide between walls of berths, with four gallery shots.
 - **2026-10-19, the moon jellies and the diver.** Two more aquarium shots: moon jellies glowing in a tank lit low and violet (a tinted `jelly_backdrop`), and the diver behind the glass with a sunbeam on the sand. A sprite behind glass no longer counts as hidden in the render report.
 - **2026-10-19, sunbeams in the tank.** A `glazed` cell key: the roof is drawn but the sun and moon shine through it (existing scenes unchanged: none glaze). The aquarium glazes a few cells of its water surface, and the sun comes down into the big tank in beams.
