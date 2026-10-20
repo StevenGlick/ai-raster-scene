@@ -38,8 +38,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 16 | 16 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 47 | 43 | 4 | 0 | 0 |
-| **all** | **611** | **587** | **24** | **0** | **0** |
+| Example scenes | 47 | 46 | 1 | 0 | 0 |
+| **all** | **611** | **590** | **21** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -853,7 +853,7 @@ The environments, judged on their gallery images and shots.
 | `mansion_library` | polish | 2 | - | Wide and empty: the shelves are far off and the beamed ceiling becomes radiating stripes. |
 | `haunted_house` | good | 4 | haunted_front, haunted_hall, haunted_parlour, haunted_ghost | Halloween at the old house: the front with jack-o'-lanterns and bats, the hall's grand stair and landing, the parlour, the ghost on the stairs. |
 | `tunnel_encounter` | good | 2 | tunnel_01 |  |
-| `underground_waterway` | polish | 4 | waterway_01 | Murky: the far end and the boat are hard to read. |
+| `underground_waterway` | good | 4 | waterway_01 | A thinner fog with halos and lanterns at the far end: the channel recedes into lit stone, the boat and its reflection read. |
 | `sewer_tunnels` | good | 3 | sewer_thing |  |
 | `bunker_lab` | good | 4 | bunker_hud, bunker_crt |  |
 
@@ -865,14 +865,14 @@ The environments, judged on their gallery images and shots.
 | `autumn_lane` | good | 4 | autumn_lane, autumn_scarecrow, autumn_dusk, autumn_walk | A lane through an autumn wood under a low sun, a field with a scarecrow, pumpkins and hay bales behind a wall; jack-o'-lanterns at dusk. |
 | `bayou` | good | 4 | bayou_dusk, bayou_night, bayou_gator, bayou_heron | A shack on an island in black water between mossy cypresses: sundown, fireflies at night, an alligator, a heron in mist. |
 | `kelp_forest` | good | 4 | sea_kelp, sea_diver, sea_shoal, sea_night | A kelp forest in teal water: a wreck with its mast, a diver with bubbles rising, a shoal; a night dive by flashlight with jellyfish. |
-| `coast_lighthouse` | polish | 4 | coast_tower, coast_jetty | The shore rocks in the tower shot are grey lumps. |
+| `coast_lighthouse` | good | 4 | coast_tower, coast_jetty | The shore rocks are the redrawn boulders now, not grey lumps; sand and water redrawn too. |
 | `rainy_street` | good | 4 | street_rain, street_lightning |  |
 | `rain_alley` | good | 4 | alley_street, alley_rain, alley_glass, alley_storm |  |
 | `neon_street` | good | 4 | neon_street, neon_stall, neon_signs, neon_runner | The neon facade style in the rain: signs, blade signs, lantern wires, a hologram koi, a noodle stall, vending machines, steam, the runner; bloom on the neon. |
 | `village_green` | good | 4 | village_market, village_stall, village_well, village_night | A cobbled street of timber-framed houses to a green: a market stall and its keeper, the inn sign, a cart, the well; the inn lit after closing. |
 | `ghost_town` | good | 4 | western_noon, western_saloon, western_ghost, western_windpump | A frontier main street: a cowboy at high noon, the saloon and its barkeep, sundown with lanterns and a ghost, a windpump in the desert. |
 | `misty_moor` | good | 3 | moor_dawn, moor_circle | Stones of varied heights with weathered menhir faces and slanted, chipped stone_cap tops in dawn mist. |
-| `winter_lake` | polish | 4 | winter_night, winter_day | The ice is blotchy (see the ice texture). |
+| `winter_lake` | good | 4 | winter_night, winter_day | Ice redrawn (fractures, depth) and snow redrawn (drifts); the snowy spruce and snow-capped boulders. |
 | `winter_woods` | good | 4 | winter_lane, winter_deer, winter_lantern, winter_stream | A snowbound wood: the lane, a deer on a frozen stream in falling snow, a child by a lantern-lit footbridge, trees mirrored in the ice. |
 | `chapel_graveyard` | good | 4 | chapel_yard, chapel_nave | The yard is a little sparse. |
 
@@ -926,6 +926,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the waterway.** underground_waterway: a thinner fog with `glow`, lanterns at the far end, so the channel reads in depth. winter_lake and coast_lighthouse re-rated good: their ice, snow, sand, water and rocks were all redrawn earlier today.
 - **2026-10-19, the fallen roof.** cathedral_ruin: rafters across the hole in the roof (`log` cards at the ceiling) with ivy hanging from its edges, column drums, a broken column and rubble under it, grass in the light, and the beam shot moved out of the pews into the aisle.
 - **2026-10-19, the throne hall.** castle_keep: the camera closer, a larger throne under a great stained-glass window, banners and candelabras on the dais, guards at the foot of the steps, the knight to one side.
 - **2026-10-19, the stone circle.** `menhir`, `menhir_top` and a `stone_cap` prop: the misty moor's stones get varied heights, weathered faces and slanted, chipped tops instead of flat-topped blocks.
