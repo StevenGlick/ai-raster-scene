@@ -321,6 +321,15 @@
     1.0
    ],
    "fov": 66,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ],
    "overlays": [
     {
      "type": "caption",

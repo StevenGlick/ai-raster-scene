@@ -56,7 +56,7 @@ def hall_of_doors():
         {'x': 6.7, 'y': 39.0, 'type': 'melting_clock', 'z': 0.9, 'planes': 1, 'angle': 90, 'length': 0.7},
         {'x': 2.6, 'y': 38.0, 'type': 'paper_boat'},
     ]
-    lights = [{'x': 4.5, 'y': y, 'z': 2.6, 'radius': 7.0, 'color': [1.0, 0.86, 0.7], 'intensity': 0.9}
+    lights = [{'x': 4.5, 'y': y, 'z': 1.8, 'radius': 7.0, 'color': [1.0, 0.86, 0.7], 'intensity': 0.9}
               for y in (40.0, 32.0, 24.0, 16.0, 8.0)]
     lights += [{'x': 4.5, 'y': 1.5, 'z': 1.5, 'radius': 6.0, 'color': [0.8, 0.88, 1.0], 'intensity': 0.5},
                {'x': 4.4, 'y': 32.6, 'z': 0.5, 'radius': 2.6, 'color': [1.0, 0.7, 0.35], 'intensity': 1.0}]

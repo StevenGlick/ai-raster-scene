@@ -81,6 +81,8 @@ def autumn_lane():
             {'x': 12.4, 'y': 15.2, 'look_at': [6.8, 25.0, 1.4], 'fov': 64, 'height': 0.6},
             {'x': 21.4, 'y': 23.6, 'look_at': [17.6, 18.4, 0.55], 'fov': 62, 'height': 0.6,
              'extra_sprites': dusk_sprites, 'post': [{'fx': 'bloom', 'threshold': 0.5, 'strength': 0.8, 'radius': 5},
+                                                     {'fx': 'bloom', 'source': 'light', 'strength': 1.0,
+                                                      'radius': 2.5, 'spread': 0.5},
                                                      {'fx': 'vignette', 'strength': 0.45}],
              'overlays': [{'type': 'caption', 'text': "All Hallows' Eve", 'at': 'top', 'box': True}],
              'overrides': {'sky': 'dusk', 'ambient': [0.14, 0.13, 0.2],

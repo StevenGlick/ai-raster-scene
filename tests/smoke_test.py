@@ -953,6 +953,101 @@ def check_glass_facades():
           'western fronts)')
 
 
+def check_light_and_lens():
+    """A lamp fades above its own height, and one on a roof lights the roof; a sharp subject keeps its
+    colours under depth of field; streaks, the flare and glowing particles and held items do what
+    they say."""
+    sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+    import post as P
+    import render as R
+
+    def frame(scene, cam=None):
+        r = R.Renderer(R.World(scene), scene)
+        return r, r.render(R.prepare_shot(scene, R.merge_camera(scene, cam or scene['camera'])))
+
+    # 1. lamps at the default height leave the falloff alone; a higher one lifts it by its own height
+    room = {'map': ['########', '#......#', '#......#', '#......#', '########'], 'sky': None,
+            'legend': {'#': {'wall': 'brick', 'h': 3.0}, '.': {'floor': 'flagstone'}},
+            'ambient': [0.1, 0.1, 0.1], 'surface_noise': 0, 'camera': {'x': 2.0, 'y': 2.5, 'angle': 0}}
+    lamp = {'x': 4.0, 'y': 2.5, 'radius': 3.0}
+    r = R.Renderer(R.World(room), dict(room, lights=[dict(lamp)]))
+    assert r.lift is None and r.lm_top is r.lm, 'a lamp at the default height changes nothing'
+    r = R.Renderer(R.World(room), dict(room, lights=[dict(lamp, z=3.2)]))
+    z = r.fade_z(np.array([3.5]), np.array([2.5]), np.array([3.0]))
+    assert abs(float(z[0]) - 1.0) < 1e-4, 'a lamp at 3.2 lights a wall at 3.0 as one at 1.2 lights it at 1.0'
+
+    # 2. a lamp above a roof lights the roof round it, past the lamp's own cell; the ground's light
+    # (walls, the street) is the plain rule's
+    tower = {'map': ['.........'] + ['.TTTTTTT.'] * 5 + ['.........'], 'sky': None, 'ambient': [0.05] * 3,
+             'legend': {'T': {'wall': 'brick', 'h': 5.0, 'top': 'concrete_floor'}, '.': {'floor': 'asphalt'}},
+             'surface_noise': 0, 'lights': [{'x': 2.5, 'y': 3.5, 'z': 5.6, 'radius': 4.5}],
+             'camera': {'x': 0.5, 'y': 3.5, 'angle': 0}}
+    r = R.Renderer(R.World(tower), tower)
+    far = (np.array([5.5]), np.array([3.5]))                 # three cells along the roof
+    assert float(R.sample_lm(r.lm_top, r.lres, *far).sum()) > 0.1, 'a lamp on a roof lights the roof'
+    assert float(R.sample_lm(r.lm, r.lres, *far).sum()) < 1e-6, 'the ground map keeps the plain rule'
+    assert r._lm_at(5.5, 3.5, 5.0) is r.lm_top and r._lm_at(0.5, 3.5, 0.0) is r.lm
+
+    # 3. depth of field: the pixels it leaves sharp are finished exactly as in the shot without it
+    yard = {'map': ['#' * 12] + ['#' + '.' * 10 + '#'] * 14 + ['#' * 12], 'sky': None,
+            'legend': {'#': {'wall': 'brick', 'h': 1.0}, '.': {'floor': 'flagstone'}},
+            'ambient': [0.5, 0.48, 0.45], 'lights': [{'x': 6.0, 'y': 9.0, 'radius': 6.0}],
+            'sprites': [{'id': 'near', 'x': 6.0, 'y': 11.0, 'type': 'guard'}, {'x': 6.5, 'y': 3.0, 'type': 'barrel'},
+                        {'x': 4.5, 'y': 5.0, 'type': 'crate'}, {'x': 8.0, 'y': 6.0, 'type': 'lamp_post'}],
+            'camera': {'x': 6.0, 'y': 13.5, 'look_at': 'near', 'fov': 60}}
+    blurred = R.render_shot(dict(yard, shots=[dict(yard['camera'], post=[{'fx': 'dof', 'blur': 2.5}])]), 0)
+    plain = R.render_shot(dict(yard, shots=[dict(yard['camera'])]), 0)
+    r, a = frame(dict(yard, post=[{'fx': 'dof', 'blur': 2.5}]))
+    _, b = frame(yard)
+    kept = (np.abs(a - b).max(-1) == 0).repeat(3, 0).repeat(3, 1)
+    assert 0.02 < kept.mean() < 0.9, kept.mean()
+    assert (np.asarray(blurred)[kept] == np.asarray(plain)[kept]).all(), 'a sharp subject keeps its colours'
+
+    # 4. streaks: a lone light draws a cross of lines fading from it, and nothing off the lines
+    img = np.zeros((40, 60, 3), np.float32)
+    em = img.copy()
+    em[20, 30] = 1.0
+    out = P.fx_streaks(img, {'points': 4, 'length': 6}, {'emission': em})
+    assert out[20, 36].min() > out[20, 42].min() > 0 and out[26, 30].min() > 0, 'lines along the cross'
+    assert out[14, 24].max() == 0 and out[20, 30].max() == 0, 'nothing off the lines, the light itself left alone'
+    out = P.fx_streaks(img, {'points': 2, 'length': 6}, {'emission': em})
+    assert out[20, 36].min() > 0 and out[26, 30].max() == 0, 'two points: one horizontal line'
+
+    # 5. the flare runs from a sun in the frame through the middle and out the far side; none
+    # from a sun that does not show
+    sun = {'x': 10.0, 'y': 8.0, 'r': 3.0, 'color': [1.0, 0.95, 0.8], 'visible': 1.0, 'power': 1.0}
+    img = np.zeros((80, 120, 3), np.float32)
+    out = P.fx_flare(img, {}, {'suns': [sun]})
+    line = [out[int(8 + (40 - 8) * t), int(10 + (60 - 10) * t)].sum() for t in (0.3, 1.45, 1.72)]
+    assert min(line) > 0 and out[70, 10].sum() < 1e-3, 'ghosts along the line through the middle'
+    assert (P.fx_flare(img, {}, {'suns': [dict(sun, visible=0.0)]}) == img).all()
+    assert (P.fx_flare(img, {}, {}) == img).all()
+
+    # 6. a sun the camera faces is in the frame and shows; a wall in front of it hides it
+    field = {'map': ['.' * 12] * 12, 'sky': 'day', 'legend': {'.': {'floor': 'grass'}, '#': {'wall': 'brick', 'h': 3.0}},
+             'lights': [{'type': 'sun', 'azimuth': 0, 'elevation': 8}], 'camera': {'x': 2.0, 'y': 6.0, 'angle': 0}}
+    for walled, want in ((False, 1.0), (True, 0.0)):
+        sc = dict(field, map=[row[:6] + ('#' if walled else '.') + row[7:] for row in field['map']])
+        r, _ = frame(sc)
+        rr = r._weather_ctx(sc['camera'], 1, r.W, r.H)
+        seen = [s_['visible'] for s_ in rr['suns']]
+        assert (seen and abs(seen[0] - want) < 0.05) if want else not seen, (walled, seen)
+        if not walled:
+            assert abs(rr['suns'][0]['x'] - r.W / 2) < 2 and rr['suns'][0]['y'] < r.H / 2
+
+    # 7. fireflies, embers and spores give off light: a light bloom later in the list glows round
+    # them; a held lantern's flame does too
+    dark = dict(field, sky='night', lights=[], ambient=[0.05] * 3)
+    _, a = frame(dict(dark, post=[{'fx': 'fireflies', 'count': 60}]))
+    _, b = frame(dict(dark, post=[{'fx': 'fireflies', 'count': 60}, {'fx': 'bloom', 'source': 'light', 'strength': 2}]))
+    assert (b - a).max() > 0.05, 'fireflies glow under a light bloom'
+    held = dict(dark, overlays=[{'type': 'viewmodel', 'item': 'lantern'}])
+    _, a = frame(held)
+    _, b = frame(dict(held, post=[{'fx': 'bloom', 'source': 'light', 'strength': 2}]))
+    assert (b - a)[100:].max() > 0.05, 'a held lantern glows under a light bloom'
+    print('ok light falloff by height and on roofs, palette under depth of field, streaks, flare, glowing particles')
+
+
 def check_docs():
     """The docs name assets, keys and counts by hand: fail as soon as they and the code disagree."""
     sys.path.insert(0, os.path.join(ROOT, 'scripts'))
@@ -1064,6 +1159,7 @@ def main():
         check_pixel_art()
         check_planes_prefabs()
         check_glass_facades()
+        check_light_and_lens()
         check_docs()
         gs = os.path.join(tmp, 'gui_post.json')
         with open(gs, 'w') as f:

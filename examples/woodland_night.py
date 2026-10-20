@@ -13,6 +13,8 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scripts'))
 from maptools import Grid, scene  # noqa: E402
 
+GLOW = {'fx': 'bloom', 'source': 'light', 'strength': 1.4, 'radius': 2.5, 'spread': 0.5}  # the lights glow
+
 FIRE = {'x': 26.5, 'y': 10.5, 'z': 0.5, 'radius': 9.0, 'color': [1.0, 0.62, 0.28], 'intensity': 2.2}
 LANTERN = {'x': 16.0, 'y': 18.4, 'z': 0.5, 'radius': 5.5, 'color': [1.0, 0.72, 0.38], 'intensity': 1.4}
 
@@ -87,10 +89,10 @@ def woodland():
         ],
         camera={'x': 17.5, 'y': 30.4, 'angle': 270, 'fov': 68, 'height': 0.5},
         shots=[
-            {'x': 17.5, 'y': 30.4, 'angle': 270,
+            {'x': 17.5, 'y': 30.4, 'angle': 270, 'post': [GLOW],
              'overlays': [{'type': 'viewmodel', 'item': 'lantern'},
                           {'type': 'caption', 'text': 'The old forest road', 'at': 'top', 'box': True}]},
-            {'x': 23.0, 'y': 13.6, 'angle': 331, 'fov': 70,
+            {'x': 23.0, 'y': 13.6, 'angle': 331, 'fov': 70, 'post': [GLOW],
              'overlays': [{'type': 'bubble', 'anchor': 'watcher', 'name': 'The Watcher',
                            'text': 'Sit. The fire does not care who you are.'}]},
             {'x': 18.2, 'y': 19.8, 'angle': 209, 'fov': 70, 'post': ['horror']},
@@ -103,7 +105,7 @@ def woodland():
                             dict(FIRE, intensity=0.8, radius=4.0)],
                  'fog': {'color': [0.66, 0.6, 0.54], 'density': 0.008, 'ground': 0.3, 'height': 0.45,
                          'noise': 0.6, 'shafts': 0.9, 'anisotropy': 0.35}}},
-            {'x': 11.0, 'y': 14.6, 'look_at': [11.2, 3.0, 1.2], 'fov': 70},
+            {'x': 11.0, 'y': 14.6, 'look_at': [11.2, 3.0, 1.2], 'fov': 70, 'post': [GLOW]},
         ],
         contact_shadows=0.5,
         supersample=2,

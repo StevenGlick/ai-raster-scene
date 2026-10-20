@@ -767,6 +767,15 @@
     0.8
    ],
    "fov": 62,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ],
    "overlays": [
     {
      "type": "caption",
@@ -791,6 +800,15 @@
    "y": 10.0,
    "look_at": "knight",
    "fov": 62,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ],
    "overlays": [
     {
      "type": "bubble",

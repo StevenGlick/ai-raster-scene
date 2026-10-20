@@ -10,6 +10,8 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scripts'))
 from maptools import Grid, scene  # noqa: E402
 
+GLOW = {'fx': 'bloom', 'source': 'light', 'strength': 1.4, 'radius': 2.5, 'spread': 0.5}  # the lights glow
+
 g = Grid(40, 40, fill='s')
 g.disc(20, 19, 8, 'i')                                # the frozen lake
 g.rect(15, 4, 24, 8, 'L')                             # the cabin
@@ -54,9 +56,9 @@ s = scene(
     scatter=[{'of': 'snow', 'on': 's', 'density': 0.06, 'sizes': ['tiny', 'small', 'medium'], 'seed': 7}],
     camera={'x': 20.0, 'y': 32.0, 'look_at': [20.0, 7.0, 0.7], 'fov': 70},
     shots=[
-        {'x': 20.0, 'y': 32.0, 'look_at': [20.0, 7.0, 0.75], 'fov': 70,
+        {'x': 20.0, 'y': 32.0, 'look_at': [20.0, 7.0, 0.75], 'fov': 70, 'post': [GLOW],
          'overlays': [{'type': 'caption', 'text': 'The cabin on the ice', 'at': 'top', 'box': True}]},
-        {'x': 22.6, 'y': 35.2, 'look_at': 'child', 'fov': 58,
+        {'x': 22.6, 'y': 35.2, 'look_at': 'child', 'fov': 58, 'post': [GLOW],
          'overlays': [{'type': 'bubble', 'anchor': 'child', 'text': "He's been watching the cabin all night."}]},
         {'x': 20.0, 'y': 30.0, 'look_at': [20.0, 7.0, 0.7], 'fov': 70, 'post': ['blizzard']},
         {'x': 20.0, 'y': 32.0, 'look_at': [20.0, 7.0, 0.75], 'fov': 70,

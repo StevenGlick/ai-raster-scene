@@ -573,6 +573,15 @@
    "x": 11.95,
    "y": 36.6,
    "angle": 270,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ],
    "overlays": [
     {
      "type": "caption",
@@ -590,7 +599,16 @@
     9.0,
     1.6
    ],
-   "fov": 70
+   "fov": 70,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ]
   },
   {
    "x": 7.4,
@@ -601,6 +619,15 @@
     1.0
    ],
    "fov": 64,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ],
    "overlays": [
     {
      "type": "caption",
@@ -616,6 +643,13 @@
    "look_at": "ghost",
    "fov": 50,
    "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    },
     {
      "fx": "vignette",
      "strength": 0.6

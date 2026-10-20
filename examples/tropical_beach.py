@@ -14,6 +14,12 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scripts'))
 from maptools import Grid, scene  # noqa: E402
 
+GLOW = {'fx': 'bloom', 'source': 'light', 'strength': 1.4, 'radius': 2.5, 'spread': 0.5}  # the lights glow
+SUN = {'type': 'sun', 'azimuth': 186, 'elevation': 4, 'color': [1.0, 0.7, 0.45], 'intensity': 0.95, 'disc_size': 3.4}
+# looking into the sun: it glows, a six-pointed star comes off it, and its flare crosses the lens
+INTO_SUN = [{'fx': 'bloom', 'source': 'light', 'strength': 1.0, 'radius': 3, 'spread': 0.5},
+            {'fx': 'streaks', 'points': 6, 'angle': 15}, {'fx': 'flare'}]
+
 W, H = 50, 46
 rnd = random.Random(21)
 g = Grid(W, H, fill=',')                              # dry sand
@@ -98,8 +104,7 @@ s = scene(
     sky='sunset',
     skyline={'type': 'islands', 'count': 7},
     ambient=[0.36, 0.3, 0.34],
-    lights=[{'type': 'sun', 'azimuth': 186, 'elevation': 4, 'color': [1.0, 0.7, 0.45], 'intensity': 0.95,
-             'disc_size': 3.4}],
+    lights=[SUN],
     fog={'color': [0.78, 0.52, 0.5], 'density': 0.003},
     sprites=sprites,
     prefabs=prefabs,
@@ -116,7 +121,7 @@ s = scene(
          'overrides': {'sky': 'day', 'ambient': [0.42, 0.42, 0.46],
                        'lights': [{'type': 'sun', 'azimuth': 150, 'elevation': 58, 'intensity': 0.8}],
                        'fog': {'color': [0.7, 0.82, 0.9], 'density': 0.004}}},
-        {'x': 24.0, 'y': 40.5, 'look_at': [14.0, 23.2, 0.6], 'fov': 80,
+        {'x': 24.0, 'y': 40.5, 'look_at': [14.0, 23.2, 0.6], 'fov': 80, 'post': [GLOW],
          'overrides': {'sky': 'night', 'ambient': [0.08, 0.09, 0.14],
                        'lights': [{'type': 'moon', 'azimuth': 200, 'elevation': 18, 'intensity': 0.5, 'disc_size': 2.6}],
                        'prefabs': prefabs + [{'type': 'campsite', 'x': 24.5, 'y': 36.0, 'seed': 1}],
@@ -124,6 +129,8 @@ s = scene(
                                   for y in range(0, H, 2)],
                        'fog': {'color': [0.06, 0.08, 0.14], 'density': 0.012, 'glow': 0.7}},
          'extra_sprites': [{'x': 23.4, 'y': 35.3, 'type': 'castaway', 'facing': 20}] + surf('surf_glow')},
+        {'x': 20.0, 'y': 28.0, 'height': 0.7, 'angle': 170, 'fov': 70, 'post': INTO_SUN,
+         'overrides': {'lights': [dict(SUN, elevation=12)]}},
     ],
     contact_shadows=0.5,
     supersample=2,

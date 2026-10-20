@@ -64,6 +64,7 @@ class Ctx:
         # every widget that shows an icon accepts icon_defs, sprite_defs and built-ins alike
         self.any_icon = {**self.icon_defs, **self.defs}
         self.cam_light = cam_light if cam_light is not None else np.ones(3, np.float32)
+        self.emission = None   # the frame's light sources, which a held lantern or a muzzle flash adds to
 
     def c(self, key):
         return tuple(self.t[key])
@@ -673,6 +674,11 @@ def draw_viewmodel(img, ov, ctx):
     a = part[..., 3:4]
     region = img[max(0, y0):y1, max(0, x0):x1]
     region[:] = region * (1 - a) + col * a
+    if ctx.emission is not None and e.any():           # its flame or flash gives off light (bloom)
+        em = ctx.emission.copy()
+        reg = em[max(0, y0):y1, max(0, x0):x1]
+        reg[:] = reg * (1 - a) + part[..., :3] * 1.1 * e * a
+        ctx.emission = em
     return img
 
 
@@ -700,6 +706,11 @@ def draw_ui_layer(img, overlays, ctx):
         if kind not in WIDGETS:
             raise KeyError(f"unknown overlay type '{kind}'. Types: {sorted(WIDGETS) + ['viewmodel']}")
         WIDGETS[kind](ctx, ov)
+    return overlay_ui(img, ctx)
+
+
+def overlay_ui(img, ctx):
+    """The widgets already drawn on ctx's layer, laid over a frame (again, without drawing them twice)."""
     lay = np.asarray(ctx.layer, np.float32) / 255
     a = lay[..., 3:4]
     return img * (1 - a) + lay[..., :3] * a

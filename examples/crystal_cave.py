@@ -9,6 +9,8 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scripts'))
 from maptools import Grid, scene  # noqa: E402
 
+GLOW = {'fx': 'bloom', 'source': 'light', 'strength': 1.4, 'radius': 2.5, 'spread': 0.5}  # the lights glow
+
 g = Grid(30, 26, fill='#')
 g.disc(9, 14, 6, '.')                                 # the near chamber
 g.disc(18, 12, 7, '.')                                # the great cavern
@@ -52,12 +54,12 @@ s = scene(
               'seed': 3}],
     camera={'x': 12.2, 'y': 18.6, 'look_at': [20.0, 7.5, 0.35], 'fov': 70},
     shots=[
-        {'x': 12.2, 'y': 18.6, 'look_at': [19.0, 7.0, 0.3], 'fov': 72,
+        {'x': 12.2, 'y': 18.6, 'look_at': [19.0, 7.0, 0.3], 'fov': 72, 'post': [GLOW],
          'overlays': [{'type': 'caption', 'text': 'The lake under the hill', 'at': 'top', 'box': True}]},
-        {'x': 11.2, 'y': 17.6, 'look_at': 'robot', 'fov': 60,
+        {'x': 11.2, 'y': 17.6, 'look_at': 'robot', 'fov': 60, 'post': [GLOW],
          'overlays': [{'type': 'bubble', 'anchor': 'robot', 'name': 'Survey unit',
                        'text': 'Mineral glow detected. Life signs: one. Large.'}]},
-        {'x': 14.0, 'y': 15.8, 'look_at': 'beast', 'fov': 44, 'post': [{'fx': 'vignette', 'strength': 0.6}]},
+        {'x': 14.0, 'y': 15.8, 'look_at': 'beast', 'fov': 44, 'post': [GLOW, {'fx': 'vignette', 'strength': 0.6}]},
     ],
     contact_shadows=0.5,
     supersample=2,

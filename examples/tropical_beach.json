@@ -1227,6 +1227,15 @@
     0.6
    ],
    "fov": 80,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ],
    "overrides": {
     "sky": "night",
     "ambient": [
@@ -2099,6 +2108,46 @@
      "flip": false
     }
    ]
+  },
+  {
+   "x": 20.0,
+   "y": 28.0,
+   "height": 0.7,
+   "angle": 170,
+   "fov": 70,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.0,
+     "radius": 3,
+     "spread": 0.5
+    },
+    {
+     "fx": "streaks",
+     "points": 6,
+     "angle": 15
+    },
+    {
+     "fx": "flare"
+    }
+   ],
+   "overrides": {
+    "lights": [
+     {
+      "type": "sun",
+      "azimuth": 186,
+      "elevation": 12,
+      "color": [
+       1.0,
+       0.7,
+       0.45
+      ],
+      "intensity": 0.95,
+      "disc_size": 3.4
+     }
+    ]
+   }
   }
  ],
  "contact_shadows": 0.5,

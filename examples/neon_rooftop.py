@@ -55,7 +55,7 @@ PINK, CYAN, GOLD, VIOLET = [1.0, 0.3, 0.7], [0.3, 0.9, 1.0], [1.0, 0.75, 0.3], [
 glows = [(17.2, 31.0, PINK), (21.8, 28.0, CYAN), (17.2, 24.0, VIOLET), (21.8, 21.0, PINK), (17.2, 15.0, CYAN),
          (21.8, 12.0, GOLD), (17.2, 8.0, PINK), (21.8, 6.0, VIOLET)]
 lights = [{'x': x, 'y': y, 'z': 2.6, 'radius': 4.5, 'color': c, 'intensity': 1.2} for x, y, c in glows]
-lights += [{'x': 19.0, 'y': 18.5, 'z': 4.0, 'radius': 4.0, 'color': [1.0, 0.9, 0.7], 'intensity': 0.6},   # the train
+lights += [{'x': 19.0, 'y': 18.5, 'z': 1.2, 'radius': 4.0, 'color': [1.0, 0.9, 0.7], 'intensity': 0.6},   # the train's spill
            {'x': 17.6, 'y': 38.4, 'z': 5.6, 'radius': 3.5, 'color': [1.0, 0.75, 0.45], 'intensity': 0.7},       # roof lamp
            {'x': 19.0, 'y': 33.7, 'z': 5.0, 'radius': 2.2, 'color': CYAN, 'intensity': 1.0},                   # the street's
            {'x': 18.4, 'y': 33.7, 'z': 4.8, 'radius': 1.8, 'color': PINK, 'intensity': 0.8}]                    # glow, rising
@@ -70,7 +70,7 @@ sprites = [
     {'x': 22.6, 'y': 39.4, 'type': 'ac_unit', 'z': 5.0}, {'x': 21.4, 'y': 40.4, 'type': 'ac_unit', 'z': 5.0, 'flip': True},
     {'x': 17.2, 'y': 40.6, 'type': 'antenna', 'z': 5.0},
     {'x': 23.0, 'y': 36.4, 'type': 'rooftop_sign', 'z': 5.0},
-    {'id': 'runner', 'x': 18.7, 'y': 34.22, 'type': 'runner', 'z': 5.15, 'facing': 268, 'tint': [2.2, 2.1, 2.5]},
+    {'id': 'runner', 'x': 18.7, 'y': 34.22, 'type': 'runner', 'z': 5.15, 'facing': 268, 'tint': [1.4, 1.35, 1.6]},
     {'id': 'cat', 'x': 19.45, 'y': 34.12, 'type': 'black_cat', 'z': 5.15},
 ] + [{'x': 19.0, 'y': y, 'type': t, 'angle': 0, 'length': 6.0, 'z': z, 'scale': sc}
      for y, z, t, sc in ((31.0, 3.4, 'lantern_span', 0.6), (25.0, 4.2, 'wires_span', 0.75), (22.0, 3.0, 'lantern_span', 0.6),
@@ -98,8 +98,10 @@ s = scene(
          'overlays': [{'type': 'caption', 'text': 'Five storeys over the lower city', 'at': 'top', 'box': True}]},
         {'x': 18.4, 'y': 34.1, 'height': 5.75, 'look_at': [19.0, 27.5, 0.0], 'fov': 74,
          'post': [{'fx': 'bloom', 'source': 'light', 'strength': 2.4, 'radius': 2.5, 'spread': 0.6}]},
-        {'x': 19.6, 'y': 23.4, 'height': 0.45, 'look_at': [19.0, 18.5, 4.2], 'fov': 74,
-         'post': [{'fx': 'bloom', 'source': 'light', 'strength': 2.4, 'radius': 2.5, 'spread': 0.6}]},
+        {'x': 19.6, 'y': 23.4, 'height': 0.45, 'look_at': [19.0, 18.5, 4.2], 'fov': 74,   # an anamorphic lens
+         'post': [{'fx': 'bloom', 'source': 'light', 'strength': 2.4, 'radius': 2.5, 'spread': 0.6},
+                  {'fx': 'streaks', 'points': 2, 'length': 50, 'strength': 0.4, 'count': 10, 'gap': 10,
+                   'color': [0.55, 0.75, 1.3]}]},
         {'x': 19.75, 'y': 34.9, 'height': 5.42, 'look_at': [19.45, 30.0, 4.6], 'fov': 56,
          'post': [{'fx': 'dof', 'focus': 'cat', 'blur': 2.2}, {'fx': 'bloom', 'source': 'light', 'strength': 2.4, 'radius': 2.5, 'spread': 0.6}]},
     ],

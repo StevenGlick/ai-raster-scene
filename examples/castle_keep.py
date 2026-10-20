@@ -10,6 +10,8 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scripts'))
 from maptools import Grid, scene  # noqa: E402
 
+GLOW = {'fx': 'bloom', 'source': 'light', 'strength': 1.4, 'radius': 2.5, 'spread': 0.5}  # the lights glow
+
 g = Grid(24, 34, fill='#')
 g.room(1, 1, 22, 20, '#', '.')                       # the throne room
 for y in (4, 8, 12, 16):
@@ -124,10 +126,10 @@ s = scene(
     ],
     camera={'x': 12.0, 'y': 12.6, 'look_at': [12.0, 3.0, 0.8], 'fov': 62},
     shots=[
-        {'x': 12.0, 'y': 12.6, 'look_at': [12.0, 3.0, 0.8], 'fov': 62,
+        {'x': 12.0, 'y': 12.6, 'look_at': [12.0, 3.0, 0.8], 'fov': 62, 'post': [GLOW],
          'overlays': [{'type': 'caption', 'text': 'The throne room', 'at': 'top', 'box': True}]},
         {'x': 3.6, 'y': 18.4, 'look_at': [1.6, 5.0, 1.15], 'fov': 70},
-        {'x': 12.2, 'y': 10.0, 'look_at': 'knight', 'fov': 62,
+        {'x': 12.2, 'y': 10.0, 'look_at': 'knight', 'fov': 62, 'post': [GLOW],
          'overlays': [{'type': 'bubble', 'anchor': 'knight', 'name': 'Knight',
                        'text': 'The king sees no one tonight. State your business, or leave.'}]},
         {'x': 12.0, 'y': 17.0, 'angle': 90, 'fov': 70,

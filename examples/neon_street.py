@@ -74,7 +74,8 @@ s = scene(
         {'x': 15.0, 'y': 43.2, 'look_at': [15.0, 6.0, 1.7], 'fov': 64, 'post': RAIN,
          'overlays': [{'type': 'caption', 'text': 'Lower city, after midnight', 'at': 'top', 'box': True}]},
         {'x': 13.4, 'y': 25.6, 'look_at': [18.4, 21.6, 1.0], 'fov': 66, 'post': RAIN},
-        {'x': 12.4, 'y': 36.0, 'look_at': [16.0, 24.0, 3.2], 'fov': 74, 'post': RAIN},
+        {'x': 12.4, 'y': 36.0, 'look_at': [16.0, 24.0, 3.2], 'fov': 74,      # the strings of bulbs twinkle
+         'post': RAIN + [{'fx': 'streaks', 'points': 4, 'length': 9, 'strength': 0.7, 'count': 20}]},
         {'x': 13.2, 'y': 34.6, 'look_at': 'runner', 'fov': 58, 'post': RAIN,
          'overlays': [{'type': 'bubble', 'anchor': 'runner', 'name': 'Runner',
                        'text': 'Not here. Walk with me, and keep your eyes on the signs.'}]},

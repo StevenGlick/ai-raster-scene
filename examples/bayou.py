@@ -17,6 +17,7 @@ from maptools import Grid, scene  # noqa: E402
 WARM = [1.0, 0.64, 0.3]
 LAMPS = [{'x': 16.6, 'y': 10.0, 'z': 1.0, 'radius': 5.0, 'color': WARM, 'intensity': 1.5},       # the window
          {'x': 19.6, 'y': 10.6, 'z': 1.1, 'radius': 4.0, 'color': WARM, 'intensity': 1.2}]       # the porch lantern
+GLOW = {'fx': 'bloom', 'source': 'light', 'strength': 1.4, 'radius': 2.5, 'spread': 0.5}  # the lights glow
 
 
 def bayou():
@@ -84,9 +85,9 @@ def bayou():
             {'x': 17.4, 'y': 21.6, 'angle': 268,
              'overlays': [{'type': 'caption', 'text': 'The bayou at sundown', 'at': 'top', 'box': True}]},
             {'x': 17.4, 'y': 21.6, 'angle': 268, 'extra_sprites': night, 'overrides': night_over,
-             'post': [{'fx': 'bloom', 'threshold': 0.55, 'strength': 0.6, 'radius': 5}]},
+             'post': [{'fx': 'bloom', 'threshold': 0.55, 'strength': 0.6, 'radius': 5}, GLOW]},
             {'x': 18.5, 'y': 26.6, 'look_at': 'gator', 'fov': 40, 'height': 0.22, 'extra_sprites': night,
-             'overrides': night_over},
+             'overrides': night_over, 'post': [GLOW]},
             {'x': 21.0, 'y': 28.6, 'look_at': 'heron', 'fov': 54, 'height': 0.6,
              'overrides': {'sky': 'golden', 'ambient': [0.36, 0.36, 0.38],
                            'lights': [{'type': 'sun', 'azimuth': 20, 'elevation': 10, 'intensity': 0.8}],

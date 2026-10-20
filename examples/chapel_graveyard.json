@@ -603,6 +603,15 @@
     1.5
    ],
    "fov": 74,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ],
    "overlays": [
     {
      "type": "caption",
@@ -616,7 +625,16 @@
    "x": 19.0,
    "y": 27.0,
    "look_at": "ghost",
-   "fov": 64
+   "fov": 64,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ]
   },
   {
    "x": 16.5,
@@ -626,7 +644,16 @@
     2.4,
     0.75
    ],
-   "fov": 74
+   "fov": 74,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ]
   },
   {
    "x": 14.2,
@@ -637,6 +664,15 @@
     0.62
    ],
    "fov": 64,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ],
    "overlays": [
     {
      "type": "dialog",

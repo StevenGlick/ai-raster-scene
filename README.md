@@ -220,7 +220,7 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **See-through walls**: iron fences, railings, picket fences, chain-link, jail bars, portcullises, lattices, smashed windows, Doric colonnades and a temple's roof comb, with the scene showing through the gaps
 - **Floors, ceilings and open sky** per cell, with eleven procedural sky panoramas (night, dusk, storm, day, overcast, blood, sunset, golden hour, deep space, alien, dream), distant skylines (mountains, hills, treeline, city, islands, rainforest), and planets, ringed gas giants, moons and stranger things hung in the sky
 - **Void floors**: no ground at all, just sky carrying on below the horizon, for space outside a station's viewport or islands adrift over a sea of cloud with ragged cliffs underneath
-- **Lighting**: coloured point lights baked into a shadowed lightmap, a sun or moon with long cast shadows and its disc in the sky, emissive texels (lit windows, stained glass, glowing runes), flashlight cone, Doom-style light banding, and a soft contact shadow under every prop
+- **Lighting**: coloured point lights baked into a shadowed lightmap, fading above their own height (a lamp hung high lights the walls round it, one on a roof lights the roof), a sun or moon with long cast shadows and its disc in the sky, emissive texels (lit windows, stained glass, glowing runes), flashlight cone, Doom-style light banding, and a soft contact shadow under every prop
 - **Volumetric fog**: mist that lies low and drifts in banks, halos round every lamp, and beams of sun or moonlight through windows, doorways, standing stones and trees; sunlight finds its way into roofed rooms through their doorways, windows and skylights
 - **Reflections**: water, ice, wet streets and puddles mirror the lamps, windows and figures beyond them
 - **The 90s look**: 320x200 framebuffer, Bayer-dithered 256-colour palette, chunky nearest-neighbour upscale, optional scanlines and 2x supersampling
@@ -240,7 +240,7 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **First-person held items**: revolver, lantern, flashlight, axe, crowbar, torch, lit by the scene; the lantern and torch cast their own light
 - **24 item icons** and a draw-op format (with automatic outlines) for new icons and held items
 - **Weather**: rain, snow, splashes, ash, embers, autumn leaves, fireflies, glowing spores and blowing dust, placed in the world rather than painted over it - hidden behind walls, kept out from under roofs, shrinking and fading into the fog with distance - plus wet ground that mirrors the lamps
-- **Post-processing**: colour grading, bloom (from the whole frame, or only from what gives off light - neon, windows, flames, the sun - so it can glow hard), depth of field that focuses on the shot's subject, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
+- **Post-processing**: colour grading, bloom (from the whole frame, or only from what gives off light - neon, windows, flames, fireflies, a held lantern, the sun - so it can glow hard), depth of field that focuses on the shot's subject and leaves its colours alone, streaks (the twinkle of a star filter on the brightest lights, or the long blue lines of an anamorphic lens), a lens flare from a sun in the frame, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
 - **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
 - **Pixel art drawn in code**: the jungle, ruins and beach are built from shapes - leaves, stones, planks, blades of grass, carved glyphs - stamped into a height field, lit from one direction, and snapped onto hue-shifted colour ramps with dark edges on their shadow sides (`scripts/pixelart.py`), so they read as pixel art rather than noise
 - **No assets to download**: all 165 textures, 260 props, 29 characters, 26 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
@@ -293,6 +293,12 @@ Bloom can come from light sources alone, so neon glows hard and walls stay walls
 | | |
 |---|---|
 | ![A street samurai in focus under a clear umbrella, the market behind melted into soft neon](docs/gallery/market_samurai.png) | ![A black cat on a ledge in focus, the neon canyon below blurred into glowing shapes](docs/gallery/rooftop_cat.png) |
+
+Streaks draw the brightest lights out into the little cross of a star filter, or the long blue lines of an anamorphic lens, and a low sun in the frame throws a flare across it: a string of coloured ghosts through the middle of the frame, gone the moment a wall or a tree hides the sun.
+
+| | |
+|---|---|
+| ![Into the sun on the beach: a six-pointed star on it, a lens flare of coloured ghosts across the frame, a palm on the left](docs/gallery/beach_flare.png) | ![The strings of bulbs over a neon street twinkle with little crosses of light in the rain](docs/gallery/neon_signs.png) |
 
 ## Install
 

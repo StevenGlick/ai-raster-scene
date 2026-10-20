@@ -176,9 +176,10 @@ def splashes(img, p, ctx):
 
 
 def _glow_dots(img, ctx, rng, n, zmin, zmax, near, far, colours, size, glow, outdoors, rise=0.0):
-    """Shared by embers, fireflies and spores: bright cores with a soft additive halo."""
+    """Shared by embers, fireflies and spores: bright cores with a soft additive halo. They give
+    off light: they are added to the frame's emission too, for a light bloom later in the list."""
     H, W = img.shape[:2]
-    ctx = dict(ctx, shape=(H, W))
+    shared, ctx = ctx, dict(ctx, shape=(H, W))
     proj = _proj(ctx)
     sx, sy, t, z, fade = place(ctx, rng, n, zmin, zmax, near, far, outdoors)
     layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
@@ -193,6 +194,8 @@ def _glow_dots(img, ctx, rng, n, zmin, zmax, near, far, colours, size, glow, out
         if rise:                                     # a short trail below a rising spark
             d.line([(x, y), (x + rng.normal() * 0.6, y + rise * s * 2.5)], fill=_rgba(c, 0.45 * f), width=1)
         d.rectangle(_box(x, y, s), fill=_rgba(c, 0.95 * f))
+    if shared.get('emission') is not None:
+        shared['emission'] = _composite(shared['emission'], layer, 'add')
     return _composite(img, layer, 'add')
 
 

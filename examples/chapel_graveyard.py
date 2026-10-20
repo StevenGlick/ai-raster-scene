@@ -10,6 +10,8 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scripts'))
 from maptools import Grid, scene  # noqa: E402
 
+GLOW = {'fx': 'bloom', 'source': 'light', 'strength': 1.4, 'radius': 2.5, 'spread': 0.5}  # the lights glow
+
 g = Grid(34, 36, fill=',')                            # grass everywhere outside
 g.box(2, 12, 31, 34, 'f')                             # the churchyard's iron fence...
 g.rect(15, 34, 18, 34, ',')                           # ...with the gate open
@@ -94,11 +96,11 @@ s = scene(
              {'of': 'stones', 'on': ',p', 'density': 0.25, 'sizes': ['tiny', 'small'], 'seed': 5}],
     camera={'x': 16.5, 'y': 34.0, 'look_at': [16.5, 6.0, 1.6], 'fov': 72},
     shots=[
-        {'x': 13.2, 'y': 31.2, 'look_at': [16.8, 12.0, 1.5], 'fov': 74,
+        {'x': 13.2, 'y': 31.2, 'look_at': [16.8, 12.0, 1.5], 'fov': 74, 'post': [GLOW],
          'overlays': [{'type': 'caption', 'text': 'The old churchyard', 'at': 'top', 'box': True}]},
-        {'x': 19.0, 'y': 27.0, 'look_at': 'ghost', 'fov': 64},
-        {'x': 16.5, 'y': 11.4, 'look_at': [16.5, 2.4, 0.75], 'fov': 74},
-        {'x': 14.2, 'y': 7.4, 'look_at': [16.6, 2.4, 0.62], 'fov': 64,
+        {'x': 19.0, 'y': 27.0, 'look_at': 'ghost', 'fov': 64, 'post': [GLOW]},
+        {'x': 16.5, 'y': 11.4, 'look_at': [16.5, 2.4, 0.75], 'fov': 74, 'post': [GLOW]},
+        {'x': 14.2, 'y': 7.4, 'look_at': [16.6, 2.4, 0.62], 'fov': 64, 'post': [GLOW],
          'overlays': [{'type': 'dialog', 'portrait': 'spiritualist', 'name': 'Voice in the nave',
                        'text': 'Light one candle for each name on the stones. Not one more.'}]},
     ],

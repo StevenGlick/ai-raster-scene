@@ -65,7 +65,7 @@ PRESETS = {
 
 WORLD = {'grade', 'bloom', 'vignette', 'grain', 'rain', 'snow', 'lightning', 'letterbox', 'hurt', 'fade',
          'splashes', 'embers', 'fireflies', 'spores', 'ash', 'leaves', 'dust',
-         'pixelate', 'posterize', 'gradient_map', 'dof'}
+         'pixelate', 'posterize', 'gradient_map', 'dof', 'streaks', 'flare'}
 LENS = {'dof'}      # run first, on the bare frame: a held item drawn after them stays sharp
 DISPLAY = {'crt', 'vhs', 'chromatic', 'scanlines'}
 
@@ -231,8 +231,143 @@ def fx_dof(img, p, ctx):
         layer = _fblur(img * m, rn) / np.maximum(cover, 1e-3)
         a_ = np.clip(cover * 1.6, 0, 1) * (1 - m)
         pick = pick * (1 - a_) + layer * a_
-    return pick
+    return pick.astype(img.dtype)          # what stayed sharp keeps the frame's own values, exactly
 
+
+def _lights(img, p, ctx):
+    """What gives off light in the frame: the renderer's emission (the default `source`, "light"),
+    or with "image" whatever is brighter than `threshold`."""
+    em = ctx.get('emission')
+    if p.get('source', 'light') == 'light' and em is not None:
+        return np.maximum(em - float(p.get('threshold', 0.0)), 0)
+    thr = float(p.get('threshold', 0.75))
+    return np.clip(img - thr, 0, 1) / max(1e-3, 1 - thr)
+
+
+def _peaks(src, count, gap, floor, compact):
+    """The brightest compact lights in `src` (H x W x 3): up to `count` of them, at least `gap`
+    pixels apart, each as (row, column, brightness, colour). A light is compact when it stands out
+    from the light round it by at least `compact` of its own brightness - a lamp, a flame, the
+    hottest letters of a sign - so a glowing sky or the even run of a long tube is passed over."""
+    lum = _lum(src)
+    near = _fblur(lum, 1.0)                  # ranked by the light round each pixel: lamps over lines
+    score = np.where(near - _fblur(lum, 5.0) >= compact * near, near, 0.0)
+    H, W = lum.shape
+    out = []
+    for _ in range(count):
+        y, x = divmod(int(np.argmax(score)), W)
+        v = float(score[y, x])                   # how much light it gives: a small one streaks faintly
+        if v < floor:
+            break
+        out.append((float(y), float(x), v, src[y, x] / max(1e-6, float(src[y, x].max()))))
+        score[max(0, y - gap):y + gap + 1, max(0, x - gap):x + gap + 1] = 0
+    return out
+
+
+def _suns(ctx, p):
+    """The sun or moon discs that show in the frame, as light sources (row, column, brightness,
+    colour) - brightness is how much of the disc shows, less for the moon."""
+    if not p.get('sun', True):
+        return []
+    return [(s_['y'], s_['x'], s_['visible'] * s_['power'], np.asarray(s_['color'], np.float32))
+            for s_ in ctx.get('suns') or [] if s_['visible'] > 0.02]
+
+
+def _splat(layer, ys, xs, w, c):
+    """Add w * c at the float positions (ys, xs) of `layer`, shared out over the nearest pixels."""
+    H, W = layer.shape[:2]
+    y0, x0 = np.floor(ys).astype(int), np.floor(xs).astype(int)
+    fy, fx = ys - y0, xs - x0
+    for oy, ox, k in ((0, 0, (1 - fy) * (1 - fx)), (0, 1, (1 - fy) * fx), (1, 0, fy * (1 - fx)), (1, 1, fy * fx)):
+        yy, xx = y0 + oy, x0 + ox
+        ok = (yy >= 0) & (yy < H) & (xx >= 0) & (xx < W) & (k > 0)
+        np.add.at(layer, (yy[ok], xx[ok]), (w * k)[ok][:, None] * c[None, :])
+
+
+def fx_streaks(img, p, ctx):
+    """Light drawn out in thin lines from the brightest lights, as through a star filter or an
+    anamorphic lens. `points` 4 makes a cross (the default), 6 or 8 a star, 2 one horizontal line -
+    the anamorphic look, best long (`length` 40 or more) and blue (`color` [0.6, 0.8, 1.3]);
+    `angle` turns the star; `length` (pixels) is how far a line runs before it fades to a third.
+    Only the brightest compact lights streak - up to `count` (24) of them, a lamp, a flame, a
+    sign's hottest letters - and a sun or moon in the frame (unless `sun` is false), longest of
+    all; `white` (0.4) pales the lines from the light's own colour toward white."""
+    H, W = img.shape[:2]
+    src = _lights(img, p, ctx)
+    peaks = _peaks(src, int(p.get('count', 24)), int(p.get('gap', 4)), float(p.get('min', 0.05)),
+                   float(p.get('compact', 0.35)))
+    suns = _suns(ctx, p)
+    if not peaks and not suns:
+        return img
+    length = max(1.0, float(p.get('length', 12)))
+    pts = max(2, int(p.get('points', 4)))
+    lines = max(1, pts // 2)
+    a0 = math.radians(float(p.get('angle', 0)))
+    white = float(p.get('white', 0.4))
+    layer = np.zeros((H, W, 3), np.float32)
+    for (y, x, v, c), reach0 in [(q, length) for q in peaks] + [(q, length * 2.5) for q in suns]:
+        c = np.asarray(c, np.float32) * (1 - white) + white
+        for j in range(lines):
+            a = a0 + math.pi * j / lines
+            reach = reach0 * (0.55 if pts >= 8 and j % 2 else 1.0)   # a star filter's short diagonals
+            k = np.arange(1, int(3 * reach) + 1, dtype=np.float32)
+            w = v * np.exp(-k / reach)
+            for sgn in (1.0, -1.0):
+                _splat(layer, y - sgn * math.sin(a) * k, x + sgn * math.cos(a) * k, w, c)
+    return img + layer * float(p.get('strength', 0.6)) * _rgb(p.get('color', [1, 1, 1]))
+
+
+# a lens flare's ghosts: (place on the line from the light through the middle of the frame - 1 is
+# the middle, 2 the far side; radius as a share of the frame's height; colour; brightness; shape)
+FLARE_GHOSTS = [(0.3, 0.022, [1.0, 0.85, 0.55], 0.5, 'disc'), (0.58, 0.05, [0.55, 1.0, 0.65], 0.26, 'hex'),
+                (0.86, 0.012, [1.0, 1.0, 0.8], 0.55, 'disc'), (1.2, 0.02, [0.75, 0.6, 1.0], 0.45, 'disc'),
+                (1.45, 0.085, [0.5, 0.8, 1.0], 0.18, 'hex'), (1.72, 0.04, [1.0, 0.6, 0.45], 0.3, 'ring'),
+                (2.05, 0.13, [0.6, 0.55, 1.0], 0.13, 'hex')]
+
+
+def fx_flare(img, p, ctx):
+    """A lens flare: a string of faint coloured ghosts - discs, a ring, the six-sided shape of the
+    aperture - running from a bright light through the middle of the frame and out the other side,
+    and a pale ring round the light. The light is the sun or moon when its disc shows in the frame
+    (the default `source`, "sun"; none when it is behind a wall or a tree or out of the frame, and
+    weaker as less of it shows); with "light", the brightest compact light in view - a lamp, a
+    headlight - or the `sources` brightest. `strength` 0.6; `ghosts` how many of the seven to draw;
+    `halo` (0.25) the ring's strength."""
+    H, W = img.shape[:2]
+    if p.get('source', 'sun') == 'sun':
+        srcs = _suns(ctx, {})
+    else:
+        srcs = [(y, x, min(1.0, v * 1.5), c) for y, x, v, c in
+                _peaks(_lights(img, p, ctx), int(p.get('sources', 1)), max(4, H // 10), 0.05, 0.35)]
+    if not srcs:
+        return img
+    yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+    ghosts = FLARE_GHOSTS[:max(0, int(p.get('ghosts', len(FLARE_GHOSTS))))]
+    out = img.copy()
+    for sy, sx, v, tint in srcs:
+        k = float(p.get('strength', 0.6)) * min(1.0, v)
+        tint = np.asarray(tint, np.float32) * 0.4 + 0.6        # the ghosts take a little of its colour
+        cx, cy = (W - 1) / 2, (H - 1) / 2
+        # with the light near the middle the ghosts pile up on it, where its own glare hides them
+        kg = k * (0.25 + 0.75 * min(1.0, math.hypot(sx - cx, sy - cy) / (0.3 * H)))
+        for t, rad, col, a, shape in ghosts:
+            gx, gy = sx + (cx - sx) * t, sy + (cy - sy) * t
+            rr = max(1.0, rad * H)
+            ux, uy = (xx - gx) / rr, (yy - gy) / rr
+            if shape == 'hex':
+                d = np.maximum(np.abs(uy), np.abs(ux) * 0.866 + np.abs(uy) * 0.5)
+                g = np.clip((1.0 - d) * 5, 0, 1) * (0.5 + 0.5 * np.clip(d, 0, 1) ** 3)
+            elif shape == 'ring':
+                g = np.exp(-((np.hypot(ux, uy) - 1.0) * 5) ** 2)
+            else:
+                g = np.clip(1.0 - np.hypot(ux, uy), 0, 1) ** 0.7
+            out = out + (g * a * kg)[..., None] * (_rgb(col) * tint)
+        halo = float(p.get('halo', 0.25))
+        if halo > 0:
+            d = np.hypot(xx - sx, yy - sy) / (H * 0.22)
+            ring = np.exp(-((d - 1.0) * 7) ** 2) * halo * k * 0.5
+            out = out + ring[..., None] * (_rgb([1.0, 0.9, 0.75]) * tint)
+    return out
 
 
 def fx_vignette(img, p, ctx):
@@ -396,22 +531,34 @@ def apply_world(img, effects, ctx):
 
 # ------------------------------------------------------------------ palette stage
 
-def quantize(img, spec, dither=1.0, levels=True):
-    """img float HxWx3 -> uint8 HxWx3. spec: int (adaptive), name, list of hex colours, or 0/None."""
+def quantize(img, spec, dither=1.0, levels=True, ref=None):
+    """img float HxWx3 -> uint8 HxWx3. spec: int (adaptive), name, list of hex colours, or 0/None.
+    `ref` is the frame as it would be without a lens effect (depth of field): the colours are
+    chosen from it, so a subject left sharp keeps exactly the colours it has in a shot without
+    the lens, instead of losing palette entries to the shades of a blurred background."""
     H, W = img.shape[:2]
     bay = np.tile(BAYER4, (H // 4 + 1, W // 4 + 1))[:H, :W]
     if not spec:
         return (np.clip(img, 0, 1) * 255).astype(np.uint8)
     if isinstance(spec, (int, float)):
         arr = img * 255 + bay[..., None] * 18 * dither
-        pim = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8), 'RGB')
-        pim = pim.quantize(colors=int(spec), method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
-        return np.asarray(pim.convert('RGB'))
+        a8 = np.clip(arr, 0, 255).astype(np.uint8)
+        pim = Image.fromarray(a8, 'RGB')
+        if ref is None:
+            pim = pim.quantize(colors=int(spec), method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
+            return np.asarray(pim.convert('RGB'))
+        r8 = np.clip(ref * 255 + bay[..., None] * 18 * dither, 0, 255).astype(np.uint8)
+        rq = Image.fromarray(r8, 'RGB').quantize(colors=int(spec), method=Image.Quantize.MEDIANCUT,
+                                                 dither=Image.Dither.NONE)
+        out = np.array(pim.quantize(palette=rq, dither=Image.Dither.NONE).convert('RGB'))
+        same = (a8 == r8).all(-1)            # what the lens left alone comes out as it would without it
+        out[same] = np.asarray(rq.convert('RGB'))[same]
+        return out
     name = spec if isinstance(spec, str) else None
     cols = np.array([_rgb(c) for c in (PALETTES[spec] if name else spec)], np.float32)
     if levels:
         # few-colour palettes need the full tonal range or dark scenes collapse into one shade
-        l = _lum(img)
+        l = _lum(img if ref is None else ref)
         lo, hi = np.percentile(l, 2), np.percentile(l, 99)
         gain = min(3.0, 1.0 / max(1e-3, hi - lo))
         img = np.clip((img - lo) * gain, 0, 1)

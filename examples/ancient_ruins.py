@@ -14,6 +14,8 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scripts'))
 from maptools import Grid, scene  # noqa: E402
 
+GLOW = {'fx': 'bloom', 'source': 'light', 'strength': 1.4, 'radius': 2.5, 'spread': 0.5}  # the lights glow
+
 W, H = 50, 44
 rnd = random.Random(11)
 g = Grid(W, H, fill=',')                              # dry grass over the headland
@@ -117,7 +119,7 @@ s = scene(
          'overlays': [{'type': 'caption', 'text': 'The temple on the headland', 'at': 'top', 'box': True}]},
         {'x': 28.6, 'y': 19.5, 'height': 0.8, 'look_at': [12.0, 20.2, 1.3], 'fov': 74},
         {'x': 39.8, 'y': 30.6, 'height': 0.36, 'look_at': [35.6, 25.6, 0.7], 'fov': 70},
-        {'x': 47.5, 'y': 21.0, 'look_at': [27.0, 19.5, 2.0], 'fov': 66,
+        {'x': 47.5, 'y': 21.0, 'look_at': [27.0, 19.5, 2.0], 'fov': 66, 'post': [GLOW],
          'overrides': {
              'sky': 'night', 'ambient': [0.1, 0.11, 0.16],
              'lights': [{'type': 'moon', 'azimuth': 205, 'elevation': 24, 'intensity': 0.55, 'disc_size': 2.4},

@@ -15,6 +15,8 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scripts'))
 from maptools import Grid, scene  # noqa: E402
 
+GLOW = {'fx': 'bloom', 'source': 'light', 'strength': 1.4, 'radius': 2.5, 'spread': 0.5}  # the lights glow
+
 WARM = [1.0, 0.64, 0.32]
 
 
@@ -118,14 +120,14 @@ def haunted_house():
         sprites=sprites,
         camera={'x': 11.95, 'y': 36.6, 'angle': 270, 'fov': 66, 'height': 0.5},
         shots=[
-            {'x': 11.95, 'y': 36.6, 'angle': 270,
+            {'x': 11.95, 'y': 36.6, 'angle': 270, 'post': [GLOW],
              'overlays': [{'type': 'caption', 'text': 'Halloween night', 'at': 'top', 'box': True}]},
-            {'x': 11.95, 'y': 20.4, 'look_at': [11.95, 9.0, 1.6], 'fov': 70},
-            {'x': 7.4, 'y': 18.4, 'look_at': [3.0, 14.5, 1.0], 'fov': 64,
+            {'x': 11.95, 'y': 20.4, 'look_at': [11.95, 9.0, 1.6], 'fov': 70, 'post': [GLOW]},
+            {'x': 7.4, 'y': 18.4, 'look_at': [3.0, 14.5, 1.0], 'fov': 64, 'post': [GLOW],
              'overlays': [{'type': 'caption', 'text': 'Nobody has wound the clock in forty years.', 'at': 'bottom',
                            'box': True}]},
             {'x': 11.95, 'y': 18.8, 'look_at': 'ghost', 'fov': 50,
-             'post': [{'fx': 'vignette', 'strength': 0.6}, {'fx': 'grain', 'amount': 0.05}],
+             'post': [GLOW, {'fx': 'vignette', 'strength': 0.6}, {'fx': 'grain', 'amount': 0.05}],
              'overlays': [{'type': 'bubble', 'anchor': 'ghost', 'text': 'Welcome home.'}]},
         ],
         contact_shadows=0.5,

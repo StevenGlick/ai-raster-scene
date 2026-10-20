@@ -752,17 +752,29 @@ class World:
 # ------------------------------------------------------------------ lighting
 
 def build_lightmap(world, lights, res=8):
-    """Returns dynamic light (mh*res, mw*res, 3) from point lights with grid shadows."""
+    """Dynamic light from point lights with grid shadows, `res` texels to a unit. Returns
+    (lm, res, lift, top):
+      lm    (mh*res, mw*res, 3) the light, for the ground, the walls and what stands on the ground;
+      lift  (mh*res, mw*res, 1) how far above the default the lights reaching each spot hang (their
+            luminance-weighted mean of z - 1.2), so their light fades above them rather than above
+            the floor - None when no light is lifted, which leaves the falloff as it always was;
+      top   the light on the tops of tall blocks - roofs - and on what stands there: a lamp above a
+            roof shines over whatever the line from a spot up to it passes above, so it lights the
+            roof round it and not only its own cell (lm itself where no roof is lit differently)."""
     H, W = world.mh * res, world.mw * res
     lm = np.zeros((H, W, 3), np.float32)
     if not lights:
-        return lm, res
+        return lm, res, None, lm
     sy, sx = np.mgrid[0:H, 0:W]
     px = (sx.ravel() + 0.5) / res
     py = (sy.ravel() + 0.5) / res
+    num = np.zeros(H * W, np.float64)
+    den = np.zeros(H * W, np.float64)
+    top = np.zeros((H, W, 3), np.float32)
+    lifted = differs = False
     for L in lights:
         lx, ly = float(L['x']), float(L['y'])
-        lz = float(L.get('z', 1.2))
+        lz = float(L.get('z', LIGHT_Z))
         r = float(L.get('radius', 4.0))
         inten = float(L.get('intensity', 1.0))
         c = np.array(L.get('color', [1.0, 0.85, 0.6]), np.float32)
@@ -773,6 +785,7 @@ def build_lightmap(world, lights, res=8):
         if idx.size == 0:
             continue
         f = np.clip(1 - d[idx] / r, 0, 1) ** 2 * inten
+        ft = f
         if L.get('shadows', True):
             block_h = min(lz, 0.95)
             steps = int(min(120, max(8, r * 12)))
@@ -781,6 +794,9 @@ def build_lightmap(world, lights, res=8):
             ddx, ddy = dx[idx], dy[idx]
             own_x, own_y = np.floor(ix).astype(int), np.floor(iy).astype(int)
             lcx, lcy = int(math.floor(lx)), int(math.floor(ly))
+            zr = world.solid_h[np.clip(own_y, 0, world.mh - 1), np.clip(own_x, 0, world.mw - 1)]
+            roof = (zr >= 0.95) & (zr < lz)             # spots on a roof, with the lamp above them
+            vis_top = vis.copy() if roof.any() else None
             for t in np.linspace(0.02, 0.98, steps):
                 qx = np.floor(ix + ddx * t).astype(int)
                 qy = np.floor(iy + ddy * t).astype(int)
@@ -788,11 +804,28 @@ def build_lightmap(world, lights, res=8):
                 qxc, qyc = np.clip(qx, 0, world.mw - 1), np.clip(qy, 0, world.mh - 1)
                 hb = world.solid_h[qyc, qxc]
                 skip = ((qx == own_x) & (qy == own_y)) | ((qx == lcx) & (qy == lcy))
-                vis &= ~(inb & (hb >= block_h) & ~skip)
+                block = inb & (hb >= block_h) & ~skip
+                vis &= ~block
+                if vis_top is not None:                 # the line to the lamp passes over it
+                    vis_top &= ~(block & ~(roof & (hb <= zr + (lz - zr) * t)))
+            if vis_top is not None:
+                ft = f * vis_top
+                differs = differs or bool((vis_top != vis).any())
             f = f * vis
+            if vis_top is None:
+                ft = f
         flat = lm.reshape(-1, 3)
         flat[idx] += f[:, None] * c[None, :]
-    return lm, res
+        top.reshape(-1, 3)[idx] += ft[:, None] * c[None, :]
+        wgt = ft * float(c[0] * 0.299 + c[1] * 0.587 + c[2] * 0.114)
+        den[idx] += wgt
+        if lz > LIGHT_Z:
+            num[idx] += wgt * (lz - LIGHT_Z)
+            lifted = True
+    lift = None
+    if lifted:
+        lift = np.where(den > 1e-9, num / np.maximum(den, 1e-9), 0.0).astype(np.float32).reshape(H, W, 1)
+    return lm, res, lift, (top if differs else lm)
 
 
 SUN_DEFAULTS = {
@@ -865,7 +898,7 @@ def build_sun(world, L, res=4):
         disc = {'azimuth': math.degrees(az), 'elevation': math.degrees(el),
                 'color': L.get('disc_color', disc_c), 'radius': float(L.get('disc_size', disc_r)), 'glow': glow}
     return {'ux': ux, 'uy': uy, 'sin': math.sin(el), 'cos': math.cos(el), 'rgb': rgb, 'zlit': zlit,
-            'zroof': zroof, 'zsky': zsky, 'ceil_h': world.ceil_h, 'res': res, 'disc': disc}
+            'zroof': zroof, 'zsky': zsky, 'ceil_h': world.ceil_h, 'res': res, 'disc': disc, 'kind': kind}
 
 
 def sun_visibility(s_, x, y, z, soft=0.12):
@@ -951,8 +984,12 @@ def sample_lm(lm, res, x, y):
     return (a * (1 - tx) + b * tx) * (1 - ty) + (c * (1 - tx) + d * tx) * ty
 
 
+LIGHT_Z = 1.2       # a point light's default height, which height_falloff is drawn for
+
+
 def height_falloff(z):
-    """Point lights sit near head height; tall walls fade into the dark above them."""
+    """Point lights sit near head height; tall walls fade into the dark above them. `z` is
+    measured as if the light hung at LIGHT_Z: a higher light lifts it (Renderer.fade_z)."""
     return 1.0 / (1.0 + 0.7 * np.maximum(0, z - 1.4) ** 1.5)
 
 
@@ -1046,7 +1083,7 @@ class Renderer:
                 L = {'x': sp['x'], 'y': sp['y'], 'z': float(sp.get('z', 0)) + base + 0.2, 'shadows': True}
                 L.update(sp['light'] if isinstance(sp['light'], dict) else {})
                 lights.append(L)
-        self.lm, self.lres = build_lightmap(world, lights, scene.get('lightmap_res', 8))
+        self.lm, self.lres, self.lift, self.lm_top = build_lightmap(world, lights, scene.get('lightmap_res', 8))
         self.overbright = float(scene.get('overbright', 1.0))
         self.suns = [build_sun(world, L) for L in suns]
         rf = scene.get('reflections', True)
@@ -1059,6 +1096,7 @@ class Renderer:
         self.sky_objects = list(scene.get('sky_objects') or [])
         self._skies = {}
         self._runs = {}
+        self.palette_ref = None     # the last frame without its lens effects, for the palette
         sn = scene.get('surface_noise', SURFACE_NOISE_DEFAULT)
         by_texture = {}
         if isinstance(sn, dict):
@@ -1104,6 +1142,25 @@ class Renderer:
     @staticmethod
     def lam_up(s_):
         return s_['sin']
+
+    def _lm_at(self, x, y, z):
+        """The lightmap for something at (x, y) standing at height z: the roofs' own on top of a
+        tall block (lit by a lamp up there over the rest of the roof), else the ground's."""
+        if self.lm_top is not self.lm:
+            cx, cy = int(math.floor(x)), int(math.floor(y))
+            if 0 <= cy < self.w.mh and 0 <= cx < self.w.mw:
+                h = float(self.w.solid_h[cy, cx])
+                if h >= 0.95 and z >= h - 0.05:
+                    return self.lm_top
+        return self.lm
+
+    def fade_z(self, x, y, z):
+        """Height z at points (x, y) as the point lights' height falloff should see it: less the
+        lift of the lights that reach there, so a lamp hung high over a street, or set on a roof,
+        lights the walls round it at its own height and fades above itself, not above the floor."""
+        if self.lift is None:
+            return z
+        return z - sample_lm(self.lift, self.lres, x, y)[..., 0]
 
     def shade(self, albedo, dyn, z, dist, em, flash, sun=0.0):
         light = self.ambient[None, :] + dyn * height_falloff(z)[..., None] + flash + sun
@@ -1152,10 +1209,21 @@ class Renderer:
         ctx = gui.Ctx(Image.new('RGBA', (W, H), (0, 0, 0, 0)), self.s, self.anchors, cam, self.w, self.camera_light(cam))
         wctx = self._weather_ctx(cam, ss, bw, bh)
         lens = [e for e in effects if e['fx'] in post.LENS]
+        rest = [e for e in effects if e['fx'] not in post.LENS]
+        sharp = post.apply_world(img, [], wctx) if lens else None
         img = post.apply_world(img, lens, wctx)
+        ctx.emission = wctx.get('emission')                 # a held lantern adds its flame to it
         img = gui.draw_world_layer(img, overlays, ctx)
-        img = post.apply_world(img, [e for e in effects if e['fx'] not in post.LENS], wctx)
+        img = post.apply_world(img, rest, dict(wctx, emission=ctx.emission))   # (a copy: embers add to it)
         img = gui.draw_ui_layer(img, overlays, ctx)
+        # with a lens effect the frame is finished a second time without it, for the palette to be
+        # chosen from (post.quantize): a subject kept sharp keeps the colours it has without the lens
+        self.palette_ref = None
+        if sharp is not None:
+            ctx.emission = wctx.get('emission')
+            sharp = gui.draw_world_layer(sharp, overlays, ctx)
+            sharp = post.apply_world(sharp, rest, dict(wctx, emission=ctx.emission))
+            self.palette_ref = np.clip(gui.overlay_ui(sharp, ctx), 0, 1)
         self.last_effects = effects
         return np.clip(img, 0, 1)
 
@@ -1229,11 +1297,40 @@ class Renderer:
             ctx['depth'] = self.depth.reshape(bh, ss, bw, ss).min(axis=(1, 3))
             if self.vol is not None:
                 ctx['fog_t'] = self.fog_t[:2]
+            ctx['suns'] = self._suns_in_view(ctx['rays'], ctx['depth'])
         if getattr(self, '_emis_out', None) is not None:
             ctx['emission'] = self._emis_out
         ctx['anchors'] = self.anchors
         ctx['focus'] = self._focus_distance(cam)
         return ctx
+
+    def _suns_in_view(self, rays, depth):
+        """Each sun or moon disc that falls in the frame: where (output pixels), its colour, how
+        much of it shows (0-1: none behind a wall or a tree or past the edge of the frame) and its
+        power (the moon's is weaker) - for the lens effects, a flare or a star of streaks."""
+        out = []
+        H, W = depth.shape
+        ang = math.atan2(self._fy, self._fx)
+        for s_ in self.suns:
+            d = s_['disc']
+            if not d:
+                continue
+            delta = (math.radians(d['azimuth']) - ang + math.pi) % (2 * math.pi) - math.pi
+            if abs(delta) >= math.radians(80):
+                continue
+            x = W / 2 + rays['proj'] * math.tan(delta) - 0.5
+            y = rays['horizon'] - rays['proj'] * math.tan(math.radians(d['elevation'])) - 0.5
+            r = max(1.0, rays['proj'] * math.tan(math.radians(d['radius'])))
+            n = int(math.ceil(r))
+            gy, gx = np.mgrid[-n:n + 1, -n:n + 1]
+            inside = gx * gx + gy * gy <= r * r
+            py, px = np.round(y + gy[inside]).astype(int), np.round(x + gx[inside]).astype(int)
+            on = (py >= 0) & (py < H) & (px >= 0) & (px < W)
+            seen = np.isinf(depth[py[on], px[on]]).sum() / max(1, inside.sum())
+            if seen > 0:
+                out.append({'x': x, 'y': y, 'r': r, 'color': d['color'], 'visible': float(seen),
+                            'power': 1.0 if s_['kind'] == 'sun' else 0.4})
+        return out
 
     def _focus_distance(self, cam):
         """How far ahead (along the view) the shot is looking: its `look_at` - a sprite or a point -
@@ -1321,7 +1418,8 @@ class Renderer:
             a = 1 - np.exp(-tau * path)
             light = np.broadcast_to(fogc, (h, w, 3)).astype(np.float32)
             if v['glow'] > 0:
-                light = light + v['glow'] * sample_lm(self.lm, self.lres, x, y) * height_falloff(z)[..., None]
+                hf = height_falloff(self.fade_z(x, y, z))[..., None]
+                light = light + v['glow'] * sample_lm(self.lm, self.lres, x, y) * hf
             if v['shafts'] > 0:
                 for s_, ph in zip(self.suns, phase):
                     # scaled so a beam seen side-on reads as a beam, and the air round a low
@@ -1358,7 +1456,8 @@ class Renderer:
 
     def camera_light(self, cam):
         """Light falling on things held at the camera (viewmodels): ambient + lightmap + flashlight spill."""
-        dyn = sample_lm(self.lm, self.lres, np.array([float(cam['x'])]), np.array([float(cam['y'])]))[0]
+        lm = self._lm_at(float(cam['x']), float(cam['y']), float(cam.get('height', 0.5)) - 0.5)
+        dyn = sample_lm(lm, self.lres, np.array([float(cam['x'])]), np.array([float(cam['y'])]))[0]
         light = self.ambient + dyn * 0.6
         if self.suns:  # a held item in sunlight is lit by it
             fx, fy = math.cos(math.radians(float(cam.get('angle', 0)))), math.sin(math.radians(float(cam.get('angle', 0))))
@@ -1596,7 +1695,7 @@ class Renderer:
             dist = D * rlen[None, :]
             rr, cc = np.meshgrid(rows, np.arange(W), indexing='ij')
             sun = self.sun_at(wx, wy, np.full(D.shape, z), self.lam_up) if kind == 'floor' and self.suns else 0.0
-            col = self.shade(alb, dyn, np.full(D.shape, z), dist, em, flash(rr, cc, dist), sun)
+            col = self.shade(alb, dyn, self.fade_z(wx, wy, np.full(D.shape, z)), dist, em, flash(rr, cc, dist), sun)
             sub = img[rows]
             sub[valid] = col[valid]
             img[rows] = sub
@@ -1706,7 +1805,7 @@ class Renderer:
                 ed = dd * rlen[c]
                 zt = np.full(len(rows), hgt)
                 sun = self.sun_at(tx, ty, zt, self.lam_up) if self.suns else 0.0
-                colr = self.shade(alb, sample_lm(self.lm, self.lres, tx, ty), zt, ed, e,
+                colr = self.shade(alb, sample_lm(self.lm_top, self.lres, tx, ty), self.fade_z(tx, ty, zt), ed, e,
                                   flash(rows, np.full(len(rows), c), ed), sun)
                 img[y0:y1, c] = colr
                 emis[y0:y1, c] = self._glow if self._glow is not None else 0.0
@@ -1738,7 +1837,8 @@ class Renderer:
                 hy = py + rdy[c] * dist - rdy[c] / rlen[c] * 0.04
                 ed = np.full(len(rows), dist * rlen[c])
                 colr = self.shade(alb, np.repeat(sample_lm(self.lm, self.lres, np.array([hx]), np.array([hy])),
-                                                 len(rows), 0), z, ed, None,
+                                                 len(rows), 0),
+                                  self.fade_z(np.array([hx]), np.array([hy]), z), ed, None,
                                   flash(rows, np.full(len(rows), c), ed), 0.0)
                 img[rows[keep], c] = colr[keep]
                 emis[rows[keep], c] = 0.0
@@ -1820,7 +1920,8 @@ class Renderer:
                 nx, ny = (-math.copysign(1, rdx[c]), 0.0) if side == 0 else (0.0, -math.copysign(1, rdy[c]))
                 sun = self.sun_at(np.full(len(rows), hx), np.full(len(rows), hy), z,
                                   lambda s_: s_['cos'] * max(0.0, nx * s_['ux'] + ny * s_['uy']))
-            colr = self.shade(alb, np.repeat(dyn, len(rows), 0), z, np.full(len(rows), ed), e,
+            colr = self.shade(alb, np.repeat(dyn, len(rows), 0), self.fade_z(np.array([hx]), np.array([hy]), z),
+                              np.full(len(rows), ed), e,
                               flash(rows, np.full(len(rows), c), np.full(len(rows), ed)), sun)
             gl = self._glow
             if solid is None:
@@ -1984,7 +2085,8 @@ class Renderer:
             self._named[sp['id']]['box'] = (cy0, cy1, cx0, cx1, alpha > 0.5)
         if not mask.any():
             return
-        dyn = sample_lm(self.lm, self.lres, np.array([float(sp['x'])]), np.array([float(sp['y'])]))[0]
+        dyn = sample_lm(self._lm_at(float(sp['x']), float(sp['y']), zb), self.lres,
+                        np.array([float(sp['x'])]), np.array([float(sp['y'])]))[0]
         zz = (horizon - (rows + 0.5)) * ty / proj + camz
         Z = np.repeat(zz[:, None], len(cols), 1)
         ed = ty * math.hypot(1, tx / ty * pl)
@@ -1996,7 +2098,8 @@ class Renderer:
             fx, fy = self._fx, self._fy
             sun = self.sun_at(np.full(Z.shape, float(sp['x'])), np.full(Z.shape, float(sp['y'])), Z,
                               lambda s_: s_['sin'] * 0.5 + s_['cos'] * 0.6 * max(0.2, -(fx * s_['ux'] + fy * s_['uy'])))
-        colr = self.shade(block[..., :3] * tint, np.broadcast_to(dyn, block.shape[:2] + (3,)), Z,
+        colr = self.shade(block[..., :3] * tint, np.broadcast_to(dyn, block.shape[:2] + (3,)),
+                          self.fade_z(np.array([float(sp['x'])]), np.array([float(sp['y'])]), Z),
                           np.full(Z.shape, ed), emm, flash(rr, cc, np.full(Z.shape, ed)), sun)
         sub = img[cy0:cy1, cx0:cx1]
         a = (alpha * mask)[..., None]
@@ -2132,7 +2235,7 @@ class Renderer:
             if not mask.any() and rv is None:
                 continue
             wx, wy = px + rdx[cols] * t, py + rdy[cols] * t
-            dyn = sample_lm(self.lm, self.lres, wx, wy)
+            dyn = sample_lm(self._lm_at(float(sp['x']), float(sp['y']), zb), self.lres, wx, wy)
             Z = (horizon - (rows[:, None] + 0.5)) * t[None, :] / proj + camz
             ed = np.broadcast_to((t * rlen[cols])[None, :], Z.shape)
             rr, cc = np.meshgrid(rows, cols, indexing='ij')
@@ -2144,7 +2247,8 @@ class Renderer:
                 # foliage cards take light on either face: a leaf lets the sun through
                 sun = self.sun_at(np.broadcast_to(wx[None, :], Z.shape), np.broadcast_to(wy[None, :], Z.shape), Z,
                                   lambda s2: s2['sin'] * 0.5 + s2['cos'] * 0.6 * max(0.25, abs(nx * s2['ux'] + ny * s2['uy'])))
-            colr = self.shade(block[..., :3] * tint, np.broadcast_to(dyn[None, :, :], block.shape[:2] + (3,)), Z,
+            colr = self.shade(block[..., :3] * tint, np.broadcast_to(dyn[None, :, :], block.shape[:2] + (3,)),
+                              self.fade_z(wx, wy, Z),
                               ed, emm, flash(rr, cc, ed), sun)
             a = (alpha * mask)[..., None]
             sub = img[r0:r1, cols]
@@ -2259,7 +2363,8 @@ class Renderer:
                 vw = vh - s2['sin'] * back * th / hs
                 return face * ((out > 1e-6) & (uw >= lft) & (uw <= rgt) & (vw >= top) & (vw <= bot))
             sun = self.sun_at(wx, wy, Z, lam)
-        col = self.shade(alb, sample_lm(self.lm, self.lres, wx, wy), Z, ed, None, flash(rows[ri], c, ed), sun)
+        col = self.shade(alb, sample_lm(self.lm, self.lres, wx, wy), self.fade_z(wx, wy, Z), ed, None,
+                         flash(rows[ri], c, ed), sun)
         return ri, ci, col, tt
 
     def _aura(self, img, depth, alpha, cx0, cy0, ty, aura, pw):
@@ -2286,11 +2391,12 @@ class Renderer:
 
 # ------------------------------------------------------------------ output
 
-def finish(img, scene, effects=(), seed=0):
-    """Palette quantise (ordered dither), nearest-neighbour upscale, then display-stage effects."""
+def finish(img, scene, effects=(), seed=0, ref=None):
+    """Palette quantise (ordered dither), nearest-neighbour upscale, then display-stage effects.
+    `ref` is the frame without its lens effects, which the palette is chosen from (Renderer.palette_ref)."""
     effects = list(effects)
     spec, levels = post.palette_spec(effects, scene)
-    arr = post.quantize(img, spec, float(scene.get('dither', 1.0)), levels)
+    arr = post.quantize(img, spec, float(scene.get('dither', 1.0)), levels, ref)
     scale = int(scene.get('scale', 3))
     pim = Image.fromarray(arr, 'RGB')
     out = np.asarray(pim.resize((pim.width * scale, pim.height * scale), Image.NEAREST))
@@ -2344,7 +2450,7 @@ def render_shot(scene, i, base=None, report=None):
     frame = rr.render(cam)
     if report is not None:
         report.extend(rr.last_report)
-    return finish(frame, {**scene, **cam.get('overrides', {})}, rr.last_effects, i)
+    return finish(frame, {**scene, **cam.get('overrides', {})}, rr.last_effects, i, rr.palette_ref)
 
 
 def draw_map(world, scene, cams, path, cell=24):

@@ -13,6 +13,8 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scripts'))
 from maptools import Grid, scene  # noqa: E402
 
+GLOW = {'fx': 'bloom', 'source': 'light', 'strength': 1.4, 'radius': 2.5, 'spread': 0.5}  # the lights glow
+
 SUN = {'type': 'sun', 'azimuth': 205, 'elevation': 24, 'intensity': 1.0}
 WARM = [1.0, 0.66, 0.34]
 INN_LIGHTS = [{'x': 19.6, 'y': y, 'z': 1.0, 'radius': 3.2, 'color': WARM, 'intensity': 1.3} for y in (29.4, 31.6)]
@@ -74,7 +76,7 @@ def village_green():
              'overlays': [{'type': 'bubble', 'anchor': 'keeper', 'name': 'The Stallholder', 'offset': 60, 'width': 120,
                            'text': "Apples from the hill orchard! Three a penny, and the bread's still warm."}]},
             {'x': 14.2, 'y': 15.0, 'look_at': [16.6, 10.2, 0.95], 'fov': 62},
-            {'x': 15.4, 'y': 23.6, 'look_at': [19.4, 30.6, 1.0], 'fov': 66,
+            {'x': 15.4, 'y': 23.6, 'look_at': [19.4, 30.6, 1.0], 'fov': 66, 'post': [GLOW],
              'overlays': [{'type': 'caption', 'text': 'After closing', 'at': 'top', 'box': True}],
              'overrides': {'sky': 'night', 'ambient': [0.1, 0.11, 0.17],
                            'lights': [{'type': 'moon', 'azimuth': 300, 'elevation': 30, 'intensity': 0.4}]

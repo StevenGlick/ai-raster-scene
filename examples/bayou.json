@@ -425,6 +425,13 @@
      "threshold": 0.55,
      "strength": 0.6,
      "radius": 5
+    },
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
     }
    ]
   },
@@ -511,7 +518,16 @@
      "noise": 0.6,
      "glow": 0.9
     }
-   }
+   },
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ]
   },
   {
    "x": 21.0,

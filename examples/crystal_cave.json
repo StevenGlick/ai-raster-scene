@@ -332,6 +332,15 @@
     0.3
    ],
    "fov": 72,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ],
    "overlays": [
     {
      "type": "caption",
@@ -346,6 +355,15 @@
    "y": 17.6,
    "look_at": "robot",
    "fov": 60,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ],
    "overlays": [
     {
      "type": "bubble",
@@ -361,6 +379,13 @@
    "look_at": "beast",
    "fov": 44,
    "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    },
     {
      "fx": "vignette",
      "strength": 0.6
