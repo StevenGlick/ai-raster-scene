@@ -894,7 +894,7 @@ def _box4(a):
     return (out / 16.0).astype(np.float32)
 
 
-GLASS_DEFAULTS = {'tint': [0.82, 0.92, 1.0], 'opacity': 0.22, 'blur': 1}
+GLASS_DEFAULTS = {'tint': [0.82, 0.92, 1.0], 'opacity': 0.22, 'blur': 1, 'fog': False}
 
 
 def glass_spec(g):
@@ -906,6 +906,7 @@ def glass_spec(g):
     out['tint'] = np.array(out['tint'], np.float32)
     out['opacity'] = min(1.0, max(0.0, float(out['opacity'])))
     out['blur'] = max(0, min(3, int(out['blur'])))
+    out['fog'] = bool(out['fog'])
     return out
 
 
@@ -1228,9 +1229,24 @@ class Renderer:
         is its own colour, the point lights (`glow`, read from the shadowed lightmap, so lamps
         get halos and doorways spill light) and every sun or moon it can see (`shafts`, through
         the shadow maps, with forward scattering so beams brighten as you look toward them).
+        Behind glass the fog carries on: the glass pass leaves a correction for the air between
+        each pane and what is seen through it (see _glass_pass).
         """
-        v, r = self.vol, self.rays
+        if not self._marched:
+            self._march(depth.shape, ss)
         H, W = depth.shape
+        Tp, Lp = self._fog_px(np.arange(H)[:, None], np.arange(W)[None, :], depth)
+        out = img * Tp[..., None] + Lp
+        if self._glass_fix is not None:
+            out = out + self._glass_fix
+        return out
+
+    def _march(self, shape, ss):
+        """The march itself, once a frame: how much of the light from each distance along every
+        ray gets through the air, and how much the air adds, kept in self.fog_t."""
+        self._marched = True
+        v, r = self.vol, self.rays
+        H, W = shape
         h, w = H // ss, W // ss
         c0 = np.arange(w) * ss + ss // 2
         rdx, rdy, rlen = r['rdx'][c0], r['rdy'][c0], r['rlen'][c0]
@@ -1289,20 +1305,27 @@ class Renderer:
         # dither pattern removes the pattern but keeps shafts and banks, and each pixel still reads
         # the result at its own depth, so nothing bleeds across a silhouette
         tv, lv = _box4(tv), _box4(lv)
-        # read each supersampled pixel's own depth along its parent ray
+        self.fog_t = (t, tv, lv)        # kept for weather, which sits inside the same fog
+
+    def _fog_px(self, ri, ci, depth):
+        """What the air does to the pixels at rows ri and columns ci (index arrays of the
+        supersampled frame, broadcast together) seen at `depth`: the share of the light from that
+        far that gets through (T) and the light the air in front adds (L). Each pixel reads its
+        parent ray's march at its own depth."""
+        t, tv, lv = self.fog_t
+        ss = self._ss
+        n = len(t) - 1
         d = np.minimum(np.nan_to_num(depth, posinf=t[-1]), t[-1])
         k = np.clip(np.searchsorted(t, d), 1, n)
         f = np.clip((d - t[k - 1]) / np.maximum(t[k] - t[k - 1], 1e-6), 0, 1)
-        pi = np.repeat(np.arange(h), ss)[:, None]
-        pj = np.repeat(np.arange(w), ss)[None, :]
+        pi, pj = ri // ss, ci // ss
         Tp = tv[k - 1, pi, pj] * (1 - f) + tv[k, pi, pj] * f
         Lp = lv[k - 1, pi, pj] * (1 - f)[..., None] + lv[k, pi, pj] * f[..., None]
         # light scattered toward the eye eases off toward white instead of clipping, so mist
         # lit by a low sun glows rather than whiting out the frame
         knee = 0.55
         Lp = np.where(Lp > knee, knee + (1 - knee) * np.tanh((Lp - knee) / (1 - knee)), Lp)
-        self.fog_t = (t, tv, lv)        # kept for weather, which sits inside the same fog
-        return img * Tp[..., None] + Lp
+        return Tp, Lp
 
     def camera_light(self, cam):
         """Light falling on things held at the camera (viewmodels): ambient + lightmap + flashlight spill."""
@@ -1376,6 +1399,7 @@ class Renderer:
     def _render3d(self, cam):
         W, H = self.W, self.H
         w = self.w
+        self._marched, self._glass_fix = False, None
         px, py = float(cam['x']), float(cam['y'])
         self._px, self._py = px, py
         ang = math.radians(float(cam.get('angle', 0)))
@@ -1798,6 +1822,8 @@ class Renderer:
             else:
                 self._draw_sprite(img, depth, ty, tx, sp, defs, horizon, proj, camz, pl, flash, translucent(sp))
         if glass:
+            self.rays = {'px': px, 'py': py, 'rdx': rdx, 'rdy': rdy, 'rlen': rlen, 'horizon': horizon,
+                         'proj': proj, 'camz': camz}
             self._glass_pass(img, depth, glass, defs, horizon, proj, camz, flash, rays)
         self.sprite_stats = {}
         for sid, n in self._named.items():
@@ -1964,15 +1990,30 @@ class Renderer:
     def _glass_pass(self, img, depth, glass, defs, horizon, proj, camz, flash, rays):
         """Glass, after all the geometry and sprites, far to near. Each pane shows what is behind
         it - by default through the finished frame shrunk to half size and blown back up without
-        smoothing, a cheap blur - tinted, and mixed with the pane's own faint reflection."""
+        smoothing, a cheap blur - tinted, and mixed with the pane's own faint reflection.
+
+        Volumetric fog is laid over the finished frame at the depth of the glass, so it stops at
+        the pane - right for a window onto space. A pane with `fog` lets it carry on behind: the
+        water of a tank, the mist past a window. For those the frame without glass is fogged at
+        its own depth, and each such pane leaves in self._glass_fix the difference between that,
+        seen through the pane, and what fogging the pane at its own depth would give."""
         behind = {}
+        fogged = None
+        if self.vol is not None and any(glass_spec(sp['glass'])['fog'] for _, _, sp in glass):
+            self._march(depth.shape, self._ss)
+            H, W = depth.shape
+            Ts, Ls = self._fog_px(np.arange(H)[:, None], np.arange(W)[None, :], depth)
+            fogged = img * Ts[..., None] + Ls
+            self._glass_fix = np.zeros_like(img)
         for ty, tx, sp in glass:
             g = glass_spec(sp['glass'])
             if g['blur'] not in behind:            # made once per blur, from the frame without glass
                 k = 2 ** g['blur'] * getattr(self, '_ss', 1)
-                behind[g['blur']] = frost(img, k) if g['blur'] > 0 else img.copy()
+                blur = (lambda a: frost(a, k)) if g['blur'] > 0 else (lambda a: a.copy())
+                behind[g['blur']] = (blur(img), None if fogged is None else blur(fogged))
+            back, fogback = behind[g['blur']]
             self._draw_planes(img, depth, ty, tx, sp, defs, horizon, proj, camz, flash, False, rays,
-                              glass=(g, behind[g['blur']]))
+                              glass=(g, back, fogback if g['fog'] else None))
 
     def _draw_planes(self, img, depth, ty, tx, sp, defs, horizon, proj, camz, flash, is_trans, rays, glass=None):
         """A planar sprite: each of its quads is drawn like a thin wall at the sprite stage.
@@ -2060,9 +2101,19 @@ class Renderer:
             sub = img[r0:r1, cols]
             if glass is not None:
                 # light through the pane, tinted, under the pane's own reflection
-                g, back = glass
+                g, back, fogback = glass
                 through = back[r0:r1, cols] * g['tint']
                 colr = through * (1 - g['opacity']) + colr * g['opacity']
+                if self._glass_fix is not None:
+                    fix = 0.0
+                    if fogback is not None:
+                        # the fog behind the pane: what it lets through and adds, less what
+                        # fogging the pane at its own depth will make of the view through it
+                        Tg, Lg = self._fog_px(np.arange(r0, r1)[:, None], cols[None, :],
+                                              np.broadcast_to(t[None, :], (r1 - r0, len(cols))))
+                        fix = g['tint'] * (1 - g['opacity']) * (fogback[r0:r1, cols] - Lg
+                                                                 - back[r0:r1, cols] * Tg[..., None])
+                    self._glass_fix[r0:r1, cols] = self._glass_fix[r0:r1, cols] * (1 - a) + fix * a
             img[r0:r1, cols] = sub + colr * a if additive else sub * (1 - a) + colr * a
             if not is_trans:
                 depth[r0:r1, cols] = np.where(mask, t[None, :], dsub)

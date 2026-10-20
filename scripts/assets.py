@@ -2627,6 +2627,18 @@ SPRITES.update(moon.SPRITES)
 SPRITE_HEIGHT.update(moon.SPRITE_HEIGHT)
 PROP_DEFAULTS.update(moon.PROP_DEFAULTS)
 
+# ---------------------------------------------------------------- the aquarium
+# A whale shark, a manta, a reef shark, a turtle, reef fish, corals, jellies, a lit plaque, and
+# the tanks' rockwork, tunnel roof and jelly backdrop - drawn with the toolkit in aquarium.py.
+import aquarium  # noqa: E402
+
+TEXTURES.update(aquarium.TEXTURES)
+TEXTURE_NOISE.update(aquarium.TEXTURE_NOISE)
+SPRITES.update(aquarium.SPRITES)
+SPRITE_HEIGHT.update(aquarium.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(aquarium.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= aquarium.NO_CONTACT_SHADOW
+
 _dcache = {}
 
 
