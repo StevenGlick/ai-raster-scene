@@ -363,7 +363,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 
 ## Install
 
-Requirements: Python 3.9+, `numpy`, `Pillow` (`pip install -r requirements.txt`).
+Requirements: Python 3.10+, `numpy`, `Pillow` (`pip install -r requirements.txt`).
 
 **As a Claude skill**
 
@@ -372,14 +372,14 @@ git clone https://github.com/StevenGlick/ai-raster-scene
 cd ai-raster-scene
 python package_skill.py
 ```
-writes `dist/ai-raster-scene.zip` (about 280 KB) containing only what the skill needs at runtime - `SKILL.md`, `scripts/`, `references/`, `examples/` and `requirements.txt`. The README gallery, tests and CI config are deliberately left out; `docs/` alone is several megabytes of PNG and is no use inside a skill.
+writes `dist/ai-raster-scene.zip` (about 600 KB) containing only what the skill needs at runtime - `SKILL.md`, `scripts/`, `references/`, `examples/` and `requirements.txt`. The README gallery, tests and CI config are deliberately left out; `docs/` alone is several megabytes of PNG and is no use inside a skill.
 
 - Claude apps: upload that zip as a custom skill in Claude's settings.
 - Claude Code: clone straight into your skills folder, `git clone https://github.com/StevenGlick/ai-raster-scene ~/.claude/skills/ai-raster-scene` (or a project's `.claude/skills/`), or unzip the package there.
 
 Then just ask, for example: *"Show me a foggy pine forest at night with a campfire and someone sitting at it."*
 
-There are no asset files to install. Every texture, prop, character and the pixel font are generated procedurally in `scripts/assets.py`, `biomes.py`, `buildings.py`, `characters.py` and `pixelfont.py`, which is why the whole skill is a few hundred KB of Python and renders identically everywhere.
+There are no asset files to install. Every texture, prop, character, sky and the pixel font are generated procedurally in `scripts/` - `classic.py` and a kit per world (listed in `assets.py`), `skies.py`, `buildings.py`, `characters.py` and `pixelfont.py` - which is why the whole skill is a few hundred KB of Python and renders identically everywhere.
 
 **As a CLI**
 ```bash
@@ -412,7 +412,7 @@ python scripts/render.py examples/garden_encounter.json -o out.png --map --sheet
 }
 ```
 
-Rows are y (south is down), columns are x, one cell is one unit, eye height is 0.5. The full reference, including the pixel-art sprite format and every option, is in [`references/scene_format.md`](references/scene_format.md). [`SKILL.md`](SKILL.md) holds the workflow and art-direction notes Claude follows.
+Rows are y (south is down), columns are x, one cell is one unit, eye height is 0.5. The full reference, including the pixel-art sprite format and every option, is in [`references/scene_format.md`](references/scene_format.md); every built-in texture, prop and character is listed in [`references/assets.md`](references/assets.md), and how to build particular places in [`references/recipes.md`](references/recipes.md). [`SKILL.md`](SKILL.md) holds the workflow and art-direction notes Claude follows.
 
 ![Layout map](docs/gallery/layout_map.png)
 
@@ -438,7 +438,7 @@ It is a 2.5D raycaster: one ground floor (plus shallow sunken cells for water, a
 ```bash
 python tests/smoke_test.py
 ```
-renders every example plus stress scenes that exercise every widget, theme, held item, effect, preset and palette, checks no frame comes out blank, runs regression checks for past bugs, and checks the docs still match the code (asset lists, counts, scene keys, gallery links, the asset inventory). CI runs it on Python 3.9 and 3.13 on every push.
+renders every example plus stress scenes that exercise every widget, theme, held item, effect, preset and palette, checks no frame comes out blank, runs regression checks for past bugs, and checks the docs still match the code (asset lists, counts, scene keys, gallery links, the asset inventory). CI runs it on Python 3.10 and 3.13 on every push.
 
 ```bash
 python docs/build_gallery.py

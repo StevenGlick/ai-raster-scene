@@ -1147,6 +1147,7 @@ def check_docs():
         with open(os.path.join(ROOT, *parts), encoding='utf-8') as f:
             return f.read()
     ref, skill, readme = read('references', 'scene_format.md'), read('SKILL.md'), read('README.md')
+    cat = read('references', 'assets.md')
 
     def section(text, heading):
         i = text.index(heading)
@@ -1161,7 +1162,8 @@ def check_docs():
         if gone:
             problems.append(f'{where} does not mention {gone}')
 
-    need('reference/Sprites', section(ref, '## Sprites'), list(assets.SPRITES) + list(CHARACTERS))
+    need('references/assets.md (props)', section(cat, '## Props'), assets.SPRITES)
+    need('references/assets.md (characters)', section(cat, '## Characters'), CHARACTERS)
     need('reference/Decals', section(ref, '## Decals'), assets.DECALS)
     need('reference/Wireframes', section(ref, '## Wireframes'), wires.MESHES)
     need('reference/GUI', section(ref, '## GUI'),
@@ -1181,7 +1183,7 @@ def check_docs():
     need('SKILL.md (prefabs)', skill, prefabs.PREFABS)
     need('reference (fringe sets)', ref, assets.FRINGES)
     need('reference (facade styles)', section(ref, '## Cell specs'), buildings.FACADE_STYLES)
-    need('reference/Textures (see-through and emissive)', section(ref, '## Textures'),
+    need('references/assets.md (see-through and emissive textures)', section(cat, '## Textures'),
          [t for t in assets.TEXTURES if assets.get_alpha(t) is not None or assets.get_texture(t)[1] is not None])
 
     counts = {r'(\d+) procedural props': len(assets.SPRITES), r'(\d+) stamps': len(assets.DECALS),
@@ -1191,9 +1193,9 @@ def check_docs():
         m = re.search(pat, readme)
         if not m or int(m.group(1)) != n:
             problems.append(f"README says {m.group(0) if m else pat!r}, the code has {n}")
-    m = re.search(r'Built-in props \((\d+)\)', ref)
+    m = re.search(r'Built-in props \((\d+)\)', cat)
     if not m or int(m.group(1)) != len(assets.SPRITES):
-        problems.append(f'reference prop count is stale (code has {len(assets.SPRITES)})')
+        problems.append(f'references/assets.md prop count is stale (code has {len(assets.SPRITES)})')
 
     linked = set(re.findall(r'docs/gallery/([\w-]+)\.png', readme))
     problems += [f'README links missing image {n}.png' for n in sorted(linked - build_gallery.ALL)]
