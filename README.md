@@ -48,6 +48,13 @@ And up on the roofs, five storeys over the street: the canyon of signs going awa
 | ![From a rooftop ledge: the neon canyon below, the runner at the edge](docs/gallery/rooftop_canyon.png) | ![Straight down past the blade signs to the lanterns and the street](docs/gallery/rooftop_down.png) |
 | ![From the street: the elevated train crossing between the towers](docs/gallery/rooftop_train.png) | ![A black cat on the ledge, watching the city](docs/gallery/rooftop_cat.png) |
 
+And a capsule hotel at four in the morning: a corridor between two walls of berths, lamps and screens glowing behind the blinds, a sleepwalker coming down it with her candle.
+
+| | |
+|---|---|
+| ![A capsule hotel corridor, berths stacked down both walls](docs/gallery/capsule_corridor.png) | ![The berths up close: lamps, blinds, a screen](docs/gallery/capsule_berths.png) |
+| ![A sleepwalker with her candle between the berths](docs/gallery/capsule_sleepwalker.png) | ![The hacker at the vending machine: it only takes old coins](docs/gallery/capsule_vending.png) |
+
 The `timber` style builds a village instead: timber-framed houses in limewash and ochre, oak posts, rails and braces, leaded casements and plank doors, and a roof on every house - a gable end over the street, or thatch or tiles with a chimney.
 
 | | |
@@ -236,7 +243,7 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **Post-processing**: colour grading, bloom, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
 - **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
 - **Pixel art drawn in code**: the jungle, ruins and beach are built from shapes - leaves, stones, planks, blades of grass, carved glyphs - stamped into a height field, lit from one direction, and snapped onto hue-shifted colour ramps with dark edges on their shadow sides (`scripts/pixelart.py`), so they read as pixel art rather than noise
-- **No assets to download**: all 156 textures, 254 props, 29 characters, 25 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
+- **No assets to download**: all 158 textures, 254 props, 29 characters, 25 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
 
 ![Character cast](docs/gallery/cast.png)
 

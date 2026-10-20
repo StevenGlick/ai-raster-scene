@@ -1,7 +1,7 @@
-"""The neon bar, drawn with the pixel-art toolkit (scripts/pixelart.py): an arcade cabinet with a game
-on its screen, a bar counter's front to stand as a card, chrome bar stools, a booth, a jukebox
+"""The neon bar, and the capsule hotel upstairs, drawn with the pixel-art toolkit (scripts/pixelart.py):
+an arcade cabinet with a game on its screen, a bar counter's front to stand as a card, chrome bar stools, a booth, a jukebox
 with its bubble tubes, neon art for the walls (a cocktail glass, a fish), a cluster of bottles
-for the counter, and the back bar's lit shelves as a wall texture.
+for the counter, the back bar's lit shelves as a wall texture, and walls of capsule berths.
 
 Screens, tubes and shelves glow: give each a coloured light of its own and the haze of a
 volumetric fog (`glow`) carries their colour through the room.
@@ -323,8 +323,60 @@ def tex_bar_shelves(name):
     return np.clip(rgb, 0, 1), em
 
 
-TEXTURES = {'bar_shelves': tex_bar_shelves}
-TEXTURE_NOISE = {'bar_shelves': 0.2}
+def tex_capsules(name, lit=0.5):
+    """A wall of capsule-hotel berths, four to a unit in white moulded plastic: each a rounded
+    opening with a glowing number plate over it, and inside a lamp-lit pillow and blanket, a
+    blind drawn down with light behind it, a screen's blue glow, or dark. `capsules_lit` has
+    more of them occupied; stack and alternate the two down a corridor."""
+    rng = _rng(name)
+    cv = Canvas(T, ground=0.0, mat=0)
+    cv.noise(0.08, cells=8, rng=rng)
+    for j in range(2):
+        for i in range(2):
+            cv.box(i * 32 + 1, j * 32 + 1, 30, 30, z=0.4, top=0.8, bevel=3.0, mat=0)
+    rgb = cv.paint([ramp('#d8d8d0', dark=0.45, light=1.1)], cv.light(relief=1.0, cavity=0.4, shadow=0.4), dither=0.25)
+    em = np.zeros((T, T), np.float32)
+    yy, xx = np.mgrid[0:32, 0:32].astype(np.float32) + 0.5
+    x0, x1, y0, y1, r = 4, 28, 8, 29, 5
+    d = np.hypot(xx - np.clip(xx, x0 + r, x1 - r), yy - np.clip(yy, y0 + r, y1 - r)) - r
+    edge = np.maximum(d, np.maximum(np.maximum(x0 - xx, xx - x1), np.maximum(y0 - yy, yy - y1)))
+    hole = edge <= 0
+    rim = (edge > 0) & (edge < 1.6)
+    for j in range(2):
+        for i in range(2):
+            sl = (slice(j * 32, j * 32 + 32), slice(i * 32, i * 32 + 32))
+            cell, ecell = rgb[sl], em[sl]
+            cell[rim] *= 0.55
+            w = np.array([0.15 + 0.5 * lit, 0.2, 0.12, max(0.05, 0.9 - lit)])
+            kind = rng.choice(['lamp', 'blind', 'screen', 'dark'], p=w / w.sum())
+            if kind == 'lamp':                                     # pillow, blanket, warm light
+                glow = np.clip(1.0 - (xx - 6) / 30, 0.35, 1.0)
+                cell[hole] = (np.array([0.75, 0.55, 0.32]) * glow[hole][:, None])
+                cell[hole & (yy > 21)] = np.array([0.42, 0.5, 0.62]) * glow[hole & (yy > 21)][:, None]
+                cell[hole & (xx < 12) & (yy > 17) & (yy < 22)] = (0.9, 0.86, 0.78)
+                ecell[hole] = 0.75
+            elif kind == 'blind':                                  # drawn, lit from behind
+                cell[hole] = (0.78, 0.7, 0.55)
+                cell[hole & (yy.astype(int) % 3 == 0)] = (0.62, 0.55, 0.42)
+                ecell[hole] = 0.45
+            elif kind == 'screen':                                 # someone up late
+                cell[hole] = (0.06, 0.1, 0.18)
+                cell[hole & (np.abs(xx - 20) < 4) & (np.abs(yy - 16) < 3)] = (0.55, 0.8, 1.0)
+                ecell[hole] = 0.25
+                ecell[hole & (np.abs(xx - 20) < 4) & (np.abs(yy - 16) < 3)] = 1.0
+            else:
+                cell[hole] = (0.03, 0.03, 0.04)
+            plate = (np.abs(xx - 16) < 4) & (yy > 2) & (yy < 6)    # the number plate
+            cell[plate] = (0.08, 0.08, 0.1)
+            digit = plate & (rng.random((32, 32)) < 0.45) & (np.abs(xx - 16) < 3) & (np.abs(yy - 4) < 1.2)
+            cell[digit] = (0.4, 0.95, 1.0) if kind != 'dark' else (1.0, 0.7, 0.3)
+            ecell[digit] = 1.0
+    return np.clip(rgb, 0, 1), em
+
+
+TEXTURES = {'bar_shelves': tex_bar_shelves, 'capsules': tex_capsules,
+            'capsules_lit': lambda n: tex_capsules(n, lit=0.9)}
+TEXTURE_NOISE = {'bar_shelves': 0.2, 'capsules': 0.2, 'capsules_lit': 0.2}
 SPRITES = {'arcade_cabinet': spr_arcade_cabinet, 'bar_counter': spr_bar_counter, 'bar_stool': spr_bar_stool,
            'booth': spr_booth, 'jukebox': spr_jukebox, 'neon_cocktail': spr_neon_cocktail,
            'neon_fish': spr_neon_fish, 'bottles': spr_bottles}
