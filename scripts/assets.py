@@ -2750,6 +2750,18 @@ PROP_DEFAULTS.update(icepalace.PROP_DEFAULTS)
 NO_CONTACT_SHADOW |= icepalace.NO_CONTACT_SHADOW
 TEXTURE_REFLECT.update(icepalace.TEXTURE_REFLECT)
 
+# ---------------------------------------------------------------- clockwork
+# The clockwork city: riveted brass, copper pipes, clock faces, great gears and clocks to stand
+# against the walls - in clockwork.py. Its orreries are wireframes.
+import clockwork  # noqa: E402
+
+TEXTURES.update(clockwork.TEXTURES)
+TEXTURE_NOISE.update(clockwork.TEXTURE_NOISE)
+SPRITES.update(clockwork.SPRITES)
+SPRITE_HEIGHT.update(clockwork.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(clockwork.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= clockwork.NO_CONTACT_SHADOW
+
 _dcache = {}
 
 
