@@ -21,15 +21,15 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 177 | 174 | 3 | 0 | 0 |
-| Props | 269 | 269 | 0 | 0 | 0 |
+| Textures | 180 | 177 | 3 | 0 | 0 |
+| Props | 280 | 280 | 0 | 0 | 0 |
 | Characters | 29 | 29 | 0 | 0 | 0 |
 | Decals | 26 | 21 | 5 | 0 | 0 |
 | Skies | 12 | 12 | 0 | 0 | 0 |
 | Skylines | 6 | 5 | 1 | 0 | 0 |
 | Sky objects | 7 | 7 | 0 | 0 | 0 |
 | Scatter sets | 18 | 18 | 0 | 0 | 0 |
-| Fringe sets | 6 | 6 | 0 | 0 | 0 |
+| Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 5 | 1 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
 | Held items | 8 | 2 | 6 | 0 | 0 |
@@ -38,8 +38,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 18 | 18 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 57 | 57 | 0 | 0 | 0 |
-| **all** | **713** | **697** | **16** | **0** | **0** |
+| Example scenes | 58 | 58 | 0 | 0 | 0 |
+| **all** | **729** | **713** | **16** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -53,7 +53,7 @@ Weakest first, and in the order the new scenes need them.
 5. **Small things.** The hands on the held items, the `stain`, `stain_rust` and `moss_patch` decals, the `child` and `dreamer` characters, the `city` skyline, `alien_rock`, `alien_ground`, and the `glowshroom` and `alien_egg` props.
 6. **Second look.** Every asset marked good, checked again on the review sheets and in its scenes, with fresh eyes and the new techniques in hand.
 
-## Textures (177)
+## Textures (180)
 
 64x64 tiles, drawn in code. "glows" means the texture lights itself (windows, screens, runes), "see-through" that the map shows through its holes, "mirror" that floors made of it reflect.
 
@@ -138,6 +138,9 @@ Weakest first, and in the order the new scenes need them.
 | `salt_brick` | good |  | salt_flat | Drawn in saltflat.py: blocks cut from the salt crust laid in courses: rough cream faces, deep joints. |
 | `meadow` | good |  | sky_islands | Drawn in skyisles.py: grass in tufts with tiny white, yellow and pink flowers, for an island's top. |
 | `island_rock` | good |  | sky_islands | Drawn in skyisles.py: rock in bands of grey and brown with roots working through it, for an island's side. |
+| `glow_leaves` | good | glows | glow_jungle | Drawn in glowjungle.py: the jungle wall at night: dark blue-green leaves, ribs and tips glowing. |
+| `lumen_floor` | good | glows | glow_jungle | Drawn in glowjungle.py: dark leaf litter with glowing moss and fungus specks. |
+| `glow_water` | good | glows, mirror 0.55 | glow_jungle | Drawn in glowjungle.py: black water with plankton glowing in swirling streams; reflects. |
 | `hangar_floor` | good |  | orbital_hangar | Drawn with the toolkit in scifi.py: heavy plates four to a unit, corner bolts, tread, a tie-down ring at each crossing, wear and oil. |
 | `conduit` | good | glows | orbital_hangar | Drawn with the toolkit in scifi.py: cable bundles in four colours and pipes up the wall, steel clamps, a junction box with lit LEDs. |
 | `screen_wall` | good | glows | orbital_hangar | Drawn with the toolkit in scifi.py: monitors four to a unit, each with a trace, readouts, a radar or a wireframe, in cyan, green or amber; glows. |
@@ -198,7 +201,7 @@ Weakest first, and in the order the new scenes need them.
 | `carpet_green` | good |  | - |  |
 | `flagstone` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, haunted_house, neon_street, night_market, rain_alley |  |
 | `obsidian` | good | mirror 0.45 | dream_world, neon_bar, space_station |  |
-| `concrete_floor` | good |  | 57 scenes |  |
+| `concrete_floor` | good |  | 58 scenes |  |
 | `rock_floor` | good |  | crystal_cave, doomed, gui_lantern, kelp_forest, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: flatter, smaller masses in brown with grit in the cracks. |
 
 ### Ceilings
@@ -256,7 +259,7 @@ Weakest first, and in the order the new scenes need them.
 |---|---|---|---|---|
 | `jungle_leaves` | good |  | jungle_temple, tropical_beach | Drawn with the pixel-art toolkit. |
 | `canopy` | polish | glows | jungle_temple | From below it can still read a little like camouflage; more depth between the layers. |
-| `canopy_top` | good |  | jungle_temple, tropical_beach | Use as the top of jungle walls. |
+| `canopy_top` | good |  | glow_jungle, jungle_temple, tropical_beach | Use as the top of jungle walls. |
 | `jungle_floor` | good |  | jungle_temple |  |
 | `jungle_bark` | good |  | jungle_temple |  |
 | `temple_stone` | good |  | jungle_temple |  |
@@ -294,7 +297,7 @@ Weakest first, and in the order the new scenes need them.
 | `bamboo` | polish |  | tropical_beach | The nodes still line up into a grid across the poles. |
 | `thatch` | polish |  | tropical_beach | The rows could be clearer, each with a shadow under its fringe. |
 
-## Props (269)
+## Props (280)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -394,7 +397,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `tree` | good | 2.6 tall | dream_world, garden_encounter, gui_menus, hospital_garden, post_presets, sky_islands, village_green, woodland_night | Redrawn with the toolkit in forest.py: an oak with a furrowed trunk on a flared foot, limbs showing between lobes of crown lit from above. |
 | `tree_autumn` | good | 2.6 tall | autumn_lane | Drawn with the toolkit in forest.py: the oak turned: orange and gold in patches cluster by cluster, a side going first, a little rust. |
 | `tree_winter` | good | 2.6 tall | winter_woods | Drawn with the toolkit in forest.py: a bare oak grown by recursive branching down to twigs, snow along every limb level enough to hold it. |
-| `glowshroom` | good | 0.16 tall, glows, no shadow | alien_world, crystal_cave | Redrawn with the toolkit in basics.py: domed caps freckled with paler spots over dark gills, pale stems; the caps glow. |
+| `glowshroom` | good | 0.16 tall, glows, no shadow | alien_world, crystal_cave, glow_jungle | Redrawn with the toolkit in basics.py: domed caps freckled with paler spots over dark gills, pale stems; the caps glow. |
 | `crystal` | good | 0.36 tall, glows, no shadow | alien_world, crystal_cave |  |
 | `stalagmite` | good | 0.8 tall | crystal_cave |  |
 
@@ -461,6 +464,17 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `island_roots` | good | 2 tall, no shadow | sky_islands | Drawn in skyisles.py: roots and vines dangling under an island's edge; a card. |
 | `island_keel` | good | 6 tall, no shadow | sky_islands | Drawn in skyisles.py: the rock under a floating island tapering to a ragged point, banded, roots trailing; a billboard. |
 | `rope_rail` | good | 0.42 tall, no shadow | sky_islands | Drawn in skyisles.py: a bridge's railing: a post at every unit and two sagging ropes; a card. |
+| `glow_monstera` | good | 0.75 tall, glows | glow_jungle | Drawn in glowjungle.py: the monstera at night, every leaf traced in cyan light. |
+| `glow_fern` | good | 0.42 tall, glows | glow_jungle | Drawn in glowjungle.py: the fern at night, its fronds edged in light. |
+| `glow_tree_fern` | good | 2.4 tall, glows | glow_jungle | Drawn in glowjungle.py: the tree fern at night, traced in blue light. |
+| `glow_heliconia` | good | 1.1 tall, glows | glow_jungle | Drawn in glowjungle.py: the heliconia at night: leaves edged in green light, the flowers burning pink. |
+| `glow_bromeliad` | good | 0.22 tall, glows | glow_jungle | Drawn in glowjungle.py: the bromeliad at night: violet light, a magenta heart. |
+| `glow_liana` | good | 2.4 tall, glows | glow_jungle | Drawn in glowjungle.py: the liana at night, hanging, edged in blue. |
+| `glow_pods` | good | 1.1 tall, glows | glow_jungle | Drawn in glowjungle.py: a curling stalk hung with seed pods glowing from inside. |
+| `glow_jungle_card_1` | good | 1.4 tall, glows, no shadow | glow_jungle | Drawn in glowjungle.py: jungle card 1 at night, faintly edged and specked with light. |
+| `glow_jungle_card_2` | good | 3.4 tall, glows, no shadow | glow_jungle | Drawn in glowjungle.py: jungle card 2 at night, faintly edged and specked with light. |
+| `glow_jungle_card_3` | good | 4 tall, glows, no shadow | glow_jungle | Drawn in glowjungle.py: jungle card 3 at night, faintly edged and specked with light. |
+| `glow_jungle_card_4` | good | 4.6 tall, glows, no shadow | glow_jungle | Drawn in glowjungle.py: jungle card 4 at night, faintly edged and specked with light. |
 | `stasis_pod` | good | 1 tall, glows | derelict_ship |  |
 | `shuttle` | good | 2.2 tall, glows | orbital_hangar | Drawn with the toolkit in scifi.py: nose-on wedge hull in white and orange, lit cockpit and engine pods, landing legs, panel lines and vents. |
 | `cargo_container` | good | 1.2 tall | orbital_hangar | Drawn with the toolkit in scifi.py: corrugated orange steel, corner castings, door rods, rust streaking down the ribs. Tint for other colours. |
@@ -530,9 +544,9 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `heliconia` | good | 1.1 tall | jungle_temple |  |
 | `bromeliad` | good | 0.22 tall | jungle_temple |  |
 | `liana` | good | 2.4 tall, no shadow | jungle_temple |  |
-| `kapok` | good | 7.5 tall | jungle_temple | An emergent tree: its crown clears a 4-unit canopy. |
+| `kapok` | good | 7.5 tall | glow_jungle, jungle_temple | An emergent tree: its crown clears a 4-unit canopy. |
 | `canopy_crown` | good | 1.2 tall, no shadow | jungle_temple | Set on jungle wall tops so the canopy edge is crowns, not a hedge. |
-| `stone_head` | good | 1.5 tall | jungle_temple |  |
+| `stone_head` | good | 1.5 tall | glow_jungle, jungle_temple |  |
 | `stela` | good | 2.1 tall | jungle_temple |  |
 
 ### Ruins
@@ -573,7 +587,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
-| `jaguar` | good | 0.34 tall, glows | jungle_temple | Redrawn with the toolkit in basics.py: prowling, side on: a long low body, heavy shoulders, a broad head, rosettes spread over a golden coat, a pale belly; the eyes glow. |
+| `jaguar` | good | 0.34 tall, glows | glow_jungle, jungle_temple | Redrawn with the toolkit in basics.py: prowling, side on: a long low body, heavy shoulders, a broad head, rosettes spread over a golden coat, a pale belly; the eyes glow. |
 | `macaw` | good | 0.3 tall | jungle_temple |  |
 | `goat` | good | 0.34 tall | ancient_ruins | Redrawn with the toolkit in basics.py: compact and deep-bodied on short sturdy legs, a piebald coat, horns swept back, a beard, the tail flicked up. |
 | `crab` | good | 0.08 tall | kelp_forest, tropical_beach |  |
@@ -651,7 +665,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `alien` | good | alien_world, derelict_ship | A familiar archetype; could be made stranger. |
 | `dreamer` | good | capsule_hotel, dream_chess, dream_world, drowned_library, hall_of_doors, salt_flat | Eyes closed now (two soft lines, not dark pupils), so she reads as a sleepwalker; nightgown and candle. |
 | `claude` | good | claude_study | Claude's own avatar. |
-| `explorer` | good | aquarium, jungle_temple, red_canyon, sky_islands |  |
+| `explorer` | good | aquarium, glow_jungle, jungle_temple, red_canyon, sky_islands |  |
 | `hoplite` | good | ancient_ruins |  |
 | `castaway` | good | tropical_beach |  |
 | `diver` | good | aquarium, kelp_forest | A brass diving helmet with a round faceplate and an air hose, a canvas suit, a weight belt, heavy boots. |
@@ -684,7 +698,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `cobweb` | good | bunker_lab, castle_keep |  |
 | `rune_mark` | good | - |  |
 | `drain` | good | bunker_lab, neon_street, night_market, rainy_street, sewer_tunnels |  |
-| `contact_shadow` | good | 56 scenes |  |
+| `contact_shadow` | good | 57 scenes |  |
 | `pad_marking` | good | moon_base, orbital_hangar | A painted landing ring with an H and a dashed outer ring, worn in patches. |
 | `rover_tracks` | good | moon_base | Drawn with the toolkit in moon.py: two tracks of chevron treads pressed into dust. |
 | `hazard_stripe` | good | orbital_hangar | A band of yellow and black diagonal stripes, worn through in places. |
@@ -705,7 +719,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 
 | sky | status | used in | notes |
 |---|---|---|---|
-| `night` | good | ancient_ruins, bayou, chapel_graveyard, claude_study, garden_encounter, gui_menus, haunted_house, hospital_garden, kelp_forest, neon_rooftop, neon_street, night_market, post_presets, salt_flat, tropical_beach, village_green, winter_lake, winter_woods, woodland_night |  |
+| `night` | good | 20 scenes |  |
 | `dusk` | good | autumn_lane, coast_lighthouse, misty_moor |  |
 | `storm` | good | coast_lighthouse, rain_alley, rainy_street | Could use darker cloud masses. |
 | `day` | good | aquarium, cathedral_ruin, ghost_town, jungle_temple, kelp_forest, red_canyon, salt_flat, sky_islands, tropical_beach, village_green, winter_lake, winter_woods |  |
@@ -766,7 +780,7 @@ Named mixes for `scatter`; repeats in the contents act as weights.
 | `swamp` | good | cattails x2, reeds, cypress_knees, rocks | - | Cattails and reeds with cypress knees and the odd rock. |
 | `seabed` | good | rocks x3, crab, boulder | kelp_forest | Rocks with the odd crab and boulder. |
 
-## Fringe sets (6)
+## Fringe sets (7)
 
 The cards a `fringe` wall stands in front of its open faces, back to front.
 
@@ -778,6 +792,7 @@ The cards a `fringe` wall stands in front of its open faces, back to front.
 | `forest_snow` | good | winter_card_4, winter_card_3, winter_card_2, winter_card_1 | winter_woods | The forest fringe in winter: snowy spruce, bare oak and birch with snow on their limbs, bushes under snow. |
 | `swamp` | good | swamp_card_3, swamp_card_2, swamp_card_1 | bayou | Three cards: cattails and knees, then young cypresses and moss, then a dense stand. |
 | `kelp` | good | kelp_card_2, kelp_card_1 | kelp_forest | Two cards: a few stalks, then a dense stand. |
+| `glow_jungle` | good | glow_jungle_card_4, glow_jungle_card_3, glow_jungle_card_2, glow_jungle_card_1 | glow_jungle | Four cards: the jungle fringe at night, faintly edged and specked with light. |
 
 ## Facade styles (6)
 
@@ -860,7 +875,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 
 | theme | status | used in | notes |
 |---|---|---|---|
-| `classic` | good | 49 scenes |  |
+| `classic` | good | 50 scenes |  |
 | `parchment` | good | gui_themes, gui_trade |  |
 | `terminal` | good | bunker_lab, gui_themes, orbital_hangar, space_station |  |
 | `blood` | good | gui_themes |  |
@@ -873,7 +888,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 |---|---|---|---|
 | `bubble` | good | 21 scenes |  |
 | `dialog` | good | bunker_lab, chapel_graveyard, claude_study, coast_lighthouse, ghost_corridor, library_medium, neon_bar, orbital_hangar, space_station |  |
-| `caption` | good | 42 scenes |  |
+| `caption` | good | 43 scenes |  |
 | `choice` | good | gui_menus, gui_themes, gui_trade |  |
 | `title` | good | gui_menus |  |
 | `panel` | good | bunker_lab, gui_lantern |  |
@@ -929,7 +944,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `mono` | good | - |  |
 | `bone` | good | - |  |
 
-## Example scenes (57)
+## Example scenes (58)
 
 The environments, judged on their gallery images and shots.
 
@@ -970,6 +985,7 @@ The environments, judged on their gallery images and shots.
 | `vector_world` | good | 5 | vector_sunset, vector_racers, vector_beacon, vector_core, vector_runner | A city of light on the grid: towers ruled in neon, racers trailing light down the avenue under a striped sun, a black core over a plaza of light beams, a beacon's flare, a runner in a suit of light. |
 | `salt_flat` | good | 5 | salt_sunset, salt_door, salt_noon, salt_night, salt_whale | A salt flat after rain mirroring the sky: a girl with a candle at sunset, a door standing alone, raked mounds at noon, the stars doubled, a whale over the mirror. |
 | `sky_islands` | good | 5 | isles_temple, isles_bridge, isles_above, isles_golden, isles_falls | Meadows adrift over a sea of cloud: a temple island with a waterfall, keels of rock, a plank bridge to an islet of trees, golden hour. |
+| `glow_jungle` | good | 4 | glow_pool, glow_head, glow_flowers, glow_path | A clearing at night where every plant glows: a pool of glowing plankton, a stone head lit green, a heliconia burning pink, a path into the jungle. |
 | `village_green` | good | 4 | village_market, village_stall, village_well, village_night | A cobbled street of timber-framed houses to a green: a market stall and its keeper, the inn sign, a cart, the well; the inn lit after closing. |
 | `ghost_town` | good | 4 | western_noon, western_saloon, western_ghost, western_windpump | A frontier main street: a cowboy at high noon, the saloon and its barkeep, sundown with lanterns and a ghost, a windpump in the desert. |
 | `misty_moor` | good | 3 | moor_dawn, moor_circle | Stones of varied heights with weathered menhir faces and slanted, chipped stone_cap tops in dawn mist. |
@@ -1028,6 +1044,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-20, the glowing jungle.** `scripts/glowjungle.py`: glowing variants of the jungle plants (a rim of light round every leaf, flowers by their colour), `glow_pods`, the `glow_jungle` fringe, `glow_leaves`, `lumen_floor`, `glow_water`. `examples/glow_jungle.py` with four gallery shots.
 - **2026-10-20, the sky islands.** `scripts/skyisles.py`: `meadow`, `island_rock`, `waterfall`, `island_roots`, `island_keel`, `rope_rail`. A cell key `cliff` (how deep an edge drops into a void). `examples/sky_islands.py` with four gallery shots.
 - **2026-10-20, the salt flat.** `scripts/saltflat.py`: `salt_flat`, `salt_water`, `salt_brick`, `salt_mound`. Reflections: `smear` (0 for a still mirror), and below 1 the sky past a figure is mirrored about the horizon and dry ground counts as flat. `examples/salt_flat.py` with five gallery shots.
 - **2026-10-20, Vector World.** `scripts/wires.py`: `wireframes`, low-poly meshes drawn as lines of light in true 3D (19 built-in shapes, or your own vertices and faces; `solid` fills the faces black so they hide what is behind). `scripts/vector.py`: seven black textures ruled in light, the `vector_runner`, `light_trail`, `light_beam` and `glint`; the `vector` sky and a striped sun (`disc_style`). `examples/vector_world.py`, with five gallery shots - the racers' headlights streak like an anamorphic lens, a beacon throws a lens flare.

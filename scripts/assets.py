@@ -2723,6 +2723,20 @@ SPRITE_HEIGHT.update(skyisles.SPRITE_HEIGHT)
 PROP_DEFAULTS.update(skyisles.PROP_DEFAULTS)
 NO_CONTACT_SHADOW |= skyisles.NO_CONTACT_SHADOW
 
+# ---------------------------------------------------------------- glowjungle
+# The jungle at night with light inside its plants: glowing variants of its plants, glowing pods,
+# a wall of rainforest specked with light, glowing moss, plankton in the water - in glowjungle.py.
+import glowjungle  # noqa: E402
+
+TEXTURES.update(glowjungle.TEXTURES)
+TEXTURE_NOISE.update(glowjungle.TEXTURE_NOISE)
+SPRITES.update(glowjungle.SPRITES)
+SPRITE_HEIGHT.update(glowjungle.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(glowjungle.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= glowjungle.NO_CONTACT_SHADOW
+TEXTURE_REFLECT.update(glowjungle.TEXTURE_REFLECT)
+FRINGES.update(glowjungle.FRINGES)
+
 _dcache = {}
 
 
