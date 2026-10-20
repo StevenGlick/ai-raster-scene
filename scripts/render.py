@@ -1096,6 +1096,7 @@ class Renderer:
               else rf if isinstance(rf, dict) else {'amount': rf})
         self.reflect_k = float(rf.get('amount', 1.0))
         self.ripple = float(rf.get('ripple', 1.0))
+        self.smear = float(rf.get('smear', 1.0))     # the vertical streak; 0 is a still mirror
         # a sun or moon light shows itself in the sky (unless it asks not to)
         self.discs = [s_['disc'] for s_ in self.suns if s_['disc']]
         self.sky_objects = list(scene.get('sky_objects') or [])
@@ -1539,6 +1540,7 @@ class Renderer:
         fov = math.radians(float(cam.get('fov', 66)))
         camz = float(cam.get('height', 0.5))
         horizon = H / 2 + float(cam.get('pitch', 0)) * H
+        self._horizon = horizon
         proj = (W / 2) / math.tan(fov / 2)
         dx, dy = math.cos(ang), math.sin(ang)
         self._fx, self._fy = dx, dy
@@ -1717,6 +1719,7 @@ class Renderer:
                 dsub2[k] = dsub[k]
                 refl[rows], refl_depth[rows] = rsub, dsub2
 
+        self._plane_depth = depth if self.smear >= 1.0 else depth.copy()   # what the floor pass left
         # --- walls: a vectorised DDA over all columns. It collects a face at every rising edge, and
         # the top of every block lower than the eye, so steps, altars and kerbs read as solid.
         mapx = np.full(W, int(math.floor(px)))
@@ -2023,6 +2026,20 @@ class Renderer:
         # the last row above each pixel that is not part of its reflective run: the mirror line
         last = np.maximum.accumulate(np.where(mask, -1, rows * np.ones((1, W), int)), axis=0)
         src = 2 * last + 1 - rows
+        if self.smear < 1.0:
+            # a still mirror: past the top of whatever stands on it the sky is mirrored about the
+            # horizon, as it is everywhere else - not about that thing's foot, which would hang a
+            # pale streak of the wrong sky under every figure
+            c_ = np.arange(W)[None, :]
+
+            def flat(rr):
+                # bare ground the floor pass left, below the horizon: flat, so never what a mirror
+                # shows above it - water ending at a bank of dry crust mirrors the sky past it
+                dd = depth[rr, c_]
+                return np.isfinite(dd) & (dd == self._plane_depth[rr, c_]) & (rr + 0.5 > self._horizon)
+            s_ = np.clip(src, 0, H - 1)
+            past = (src < 0) | np.isinf(depth[s_, c_]) | flat(s_) | flat(np.clip(last, 0, H - 1))
+            src = np.where(past, np.round(2 * self._horizon - 1 - rows).astype(int), src)
         # a ripple: rows shimmer sideways a pixel or two, more toward the camera
         amp = self.ripple * ss * (0.6 + 1.4 * np.clip((rows - H / 2) / (H / 2), 0, 1))
         cols = np.arange(W)[None, :]
@@ -2031,8 +2048,13 @@ class Renderer:
         ok = mask & (last >= 0)
         # a short vertical smear: real wet ground and water stretch reflections into streaks
         s0 = np.clip(src, 0, H - 1)
-        mirrored = (0.5 * img[s0, sc] + 0.25 * img[np.clip(s0 - 2 * ss, 0, H - 1), sc]
-                    + 0.25 * img[np.clip(s0 + 2 * ss, 0, H - 1), sc])
+        if self.smear == 1.0:
+            mirrored = (0.5 * img[s0, sc] + 0.25 * img[np.clip(s0 - 2 * ss, 0, H - 1), sc]
+                        + 0.25 * img[np.clip(s0 + 2 * ss, 0, H - 1), sc])
+        else:
+            sm = min(2.0, max(0.0, self.smear)) * 0.25
+            mirrored = ((1 - 2 * sm) * img[s0, sc] + sm * img[np.clip(s0 - 2 * ss, 0, H - 1), sc]
+                        + sm * img[np.clip(s0 + 2 * ss, 0, H - 1), sc])
         # stronger at a grazing angle (far away), weaker looking straight down
         k = refl * (0.55 + 0.45 * (1 - np.exp(-np.maximum(refl_depth, 0) / 4.0)))
         # close to the camera the mirrored point is above the top of the frame; what is up there

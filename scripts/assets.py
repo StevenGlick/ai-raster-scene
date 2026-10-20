@@ -2699,6 +2699,18 @@ SPRITE_HEIGHT.update(vector.SPRITE_HEIGHT)
 PROP_DEFAULTS.update(vector.PROP_DEFAULTS)
 NO_CONTACT_SHADOW |= vector.NO_CONTACT_SHADOW
 
+# ---------------------------------------------------------------- saltflat
+# A dry lake bed of salt: the crust cracked into plates, the same crust under a film of water
+# that mirrors the sky, salt bricks, raked mounds - in saltflat.py.
+import saltflat  # noqa: E402
+
+TEXTURES.update(saltflat.TEXTURES)
+TEXTURE_NOISE.update(saltflat.TEXTURE_NOISE)
+SPRITES.update(saltflat.SPRITES)
+SPRITE_HEIGHT.update(saltflat.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(saltflat.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= saltflat.NO_CONTACT_SHADOW
+
 _dcache = {}
 
 
