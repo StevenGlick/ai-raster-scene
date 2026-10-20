@@ -218,13 +218,13 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 
 - **2.5D raycaster** with multi-hit rays: walls of any height, so towers rise over hedges; per-storey wall textures for building facades; low blocks with real tops for steps, daises and altars
 - **See-through walls**: iron fences, railings, picket fences, chain-link, jail bars, portcullises, lattices, smashed windows, Doric colonnades and a temple's roof comb, with the scene showing through the gaps
-- **Floors, ceilings and open sky** per cell, with twelve procedural sky panoramas (night, dusk, storm, day, overcast, blood, sunset, golden hour, deep space, alien, dream, vector), distant skylines (mountains, hills, treeline, city, islands, rainforest), and planets, ringed gas giants, moons and stranger things hung in the sky
+- **Floors, ceilings and open sky** per cell, with thirteen procedural sky panoramas (night, dusk, storm, day, overcast, blood, sunset, golden hour, deep space, alien, dream, vector, aurora), distant skylines (mountains, hills, treeline, city, islands, rainforest), and planets, ringed gas giants, moons and stranger things hung in the sky
 - **Void floors**: no ground at all, just sky carrying on below the horizon, for space outside a station's viewport or islands adrift over a sea of cloud with ragged cliffs underneath
 - **Lighting**: coloured point lights baked into a shadowed lightmap, fading above their own height (a lamp hung high lights the walls round it, one on a roof lights the roof), a sun or moon with long cast shadows and its disc in the sky, emissive texels (lit windows, stained glass, glowing runes), flashlight cone, Doom-style light banding, and a soft contact shadow under every prop
 - **Volumetric fog**: mist that lies low and drifts in banks, halos round every lamp, and beams of sun or moonlight through windows, doorways, standing stones and trees; sunlight finds its way into roofed rooms through their doorways, windows and skylights
 - **Reflections**: water, ice, wet streets and puddles mirror the lamps, windows and figures beyond them
 - **The 90s look**: 320x200 framebuffer, Bayer-dithered 256-colour palette, chunky nearest-neighbour upscale, optional scanlines and 2x supersampling
-- **Sprites**: 280 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 29-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
+- **Sprites**: 284 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 29-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
 - **Planar sprites**: a plant can stand as fixed planes in the world instead of a billboard - a cross of two, or a star of three that cuts the ground round it into sixths - so it has body as the camera moves; the low plants do by default, and a prefab can mix billboards and planes (a billboard palm trunk under a star of fronds)
 - **Layered forest edges**: give the walls of a jungle or a wood a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
@@ -244,7 +244,7 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **Post-processing**: colour grading, bloom (from the whole frame, or only from what gives off light - neon, windows, flames, fireflies, a held lantern, the sun - so it can glow hard), depth of field that focuses on the shot's subject and leaves its colours alone, streaks (the twinkle of a star filter on the brightest lights, or the long blue lines of an anamorphic lens), a lens flare from a sun in the frame, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
 - **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
 - **Pixel art drawn in code**: the jungle, ruins and beach are built from shapes - leaves, stones, planks, blades of grass, carved glyphs - stamped into a height field, lit from one direction, and snapped onto hue-shifted colour ramps with dark edges on their shadow sides (`scripts/pixelart.py`), so they read as pixel art rather than noise
-- **No assets to download**: all 180 textures, 280 props, 29 characters, 26 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
+- **No assets to download**: all 183 textures, 284 props, 29 characters, 26 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
 
 ![Character cast](docs/gallery/cast.png)
 
@@ -278,6 +278,15 @@ An homage to the first level of the 1993 shooter that named a genre: the slime p
                {"text": "Bribe him", "hint": "2 idols", "disabled": true}]}
 ]
 ```
+
+## The aurora palace
+
+A palace of ice on the shore of a frozen lake, under the aurora: curtains of green light hanging across the arctic night, doubled in the ice. Towers of blue ice blocks crowned with crystal spires, icicles along the walls, a courtyard, and an open hall walled in frost round a throne cut from the ice.
+
+| | |
+|---|---|
+| ![The ice palace across the frozen lake, the aurora over it and doubled in the ice](docs/gallery/aurora_lake.png) | ![The gate between two towers of ice, the aurora glowing over the courtyard](docs/gallery/aurora_gate.png) |
+| ![A throne of ice in a hall walled in frost, the queen beside it, the aurora overhead](docs/gallery/aurora_throne.png) | ![The aurora doubled in the frozen lake from its shore, the palace dark on the horizon](docs/gallery/aurora_shore.png) |
 
 ## The glowing jungle
 

@@ -1,0 +1,486 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnTTTnnnnnnnnnnnnnnnnTTTnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnTTTIIIIIIIIIIIIIIIITTTnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnTTTccccccccccccccccTTTnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnIccccFFFFFFFFFFccccInnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnIccccFhhhhhhhhFccccInnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnIccccFhhhhhhhhFccccInnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnIccccFhhhhhhhhFccccInnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnIccccFhhhhhhhhFccccInnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnIccccFhhhhhhhhFccccInnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnIccccFFFFhhFFFFccccInnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnIccccccccccccccccccInnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnIccccccccccccccccccInnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnIccccccccccccccccccInnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnIccccccccccccccccccInnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnTTTccccccccccccccccTTTnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnTTTIIIIIIccccIIIIIITTTnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnTTTnnnnnnnnnnnnnnnnTTTnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnLLLLLLLLLLLLLLnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnLLLLLLLLLLLLLLLLLLLLnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnLLLLLLLLLLLLLLLLLLLLLLLLnnnnnnnnnnnn",
+  "nnnnnnnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnnnnnnn",
+  "nnnnnnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnnnnnn",
+  "nnnnnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnnnnn",
+  "nnnnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnnnn",
+  "nnnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnnn",
+  "nnnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnnn",
+  "nnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnn",
+  "nnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnn",
+  "nnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnn",
+  "nnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnn",
+  "nnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnn",
+  "nnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnn",
+  "nnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnn",
+  "nnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnn",
+  "nnnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnnn",
+  "nnnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnnn",
+  "nnnnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnnnn",
+  "nnnnnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnnnnn",
+  "nnnnnnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnnnnnn",
+  "nnnnnnnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnnnnnnn",
+  "nnnnnnnnnnnnLLLLLLLLLLLLLLLLLLLLLLLLnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnLLLLLLLLLLLLLLLLLLLLnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnLLLLLLLLLLLLLLnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+  "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn"
+ ],
+ "legend": {
+  "n": {
+   "floor": "snow"
+  },
+  "c": {
+   "floor": "snow"
+  },
+  "h": {
+   "floor": "ice_floor",
+   "reflect": 0.45
+  },
+  "L": {
+   "floor": "ice_floor",
+   "reflect": 0.85
+  },
+  "I": {
+   "wall": [
+    "ice_block",
+    "ice_block",
+    "ice_block"
+   ],
+   "h": 2.4,
+   "top": {
+    "base": "snow",
+    "tint": [
+     0.85,
+     0.92,
+     1.0
+    ]
+   }
+  },
+  "T": {
+   "wall": [
+    "ice_block",
+    "ice_block",
+    "ice_block",
+    "ice_block"
+   ],
+   "h": 4.0,
+   "top": {
+    "base": "snow",
+    "tint": [
+     0.85,
+     0.92,
+     1.0
+    ]
+   }
+  },
+  "F": {
+   "wall": [
+    "frost_wall",
+    "frost_wall"
+   ],
+   "h": 1.8,
+   "top": {
+    "base": "snow",
+    "tint": [
+     0.85,
+     0.92,
+     1.0
+    ]
+   }
+  }
+ },
+ "camera": {
+  "x": 24.0,
+  "y": 55.0,
+  "look_at": [
+   24.0,
+   10.0,
+   2.0
+  ],
+  "fov": 72
+ },
+ "title": "The aurora palace - ice under the northern lights",
+ "sky": "aurora",
+ "ambient": [
+  0.14,
+  0.18,
+  0.24
+ ],
+ "lights": [
+  {
+   "type": "moon",
+   "azimuth": 300,
+   "elevation": 40,
+   "intensity": 0.45,
+   "color": [
+    0.45,
+    1.0,
+    0.75
+   ],
+   "disc": false
+  },
+  {
+   "x": 23.5,
+   "y": 9.0,
+   "z": 1.2,
+   "radius": 4.0,
+   "color": [
+    0.5,
+    0.8,
+    1.0
+   ],
+   "intensity": 0.7
+  },
+  {
+   "x": 23.5,
+   "y": 19.5,
+   "z": 1.0,
+   "radius": 3.0,
+   "color": [
+    0.5,
+    0.8,
+    1.0
+   ],
+   "intensity": 0.5
+  }
+ ],
+ "fog": {
+  "color": [
+   0.04,
+   0.08,
+   0.12
+  ],
+  "density": 0.008
+ },
+ "reflections": {
+  "ripple": 0,
+  "smear": 0
+ },
+ "sprites": [
+  {
+   "x": 14.5,
+   "y": 4.5,
+   "type": "ice_spire",
+   "z": 4.0,
+   "scale": 2.8
+  },
+  {
+   "x": 33.5,
+   "y": 4.5,
+   "type": "ice_spire",
+   "z": 4.0,
+   "scale": 2.8
+  },
+  {
+   "x": 14.5,
+   "y": 18.5,
+   "type": "ice_spire",
+   "z": 4.0,
+   "scale": 2.8
+  },
+  {
+   "x": 33.5,
+   "y": 18.5,
+   "type": "ice_spire",
+   "z": 4.0,
+   "scale": 2.8
+  },
+  {
+   "x": 18.0,
+   "y": 19.04,
+   "type": "icicles",
+   "angle": 0,
+   "length": 6.0,
+   "z": 2.0
+  },
+  {
+   "x": 30.0,
+   "y": 19.04,
+   "type": "icicles",
+   "angle": 0,
+   "length": 6.0,
+   "z": 2.0
+  },
+  {
+   "x": 13.96,
+   "y": 8.0,
+   "type": "icicles",
+   "angle": 90,
+   "length": 6.0,
+   "z": 2.0
+  },
+  {
+   "x": 13.96,
+   "y": 14.0,
+   "type": "icicles",
+   "angle": 90,
+   "length": 6.0,
+   "z": 2.0
+  },
+  {
+   "x": 34.04,
+   "y": 8.0,
+   "type": "icicles",
+   "angle": 90,
+   "length": 6.0,
+   "z": 2.0
+  },
+  {
+   "x": 34.04,
+   "y": 14.0,
+   "type": "icicles",
+   "angle": 90,
+   "length": 6.0,
+   "z": 2.0
+  },
+  {
+   "id": "throne",
+   "x": 23.5,
+   "y": 7.6,
+   "type": "ice_throne",
+   "scale": 1.3
+  },
+  {
+   "id": "queen",
+   "x": 22.4,
+   "y": 8.6,
+   "type": "witch",
+   "tint": [
+    0.75,
+    0.85,
+    1.0
+   ],
+   "facing": 90
+  },
+  {
+   "id": "traveller",
+   "x": 25.0,
+   "y": 46.0,
+   "type": "explorer",
+   "facing": 270
+  },
+  {
+   "x": 17.0,
+   "y": 21.0,
+   "type": "ice_shards",
+   "flip": false
+  },
+  {
+   "x": 30.5,
+   "y": 21.6,
+   "type": "ice_shards",
+   "flip": true
+  },
+  {
+   "x": 9.5,
+   "y": 24.5,
+   "type": "ice_shards",
+   "flip": false
+  },
+  {
+   "x": 38.5,
+   "y": 25.0,
+   "type": "ice_shards",
+   "flip": true
+  },
+  {
+   "x": 20.6,
+   "y": 9.0,
+   "type": "ice_shards",
+   "flip": false
+  },
+  {
+   "x": 26.6,
+   "y": 10.2,
+   "type": "ice_shards",
+   "flip": true
+  },
+  {
+   "x": 5.0,
+   "y": 22.0,
+   "type": "snowy_pine",
+   "scale": 2.6
+  },
+  {
+   "x": 8.0,
+   "y": 19.0,
+   "type": "snowy_pine",
+   "scale": 3.0
+  },
+  {
+   "x": 41.0,
+   "y": 20.0,
+   "type": "snowy_pine",
+   "scale": 2.8
+  },
+  {
+   "x": 44.0,
+   "y": 24.0,
+   "type": "snowy_pine",
+   "scale": 2.4
+  },
+  {
+   "x": 2.5,
+   "y": 30.0,
+   "type": "snowy_pine",
+   "scale": 2.8
+  },
+  {
+   "x": 45.5,
+   "y": 33.0,
+   "type": "snowy_pine",
+   "scale": 2.6
+  },
+  {
+   "x": 3.0,
+   "y": 45.0,
+   "type": "snowy_pine",
+   "scale": 2.4
+  },
+  {
+   "x": 45.0,
+   "y": 47.0,
+   "type": "snowy_pine",
+   "scale": 2.8
+  },
+  {
+   "x": 10.0,
+   "y": 55.0,
+   "type": "snowy_pine",
+   "scale": 2.6
+  },
+  {
+   "x": 38.0,
+   "y": 55.5,
+   "type": "snowy_pine",
+   "scale": 3.0
+  }
+ ],
+ "shots": [
+  {
+   "x": 24.0,
+   "y": 52.0,
+   "height": 0.4,
+   "look_at": [
+    24.0,
+    11.0,
+    3.6
+   ],
+   "fov": 72,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.3,
+     "radius": 3,
+     "spread": 0.6
+    }
+   ],
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "The aurora palace",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 23.5,
+   "y": 24.5,
+   "height": 0.45,
+   "look_at": [
+    23.5,
+    12.0,
+    3.0
+   ],
+   "fov": 72,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.3,
+     "radius": 3,
+     "spread": 0.6
+    }
+   ]
+  },
+  {
+   "x": 23.5,
+   "y": 11.4,
+   "height": 0.45,
+   "look_at": "throne",
+   "fov": 62,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.3,
+     "radius": 3,
+     "spread": 0.6
+    }
+   ]
+  },
+  {
+   "x": 14.0,
+   "y": 50.0,
+   "height": 0.35,
+   "look_at": [
+    30.0,
+    36.0,
+    1.6
+   ],
+   "fov": 74,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.3,
+     "radius": 3,
+     "spread": 0.6
+    }
+   ]
+  }
+ ],
+ "contact_shadows": 0.3,
+ "supersample": 2
+}

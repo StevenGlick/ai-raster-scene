@@ -2737,6 +2737,19 @@ NO_CONTACT_SHADOW |= glowjungle.NO_CONTACT_SHADOW
 TEXTURE_REFLECT.update(glowjungle.TEXTURE_REFLECT)
 FRINGES.update(glowjungle.FRINGES)
 
+# ---------------------------------------------------------------- icepalace
+# A palace of ice under the aurora: ice blocks, frost, polished ice, spires, a throne, icicles,
+# shards - and the aurora itself, which assets.make_sky draws with icepalace.draw_aurora.
+import icepalace  # noqa: E402
+
+TEXTURES.update(icepalace.TEXTURES)
+TEXTURE_NOISE.update(icepalace.TEXTURE_NOISE)
+SPRITES.update(icepalace.SPRITES)
+SPRITE_HEIGHT.update(icepalace.SPRITE_HEIGHT)
+PROP_DEFAULTS.update(icepalace.PROP_DEFAULTS)
+NO_CONTACT_SHADOW |= icepalace.NO_CONTACT_SHADOW
+TEXTURE_REFLECT.update(icepalace.TEXTURE_REFLECT)
+
 _dcache = {}
 
 
@@ -3113,19 +3126,20 @@ SKY_PRESETS = {
     'sunset': ('#2a2c5a', '#c8607a', '#ffb860'),
     'golden': ('#3a6aa8', '#a0bcd2', '#f2d8a0'),
     'vector': ('#020108', '#0c0522', '#3c1046'),       # black to violet, a magenta glow at the horizon
+    'aurora': ('#02040c', '#07152a', '#103046'),       # a clear arctic night: the aurora is drawn over it
 }
 _CLOUD_COVER = {'night': 0.62, 'dusk': 0.55, 'storm': 0.42, 'day': 0.6, 'overcast': 0.3, 'blood': 0.55,
-                'alien': 0.5, 'dream': 0.5, 'sunset': 0.56, 'golden': 0.64, 'vector': 9.0}
+                'alien': 0.5, 'dream': 0.5, 'sunset': 0.56, 'golden': 0.64, 'vector': 9.0, 'aurora': 9.0}
 _CLOUD_COLOUR = {'night': '#2a3245', 'dusk': '#5a3a4a', 'storm': '#1c2028', 'day': '#e8eef4',
                  'overcast': '#6a7078', 'blood': '#2a0a0c', 'alien': '#7a3a6a', 'dream': '#fff2f6',
-                 'sunset': '#e8806a', 'golden': '#fff0d8', 'vector': '#100820'}
+                 'sunset': '#e8806a', 'golden': '#fff0d8', 'vector': '#100820', 'aurora': '#0c1a2a'}
 # the sea of cloud seen from above, under a void floor: sunlit tops, shadowed hollows
 _CLOUD_SEA = {'night': ('#4a5672', '#121828'), 'dusk': ('#d89880', '#3a2c48'),
               'storm': ('#3e4652', '#141820'), 'day': ('#f2f5fa', '#9aaccc'),
               'overcast': ('#a0a6ae', '#5a6068'), 'blood': ('#7a2a1e', '#1e0608'),
               'alien': ('#9ae0c0', '#2a3a5a'), 'dream': ('#fff6fa', '#c0a0d8'),
               'sunset': ('#ffc890', '#5a3a6a'), 'golden': ('#fff0d8', '#a89aa8'),
-              'vector': ('#3a1a5a', '#0a0418')}
+              'vector': ('#3a1a5a', '#0a0418'), 'aurora': ('#2a4a5a', '#081420')}
 
 
 def _wrapnoise(w, h, cx, cy, rng):
@@ -3237,7 +3251,7 @@ def make_sky(preset, w, h, seed=3, skyline=None, proj=None, discs=(), objects=()
         cn /= 1.75
         mask = np.clip((cn - _CLOUD_COVER[preset]) * 4, 0, 1) * (t < 0.85)
         sky = sky * (1 - mask[..., None] * 0.85) + col(_CLOUD_COLOUR[preset]) * mask[..., None] * 0.85
-        if preset in ('night', 'storm', 'blood', 'dusk', 'alien', 'vector'):
+        if preset in ('night', 'storm', 'blood', 'dusk', 'alien', 'vector', 'aurora'):
             stars = (rng.random((h, w)) > 0.997) & (t[:, 0][:, None] < 0.6) & (mask < 0.2)
             sky[stars] = col('#c8c8d0') * (0.5 if preset != 'night' else 1)
         if preset in ('night', 'blood') and not discs and not objects:
@@ -3245,6 +3259,9 @@ def make_sky(preset, w, h, seed=3, skyline=None, proj=None, discs=(), objects=()
             yy, xx = np.mgrid[0:h, 0:w]
             m = (yy - my) ** 2 + (xx - mx) ** 2 < r * r
             sky[m] = col('#e6e0c8') if preset == 'night' else col('#d04a30')
+        if preset == 'aurora':                    # curtains of light over the stars (icepalace.py)
+            import icepalace
+            sky = icepalace.draw_aurora(sky, rng, h - 1, proj)
         if below:
             sky = np.concatenate([sky, _cloud_sea(w, below, proj, preset, hor, rng)], axis=0)
     sky = sky.astype(np.float32)
