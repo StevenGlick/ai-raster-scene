@@ -100,7 +100,7 @@ s = scene(
          'overlays': [{'type': 'caption', 'text': 'The clockwork city', 'at': 'top', 'box': True}]},
         {'x': 22.2, 'y': 26.6, 'height': 0.6, 'look_at': [18.0, 21.5, 1.8], 'fov': 62,
          'post': [{'fx': 'dof', 'focus': 'orrery', 'blur': 1.6}, GLOW]},
-        {'x': 21.0, 'y': 27.8, 'height': 0.5, 'look_at': [26.94, 17.5, 2.0], 'fov': 66, 'post': [GLOW]},
+        {'x': 22.4, 'y': 24.8, 'height': 0.5, 'look_at': [26.94, 18.0, 2.0], 'fov': 66, 'post': [GLOW]},
         {'x': 11.0, 'y': 26.0, 'height': 0.5, 'look_at': [16.7, 17.8, 3.2], 'fov': 68, 'post': [GLOW]},
     ],
     contact_shadows=0.45,
