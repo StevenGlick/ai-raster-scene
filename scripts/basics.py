@@ -737,6 +737,37 @@ def spr_jaguar():
                  cavity=0.35, shadow=0.45, em=em)
 
 
+def spr_goat():
+    """A goat among the ruins, side on, facing left: a compact, deep body on short sturdy legs with
+    dark hooves, a piebald coat of cream and brown, horns swept back over the head, a beard, an
+    ear out sideways and a short tail flicked up."""
+    rng = np.random.default_rng(183)
+    w, h = 50, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x0, x1 in ((19, 18), (36, 37)):                                  # the far legs
+        cv.stroke([(x0, 22), (x0 + 0.5, 30), (x1, h - 2)], 2.4, z=0.2, dome=0.6, taper=(1.3, 0.9), mat=0, tone=-0.12)
+    cv.stroke([(41, 15), (44, 10)], 2.2, z=0.4, dome=0.6, taper=(1.0, 0.6), mat=1)   # the tail
+    cv.ellipse(29, 19, 13.5, 7.5, z=0.6, dome=1.4, mat=0)                # the body
+    cv.stroke([(19, 17), (14, 11)], 6.0, z=0.9, dome=1.0, taper=(1.1, 0.8), mat=0)   # the neck
+    for x0, x1 in ((22, 21), (34, 35)):                                  # the near legs
+        cv.stroke([(x0, 22), (x0 - 0.5, 30), (x1, h - 2)], 2.8, z=1.4, dome=0.8, taper=(1.3, 0.9), mat=0)
+        cv.ellipse(x1 - 0.4, h - 1.6, 1.8, 1.2, z=1.6, dome=0.4, mat=3)  # hooves
+    for x in (18, 37):
+        cv.ellipse(x - 0.4, h - 1.8, 1.5, 1.0, z=0.4, dome=0.3, mat=3)
+    cv.ellipse(10, 10, 5.0, 4.2, z=1.4, dome=1.1, mat=0)                 # the head
+    cv.ellipse(5.6, 12.4, 3.2, 2.4, z=1.6, dome=0.8, mat=0)              # the muzzle
+    cv.stroke([(6, 15), (6.5, 19)], 1.8, z=1.7, dome=0.4, taper=(1.0, 0.5), mat=1)   # the beard
+    cv.stroke([(11, 7), (14, 3), (19, 2.5), (21, 6)], 1.9, z=1.8, dome=0.6, taper=(1.2, 0.5), mat=2)   # horns
+    cv.ellipse(15, 9.5, 2.6, 1.1, z=1.5, dome=0.4, angle=20, mat=0)      # the ear
+    cv.ellipse(8.4, 9.0, 0.9, 0.8, z=2.0, dome=0.2, mat=3)               # the eye
+    coat = (cv.mat == 0) & (cv.id > 0)
+    patch = smooth_noise(w, h, 5, rng, wrap=False) > 0.58                # piebald patches
+    cv.mat[coat & patch] = 1
+    return _prop(cv, [ramp('#d8d0be', dark=0.42, light=1.1), ramp('#7a5434', dark=0.35, light=1.35, warm=0.12),
+                      ramp('#9a8a66', dark=0.4, light=1.3), ramp('#24201c', dark=0.6, light=1.7)], relief=1.0,
+                 cavity=0.35, shadow=0.45)
+
+
 # ---------------------------------------------------------------- props
 
 def spr_barrel():
@@ -1142,6 +1173,6 @@ TEXTURES = {
 SPRITES = {'barrel': spr_barrel, 'broken_barrel': spr_broken_barrel, 'crate': spr_crate, 'fountain': spr_fountain,
            'rowboat': spr_rowboat, 'bench': spr_bench, 'flowers': spr_flowers, 'statue': spr_statue,
            'bed': spr_bed, 'wheelchair': spr_wheelchair, 'table': spr_table, 'chest': spr_chest,
-           'glowshroom': spr_glowshroom, 'buoy': spr_buoy, 'alien_egg': spr_alien_egg, 'jaguar': spr_jaguar,
+           'glowshroom': spr_glowshroom, 'buoy': spr_buoy, 'alien_egg': spr_alien_egg, 'jaguar': spr_jaguar, 'goat': spr_goat,
            'stone_cap': spr_stone_cap}
 SPRITE_HEIGHT = {'stone_cap': 0.44}

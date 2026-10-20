@@ -22,7 +22,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
 | Textures | 158 | 155 | 3 | 0 | 0 |
-| Props | 254 | 252 | 2 | 0 | 0 |
+| Props | 254 | 253 | 1 | 0 | 0 |
 | Characters | 29 | 28 | 1 | 0 | 0 |
 | Decals | 25 | 20 | 5 | 0 | 0 |
 | Skies | 11 | 11 | 0 | 0 | 0 |
@@ -39,7 +39,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 53 | 53 | 0 | 0 | 0 |
-| **all** | **668** | **649** | **19** | **0** | **0** |
+| **all** | **668** | **650** | **18** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -541,7 +541,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 |---|---|---|---|---|
 | `jaguar` | good | 0.34 tall, glows | jungle_temple | Redrawn with the toolkit in basics.py: prowling, side on: a long low body, heavy shoulders, a broad head, rosettes spread over a golden coat, a pale belly; the eyes glow. |
 | `macaw` | good | 0.3 tall | jungle_temple |  |
-| `goat` | polish | 0.34 tall | ancient_ruins | Legs long and stiff. |
+| `goat` | good | 0.34 tall | ancient_ruins | Redrawn with the toolkit in basics.py: compact and deep-bodied on short sturdy legs, a piebald coat, horns swept back, a beard, the tail flicked up. |
 | `crab` | good | 0.08 tall | kelp_forest, tropical_beach |  |
 | `seagull` | good | 0.14 tall, no shadow | tropical_beach |  |
 | `heron` | good | 0.95 tall | bayou | Drawn with the toolkit in swamp.py: a grey heron: long legs, the neck in an S, a yellow dagger of a beak, the black crest. |
@@ -983,6 +983,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the goat.** Redrawn with the toolkit in basics.py (it overrides the old grid), short-legged and piebald; the ancient ruins' images rebuilt. Rated good.
 - **2026-10-19, the sleepwalker's eyes.** `dreamer`: closed eyes; the galleries she appears in are rebuilt. Rated good.
 - **2026-10-19, the capsule hotel.** bar.py: `capsules` and `capsules_lit`. `examples/capsule_hotel.py`: a corridor one cell wide between walls of berths, with four gallery shots.
 - **2026-10-19, the moon jellies and the diver.** Two more aquarium shots: moon jellies glowing in a tank lit low and violet (a tinted `jelly_backdrop`), and the diver behind the glass with a sunbeam on the sand. A sprite behind glass no longer counts as hidden in the render report.
