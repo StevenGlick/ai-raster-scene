@@ -87,8 +87,10 @@ def kelp_forest():
             {'x': 23.0, 'y': 28.0, 'look_at': [13.0, 16.0, 2.2], 'fov': 70, 'height': 1.2},
             {'x': 16.6, 'y': 24.6, 'look_at': [17.6, 19.0, 1.0], 'fov': 64, 'height': 0.9, 'flashlight': True,
              'extra_sprites': night,
-             'overrides': {'sky': 'night', 'ambient': [0.03, 0.06, 0.08], 'lights': [],
-                           'fog': {'color': [0.0, 0.04, 0.06], 'density': 0.04, 'glow': 1.0}}},
+             'overrides': {'sky': 'night', 'ambient': [0.05, 0.09, 0.12],
+                           'lights': [{'x': j['x'], 'y': j['y'], 'z': j['z'], 'radius': 3.0, 'color': [0.55, 0.85, 1.0],
+                                       'intensity': 1.1} for j in night],            # the jellyfish light the water
+                           'fog': {'color': [0.0, 0.05, 0.08], 'density': 0.03, 'glow': 1.0}}},
         ],
         contact_shadows=0.5,
         supersample=2,
