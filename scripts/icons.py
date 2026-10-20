@@ -142,14 +142,15 @@ def get_icon(name, defs=None):
 # the canvas hugs. 'light' (optional) adds a point light at the camera when the item is shown.
 
 VIEWMODELS = {
-    # drawn with the pixel-art toolkit in held.py: a shaded hand round each, out of a coat sleeve
-    'revolver': {'size': (84, 78), 'anchor': 'right', 'draw': 'held.vm_revolver'},
-    'lantern': {'size': (60, 96), 'anchor': 'left', 'draw': 'held.vm_lantern',
+    # modelled in 3D in held.py and seen from the player's eye; their canvases reach the screen's edge,
+    # so the sleeve runs off it
+    'revolver': {'size': (141, 112), 'anchor': 'right', 'draw': 'held.vm_revolver'},
+    'lantern': {'size': (115, 150), 'anchor': 'left', 'draw': 'held.vm_lantern',
                 'light': {'radius': 4.5, 'color': [1.0, 0.72, 0.38], 'intensity': 1.2}},
-    'flashlight': {'size': (70, 80), 'anchor': 'right', 'draw': 'held.vm_flashlight', 'flashlight': True},
-    'axe': {'size': (90, 96), 'anchor': 'right', 'draw': 'held.vm_axe'},
-    'crowbar': {'size': (80, 92), 'anchor': 'right', 'draw': 'held.vm_crowbar'},
-    'torch': {'size': (56, 96), 'anchor': 'left', 'draw': 'held.vm_torch',
+    'flashlight': {'size': (141, 110), 'anchor': 'right', 'draw': 'held.vm_flashlight', 'flashlight': True},
+    'axe': {'size': (141, 150), 'anchor': 'right', 'draw': 'held.vm_axe'},
+    'crowbar': {'size': (141, 150), 'anchor': 'right', 'draw': 'held.vm_crowbar'},
+    'torch': {'size': (115, 150), 'anchor': 'left', 'draw': 'held.vm_torch',
               'light': {'radius': 5.0, 'color': [1.0, 0.6, 0.25], 'intensity': 1.4}},
 }
 
@@ -158,6 +159,14 @@ VIEWMODELS['pistol'] = {'size': (56, 66), 'anchor': 'center', 'draw': 'doomed.vm
                         'fire_light': {'radius': 3.5, 'color': [1.0, 0.72, 0.36], 'intensity': 1.6}}
 VIEWMODELS['shotgun'] = {'size': (84, 78), 'anchor': 'center', 'draw': 'doomed.vm_shotgun',
                          'fire_light': {'radius': 4.5, 'color': [1.0, 0.72, 0.36], 'intensity': 2.0}}
+
+
+def viewmodel_origin(W, H, w, h, side, x_offset=0, y_offset=0):
+    """Where a held item's w x h canvas goes on a W x H frame: a right-hand item's left edge at 56% of
+    the width, a left-hand item's right edge at 36%, a centred one in the middle, its foot on the bottom
+    edge. held.py renders its models for this placement, so their perspective is the player's."""
+    x0 = {'right': int(W * 0.56), 'left': int(W * 0.36) - w, 'center': (W - w) // 2}[side] + int(x_offset)
+    return x0, H - h + int(y_offset)
 
 
 def get_viewmodel(name, defs=None, fire=False):

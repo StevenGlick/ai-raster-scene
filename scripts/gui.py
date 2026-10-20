@@ -660,9 +660,8 @@ def draw_viewmodel(img, ov, ctx):
         em = np.asarray(Image.fromarray((em * 255).astype(np.uint8)).resize(im.size, Image.NEAREST), np.float32) / 255
     H, W = img.shape[:2]
     h, w = rgba.shape[:2]
-    side = ov.get('side', v.get('anchor', 'right'))
-    x0 = {'right': int(W * 0.56), 'left': int(W * 0.36) - w, 'center': (W - w) // 2}[side] + int(ov.get('x_offset', 0))
-    y0 = H - h + int(ov.get('y_offset', 0))
+    x0, y0 = icons.viewmodel_origin(W, H, w, h, ov.get('side', v.get('anchor', 'right')),
+                                    ov.get('x_offset', 0), ov.get('y_offset', 0))
     sx0, sy0 = max(0, -x0), max(0, -y0)
     x1, y1 = min(W, x0 + w), min(H, y0 + h)
     if x1 <= max(0, x0) or y1 <= max(0, y0):

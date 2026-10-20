@@ -377,6 +377,9 @@ def catalog(path):
         im = Image.fromarray((rgba * 255).astype(np.uint8), 'RGBA')
         x = i * (sheet.width // len(vnames)) + 8
         bg = Image.new('RGB', (sheet.width // len(vnames) - 12, 110), (60, 60, 70))
+        k = min(1.0, bg.width / im.width, bg.height / im.height)       # the big ones, shrunk to fit
+        if k < 1:
+            im = im.resize((max(1, int(im.width * k)), max(1, int(im.height * k))), Image.BOX)
         bg.paste(im, ((bg.width - im.width) // 2, 110 - im.height), im)
         big.paste(bg, (x, oy))
         d.text((x, oy + 112), n, fill=(220, 220, 220))

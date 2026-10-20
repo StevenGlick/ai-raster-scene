@@ -535,7 +535,7 @@ The pixel font covers printable ASCII. Curly quotes, dashes, ellipses and no-bre
 
 **Icons** (16x16, used by toast/hotbar/inventory/panel/counter/image): revolver, bolt_cutters, screwdriver, crowbar, wrench, lockpick, hammer, axe, key, iron_key, note, idol, amulet, tonic, ammo, dispel, lantern, flashlight, fuel, boards, book, map, gear, skull, plus pointers `pointer` and `hand_pointer`. Any sprite name also works as an icon.
 
-**Held items** (`viewmodel`): revolver, lantern, flashlight, axe, crowbar, torch (each in a shaded hand coming out of a coat sleeve), pistol, shotgun (the last two held out in the middle of the view, 1993-style). The lantern and torch add a point light at the camera automatically (`"light": false` to disable); the flashlight turns the flashlight cone on unless the shot sets it.
+**Held items** (`viewmodel`): revolver, lantern, flashlight, axe, crowbar, torch (modelled in 3D and seen from the player's eye - the revolver from behind, its barrel running away into the view; each hand from the holder's side, its sleeve running off the edge of the screen), pistol, shotgun (the last two held out in the middle of the view, 1993-style). The lantern and torch add a point light at the camera automatically (`"light": false` to disable); the flashlight turns the flashlight cone on unless the shot sets it.
 
 **Custom icons and held items** use draw ops, then get an automatic 1px dark outline:
 ```json

@@ -847,12 +847,12 @@ Named groups placed with one line (`scripts/prefabs.py`).
 
 | item | status | used in | notes |
 |---|---|---|---|
-| `revolver` | good | gui_hud, rainy_street | Redrawn in held.py with the pixel-art toolkit: four fingers wrapped round it, light on the knuckles, a thumb laid over, out of a dark coat sleeve with a shirt cuff. |
-| `lantern` | good | gui_lantern, woodland_night | Redrawn in held.py with the pixel-art toolkit: four fingers wrapped round it, light on the knuckles, a thumb laid over, out of a dark coat sleeve with a shirt cuff. |
-| `flashlight` | good | bunker_lab, derelict_ship, sewer_tunnels | Redrawn in held.py with the pixel-art toolkit: four fingers wrapped round it, light on the knuckles, a thumb laid over, out of a dark coat sleeve with a shirt cuff. |
-| `axe` | good | - | Redrawn in held.py with the pixel-art toolkit: four fingers wrapped round it, light on the knuckles, a thumb laid over, out of a dark coat sleeve with a shirt cuff. |
-| `crowbar` | good | - | Redrawn in held.py with the pixel-art toolkit: four fingers wrapped round it, light on the knuckles, a thumb laid over, out of a dark coat sleeve with a shirt cuff. |
-| `torch` | good | - | Redrawn in held.py with the pixel-art toolkit: four fingers wrapped round it, light on the knuckles, a thumb laid over, out of a dark coat sleeve with a shirt cuff. |
+| `revolver` | good | gui_hud, rainy_street | Modelled in 3D in held.py (sculpt.py) and seen from the player's eye: the hand from the holder's side (the back of the hand, the thumb, the top of the index finger), the sleeve running off the screen. |
+| `lantern` | good | gui_lantern, woodland_night | Modelled in 3D in held.py (sculpt.py) and seen from the player's eye: the hand from the holder's side (the back of the hand, the thumb, the top of the index finger), the sleeve running off the screen. |
+| `flashlight` | good | bunker_lab, derelict_ship, sewer_tunnels | Modelled in 3D in held.py (sculpt.py) and seen from the player's eye: the hand from the holder's side (the back of the hand, the thumb, the top of the index finger), the sleeve running off the screen. |
+| `axe` | good | - | Modelled in 3D in held.py (sculpt.py) and seen from the player's eye: the hand from the holder's side (the back of the hand, the thumb, the top of the index finger), the sleeve running off the screen. |
+| `crowbar` | good | - | Modelled in 3D in held.py (sculpt.py) and seen from the player's eye: the hand from the holder's side (the back of the hand, the thumb, the top of the index finger), the sleeve running off the screen. |
+| `torch` | good | - | Modelled in 3D in held.py (sculpt.py) and seen from the player's eye: the hand from the holder's side (the back of the hand, the thumb, the top of the index finger), the sleeve running off the screen. |
 | `pistol` | good | doomed | Drawn in doomed.py: held out in the middle of the view: a fist round the grip, the slide from behind with its sights; `fire` adds a muzzle flash. |
 | `shotgun` | good | doomed | Drawn in doomed.py: a pump shotgun in the middle: the receiver, the barrel running away to its bead, a hand on the wooden pump; `fire` adds a flash. |
 
@@ -1062,6 +1062,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-20, held items in 3D.** The six held items were drawn from the wrong side - the hand facing the player, the revolver muzzle-on. Now each is a small 3D model (scripts/sculpt.py: rounded primitives as distance fields, ray-marched from the eye, painted on the colour ramps with dithering, contour lines and an outline) posed in a hand and seen as its holder sees it; their canvases reach the screen edge so the sleeve runs off it.
 - **2026-10-20, the polish list.** The six held items redrawn in held.py (a shaded hand of four fingers, knuckles and a thumb, out of a coat sleeve); `stain`, `stain_rust` and `moss_patch` redrawn; `bamboo`, `thatch`, `canopy` and the `islands` skyline touched up; `foam`, `foam_glow` and the `plaster` facade style judged fine. Nothing is left on the polish list.
 - **2026-10-20, salt piles and the aurora.** `salt_mound` redrawn round-topped and smaller (0.22), with `salt_heap`, `salt_pile` and `salt_clods` beside it - the salt flat's rows now mix them, no two the same size. The `aurora` varied: rays of every width and height in bundles, a pleated ribbon, red-tipped rays, a high arc. Reflections: a still mirror (`smear` under 1) now mirrors each thing about its own foot.
 - **2026-10-20, second passes.** `aurora_shore` re-shot from the lake's western shore: the palace and its spires under the aurora, a pine and the ice edge framing it (it was a dark view with the palace small on the horizon).
