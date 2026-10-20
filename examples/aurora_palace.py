@@ -75,7 +75,7 @@ s = scene(
          'overlays': [{'type': 'caption', 'text': 'The aurora palace', 'at': 'top', 'box': True}]},
         {'x': 23.5, 'y': 24.5, 'height': 0.45, 'look_at': [23.5, 12.0, 3.0], 'fov': 72, 'post': [GLOW]},
         {'x': 23.5, 'y': 11.4, 'height': 0.45, 'look_at': 'throne', 'fov': 62, 'post': [GLOW]},
-        {'x': 14.0, 'y': 50.0, 'height': 0.35, 'look_at': [30.0, 36.0, 1.6], 'fov': 74, 'post': [GLOW]},
+        {'x': 7.5, 'y': 34.0, 'height': 0.35, 'look_at': [24.0, 11.0, 4.0], 'fov': 74, 'post': [GLOW]},
     ],
     contact_shadows=0.3,
     supersample=2,

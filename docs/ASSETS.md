@@ -1059,6 +1059,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-20, second passes.** `aurora_shore` re-shot from the lake's western shore: the palace and its spires under the aurora, a pine and the ice edge framing it (it was a dark view with the palace small on the horizon).
 - **2026-10-20, the clockwork city.** `scripts/clockwork.py`: `brass_plate`, `copper_pipes`, `clock_face`, `brass_gear`, `great_clock`. `examples/clockwork_city.py` with four gallery shots; its orrery is brass wireframes.
 - **2026-10-20, the aurora palace.** `scripts/icepalace.py`: the `aurora` sky (drawn into the panorama by `draw_aurora`), `ice_block`, `frost_wall`, `ice_floor`, `ice_spire`, `ice_throne`, `icicles`, `ice_shards`. `examples/aurora_palace.py` with four gallery shots.
 - **2026-10-20, the glowing jungle.** `scripts/glowjungle.py`: glowing variants of the jungle plants (a rim of light round every leaf, flowers by their colour), `glow_pods`, the `glow_jungle` fringe, `glow_leaves`, `lumen_floor`, `glow_water`. `examples/glow_jungle.py` with four gallery shots.

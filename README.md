@@ -295,7 +295,7 @@ A palace of ice on the shore of a frozen lake, under the aurora: curtains of gre
 | | |
 |---|---|
 | ![The ice palace across the frozen lake, the aurora over it and doubled in the ice](docs/gallery/aurora_lake.png) | ![The gate between two towers of ice, the aurora glowing over the courtyard](docs/gallery/aurora_gate.png) |
-| ![A throne of ice in a hall walled in frost, the queen beside it, the aurora overhead](docs/gallery/aurora_throne.png) | ![The aurora doubled in the frozen lake from its shore, the palace dark on the horizon](docs/gallery/aurora_shore.png) |
+| ![A throne of ice in a hall walled in frost, the queen beside it, the aurora overhead](docs/gallery/aurora_throne.png) | ![The palace across the frozen lake from its western shore, the aurora over its spires and doubled in the ice](docs/gallery/aurora_shore.png) |
 
 ## The glowing jungle
 
