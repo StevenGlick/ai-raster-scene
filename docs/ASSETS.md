@@ -38,8 +38,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 16 | 16 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 48 | 47 | 1 | 0 | 0 |
-| **all** | **613** | **592** | **21** | **0** | **0** |
+| Example scenes | 48 | 48 | 0 | 0 | 0 |
+| **all** | **613** | **593** | **20** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -88,7 +88,7 @@ Weakest first, and in the order the new scenes need them.
 
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
-| `wood_panel` | good |  | drowned_library, haunted_house | Redrawn with the toolkit in basics.py: stiles and rails framing two raised panels per unit, all one dark wood, the bevels catching the light, figure streaked along the grain. |
+| `wood_panel` | good |  | drowned_library, haunted_house, mansion_library | Redrawn with the toolkit in basics.py: stiles and rails framing two raised panels per unit, all one dark wood, the bevels catching the light, figure streaked along the grain. |
 | `planks` | good |  | bayou, ghost_town, kelp_forest, winter_woods |  |
 | `boards` | good |  | bayou, coast_lighthouse, ghost_town, kelp_forest, rain_alley, tropical_beach |  |
 | `logs` | good |  | coast_lighthouse, winter_lake |  |
@@ -183,7 +183,7 @@ Weakest first, and in the order the new scenes need them.
 |---|---|---|---|---|
 | `acoustic` | good |  | ghost_corridor, gui_hud, hospital_corridor | Redrawn with the toolkit in basics.py: four bevelled tiles a unit in a grid of runners, pitted with fissures and pin-holes, a water stain. |
 | `ceiling_plaster` | good |  | gui_themes, gui_trade, library_medium | Redrawn with the toolkit in basics.py: the plaster render in a darker tone, with no band across it. |
-| `beams` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, haunted_house, mansion_library | Redrawn with the toolkit in basics.py: two oak beams a unit, proud of the limewash: a lit edge, a side in shadow and a soft shadow on the plaster; grain and checks. |
+| `beams` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, haunted_house | Redrawn with the toolkit in basics.py: two oak beams a unit, proud of the limewash: a lit edge, a side in shadow and a soft shadow on the plaster; grain and checks. |
 
 ### Fabric and interior
 
@@ -276,25 +276,25 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
-| `armchair` | good | 0.6 tall | claude_study, haunted_house |  |
+| `armchair` | good | 0.6 tall | claude_study, haunted_house, mansion_library |  |
 | `bed` | good | 0.4 tall | bunker_lab, ghost_corridor, gui_hud, hospital_corridor | Redrawn with the toolkit in basics.py: an iron bedstead with uprights, a mattress in white sheets, a pillow, a grey blanket turned back, castors. |
 | `bench` | good | 0.35 tall | coast_lighthouse, garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, village_green | Redrawn with the toolkit in basics.py: three backrest slats and two in the seat, held in cast-iron ends with scrolled armrests and curving legs. |
-| `book_stack` | good | 0.22 tall | claude_study, drowned_library |  |
+| `book_stack` | good | 0.22 tall | claude_study, drowned_library, mansion_library |  |
 | `chest` | good | 0.3 tall | castle_keep, kelp_forest | Redrawn with the toolkit in basics.py: oak planks under a rounded lid, iron straps studded with rivets, iron corners, a brass lock plate. |
 | `console` | good | 0.85 tall, glows | bunker_lab, orbital_hangar, space_station |  |
 | `crate` | good | 0.4 tall | bunker_lab, coast_lighthouse, ghost_town, gui_lantern, gui_themes, gui_trade, hospital_corridor, library_medium, mansion_library, neon_street, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway, village_green, winter_lake, woodland_night | Redrawn with the toolkit in basics.py: planks behind battens and a diagonal brace, nails at the corners, a stencilled arrow. |
 | `barrel` | good | 0.45 tall | bayou, bunker_lab, coast_lighthouse, ghost_town, gui_lantern, gui_themes, gui_trade, library_medium, mansion_library, neon_street, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway, village_green | Redrawn with the toolkit in basics.py: bulging staves turned on a lathe, three iron hoops, the lid showing at the top. |
 | `locker` | good | 1 tall | bunker_lab |  |
 | `lectern` | good | 0.5 tall | chapel_graveyard |  |
-| `open_book` | good | 0.12 tall, glows, no shadow | claude_study, drowned_library |  |
+| `open_book` | good | 0.12 tall, glows, no shadow | claude_study, drowned_library, mansion_library |  |
 | `pew` | good | 0.42 tall | cathedral_ruin, chapel_graveyard |  |
 | `table` | good | 0.36 tall | castle_keep | Redrawn with the toolkit in basics.py: a thick top with grain along it, an apron, turned legs, the far pair darker. |
 | `throne` | good | 0.95 tall | castle_keep |  |
 | `wheelchair` | good | 0.45 tall | ghost_corridor, gui_hud, hospital_corridor | Redrawn with the toolkit in basics.py: side on: a big spoked wheel with its push rim, a caster, leather seat and back, armrest, handles, footrest. |
-| `writing_desk` | good | 0.55 tall, glows | claude_study, drowned_library |  |
-| `globe` | good | 0.45 tall | claude_study, drowned_library |  |
+| `writing_desk` | good | 0.55 tall, glows | claude_study, drowned_library, mansion_library |  |
+| `globe` | good | 0.45 tall | claude_study, drowned_library, mansion_library |  |
 | `orrery` | good | 0.6 tall, glows | claude_study |  |
-| `telescope` | good | 0.8 tall | claude_study |  |
+| `telescope` | good | 0.8 tall | claude_study, mansion_library |  |
 | `painting` | good | 0.45 tall, no shadow | - |  |
 | `wall_clock` | good | 0.28 tall, no shadow | bunker_lab, hall_of_doors, rainy_street |  |
 | `banner` | good | 0.95 tall, no shadow | castle_keep, rainy_street |  |
@@ -313,10 +313,10 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `candles` | good | 0.2 tall, glows, no shadow | castle_keep, cathedral_ruin, chapel_graveyard, drowned_library, gui_lantern, gui_themes, gui_trade, jungle_temple, library_medium, mansion_library, tunnel_encounter, underground_waterway |  |
 | `ceiling_lamp` | good | 0.3 tall, glows, no shadow | bunker_lab, sewer_tunnels |  |
 | `chandelier` | good | 0.45 tall, glows, no shadow | castle_keep, claude_study, haunted_house |  |
-| `cobweb` | good | 0.9 tall, no shadow | haunted_house | Drawn with the toolkit in haunted.py: threads radiating from a corner with sagging spiral rings, a broken strand; translucent. |
-| `candelabra` | good | 1.2 tall, glows, aura | castle_keep, haunted_house | Drawn with the toolkit in haunted.py: a turned brass stem on a tripod foot, five curved arms with candles burning, wax run down them; aura. |
-| `portrait` | good | 0.75 tall, glows, no shadow | haunted_house | Drawn with the toolkit in haunted.py: an oval beaded gilt frame round a pale, unsmiling face, black coat and white collar; the eyes glow faintly. |
-| `grandfather_clock` | good | 1.6 tall | haunted_house | Drawn with the toolkit in haunted.py: a mahogany case: hood with a broken pediment and finial, a dial near midnight, a glass door on the pendulum. |
+| `cobweb` | good | 0.9 tall, no shadow | haunted_house, mansion_library | Drawn with the toolkit in haunted.py: threads radiating from a corner with sagging spiral rings, a broken strand; translucent. |
+| `candelabra` | good | 1.2 tall, glows, aura | castle_keep, haunted_house, mansion_library | Drawn with the toolkit in haunted.py: a turned brass stem on a tripod foot, five curved arms with candles burning, wax run down them; aura. |
+| `portrait` | good | 0.75 tall, glows, no shadow | haunted_house, mansion_library | Drawn with the toolkit in haunted.py: an oval beaded gilt frame round a pale, unsmiling face, black coat and white collar; the eyes glow faintly. |
+| `grandfather_clock` | good | 1.6 tall | haunted_house, mansion_library | Drawn with the toolkit in haunted.py: a mahogany case: hood with a broken pediment and finial, a dial near midnight, a glass door on the pendulum. |
 | `balustrade` | good | 0.5 tall | haunted_house | Drawn with the toolkit in haunted.py: turned balusters every eighth of a unit between handrail and base rail, newel posts; three units a card. |
 | `lamp_post` | good | 1.6 tall, glows | garden_encounter, gui_menus, hospital_garden, post_presets, rain_alley, rainy_street | Thin at a distance. |
 | `lantern` | good | 0.3 tall, glows, no shadow | bayou, chapel_graveyard, coast_lighthouse, garden_encounter, ghost_town, gui_lantern, gui_menus, gui_themes, gui_trade, library_medium, mansion_library, post_presets, tunnel_encounter, underground_waterway, village_green, winter_lake, winter_woods, woodland_night |  |
@@ -440,7 +440,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `paper_boat` | good | 0.3 tall | dream_chess, hall_of_doors | Drawn with the toolkit in dream.py: folded planes, a peak and a crease. |
 | `jellyfish` | good | 0.9 tall, glows, no shadow | drowned_library, kelp_forest | A bell of light frilled at the rim, oral arms and tentacles; additive and glowing, no shadow. |
 | `sky_lantern` | good | 0.34 tall, glows, aura, no shadow | drowned_library, hall_of_doors | Drawn with the toolkit in dream.py: a tapering paper shade lit from inside, the flame at its foot, a wire ring; aura. |
-| `book_fly` | good | 0.3 tall, no shadow | drowned_library, hall_of_doors | Drawn with the toolkit in dream.py: an open book with its covers raised as wings and its pages fanned. |
+| `book_fly` | good | 0.3 tall, no shadow | drowned_library, hall_of_doors, mansion_library | Drawn with the toolkit in dream.py: an open book with its covers raised as wings and its pages fanned. |
 | `chess_pawn` | good | 0.9 tall | dream_chess, dream_world | Drawn with the toolkit in dream.py: a turned marble pawn (lathe profile), faint veins. Tint dark for the other side. |
 | `door_frame` | good | 1.1 tall | dream_chess, dream_world, hall_of_doors |  |
 | `floating_rock` | good | 1.6 tall, no shadow | dream_world |  |
@@ -555,7 +555,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `scientist` | good | bunker_lab, coast_lighthouse, gui_lantern, orbital_hangar, tunnel_encounter |  |
 | `guard` | good | garden_encounter, gui_menus, post_presets, rain_alley, rainy_street |  |
 | `nurse` | good | ghost_corridor, gui_hud |  |
-| `spiritualist` | good | cathedral_ruin, chapel_graveyard, gui_themes, gui_trade, library_medium |  |
+| `spiritualist` | good | cathedral_ruin, chapel_graveyard, gui_themes, gui_trade, library_medium, mansion_library |  |
 | `ghost` | good | chapel_graveyard, garden_encounter, ghost_corridor, ghost_town, gui_hud, gui_menus, haunted_house, post_presets, woodland_night |  |
 | `hybrid` | good | gui_lantern, sewer_tunnels, tunnel_encounter |  |
 | `soldier` | good | castle_keep |  |
@@ -851,7 +851,7 @@ The environments, judged on their gallery images and shots.
 | `hospital_corridor` | good | 3 | - | An empty corridor; the second shot is very dark. |
 | `hospital_garden` | good | 3 | hospital_garden_01 |  |
 | `library_medium` | good | 1 | library_medium |  |
-| `mansion_library` | polish | 2 | - | Wide and empty: the shelves are far off and the beamed ceiling becomes radiating stripes. |
+| `mansion_library` | good | 2 | - | Taller, under a panelled ceiling (the beams radiated as stripes), shelves two storeys high, furnished: a desk and reader, armchair, globe, telescope, clock, candelabras, books flying. |
 | `haunted_house` | good | 4 | haunted_front, haunted_hall, haunted_parlour, haunted_ghost | Halloween at the old house: the front with jack-o'-lanterns and bats, the hall's grand stair and landing, the parlour, the ghost on the stairs. |
 | `tunnel_encounter` | good | 2 | tunnel_01 |  |
 | `underground_waterway` | good | 4 | waterway_01 | A thinner fog with halos and lanterns at the far end: the channel recedes into lit stone, the boat and its reflection read. |
@@ -928,6 +928,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, the occult library.** mansion_library: raised to 2 units under a panelled ceiling, shelves two storeys high, and furnished - a reading desk with the spiritualist at it, an armchair, a globe, a telescope, the grandfather clock, lit candelabras, a portrait, cobwebs, books flying. Every example scene is now rated good.
 - **2026-10-19, the hall of doors.** dream.py: `door_hall`. `examples/hall_of_doors.py`: doors in every wall at every storey and in the ceiling, tinted per cell, a few open onto the sky, with four gallery shots.
 - **2026-10-19, the waterway.** underground_waterway: a thinner fog with `glow`, lanterns at the far end, so the channel reads in depth. winter_lake and coast_lighthouse re-rated good: their ice, snow, sand, water and rocks were all redrawn earlier today.
 - **2026-10-19, the fallen roof.** cathedral_ruin: rafters across the hole in the roof (`log` cards at the ceiling) with ivy hanging from its edges, column drums, a broken column and rubble under it, grass in the light, and the beam shot moved out of the pews into the aisle.
