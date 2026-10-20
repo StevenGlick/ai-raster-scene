@@ -685,7 +685,8 @@ Presets: `crt`, `crt_amber`, `crt_green`, `vhs`, `gameboy`, `cga`, `ega`, `night
 | effect | stage | parameters (defaults) |
 |---|---|---|
 | `grade` | world | `exposure` 1, `brightness` 0, `contrast` 1, `saturation` 1, `gamma` 1, `tint` [r,g,b], `lift` [r,g,b] |
-| `bloom` | world | `threshold` 0.65, `strength` 0.6, `radius` 6, `color` |
+| `bloom` | world | `source` "image" or "light" (see below), `threshold` 0.65 (0 for light), `strength` 0.6 (0.8 for light), `radius` 6 (4 for light), `spread` (0-1: the share of the glow in a wide halo), `color` |
+| `dof` | world (lens) | depth of field: `focus` (a distance, a sprite's id, or left out to focus on the shot's `look_at`), `blur` 2.5 (the widest blur, in pixels), `range` 0.1 (0-1: widens the band that stays sharp) |
 | `vignette` | world | `strength` 0.5, `radius` 0.7, `color` |
 | `grain` | world | `amount` 0.06, `color` false |
 | `rain` | world | `density` 1, `length` 7 (pixels, for a drop two units away), `angle` 12, `opacity` 0.35, `color` |
@@ -711,6 +712,10 @@ Presets: `crt`, `crt_amber`, `crt_green`, `vhs`, `gameboy`, `cga`, `ega`, `night
 | `scanlines` | display | `strength` 0.28 |
 
 Palettes: `gameboy`, `cga`, `cga_warm`, `ega`, `amber`, `phosphor`, `sepia`, `mono`, `bone` (ramp palettes map by brightness), an integer for an adaptive palette (default 256), or a list of hex colours. Few-colour palettes stretch the frame's tonal range first (`auto_levels`) so dark scenes keep detail. `seed` (scene or shot) changes the random pattern of grain, rain, snow and VHS noise.
+
+**Bloom from light.** `"source": "image"` (the default) blooms whatever is bright in the finished frame, a pale wall as much as a lamp. `"source": "light"` blooms only what gives off light: emissive texels (lit windows, neon, screens, runes), glowing sprites and their flames, auras, a sun or moon disc - and their reflections in wet ground and water - read from an emission buffer the renderer keeps beside the frame. The glow is blurred in float at three widths, a tight core and a halo `spread` wide, so it can go far stronger without washing the walls out: `{"fx": "bloom", "source": "light", "strength": 2.4, "radius": 2.5, "spread": 0.6}` makes a neon street glow (see `examples/neon_street.py`).
+
+**Depth of field.** `{"fx": "dof"}` keeps the frame sharp at the focus and softens it nearer and farther, as a lens wide open does: the blur grows with the difference between 1/distance and 1/focus, so it is greatest at the horizon and at half the focus distance. The background is gathered only from pixels at or beyond the focus, so a sharp subject never smears into it; a soft foreground spreads past its edges over what is behind. Lens effects run first, whatever their place in the list, and a held item (`viewmodel`) is drawn after them, so it stays sharp. Left without a `focus` it focuses where the shot looks (`look_at`); give a close shot of a character `"blur": 2-3` and the street behind melts into soft light (see the samurai in `examples/night_market.py` and the cat in `examples/neon_rooftop.py`).
 
 **Weather.** The weather effects place their particles in the world in front of the camera. A drop or flake has a real depth: it hides behind anything nearer, shrinks and fades with distance, and fades into the scene's fog. Rain, snow, leaves, ash, dust and splashes never fall under a roof, so the inside of a doorway stays dry. Embers, fireflies and spores glow and go anywhere. Pair rain with `"wet"`, and with `splashes` for a downpour. A heavy shower reads better with a little `ground` fog and `glow`, so the lamps get halos.
 

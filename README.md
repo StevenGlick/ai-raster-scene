@@ -240,7 +240,7 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **First-person held items**: revolver, lantern, flashlight, axe, crowbar, torch, lit by the scene; the lantern and torch cast their own light
 - **24 item icons** and a draw-op format (with automatic outlines) for new icons and held items
 - **Weather**: rain, snow, splashes, ash, embers, autumn leaves, fireflies, glowing spores and blowing dust, placed in the world rather than painted over it - hidden behind walls, kept out from under roofs, shrinking and fading into the fog with distance - plus wet ground that mirrors the lamps
-- **Post-processing**: colour grading, bloom, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
+- **Post-processing**: colour grading, bloom (from the whole frame, or only from what gives off light - neon, windows, flames, the sun - so it can glow hard), depth of field that focuses on the shot's subject, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
 - **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
 - **Pixel art drawn in code**: the jungle, ruins and beach are built from shapes - leaves, stones, planks, blades of grass, carved glyphs - stamped into a height field, lit from one direction, and snapped onto hue-shifted colour ramps with dark edges on their shadow sides (`scripts/pixelart.py`), so they read as pixel art rather than noise
 - **No assets to download**: all 158 textures, 254 props, 29 characters, 25 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
@@ -278,6 +278,12 @@ One frame, twelve looks: none, crt, vhs, gameboy, nightvision, old_photo, storm 
 ```json
 "post": ["storm", {"fx": "lightning", "x": 0.7}, "crt"]
 ```
+
+Bloom can come from light sources alone, so neon glows hard and walls stay walls, and depth of field puts the subject in focus and melts the street behind it into soft light.
+
+| | |
+|---|---|
+| ![A street samurai in focus under a clear umbrella, the market behind melted into soft neon](docs/gallery/market_samurai.png) | ![A black cat on a ledge in focus, the neon canyon below blurred into glowing shapes](docs/gallery/rooftop_cat.png) |
 
 ## Install
 

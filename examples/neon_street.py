@@ -27,7 +27,7 @@ PINK, CYAN, GOLD, VIOLET = [1.0, 0.3, 0.7], [0.3, 0.9, 1.0], [1.0, 0.75, 0.3], [
 glows = [(11.2, 40.0, PINK), (18.8, 35.0, CYAN), (11.2, 30.0, VIOLET), (18.8, 25.0, PINK), (11.2, 20.0, CYAN),
          (18.8, 15.0, GOLD), (11.2, 10.0, PINK), (18.8, 8.0, CYAN)]
 RAIN = [{'fx': 'rain', 'density': 0.7, 'length': 8, 'opacity': 0.26, 'angle': 10}, {'fx': 'splashes', 'density': 0.6},
-        {'fx': 'bloom', 'threshold': 0.55, 'strength': 0.7, 'radius': 6},
+        {'fx': 'bloom', 'source': 'light', 'strength': 2.4, 'radius': 2.5, 'spread': 0.6},
         {'fx': 'grade', 'saturation': 1.1, 'tint': [1.02, 0.95, 1.06]}]
 
 s = scene(

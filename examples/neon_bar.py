@@ -23,7 +23,7 @@ g.rect(4, 2, 7, 3, 'R')                              # the reef tank, let into t
 g.rect(5, 3, 6, 3, 'A')
 
 PINK, CYAN, VIOLET, WARM = [1.0, 0.3, 0.7], [0.3, 0.9, 1.0], [0.65, 0.45, 1.0], [1.0, 0.72, 0.42]
-BLOOM = [{'fx': 'bloom', 'threshold': 0.6, 'strength': 0.6, 'radius': 5}]
+BLOOM = [{'fx': 'bloom', 'source': 'light', 'strength': 2.0, 'radius': 2.5, 'spread': 0.6}]
 water = {'tint': [0.62, 0.88, 1.0], 'opacity': 0.08, 'blur': 0, 'fog': True}
 sprites = [
     {'x': 6.0, 'y': 4.0, 'type': 'glass_pane', 'angle': 0, 'length': 2.0, 'scale': 1.3, 'glass': water},
@@ -89,7 +89,7 @@ s = scene(
         {'x': 2.6, 'y': 6.3, 'look_at': 'bartender', 'fov': 56, 'post': BLOOM,
          'overlays': [{'type': 'dialog', 'portrait': 'android', 'name': 'Bartender',
                        'text': 'Your man was in an hour ago. Sat by the fish. Paid in real money.'}]},
-        {'x': 4.85, 'y': 8.45, 'look_at': 'regular', 'fov': 52, 'post': BLOOM,
+        {'x': 4.85, 'y': 8.45, 'look_at': 'regular', 'fov': 52, 'post': [{'fx': 'dof', 'blur': 2.0}] + BLOOM,
          'overlays': [{'type': 'bubble', 'anchor': 'regular', 'name': 'Hacker',
                        'text': "Don't look at the screen. It looks back."}]},
     ],

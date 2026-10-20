@@ -509,9 +509,10 @@
    "post": [
     {
      "fx": "bloom",
-     "threshold": 0.6,
-     "strength": 0.6,
-     "radius": 5
+     "source": "light",
+     "strength": 2.0,
+     "radius": 2.5,
+     "spread": 0.6
     }
    ],
    "overlays": [
@@ -535,9 +536,10 @@
    "post": [
     {
      "fx": "bloom",
-     "threshold": 0.6,
-     "strength": 0.6,
-     "radius": 5
+     "source": "light",
+     "strength": 2.0,
+     "radius": 2.5,
+     "spread": 0.6
     }
    ]
   },
@@ -553,9 +555,10 @@
    "post": [
     {
      "fx": "bloom",
-     "threshold": 0.6,
-     "strength": 0.6,
-     "radius": 5
+     "source": "light",
+     "strength": 2.0,
+     "radius": 2.5,
+     "spread": 0.6
     }
    ]
   },
@@ -567,9 +570,10 @@
    "post": [
     {
      "fx": "bloom",
-     "threshold": 0.6,
-     "strength": 0.6,
-     "radius": 5
+     "source": "light",
+     "strength": 2.0,
+     "radius": 2.5,
+     "spread": 0.6
     }
    ],
    "overlays": [
@@ -588,10 +592,15 @@
    "fov": 52,
    "post": [
     {
+     "fx": "dof",
+     "blur": 2.0
+    },
+    {
      "fx": "bloom",
-     "threshold": 0.6,
-     "strength": 0.6,
-     "radius": 5
+     "source": "light",
+     "strength": 2.0,
+     "radius": 2.5,
+     "spread": 0.6
     }
    ],
    "overlays": [

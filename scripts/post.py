@@ -65,7 +65,8 @@ PRESETS = {
 
 WORLD = {'grade', 'bloom', 'vignette', 'grain', 'rain', 'snow', 'lightning', 'letterbox', 'hurt', 'fade',
          'splashes', 'embers', 'fireflies', 'spores', 'ash', 'leaves', 'dust',
-         'pixelate', 'posterize', 'gradient_map'}
+         'pixelate', 'posterize', 'gradient_map', 'dof'}
+LENS = {'dof'}      # run first, on the bare frame: a held item drawn after them stays sharp
 DISPLAY = {'crt', 'vhs', 'chromatic', 'scanlines'}
 
 
@@ -108,6 +109,31 @@ def _lum(img):
     return img[..., 0] * 0.299 + img[..., 1] * 0.587 + img[..., 2] * 0.114
 
 
+def _box(a, w, axis):
+    """A box blur `w` wide (odd) along one axis, edges clamped, in float."""
+    h = w // 2
+    pad = [(0, 0)] * a.ndim
+    pad[axis] = (h + 1, h)
+    c = np.cumsum(np.pad(a, pad, mode='edge'), axis=axis, dtype=np.float64)
+    n = a.shape[axis]
+    hi = np.take(c, np.arange(w, w + n), axis=axis)
+    lo = np.take(c, np.arange(0, n), axis=axis)
+    return ((hi - lo) / w).astype(np.float32)
+
+
+def _fblur(img, r):
+    """A Gaussian blur of radius (sigma) `r` that stays in float: three box blurs each way, which is
+    as smooth to the eye and keeps the faint ends of a glow from banding in 8 bits."""
+    if r < 0.35:
+        return np.asarray(img, np.float32).copy()
+    w = max(1, int(round(np.sqrt(4 * r * r + 1))) | 1)
+    out = np.asarray(img, np.float32)
+    for axis in (0, 1):
+        for _ in range(3):
+            out = _box(out, w, axis)
+    return out
+
+
 # ------------------------------------------------------------------ world stage
 
 def fx_grade(img, p, ctx):
@@ -128,10 +154,85 @@ def fx_grade(img, p, ctx):
 
 
 def fx_bloom(img, p, ctx):
-    thr = float(p.get('threshold', 0.65))
-    bright = np.clip(img - thr, 0, 1) / max(1e-3, 1 - thr)
-    glow = _blur(bright, float(p.get('radius', 6)))
-    return img + glow * float(p.get('strength', 0.6)) * _rgb(p.get('color', [1, 1, 1]))
+    """Glow round bright things. `source` "image" (the default) blooms whatever is bright in the
+    frame above `threshold`; "light" blooms only what gives off light - neon, lit windows, screens,
+    flames, lamps, a sun or moon disc, and their reflections in wet ground (the renderer's emission
+    buffer) - so a white wall stays a white wall and the glow can go much stronger. `spread` (0-1)
+    sends that share of the glow into a wide halo round the tight core; with it, or with "light",
+    the glow is blurred in float in three widths."""
+    source = p.get('source', 'image')
+    if source == 'image' and 'spread' not in p:
+        thr = float(p.get('threshold', 0.65))
+        bright = np.clip(img - thr, 0, 1) / max(1e-3, 1 - thr)
+        glow = _blur(bright, float(p.get('radius', 6)))
+        return img + glow * float(p.get('strength', 0.6)) * _rgb(p.get('color', [1, 1, 1]))
+    if source == 'light':
+        em = ctx.get('emission')
+        bright = np.maximum((em if em is not None else np.zeros_like(img)) - float(p.get('threshold', 0.0)), 0)
+    else:
+        thr = float(p.get('threshold', 0.65))
+        bright = np.clip(img - thr, 0, 1) / max(1e-3, 1 - thr)
+    r = float(p.get('radius', 4))
+    spread = float(p.get('spread', 0.45))
+    glow = _fblur(bright, r) * (1 - spread) + (_fblur(bright, r * 3) * 0.6 + _fblur(bright, r * 8) * 0.4) * spread
+    return img + glow * float(p.get('strength', 0.8)) * _rgb(p.get('color', [1, 1, 1]))
+
+
+def fx_dof(img, p, ctx):
+    """Depth of field: the frame sharp at the `focus` distance and softening away from it, nearer
+    and farther, as through a lens wide open. `focus` is a distance, a sprite's id, or left out to
+    focus where the shot's `look_at` is (else on the middle of the frame); `blur` is the widest blur
+    in pixels, reached at the horizon and at half the focus distance; `range` (0-1) widens the band
+    that stays sharp. Each pixel takes the blur its distance asks for; the background is gathered
+    only from pixels at or beyond the focus, so a sharp subject never smears into it, and a soft
+    foreground spreads over whatever is behind its edges."""
+    depth = ctx.get('depth')
+    if depth is None:
+        return img
+    d = np.maximum(np.nan_to_num(depth, nan=1e4, posinf=1e4), 1e-3)
+    f = p.get('focus')
+    if isinstance(f, str):
+        a = (ctx.get('anchors') or {}).get(f)
+        f = a.get('depth') if a else None
+    if f is None:
+        f = ctx.get('focus')
+    if f is None:
+        H, W = d.shape
+        f = float(np.median(d[H * 2 // 5:H * 3 // 5, W * 2 // 5:W * 3 // 5]))
+    f = max(float(f), 0.05)
+    maxb = max(0.0, float(p.get('blur', 2.5)))
+    band = min(0.95, max(0.0, float(p.get('range', 0.1))))
+    if maxb < 0.35:
+        return img
+    c = np.abs(1.0 / f - 1.0 / d) * f                     # 0 in focus, 1 at the horizon and at f/2
+    coc = maxb * np.clip((c - band) / (1 - band), 0, 1)
+    far = d >= f
+    n = 4
+    step = maxb / n
+    wf = far.astype(np.float32)[..., None]
+    lev_far, lev_near = [img], [img]
+    for k in range(1, n + 1):
+        r = step * k
+        num, den = _fblur(img * wf, r), _fblur(wf, r)
+        lev_far.append(np.where(den > 1e-3, num / np.maximum(den, 1e-3), img))
+        lev_near.append(_fblur(img, r))
+    x = np.clip(coc / step, 0, n)
+    k0 = np.minimum(x.astype(int), n - 1)
+    t = (x - k0)[..., None]
+    lf, ln = np.stack(lev_far), np.stack(lev_near)
+    rows, cols = np.indices(d.shape)
+    pick = np.where(far[..., None], lf[k0, rows, cols] * (1 - t) + lf[k0 + 1, rows, cols] * t,
+                    ln[k0, rows, cols] * (1 - t) + ln[k0 + 1, rows, cols] * t)
+    near = (~far) & (coc > 0.5)
+    if near.any():                                          # a soft foreground spreads past its edges
+        rn = float(np.mean(coc[near]))
+        m = near.astype(np.float32)[..., None]
+        cover = _fblur(m, rn)
+        layer = _fblur(img * m, rn) / np.maximum(cover, 1e-3)
+        a_ = np.clip(cover * 1.6, 0, 1) * (1 - m)
+        pick = pick * (1 - a_) + layer * a_
+    return pick
+
 
 
 def fx_vignette(img, p, ctx):

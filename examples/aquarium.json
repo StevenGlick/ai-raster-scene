@@ -1287,7 +1287,13 @@
     0.95
    ],
    "fov": 60,
-   "height": 0.55
+   "height": 0.55,
+   "post": [
+    {
+     "fx": "dof",
+     "blur": 1.8
+    }
+   ]
   }
  ],
  "contact_shadows": 0.5,

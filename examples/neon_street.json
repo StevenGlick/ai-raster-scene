@@ -465,9 +465,10 @@
     },
     {
      "fx": "bloom",
-     "threshold": 0.55,
-     "strength": 0.7,
-     "radius": 6
+     "source": "light",
+     "strength": 2.4,
+     "radius": 2.5,
+     "spread": 0.6
     },
     {
      "fx": "grade",
@@ -511,9 +512,10 @@
     },
     {
      "fx": "bloom",
-     "threshold": 0.55,
-     "strength": 0.7,
-     "radius": 6
+     "source": "light",
+     "strength": 2.4,
+     "radius": 2.5,
+     "spread": 0.6
     },
     {
      "fx": "grade",
@@ -549,9 +551,10 @@
     },
     {
      "fx": "bloom",
-     "threshold": 0.55,
-     "strength": 0.7,
-     "radius": 6
+     "source": "light",
+     "strength": 2.4,
+     "radius": 2.5,
+     "spread": 0.6
     },
     {
      "fx": "grade",
@@ -583,9 +586,10 @@
     },
     {
      "fx": "bloom",
-     "threshold": 0.55,
-     "strength": 0.7,
-     "radius": 6
+     "source": "light",
+     "strength": 2.4,
+     "radius": 2.5,
+     "spread": 0.6
     },
     {
      "fx": "grade",

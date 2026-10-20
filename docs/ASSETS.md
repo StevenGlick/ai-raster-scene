@@ -983,6 +983,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-19, glow and focus.** The renderer keeps an emission buffer beside the frame; `bloom` takes `source: light` (only what gives off light, with a wide halo) and the neon scenes use it; a new `dof` effect (depth of field) on the close shots of the samurai, the hacker, the cat, the sleepwalker and the diver. Scenes that do not opt in render byte-identical.
 - **2026-10-19, the child.** A narrower head with a fringe, eyes closer, a small mouth, a tapered chin; the galleries of the six scenes the child appears in rebuilt. Rated good.
 - **2026-10-19, the column drum.** Flutes along its length, a lit end face on a shadowed rim; the ruins' and the cathedral's images rebuilt. Rated good.
 - **2026-10-19, the goat.** Redrawn with the toolkit in basics.py (it overrides the old grid), short-legged and piebald; the ancient ruins' images rebuilt. Rated good.

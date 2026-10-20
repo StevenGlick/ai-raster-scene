@@ -1111,12 +1111,17 @@ class Renderer:
         if self.levels > 0:
             light = np.floor(light * self.levels + 0.5) / self.levels
         out = albedo * light
+        glow = None
         if em is not None:
             e = em[..., None]
-            out = out * (1 - e) + albedo * e * 1.15
+            glow = albedo * e * 1.15
+            out = out * (1 - e) + glow
         if self.fog_c is not None and self.vol is None:
             k = (1 - np.exp(-self.fog_d * dist))[..., None]
             out = out * (1 - k) + self.fog_c[None, :] * k
+            if glow is not None:
+                glow = glow * (1 - k)
+        self._glow = glow           # the emitted part, for the emission buffer (bloom, glare)
         return out
 
     def render(self, cam):
@@ -1131,8 +1136,10 @@ class Renderer:
                 img = self._atmosphere(img, self.depth, ss)
         finally:
             self.W, self.H = bw, bh
+        self._emis_out = self._emis
         if ss > 1:
             img = img.reshape(bh, ss, bw, ss, 3).mean(axis=(1, 3))
+            self._emis_out = self._emis.reshape(bh, ss, bw, ss, 3).mean(axis=(1, 3))
             for a in self.anchors.values():
                 for k in ('x', 'top', 'w', 'h'):
                     a[k] /= ss
@@ -1143,8 +1150,11 @@ class Renderer:
             effects.append({'fx': 'scanlines'})
         H, W = img.shape[:2]
         ctx = gui.Ctx(Image.new('RGBA', (W, H), (0, 0, 0, 0)), self.s, self.anchors, cam, self.w, self.camera_light(cam))
+        wctx = self._weather_ctx(cam, ss, bw, bh)
+        lens = [e for e in effects if e['fx'] in post.LENS]
+        img = post.apply_world(img, lens, wctx)
         img = gui.draw_world_layer(img, overlays, ctx)
-        img = post.apply_world(img, effects, self._weather_ctx(cam, ss, bw, bh))
+        img = post.apply_world(img, [e for e in effects if e['fx'] not in post.LENS], wctx)
         img = gui.draw_ui_layer(img, overlays, ctx)
         self.last_effects = effects
         return np.clip(img, 0, 1)
@@ -1219,7 +1229,23 @@ class Renderer:
             ctx['depth'] = self.depth.reshape(bh, ss, bw, ss).min(axis=(1, 3))
             if self.vol is not None:
                 ctx['fog_t'] = self.fog_t[:2]
+        if getattr(self, '_emis_out', None) is not None:
+            ctx['emission'] = self._emis_out
+        ctx['anchors'] = self.anchors
+        ctx['focus'] = self._focus_distance(cam)
         return ctx
+
+    def _focus_distance(self, cam):
+        """How far ahead (along the view) the shot is looking: its `look_at` - a sprite or a point -
+        measured the way the depth buffer measures, or None when it looks nowhere in particular."""
+        look = cam.get('look_at')
+        if isinstance(look, str):
+            sp = next((q for q in self.s.get('sprites', []) if q.get('id') == look), None)
+            look = None if sp is None else [sp['x'], sp['y']]
+        if not isinstance(look, (list, tuple)) or len(look) < 2:
+            return None
+        d = (float(look[0]) - self._px) * self._fx + (float(look[1]) - self._py) * self._fy
+        return d if d > 0.05 else None
 
     def _atmosphere(self, img, depth, ss):
         """Volumetric fog: march the air in front of every pixel, losing the surface behind it to
@@ -1241,6 +1267,7 @@ class Renderer:
         out = img * Tp[..., None] + Lp
         if self._glass_fix is not None:
             out = out + self._glass_fix
+        self._emis = self._emis * Tp[..., None]
         return out
 
     def _march(self, shape, ss):
@@ -1429,6 +1456,11 @@ class Renderer:
 
         img = np.zeros((H, W, 3), np.float32)
         depth = np.full((H, W), np.inf, np.float32)
+        # what each pixel gives off as light (lit windows, neon, flames, the sun), beside what it shows:
+        # every surface that is drawn writes its emitted part here, so bloom can glow from light
+        # sources only (see post.fx_bloom's `source`)
+        emis = np.zeros((H, W, 3), np.float32)
+        self._emis = emis
         refl = np.zeros((H, W), np.float32)          # how mirror-like each floor pixel is
         refl_depth = np.full((H, W), -1.0, np.float32)
 
@@ -1470,9 +1502,11 @@ class Renderer:
             rows = np.arange(H) if below else np.arange(min(H, sky_rows + 2))
             pr = np.clip(ph - (horizon - rows) - 1, 0, pano.shape[0] - 1).astype(int)
             img[rows] = pano[pr][:, ang_cols]
+            emis[rows] = np.maximum(img[rows] - 0.9, 0) * 6.0       # a sun or moon disc glows
             if self.fog_c is not None and self.s.get('fog_sky', True) and self.vol is None:
                 k = float(self.s['fog'].get('sky_mix', 0.35))
                 img[rows] = img[rows] * (1 - k) + self.fog_c * k
+                emis[rows] = emis[rows] * (1 - k)
         else:
             img[:] = 0
 
@@ -1566,6 +1600,9 @@ class Renderer:
             sub = img[rows]
             sub[valid] = col[valid]
             img[rows] = sub
+            gsub = emis[rows]
+            gsub[valid] = self._glow[valid] if self._glow is not None else 0.0
+            emis[rows] = gsub
             dsub = depth[rows]
             dsub[valid] = D[valid]
             depth[rows] = dsub
@@ -1672,6 +1709,7 @@ class Renderer:
                 colr = self.shade(alb, sample_lm(self.lm, self.lres, tx, ty), zt, ed, e,
                                   flash(rows, np.full(len(rows), c), ed), sun)
                 img[y0:y1, c] = colr
+                emis[y0:y1, c] = self._glow if self._glow is not None else 0.0
                 depth[y0:y1, c] = dd
                 continue
             if hit[0] == 'bank':
@@ -1703,6 +1741,7 @@ class Renderer:
                                                  len(rows), 0), z, ed, None,
                                   flash(rows, np.full(len(rows), c), ed), 0.0)
                 img[rows[keep], c] = colr[keep]
+                emis[rows[keep], c] = 0.0
                 depth[rows[keep], c] = dist
                 continue
             _, dist, c, side, mx, my, hgt, below, see_hit = hit
@@ -1783,12 +1822,15 @@ class Renderer:
                                   lambda s_: s_['cos'] * max(0.0, nx * s_['ux'] + ny * s_['uy']))
             colr = self.shade(alb, np.repeat(dyn, len(rows), 0), z, np.full(len(rows), ed), e,
                               flash(rows, np.full(len(rows), c), np.full(len(rows), ed)), sun)
+            gl = self._glow
             if solid is None:
                 img[y0:y1, c] = colr
+                emis[y0:y1, c] = gl if gl is not None else 0.0
                 depth[y0:y1, c] = dist
             else:
                 # holes in a fence write nothing, so whatever lies behind (and its depth) shows
                 img[rows[solid], c] = colr[solid]
+                emis[rows[solid], c] = gl[solid] if gl is not None else 0.0
                 depth[rows[solid], c] = dist
 
         # --- sprites: opaque pass (writes depth), then translucent/additive far-to-near (no depth writes)
@@ -1840,6 +1882,7 @@ class Renderer:
 
         if refl.any():
             img = self._reflect(img, depth, refl, refl_depth)
+            self._emis = self._reflect(self._emis, depth, refl, refl_depth)
         self.depth = depth
         self.rays = {'px': px, 'py': py, 'rdx': rdx, 'rdy': rdy, 'rlen': rlen, 'horizon': horizon,
                      'proj': proj, 'camz': camz}
@@ -1957,10 +2000,14 @@ class Renderer:
                           np.full(Z.shape, ed), emm, flash(rr, cc, np.full(Z.shape, ed)), sun)
         sub = img[cy0:cy1, cx0:cx1]
         a = (alpha * mask)[..., None]
+        gsub = self._emis[cy0:cy1, cx0:cx1]
+        gl = self._glow if self._glow is not None else 0.0
         if sp.get('blend') == 'additive':
             sub += colr * a
+            gsub += gl * a
         else:
             sub[:] = sub * (1 - a) + colr * a
+            gsub[:] = gsub * (1 - a) + gl * a
         if not is_trans:
             dsub[mask] = ty
         aura = sp.get('aura')
@@ -2117,11 +2164,18 @@ class Renderer:
                                                                  - back[r0:r1, cols] * Tg[..., None])
                     self._glass_fix[r0:r1, cols] = self._glass_fix[r0:r1, cols] * (1 - a) + fix * a
             img[r0:r1, cols] = sub + colr * a if additive else sub * (1 - a) + colr * a
+            gsub = self._emis[r0:r1, cols]
+            if glass is not None:      # light from behind comes through the pane, tinted
+                gl = gsub * glass[0]['tint'] * (1 - glass[0]['opacity'])
+            else:
+                gl = self._glow if self._glow is not None else 0.0
+            self._emis[r0:r1, cols] = gsub + gl * a if additive else gsub * (1 - a) + gl * a
             if not is_trans:
                 depth[r0:r1, cols] = np.where(mask, t[None, :], dsub)
             if rv is not None:
                 ri, ci, rcol, rt = rv
                 img[r0 + ri, cols[ci]] = rcol
+                self._emis[r0 + ri, cols[ci]] = 0.0
                 depth[r0 + ri, cols[ci]] = rt
             if named:
                 seen[r0:r1, cols] |= mask & (alpha > 0.5)
@@ -2226,6 +2280,7 @@ class Renderer:
         vis = (depth[max(0, y0):y1, max(0, x0):x1] > ty * 0.9)[..., None]
         c = np.array(aura.get('color', [0.6, 0.8, 1.0]), np.float32) * float(aura.get('strength', 0.5))
         img[max(0, y0):y1, max(0, x0):x1] += g[..., None] * c * vis
+        self._emis[max(0, y0):y1, max(0, x0):x1] += g[..., None] * c * vis
 
 
 

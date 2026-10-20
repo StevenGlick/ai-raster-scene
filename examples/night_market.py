@@ -23,7 +23,7 @@ g.rect(21, 21, 28, 24, 's')                           # a side alley off it
 PINK, CYAN, GOLD, VIOLET = [1.0, 0.3, 0.7], [0.3, 0.9, 1.0], [1.0, 0.75, 0.3], [0.7, 0.45, 1.0]
 WARM, RED = [1.0, 0.72, 0.42], [1.0, 0.32, 0.18]
 RAIN = [{'fx': 'rain', 'density': 0.75, 'length': 8, 'opacity': 0.24, 'angle': 8}, {'fx': 'splashes', 'density': 0.25},
-        {'fx': 'bloom', 'threshold': 0.55, 'strength': 0.75, 'radius': 6},
+        {'fx': 'bloom', 'source': 'light', 'strength': 2.4, 'radius': 2.5, 'spread': 0.6},
         {'fx': 'grade', 'saturation': 1.12, 'tint': [1.03, 0.95, 1.04]}]
 
 # stalls down both sides: (x, y, kind, flip); every stall gets a warm light and a lantern
@@ -101,7 +101,7 @@ s = scene(
         {'x': 16.6, 'y': 39.4, 'look_at': 'runner', 'fov': 56, 'post': RAIN,
          'overlays': [{'type': 'bubble', 'anchor': 'runner', 'name': 'Runner',
                        'text': 'Two bowls, extra chilli. Then we find your man.'}]},
-        {'x': 16.3, 'y': 33.1, 'look_at': 'samurai', 'fov': 48, 'post': RAIN},
+        {'x': 16.3, 'y': 33.1, 'look_at': 'samurai', 'fov': 48, 'post': [{'fx': 'dof', 'blur': 2.5}] + RAIN},
     ],
     contact_shadows=0.5,
     supersample=2,
