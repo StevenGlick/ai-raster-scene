@@ -22,7 +22,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
 | Textures | 186 | 186 | 0 | 0 | 0 |
-| Props | 289 | 289 | 0 | 0 | 0 |
+| Props | 293 | 293 | 0 | 0 | 0 |
 | Characters | 29 | 29 | 0 | 0 | 0 |
 | Decals | 26 | 26 | 0 | 0 | 0 |
 | Skies | 13 | 13 | 0 | 0 | 0 |
@@ -32,6 +32,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
+| Objects | 2 | 2 | 0 | 0 | 0 |
 | Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
@@ -39,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 60 | 60 | 0 | 0 | 0 |
-| **all** | **747** | **747** | **0** | **0** | **0** |
+| **all** | **753** | **753** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -303,7 +304,7 @@ Weakest first, and in the order the new scenes need them.
 | `bamboo` | good |  | tropical_beach | A node in each third of every pole, so they stagger from pole to pole instead of lining up across them. |
 | `thatch` | good |  | tropical_beach | Each row stands out over the one under it and shades its top, so the rows read. |
 
-## Props (289)
+## Props (293)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -316,10 +317,10 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `bench` | good | 0.35 tall | aquarium, coast_lighthouse, garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, village_green | Redrawn with the toolkit in basics.py: three backrest slats and two in the seat, held in cast-iron ends with scrolled armrests and curving legs. |
 | `arcade_cabinet` | good | 0.68 tall, glows, aura | neon_bar | Drawn with the toolkit in bar.py: a dark cabinet with neon side art, a lit marquee in pseudo-letters, a space shooter on a scanlined screen, joystick and buttons, a coin door. |
 | `bar_counter` | good | 0.35 tall, glows, no shadow | neon_bar | Drawn with the toolkit in bar.py: dark raised panels, a chrome rail, the black lip of the top, a magenta light strip along the foot; a card that repeats along its length. |
-| `bar_stool` | good | 0.27 tall | neon_bar | Drawn with the toolkit in bar.py: a red vinyl seat on a chrome pole with a foot ring and a weighted base. |
+| `bar_stool` | good | 0.27 tall | neon_bar, neon_street | Drawn with the toolkit in bar.py: a red vinyl seat on a chrome pole with a foot ring and a weighted base. |
 | `booth` | good | 0.5 tall, glows | neon_bar | Drawn with the toolkit in bar.py: a high back buttoned in teal vinyl, the seat, a formica table on a chrome leg with a glowing lamp. |
 | `jukebox` | good | 0.56 tall, glows, aura | neon_bar | Drawn with the toolkit in bar.py: bands of red, gold and blue light round its arch, bubble tubes up both sides, the records in a window, a grille. |
-| `bottles` | good | 0.12 tall | neon_bar | Drawn with the toolkit in bar.py: green, amber and clear bottles at different heights with labels and glints. |
+| `bottles` | good | 0.12 tall | neon_bar, neon_street | Drawn with the toolkit in bar.py: green, amber and clear bottles at different heights with labels and glints. |
 | `info_plaque` | good | 0.42 tall, glows | aquarium | Drawn with the toolkit in aquarium.py: a slanted panel on a post, lit blue from behind, a fish outline and lines of text too small to read. |
 | `book_stack` | good | 0.22 tall | claude_study, drowned_library, mansion_library |  |
 | `chest` | good | 0.3 tall | castle_keep, kelp_forest | Redrawn with the toolkit in basics.py: oak planks under a rounded lid, iron straps studded with rivets, iron corners, a brass lock plate. |
@@ -499,14 +500,14 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `robot_arm` | good | 1.8 tall, glows | orbital_hangar | Drawn with the toolkit in scifi.py: three orange segments, dark joints, a turntable base, a welding spark. |
 | `cables_hang` | good | 1.4 tall, no shadow | orbital_hangar | Drawn with the toolkit in scifi.py: slack loops of cable and a few dangling ends; hangs from a ceiling, no contact shadow. |
 | `vending_machine` | good | 1.1 tall, glows, aura | capsule_hotel, neon_street | Drawn with the toolkit in scifi.py: a red steel box, its front a lit window of cans in rows, a glowing strip, coin slot and hatch. |
-| `noodle_stall` | good | 1.6 tall, glows | neon_street | Drawn with the toolkit in scifi.py: a counter under a striped awning, red paper lanterns lit, a neon sign of pseudo-letters, pots. |
+| `noodle_stall` | good | 1.6 tall, glows | - | Drawn with the toolkit in scifi.py: a counter under a striped awning, red paper lanterns lit, a neon sign of pseudo-letters, pots. |
 | `steam` | good | 1.2 tall, no shadow | clockwork_city, neon_street, night_market | A dithered plume, soft and spreading as it rises; see-through by default. |
 | `holo_ad` | good | 1.6 tall, glows, no shadow | neon_rooftop, neon_street | A hologram koi in cyan and pink with scanlines, dorsal and pectoral fins; additive by default. |
 | `wires_span` | good | 0.75 tall, glows, no shadow | neon_rooftop, neon_street | Drawn with the toolkit in scifi.py: four sagging wires with paper lanterns, a card to sling across a street. |
 | `food_cart` | good | 1 tall, glows | neon_rooftop, night_market | Drawn with the toolkit in market.py: a teal cabinet on two wheels, a steel counter with a wok over a roaring burner, stock pots, bowls, a tin roof, a neon menu board and three bare bulbs. |
 | `fruit_stall` | good | 0.95 tall, glows | night_market | Drawn with the toolkit in market.py: crates stepped back in three tiers heaped with oranges, apples, limes, bananas and grapes, price cards, a green tarp with a bulb and coloured lights. |
 | `gadget_stall` | good | 0.95 tall, glows | night_market | Drawn with the toolkit in market.py: glowing screens on a table in dark cloth, a pegboard of cables, headphones and boxes, a blue tarp with a neon sign along it. |
-| `red_lantern` | good | 0.16 tall, glows, no shadow | night_market | Drawn with the toolkit in market.py: ribbed red paper glowing from inside, black bands, a gold tassel, a painted pseudo-letter. |
+| `red_lantern` | good | 0.16 tall, glows, no shadow | neon_street, night_market | Drawn with the toolkit in market.py: ribbed red paper glowing from inside, black bands, a gold tassel, a painted pseudo-letter. |
 | `lantern_span` | good | 0.6 tall, glows, no shadow | neon_rooftop, night_market | Drawn with the toolkit in market.py: a sagging rope hung with big red lanterns, a card to sling across a lane. |
 | `neon_sign` | good | 1.5 tall, glows, aura | night_market | Drawn with the toolkit in market.py: a standing lightbox on a steel post, edged in pink tube and lettered top to bottom. |
 | `neon_cocktail` | good | 0.4 tall, glows, no shadow | neon_bar | Drawn with the toolkit in bar.py: a cocktail glass in pink tube with an olive on a stick in green; additive. |
@@ -520,6 +521,10 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `rooftop_sign` | good | 2.6 tall, glows, aura | neon_rooftop | Drawn with the toolkit in rooftop.py: three tall panels edged in neon and lettered in bold glowing pseudo-letters, on a steel lattice scaffold with a catwalk. |
 | `sky_train` | good | 2.5 tall, glows, no shadow | neon_rooftop | Drawn with the toolkit in rooftop.py: three pale cars with a red stripe and every window lit, on a concrete beam on slim pillars; a card that repeats along its length. |
 | `crowd` | good | 0.66 tall, glows | neon_rooftop, night_market | Drawn with the toolkit in market.py: a dozen figures in dark coats at different depths, some under umbrellas (a few lit), hoods, a bag. |
+| `noodle_bowl` | good | 0.055 tall | neon_street | Red lacquer bowl seen a little from above: amber broth, noodles, half an egg, a pink swirl of fish cake, green onion, chopsticks across it. Sits on the noodle_stand counter. |
+| `stock_pot` | good | 0.11 tall | neon_street | Stainless pot, lid ajar, riveted handles; steam set over it by the noodle_stand. |
+| `bowl_stack` | good | 0.075 tall | neon_street | Five white rice bowls with blue bands, stacked. |
+| `condiments` | good | 0.07 tall | neon_street | A tray of soy sauce, chilli oil and a cup of chopsticks. |
 
 ### Alien and dream
 
@@ -843,6 +848,15 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
+## Objects (2)
+
+Things too big for a billboard, built in 3D out of flat panels (`scripts/objects.py`).
+
+| object | status | used in | notes |
+|---|---|---|---|
+| `car` | good | rain_alley | A saloon from panels, laid out as the user drew it: the overall box with the car's outline on its sides, hood and trunk lid across it at the belt (body 60%, glass 40%), the roof, glass windows with seats, dashboard and steering wheel inside, four wheels set in under the body in dark wells, a floor pan and a soft shadow; `paint`, `lights`. Proportions and handles tuned with the user. |
+| `noodle_stand` | good | neon_street | Counter, awning, valance, noren and sign as panels; bowls, pot, tray, lanterns and stools as billboards, with its own lamp and lantern lights. |
+
 ## Held items (8)
 
 | item | status | used in | notes |
@@ -991,8 +1005,8 @@ The environments, judged on their gallery images and shots.
 | `aquarium` | good | 7 | aquarium_hall, aquarium_manta, aquarium_tunnel, aquarium_jellies, aquarium_reef, aquarium_moon, aquarium_diver | A dark hall before the great window (whale shark, manta, a diver cleaning the glass, silhouettes, the floor mirroring it); the manta from below; the tunnel; sea nettles against blue; the reef tank. |
 | `coast_lighthouse` | good | 4 | coast_tower, coast_jetty | The shore rocks are the redrawn boulders now, not grey lumps; sand and water redrawn too. |
 | `rainy_street` | good | 4 | street_rain, street_lightning |  |
-| `rain_alley` | good | 4 | alley_street, alley_rain, alley_glass, alley_storm |  |
-| `neon_street` | good | 4 | neon_street, neon_stall, neon_signs, neon_runner | The neon facade style in the rain: signs, blade signs, lantern wires, a hologram koi, a noodle stall, vending machines, steam, the runner; bloom on the neon. |
+| `rain_alley` | good | 5 | alley_street, alley_rain, alley_glass, alley_storm, alley_cars |  |
+| `neon_street` | good | 5 | neon_street, neon_stall, neon_signs, neon_runner, neon_counter | The neon facade style in the rain: signs, blade signs, lantern wires, a hologram koi, a noodle stall, vending machines, steam, the runner; bloom on the neon. |
 | `night_market` | good | 5 | market_lane, market_cart, market_puddle, market_runner, market_samurai | A lane of stalls between neon fronts in the rain: lantern strings overhead, food carts, fruit and gadget stalls, a crowd; the cart close up; the lanterns in the wet; the runner under a lit umbrella. |
 | `neon_bar` | good | 5 | bar_room, bar_tank, bar_arcade, bar_bartender, bar_hacker | A small smoky bar: glowing shelves, the counter and stools, a jukebox and booths, a reef tank in the back wall, the arcade row mirrored in the floor, the bartender. |
 | `neon_rooftop` | good | 4 | rooftop_canyon, rooftop_down, rooftop_train, rooftop_cat | From a roof five storeys up: the neon canyon below with lanterns and a holo koi, the runner and a black cat on the ledge; straight down past the blade signs; the elevated train from the street. |

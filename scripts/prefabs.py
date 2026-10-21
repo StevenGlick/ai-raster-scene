@@ -26,6 +26,8 @@ mirrors half of them. A prefab-level `scale` pair varies the whole group. The pl
 import math
 import random
 
+import objects
+
 MAX_DEPTH = 6
 PLACEMENT_KEYS = {'type', 'x', 'y', 'dx', 'dy', 'angle', 'scale', 'seed', 'id', 'title', 'notes'}
 FACES = {'east': 0, 'south': 90, 'west': 180, 'north': 270}
@@ -188,10 +190,11 @@ def _fresh(state):
 
 
 def expand(scene):
-    """The scene with every prefab placement turned into its parts. A scene without prefabs comes
-    back as it is - the same object - and an expanded one is never expanded twice."""
+    """The scene with every prefab placement turned into its parts, and every object into its
+    panels (objects.expand). A scene without prefabs or objects comes back as it is - the same
+    object - and an expanded one is never expanded twice."""
     if not scene.get('prefabs'):
-        return scene
+        return objects.expand(scene)
     defs = {**PREFABS, **(scene.get('prefab_defs') or {})}
     out = dict(scene)
     out['map'] = [list(r) for r in scene['map']]
@@ -204,7 +207,7 @@ def expand(scene):
     out['map'] = [''.join(r) for r in out['map']]
     out.pop('prefabs')
     out.pop('prefab_defs', None)
-    return out
+    return objects.expand(out)
 
 
 def _place(out, defs, pl, parent, depth, state, n):

@@ -206,18 +206,6 @@
    "intensity": 1.3
   },
   {
-   "x": 17.6,
-   "y": 22.0,
-   "z": 1.8,
-   "radius": 4.0,
-   "color": [
-    1.0,
-    0.62,
-    0.32
-   ],
-   "intensity": 0.9
-  },
-  {
    "x": 11.6,
    "y": 26.8,
    "z": 0.8,
@@ -242,25 +230,21 @@
    "intensity": 0.9
   }
  ],
+ "objects": [
+  {
+   "type": "noodle_stand",
+   "x": 17.95,
+   "y": 22.0,
+   "angle": 180
+  }
+ ],
  "sprites": [
   {
-   "x": 17.9,
-   "y": 22.0,
-   "type": "noodle_stall"
-  },
-  {
    "id": "cook",
-   "x": 18.3,
-   "y": 21.4,
+   "x": 18.32,
+   "y": 22.15,
    "type": "shopkeeper",
    "facing": 270
-  },
-  {
-   "x": 17.4,
-   "y": 21.4,
-   "type": "steam",
-   "z": 0.9,
-   "scale": 0.8
   },
   {
    "x": 11.4,
@@ -490,14 +474,14 @@
    ]
   },
   {
-   "x": 13.4,
-   "y": 25.6,
+   "x": 15.6,
+   "y": 20.2,
    "look_at": [
-    18.4,
-    21.6,
-    1.0
+    17.95,
+    22.1,
+    0.7
    ],
-   "fov": 66,
+   "fov": 62,
    "post": [
     {
      "fx": "rain",
@@ -614,6 +598,45 @@
      "anchor": "runner",
      "name": "Runner",
      "text": "Not here. Walk with me, and keep your eyes on the signs."
+    }
+   ]
+  },
+  {
+   "x": 16.3,
+   "y": 21.2,
+   "look_at": [
+    17.95,
+    22.0,
+    0.45
+   ],
+   "fov": 58,
+   "post": [
+    {
+     "fx": "rain",
+     "density": 0.7,
+     "length": 8,
+     "opacity": 0.26,
+     "angle": 10
+    },
+    {
+     "fx": "splashes",
+     "density": 0.6
+    },
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 2.4,
+     "radius": 2.5,
+     "spread": 0.6
+    },
+    {
+     "fx": "grade",
+     "saturation": 1.1,
+     "tint": [
+      1.02,
+      0.95,
+      1.06
+     ]
     }
    ]
   }

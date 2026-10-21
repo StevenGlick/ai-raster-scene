@@ -23,8 +23,14 @@ The `neon` style turns the same street to the lower city: dark concrete hung wit
 
 | | |
 |---|---|
-| ![A neon street at night in the rain, signs on both sides and lantern wires overhead](docs/gallery/neon_street.png) | ![A noodle stall under its lanterns, steam rising](docs/gallery/neon_stall.png) |
+| ![A neon street at night in the rain, signs on both sides and lantern wires overhead](docs/gallery/neon_street.png) | ![A noodle stand built in 3D, its awning, curtains and lanterns, its cook at the counter](docs/gallery/neon_stall.png) |
 | ![Looking up at the blade signs and the wires](docs/gallery/neon_signs.png) | ![A runner in a lit visor: walk with me](docs/gallery/neon_runner.png) |
+
+Objects are things too big to be a billboard, built in 3D out of flat panels the way Build-engine maps built them - standing, lying and sloped, see-through wherever the thing is not - so they show the right sides from any angle: a car, parked along the kerb or coming up the street with its headlamps on, its seats seen through the glass, and the noodle stand, bowls and a stock pot on its counter as billboards.
+
+| | |
+|---|---|
+| ![A car coming up the rain alley at night, its headlamps on, another parked under the lamps](docs/gallery/alley_cars.png) | ![Up at the noodle stand's counter: bowls of noodles, a stock pot steaming, the cook under the curtains](docs/gallery/neon_counter.png) |
 
 After dark a lane of the same city fills with a night market: food carts with their woks over the flame, fruit and gadget stalls under tarps, strings of red paper lanterns overhead, scooters, plastic stools, a crowd under umbrellas.
 
@@ -224,11 +230,12 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **Volumetric fog**: mist that lies low and drifts in banks, halos round every lamp, and beams of sun or moonlight through windows, doorways, standing stones and trees; sunlight finds its way into roofed rooms through their doorways, windows and skylights
 - **Reflections**: water, ice, wet streets and puddles mirror the lamps, windows and figures beyond them
 - **The 90s look**: 320x200 framebuffer, Bayer-dithered 256-colour palette, chunky nearest-neighbour upscale, optional scanlines and 2x supersampling
-- **Sprites**: 289 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 29-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
+- **Sprites**: 293 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 29-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
 - **Planar sprites**: a plant can stand as fixed planes in the world instead of a billboard - a cross of two, or a star of three that cuts the ground round it into sixths - so it has body as the camera moves; the low plants do by default, and a prefab can mix billboards and planes (a billboard palm trunk under a star of fronds)
 - **Layered forest edges**: give the walls of a jungle or a wood a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
 - **Glass**: a pass of its own after everything else, showing what is behind each pane tinted and softly blurred - the frame shrunk to half size and blown back up without smoothing - under a faint reflection
+- **Objects**: things bigger than a prop - a `car`, a `noodle_stand` - built in 3D out of flat panels at any angle, see-through wherever the thing is not, with glass to see inside and billboards among them for the small things; drawn in true perspective, depth-tested per pixel and lit like walls (`scripts/objects.py`)
 - **Wireframes**: low-poly meshes - cubes, pyramids, polyhedra, mountains, racers, palms, or your own vertices - drawn as lines of light in true 3D, one pixel wide at any distance, hidden behind what is nearer and mirrored in wet floors; solid ones are black faces edged in light
 - **Prefabs**: named groups placed with one line - a campsite with its light, a palm grove, a beach hut with its walls, door, window, roof and torches - turned, scaled and varied by seed; scenes can define their own
 - **Procedural scatter**: declare debris by set, density and size class and the loader expands it into hundreds of placed props, clumped by a noise field so it drifts and leaves bare patches instead of spreading evenly - and never piles up on a camera or in front of a speaker

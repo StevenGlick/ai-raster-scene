@@ -392,6 +392,84 @@ def spr_stools_table():
                  shadow=0.4)
 
 
+BROTH = ramp('#c8883a', dark=0.45, light=1.25)
+NOODLE = ramp('#ecd890', dark=0.55, light=1.1)
+LACQUER_RED = ramp('#9a1e1a', dark=0.35, light=1.4)
+EGG = ramp('#f0e8d8', dark=0.55, light=1.05)
+YOLK = ramp('#f0a828', dark=0.5, light=1.1)
+ONION = ramp('#5aa83a', dark=0.45, light=1.25)
+PORCELAIN = ramp('#e6e4dc', dark=0.5, light=1.08)
+GLAZE_BLUE = ramp('#2a4a9a', dark=0.4, light=1.3)
+SOY = ramp('#2a1a12', dark=0.6, light=1.9)
+BAMBOO = ramp('#c8a860', dark=0.45, light=1.2)
+
+
+def spr_noodle_bowl():
+    """A bowl of noodles on the counter, seen a little from above: a red lacquer bowl of amber
+    broth, noodles, half an egg, a pink swirl of fish cake, green onion, chopsticks across it."""
+    w, h = 22, 14
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(1, 5), (21, 5), (17, 13), (5, 13)], z=0.6, top=0.4, bevel=1.5, mat=0)       # the bowl
+    cv.ellipse(11, 5, 10, 3.6, z=1.2, dome=0.3, mat=1)                                    # the broth
+    for k in range(6):                                                                      # noodles
+        cv.stroke([(4 + k * 2.4, 4.8 + (k % 2) * 0.8), (6 + k * 2.4, 6.0)], 0.8, z=1.4, dome=0.4, mat=2)
+    cv.ellipse(15.5, 4.6, 2.4, 1.6, z=1.6, dome=0.6, mat=3)                               # half an egg
+    cv.ellipse(15.5, 4.7, 1.1, 0.8, z=1.8, dome=0.4, mat=4)
+    cv.ellipse(7, 4.4, 1.8, 1.2, z=1.6, dome=0.4, mat=3, tone=0.05)                       # fish cake
+    for x, y in ((10, 3.4), (11.5, 5.6), (9.2, 6.0), (12.8, 3.8)):                         # green onion
+        cv.ellipse(x, y, 0.7, 0.6, z=1.7, dome=0.3, mat=5)
+    cv.stroke([(2, 2.4), (20, 0.8)], 0.7, z=2.4, dome=0.3, mat=6)                         # chopsticks
+    cv.stroke([(2, 3.2), (20, 1.8)], 0.7, z=2.4, dome=0.3, mat=6)
+    rgba, em = _prop(cv, [LACQUER_RED, BROTH, NOODLE, EGG, YOLK, ONION, WOOD], relief=0.8, cavity=0.3,
+                     shadow=0.3, sun=(-0.3, -0.6, 0.8))
+    yy, xx = np.mgrid[0:h, 0:w]
+    swirl = (np.hypot(xx + 0.5 - 7, (yy + 0.5 - 4.4) * 1.5) < 1.0) & (rgba[..., 3] > 0)
+    rgba[swirl, :3] = (0.92, 0.45, 0.6)
+    return rgba, em
+
+
+def spr_stock_pot():
+    """A tall stock pot of stainless steel, its lid set ajar and its handles riveted on: stand it on
+    a burner or a counter and set `steam` over it."""
+    w, h = 20, 22
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(3, 6, 14, 15, z=0.8, top=1.4, bevel=3.0, mat=0)                                 # the pot
+    cv.ellipse(10, 6, 7.2, 1.8, z=1.6, dome=0.4, mat=0, tone=0.08)                        # its rim
+    cv.polygon([(2, 4.6), (17, 1.8), (18, 3.2), (3, 6.0)], z=2.2, top=0.6, bevel=1.0, mat=0, tone=0.05)  # the lid
+    cv.ellipse(10, 2.8, 1.6, 0.9, z=2.6, dome=0.6, mat=1)                                 # its knob
+    for x in (1.5, 18.5):                                                                 # handles
+        cv.stroke([(x, 8), (x, 11)], 1.4, z=1.6, dome=0.6, mat=1)
+    cv.stroke([(3, 18), (17, 18)], 0.6, z=0, dome=0.3, mode='carve')
+    return _prop(cv, [STAINLESS, IRON], relief=1.0, cavity=0.35, shadow=0.35)
+
+
+def spr_bowl_stack():
+    """A stack of white rice bowls, a blue band round each rim: for a counter or a shelf."""
+    w, h = 16, 17
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for k in range(5):
+        y = 15 - k * 2.7
+        cv.polygon([(1, y - 2.4), (15, y - 2.4), (12, y), (4, y)], z=0.6 + k * 0.3, top=0.5, bevel=1.2, mat=0)
+        cv.stroke([(1.5, y - 2.2), (14.5, y - 2.2)], 0.6, z=0.8 + k * 0.3, dome=0.3, mat=1)
+    cv.ellipse(8, 2.7, 6.6, 1.6, z=2.2, dome=0.3, mat=0, tone=-0.08)                      # the top bowl's hollow
+    return _prop(cv, [PORCELAIN, GLAZE_BLUE], relief=0.9, cavity=0.35, shadow=0.3)
+
+
+def spr_condiments():
+    """A tray of condiments for a noodle counter: soy sauce, chilli oil, a cup of chopsticks."""
+    w, h = 22, 18
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(1, 14, 20, 3, z=0.4, top=0.8, bevel=0.8, mat=0)                                 # the tray
+    cv.box(3, 7, 5, 8, z=1.2, top=1.2, bevel=1.5, mat=1)                                   # soy sauce
+    cv.stroke([(5.5, 7), (5.5, 4)], 1.6, z=1.4, dome=0.5, mat=2)
+    cv.ellipse(11.5, 11.5, 3.0, 3.2, z=1.2, dome=1.0, mat=3)                              # chilli oil
+    cv.ellipse(11.5, 8.4, 2.2, 0.9, z=1.6, dome=0.4, mat=2)
+    cv.box(15, 8, 5, 7, z=1.2, top=1.0, bevel=1.2, mat=0)                                  # the chopstick cup
+    for k, x in enumerate((15.6, 16.6, 17.6, 18.6, 19.4)):
+        cv.stroke([(x, 8), (x - 0.4 + (k % 2) * 0.8, 1 + k % 3)], 0.6, z=1.6, dome=0.3, mat=4)
+    return _prop(cv, [BAMBOO, SOY, IRON, LANTERN, WOOD], relief=0.9, cavity=0.35, shadow=0.3)
+
+
 def spr_power_pole():
     """A concrete utility pole of the old city: a crossarm of insulators, a transformer drum, a
     street lamp on an arm, and cables looping down from it every which way."""
@@ -472,10 +550,12 @@ def spr_crowd():
 SPRITES = {'food_cart': spr_food_cart, 'fruit_stall': spr_fruit_stall, 'gadget_stall': spr_gadget_stall,
            'red_lantern': spr_red_lantern, 'lantern_span': spr_lantern_span, 'neon_sign': spr_neon_sign,
            'umbrella': spr_umbrella, 'scooter': spr_scooter, 'stools_table': spr_stools_table,
-           'power_pole': spr_power_pole, 'crowd': spr_crowd}
+           'power_pole': spr_power_pole, 'crowd': spr_crowd, 'noodle_bowl': spr_noodle_bowl,
+           'stock_pot': spr_stock_pot, 'bowl_stack': spr_bowl_stack, 'condiments': spr_condiments}
 SPRITE_HEIGHT = {'food_cart': 1.0, 'fruit_stall': 0.95, 'gadget_stall': 0.95, 'red_lantern': 0.16,
                  'lantern_span': 0.6, 'neon_sign': 1.5, 'umbrella': 0.42, 'scooter': 0.42, 'stools_table': 0.26,
-                 'power_pole': 3.4, 'crowd': 0.66}
+                 'power_pole': 3.4, 'crowd': 0.66, 'noodle_bowl': 0.055, 'stock_pot': 0.11, 'bowl_stack': 0.075,
+                 'condiments': 0.07}
 PROP_DEFAULTS = {'red_lantern': {'shadow': False}, 'lantern_span': {'planes': 1, 'shadow': False},
                  'umbrella': {'shadow': False},
                  'neon_sign': {'aura': {'color': [1.0, 0.3, 0.7], 'strength': 0.35, 'radius': 0.2}}}

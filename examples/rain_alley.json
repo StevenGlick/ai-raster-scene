@@ -199,6 +199,44 @@
    "seed": 10
   }
  ],
+ "objects": [
+  {
+   "type": "car",
+   "x": 20.4,
+   "y": 45.6,
+   "angle": 270,
+   "paint": "#9a9ea4"
+  },
+  {
+   "type": "car",
+   "x": 20.4,
+   "y": 38.6,
+   "angle": 270,
+   "paint": "#8a2a26"
+  },
+  {
+   "type": "car",
+   "x": 23.6,
+   "y": 33.0,
+   "angle": 90,
+   "paint": "#c8c0a8"
+  },
+  {
+   "type": "car",
+   "x": 23.6,
+   "y": 20.6,
+   "angle": 90,
+   "paint": "#c89a3a"
+  },
+  {
+   "type": "car",
+   "x": 22.75,
+   "y": 49.0,
+   "angle": 90,
+   "paint": "#2e3c5a",
+   "lights": true
+  }
+ ],
  "sprites": [
   {
    "id": "officer",
@@ -400,6 +438,45 @@
     {
      "fx": "lightning",
      "x": 0.66
+    }
+   ]
+  },
+  {
+   "x": 21.0,
+   "y": 54.5,
+   "look_at": [
+    21.8,
+    44.0,
+    0.4
+   ],
+   "fov": 58,
+   "post": [
+    {
+     "fx": "rain",
+     "density": 0.8,
+     "length": 8,
+     "opacity": 0.3,
+     "angle": 14
+    },
+    {
+     "fx": "splashes",
+     "density": 0.7
+    },
+    {
+     "fx": "grade",
+     "saturation": 0.75,
+     "tint": [
+      0.92,
+      0.97,
+      1.05
+     ]
+    },
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.2,
+     "radius": 2.0,
+     "spread": 0.5
     }
    ]
   }

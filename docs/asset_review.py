@@ -58,6 +58,7 @@ SECTIONS = {
     'Fringe sets': (lambda: list(assets.FRINGES), 'set', ['cards', 'used in']),
     'Facade styles': (lambda: list(buildings.FACADE_STYLES), 'style', ['used in']),
     'Prefabs': (lambda: list(prefabs.PREFABS), 'prefab', ['parts', 'used in']),
+    'Objects': (lambda: list(prefabs.objects.OBJECTS), 'object', ['used in']),
     'Held items': (lambda: list(icons.VIEWMODELS), 'item', ['used in']),
     'Icons': (lambda: list(icons.ICONS), 'icon', ['used in']),
     'GUI themes': (lambda: list(gui.THEMES), 'theme', ['used in']),
@@ -151,6 +152,8 @@ def usage():
         found = [('Prefabs', n) for n in _placed(raw.get('prefabs'), defs)]
         for s in shots:
             found += [('Prefabs', n) for n in _placed((s.get('overrides') or {}).get('prefabs'), defs)]
+        for objs in [raw.get('objects')] + [(s.get('overrides') or {}).get('objects') for s in shots]:
+            found += [('Objects', o.get('type')) for o in objs or [] if isinstance(o, dict)]
         sc = prefabs.expand(raw)
         overrides = [prefabs.expand({**raw, **s['overrides']}) for s in shots if s.get('overrides')]
         for part in [sc] + overrides:
@@ -482,7 +485,27 @@ def tile_held(name):
     return tile
 
 
+def tile_object(name):
+    """An object in a plain yard, seen from a front three-quarter and from behind, side by side."""
+    import render
+    import math as m
+    yard = {'map': ['#' * 9] + ['#' + '.' * 7 + '#'] * 7 + ['#' * 9], 'sky': 'dusk', 'ambient': [0.5, 0.5, 0.55],
+            'legend': {'#': {'wall': 'brick', 'h': 1.0}}, 'default': {'floor': 'concrete_floor'},
+            'objects': [{'type': name, 'x': 4.5, 'y': 4.5}]}
+    views = []
+    for bearing in (35, 215):
+        b = m.radians(bearing)
+        cam = {'x': 4.5 + m.cos(b) * 2.3, 'y': 4.5 + m.sin(b) * 2.3, 'look_at': [4.5, 4.5, 0.25], 'height': 0.62,
+               'fov': 62}
+        views.append(render.render_shot(dict(yard, camera=cam, shots=[cam]), 0).convert('RGB').resize((320, 200)))
+    tile = Image.new('RGB', (646, 200), (44, 40, 48))
+    for k, v in enumerate(views):
+        tile.paste(v, (k * 326, 0))
+    return tile
+
+
 TILES = {
+    'objects': ('Objects', tile_object, 1),
     'textures': ('Textures', tile_texture, 6),
     'props': ('Props', tile_prop, 6),
     'characters': ('Characters', tile_character, 6),

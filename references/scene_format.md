@@ -43,6 +43,7 @@ A scene is one JSON file, read as UTF-8. Only `map`, `legend` and `camera` are r
 | `scatter` | `[]` | procedural debris: specs expanded into real sprites at load (see Scatter) |
 | `prefabs` | `[]` | named groups placed with one line each - sprites, lights, decals, scatter and patches of map (see Prefabs) |
 | `prefab_defs` | `{}` | the scene's own prefabs, in the same form as the built-ins |
+| `objects` | `[]` | things too big for a billboard, built in 3D out of flat panels - a car, a noodle stand (see Objects) |
 | `grime` | `0` | 0-1 dial for neglect: raises surface noise, scatter density and wear decals |
 | `grime_debris`, `grime_decals` | `true` | set either to `false` to keep that part out of `grime` |
 | `decals` | `[]` | stamps blended into floors, walls and ceilings (see Decals) |
@@ -627,6 +628,32 @@ Defining one (in `prefab_defs`, or the same form in `scripts/prefabs.py` for a b
 - Variation: `jitter` (move by up to that much), `chance` (keep only that often), a `[low, high]` pair for `scale`, `z` or `angle`, `"flip": "random"`, and a prefab-level `scale` pair for the whole group.
 - `scatter` entries keep working inside a prefab: an `on` naming the prefab's own legend characters scatters over its cells alone. `prefabs` nest, turning and scaling with their parent.
 - A shot's `overrides` can change `prefabs` (a campfire only at night): give the whole list, it replaces the scene's.
+
+## Objects
+
+An object is a thing too big to be a billboard - a car, a food stand - built in 3D out of flat panels, the way Build-engine maps built cars and counters out of flat sprites: panels standing, lying and sloped at any angle, see-through wherever the thing is not (a car's side is its outline, open above the hood), glass you can see the seats through, and among them, for the small things that read best as pictures (bowls on a counter, lanterns), ordinary billboards. Every panel is drawn in true perspective, depth-tested per pixel and lit like a wall, so from any side you see the sides you should, and a figure can stand in front of the counter and behind the awning post. Put them in `objects`:
+
+```json
+"objects": [
+  {"type": "car", "x": 20.4, "y": 45.6, "angle": 270, "paint": "#9a9ea4"},
+  {"type": "car", "x": 22.75, "y": 49.0, "angle": 90, "paint": "#2e3c5a", "lights": true},
+  {"type": "noodle_stand", "x": 17.95, "y": 22.0, "angle": 180}
+]
+```
+| field | meaning |
+|---|---|
+| `type` | a built-in object |
+| `x`, `y` | where it stands; it rests on the floor there (a road sunk below the pavement, a raised platform) |
+| `z` | lift it off that floor |
+| `angle` | the way it faces, in compass degrees: 0 east, 90 south |
+| `scale` | grow or shrink it |
+| `paint` | a car's colour, `#rrggbb` |
+| `lights` | a car: `true` turns its headlamps on, with light on the road ahead (otherwise only its tail lamps glow, faintly). The noodle stand: `false` leaves its lamp and lanterns unlit |
+
+Built-in objects: `car` (a saloon 1.6 long, 0.6 wide and 0.47 tall - eye height is 0.5: its body a box whose sides are the car's outline, the hood and trunk lid flat across it, the roof, a windscreen, rear and side windows of glass with the seats, dashboard and steering wheel seen through them, four wheels set in under the body in dark wells, a floor pan and a soft shadow under it), `noodle_stand` (a street-food stand 1.4 wide and about 1.2 tall: a counter of lacquered boards under a sloping striped awning on four posts, a scalloped valance, split indigo curtains hanging from its front, a lit sign on the roof, red lanterns with their own light; bowls of noodles, a condiment tray, a stock pot with steam, bowls and bottles on its counter and stools before it, as billboards; it faces its customers. Put a `shopkeeper` behind its counter for a cook).
+
+- Shoot an object at an angle: its depth is the point of it. Objects light, occlude and mirror in wet floors like everything else; their billboards get contact shadows and their lights join the scene's. They do not cast shadows from the scene's lights.
+- They render fast - a car is about seventy panels, each touching only its own patch of the screen.
 
 ## Scatter
 

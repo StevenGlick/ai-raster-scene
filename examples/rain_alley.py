@@ -5,8 +5,9 @@ brick, each with real depth - windows set back in the wall, glass (the glass pas
 behind it, tinted and softly blurred), curtains and blinds behind the glass, and lit or dark
 rooms behind those - plus depth-aware rain and splashes (the `downpour` preset), `wet` ground
 mirroring the lamps and windows, a road sunk a kerb's height below the pavements, street-lamp
-prefabs, volumetric fog with `glow` (every lamp gets a halo), lightning, and a figure walking
-away from the camera (`facing`).
+prefabs, volumetric fog with `glow` (every lamp gets a halo), lightning, a figure walking away
+from the camera (`facing`), and `car` objects (scripts/objects.py) built in 3D out of panels -
+parked along both kerbs, and one coming up the street with its headlamps on.
 Run:  python rain_alley.py  -> writes rain_alley.json
 """
 import os
@@ -55,6 +56,11 @@ s = scene(
     wet=0.75,
     fog={'color': [0.07, 0.08, 0.1], 'density': 0.016, 'ground': 0.05, 'height': 0.8, 'glow': 1.2},
     prefabs=[{'type': 'street_lamp', 'x': x, 'y': y, 'seed': i} for i, (x, y) in enumerate(lamps)],
+    objects=[{'type': 'car', 'x': 20.4, 'y': y, 'angle': 270, 'paint': p}                       # parked along the kerbs
+             for y, p in ((45.6, '#9a9ea4'), (38.6, '#8a2a26'))]
+           + [{'type': 'car', 'x': 23.6, 'y': y, 'angle': 90, 'paint': p}
+              for y, p in ((33.0, '#c8c0a8'), (20.6, '#c89a3a'))]
+           + [{'type': 'car', 'x': 22.75, 'y': 49.0, 'angle': 90, 'paint': '#2e3c5a', 'lights': True}],   # coming up the street
     sprites=[
         {'id': 'officer', 'x': 19.1, 'y': 31.0, 'type': 'guard', 'facing': 270},
         {'x': 25.1, 'y': 38.6, 'type': 'barrel'}, {'x': 18.9, 'y': 45.4, 'type': 'crate'},
@@ -71,6 +77,8 @@ s = scene(
         {'x': 24.7, 'y': 52.0, 'look_at': [26.4, 40.0, 1.3], 'fov': 62, 'post': RAIN},
         {'x': 22.0, 'y': 18.5, 'look_at': [40.0, 11.0, 1.6], 'fov': 70,
          'post': ['storm', {'fx': 'lightning', 'x': 0.66}]},
+        {'x': 21.0, 'y': 54.5, 'look_at': [21.8, 44.0, 0.4], 'fov': 58,      # a car coming up the street
+         'post': RAIN + [{'fx': 'bloom', 'source': 'light', 'strength': 1.2, 'radius': 2.0, 'spread': 0.5}]},
     ],
     contact_shadows=0.5,
     supersample=2,

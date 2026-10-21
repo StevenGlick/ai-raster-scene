@@ -1128,6 +1128,70 @@ def check_wireframes():
     print(f'ok wireframes ({len(wires.MESHES)} meshes, depth, solid fill, look_at), Vector World textures and sun')
 
 
+def check_objects():
+    """Objects are built in 3D out of panels: every built-in builds sound panels; a placement
+    expands into panels, billboards and lights; a car is wider seen side on than end on, a wall
+    hides it, and a figure behind it is hidden only in part; glass is see-through."""
+    sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+    import objects
+    import prefabs
+    import render as R
+
+    # 1. every built-in: finite panels with an area, textures with alpha
+    for name in objects.OBJECTS:
+        ex = objects.expand({'map': ['.'], 'objects': [{'type': name, 'x': 0.5, 'y': 0.5}]})
+        assert 'objects' not in ex and ex['panels'], name
+        for pn in ex['panels']:
+            assert np.isfinite(pn['o']).all() and np.linalg.norm(np.cross(pn['u'], pn['v'])) > 1e-6, name
+            assert pn['rgba'].ndim == 3 and pn['rgba'].shape[2] == 4 and pn['em'].shape == pn['rgba'].shape[:2], name
+    stand = prefabs.expand({'map': ['.'], 'objects': [{'type': 'noodle_stand', 'x': 3.0, 'y': 3.0, 'angle': 90}]})
+    assert stand['sprites'] and stand['lights'] and prefabs.expand(stand) is stand, 'billboards and lights; once only'
+    car = objects.expand({'map': ['.'], 'objects': [{'type': 'car', 'x': 0.5, 'y': 0.5}]})
+    assert any(pn.get('translucent') for pn in car['panels']), 'its windows are glass'
+    bare = {'map': ['.']}
+    assert prefabs.expand(bare) is bare
+    try:
+        objects.expand({'map': ['.'], 'objects': [{'type': 'tank', 'x': 0, 'y': 0}]})
+        raise AssertionError('an unknown object must be refused')
+    except KeyError:
+        pass
+    assert any('paintt' in w for w in R.lint_scene({'map': ['.'], 'legend': {}, 'camera': {'x': 0, 'y': 0},
+                                                    'objects': [{'type': 'car', 'x': 0, 'y': 0, 'paintt': '#fff'}]}))
+
+    # 2. a car in front of the camera: wider side on than end on, hidden by a wall
+    room = {'map': ['#' * 12] + ['#' + '.' * 10 + '#'] * 10 + ['#' * 12], 'sky': None, 'ambient': [0.6] * 3,
+            'legend': {'#': {'wall': 'brick', 'h': 1.0}, '.': {'floor': 'concrete_floor', 'reflect': 0}},
+            'surface_noise': 0, 'light_levels': 0, 'camera': {'x': 6.0, 'y': 9.5, 'angle': 270, 'fov': 60}}
+
+    def frame(scene):
+        r = R.Renderer(R.World(scene), scene)
+        return r, r.render(R.prepare_shot(scene, R.merge_camera(scene, scene['camera'])))
+
+    def placed(**kw):
+        return dict(room, objects=[dict({'type': 'car', 'x': 6.0, 'y': 5.5, 'paint': '#3a6ad0'}, **kw)])
+    _, empty = frame(room)
+    widths = []
+    for angle in (0, 90):
+        _, f = frame(placed(angle=angle))
+        cols = np.nonzero((np.abs(f - empty).max(-1) > 0.05).any(0))[0]
+        assert len(cols), 'the car is drawn'
+        widths.append(cols.max() - cols.min())
+    assert widths[0] > 1.6 * widths[1], f'a car is longer than it is wide, seen in 3D: {widths}'
+    walled = dict(room, map=room['map'][:7] + ['#' * 12] + room['map'][8:])
+    _, a = frame(walled)
+    _, b = frame(dict(placed(), map=walled['map']))
+    assert np.abs(a - b).max() < 1e-6, 'a wall hides a car behind it'
+
+    # 3. a figure standing behind the car: its head shows above the roof, its legs do not
+    guard = [{'id': 'g', 'type': 'guard', 'x': 6.0, 'y': 4.4}]
+    r, _ = frame(dict(room, sprites=guard))
+    alone = r.sprite_stats['g']['visible']
+    r, _ = frame(dict(placed(), sprites=guard))
+    behind = r.sprite_stats['g']['visible']
+    assert 0.1 * alone < behind < 0.8 * alone, f'hidden in part, pixel by pixel: {behind} of {alone}'
+    print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights)')
+
+
 def check_docs():
     """The docs name assets, keys and counts by hand: fail as soon as they and the code disagree."""
     sys.path.insert(0, os.path.join(ROOT, 'scripts'))
@@ -1181,6 +1245,8 @@ def check_docs():
     need('reference (sky presets and objects)', ref, list(assets.SKY_PRESETS) + list(assets.SKY_OBJECTS))
     need('reference/Prefabs', section(ref, '## Prefabs'), prefabs.PREFABS)
     need('SKILL.md (prefabs)', skill, prefabs.PREFABS)
+    need('reference/Objects', section(ref, '## Objects'), prefabs.objects.OBJECTS)
+    need('SKILL.md (objects)', skill, prefabs.objects.OBJECTS)
     need('reference (fringe sets)', ref, assets.FRINGES)
     need('reference (facade styles)', section(ref, '## Cell specs'), buildings.FACADE_STYLES)
     need('references/assets.md (see-through and emissive textures)', section(cat, '## Textures'),
@@ -1245,6 +1311,7 @@ def main():
         check_glass_facades()
         check_light_and_lens()
         check_wireframes()
+        check_objects()
         check_docs()
         gs = os.path.join(tmp, 'gui_post.json')
         with open(gs, 'w') as f:

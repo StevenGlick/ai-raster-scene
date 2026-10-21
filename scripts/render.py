@@ -1283,7 +1283,31 @@ class Renderer:
                     placed.append((max(ty, 0.05), tx, sp))
             elif ty > 0.05:
                 placed.append((ty, tx, sp))
-        translucent = lambda sp: sp.get('blend', 'alpha') != 'alpha' or float(sp.get('opacity', 1)) < 1
+        H, W = depth.shape
+        for pn in self.s.get('panels', []):            # the flat parts of objects (scripts/objects.py)
+            lift = self.w.base_z(float(pn['at'][0]), float(pn['at'][1])) if 'at' in pn else 0.0
+            if lift:                                   # an object stands on the floor under it
+                pn = dict(pn, o=pn['o'] + np.array([0.0, 0.0, lift]))
+            corners = pn['o'] + np.array([[0, 0], [1, 0], [0, 1], [1, 1]], float) @ np.stack([pn['u'], pn['v']])
+            sx, sy = corners[:, 0] - px, corners[:, 1] - py
+            cty = inv * (-ply * sx + plx * sy)
+            if (cty < 0.05).all():
+                continue
+            if (cty < 0.05).any():                     # it reaches behind the camera: look everywhere
+                box = (0, H, 0, W)
+            else:
+                scx = (inv * (dy * sx - dx * sy) / cty + 1) * W / 2
+                scy = horizon - (corners[:, 2] - camz) * proj / cty
+                box = (max(0, int(math.floor(scy.min()))), min(H, int(math.ceil(scy.max())) + 1),
+                       max(0, int(math.floor(scx.min()))), min(W, int(math.ceil(scx.max())) + 1))
+                if box[1] <= box[0] or box[3] <= box[2]:
+                    continue
+            placed.append((max(float(cty.mean()), 0.05), 0.0,
+                           {'_panel': pn, '_box': box, 'blend': pn.get('blend', 'alpha'),
+                            'opacity': pn.get('opacity', 1.0), '_trans': bool(pn.get('translucent'))}))
+        # glass and the like: drawn over what is behind them, far to near, without writing depth
+        translucent = lambda sp: (sp.get('blend', 'alpha') != 'alpha' or float(sp.get('opacity', 1)) < 1
+                                  or sp.get('_trans', False))
         glass = sorted([p for p in placed if p[2].get('glass')], key=lambda s: -s[0])
         placed = [p for p in placed if not p[2].get('glass')]
         opaque = sorted([p for p in placed if not translucent(p[2])], key=lambda s: -s[0])
@@ -1294,7 +1318,10 @@ class Renderer:
         for k, (ty, tx, sp) in enumerate(opaque + trans):
             if k == len(opaque) and wired:
                 self._wire_pass(img, depth, wired, px, py, dx, dy, camz, horizon, proj, rlen)
-            if int(sp.get('planes', 0)) > 0:
+            if '_panel' in sp:
+                self._draw_panel(img, depth, sp['_panel'], sp['_box'], (px, py, camz), horizon, proj, flash,
+                                 rays, translucent(sp))
+            elif int(sp.get('planes', 0)) > 0:
                 self._draw_planes(img, depth, ty, tx, sp, defs, horizon, proj, camz, flash, translucent(sp), rays)
             else:
                 self._draw_sprite(img, depth, ty, tx, sp, defs, horizon, proj, camz, pl, flash, translucent(sp))
@@ -1664,6 +1691,86 @@ class Renderer:
             y0_, y1_, x0_, x1_ = ys_.min(), ys_.max() + 1, xs_.min(), xs_.max() + 1
             self._named[sp['id']]['box'] = (y0_, y1_, x0_, x1_, seen[y0_:y1_, x0_:x1_])
 
+    def _draw_panel(self, img, depth, pn, box, cam3, horizon, proj, flash, rays, is_trans):
+        """One flat panel of an object (scripts/objects.py) at any angle - standing, lying or
+        sloped - over the rows and columns of `box`.
+
+        The panel is a parallelogram: its texture's top left corner at `o`, its columns running
+        along `u` and its rows along `v`. Each pixel's ray meets the panel's plane on its own, so
+        the panel is drawn in true perspective and depth-tested per pixel against everything drawn
+        so far, the object's other panels included. It is lit as a wall is: by the light map on the
+        side it is seen from, the sun or moon by the way that side faces, a face turned along y
+        darker than one turned along x, the underside of a thing darker still. Seen from behind,
+        its texture shows mirrored at `back` of its brightness - the inside of a box.
+        """
+        rdx, rdy, rlen = rays
+        r0, r1, c0, c1 = box
+        o, u, v = pn['o'], pn['u'], pn['v']
+        rgba, em = pn['rgba'], pn['em']
+        th, tw = rgba.shape[:2]
+        cam3 = np.asarray(cam3, float)
+        nf = np.cross(u, v)                                  # toward the side the texture reads from
+                                                             # (x east, y south, z up)
+        nn = float(nf @ nf)
+        if nn < 1e-12:
+            return
+        front = float((cam3 - o) @ nf) > 0
+        if not front and pn.get('cull'):
+            return
+        rows, cols = np.arange(r0, r1), np.arange(c0, c1)
+        k = ((horizon - (rows + 0.5)) / proj)[:, None]       # height the ray climbs per unit of depth
+        Rx, Ry = rdx[cols][None, :], rdy[cols][None, :]
+        den = Rx * nf[0] + Ry * nf[1] + k * nf[2]
+        with np.errstate(divide='ignore', invalid='ignore'):
+            t = float((o - cam3) @ nf) / den                  # depth along each pixel's ray
+            hx, hy, hz = cam3[0] + t * Rx, cam3[1] + t * Ry, cam3[2] + t * k
+            d0, d1, d2 = hx - o[0], hy - o[1], hz - o[2]
+            nv_, nu_ = np.cross(v, nf), np.cross(nf, u)       # where along u and along v, 0..1
+            s = (d0 * nv_[0] + d1 * nv_[1] + d2 * nv_[2]) / nn
+            w = (d0 * nu_[0] + d1 * nu_[1] + d2 * nu_[2]) / nn
+            inside = np.isfinite(t) & (t > 0.05) & (s >= 0) & (s < 1) & (w >= 0) & (w < 1)
+        if not inside.any():
+            return
+        uu = (np.where(inside, s, 0.0) * tw).astype(int).clip(0, tw - 1)
+        vv = (np.where(inside, w, 0.0) * th).astype(int).clip(0, th - 1)
+        t = np.where(inside, t, np.inf)
+        block = rgba[vv, uu]
+        alpha = block[..., 3] * float(pn.get('opacity', 1.0))
+        if not is_trans:
+            alpha = (alpha > 0.5).astype(np.float32)
+        dsub = depth[r0:r1, c0:c1]
+        mask = inside & (alpha > 0.02) & (t < dsub)
+        if not mask.any():
+            return
+        n = nf / math.sqrt(nn) * (1 if front else -1)         # the normal of the side seen
+        flat = n[0] ** 2 + n[1] ** 2
+        side = 0.78 + 0.22 * n[0] ** 2 / flat if flat > 1e-9 else 1.0
+        fac = side * flat + (1.0 if n[2] >= 0 else 0.62) * n[2] ** 2
+        if not front:
+            fac *= float(pn.get('back', 0.6))
+        hx, hy, hz = (np.where(inside, q, 0.0) for q in (hx, hy, hz))
+        ed = np.where(inside, t * rlen[cols][None, :], 0.0)
+        ax, ay, az = pn.get('at', o)
+        dyn = sample_lm(self._lm_at(float(ax), float(ay), float(az)), self.lres, hx + n[0] * 0.04, hy + n[1] * 0.04)
+        sun = 0.0
+        if self.suns:
+            sun = self.sun_at(hx, hy, hz, lambda s2: s2['sin'] * max(0.0, n[2])
+                              + s2['cos'] * max(0.0, n[0] * s2['ux'] + n[1] * s2['uy']))
+        rr, cc = np.meshgrid(rows, cols, indexing='ij')
+        emm = np.maximum(em[vv, uu], 1.0 if pn.get('fullbright') else 0.0)
+        tint = np.array(pn.get('tint', [1, 1, 1]), np.float32)
+        colr = self.shade(block[..., :3] * (fac * tint), dyn, self.fade_z(hx, hy, hz), ed, emm,
+                          flash(rr, cc, ed), sun)
+        a = (alpha * mask)[..., None]
+        sub = img[r0:r1, c0:c1]
+        additive = pn.get('blend') == 'additive'
+        img[r0:r1, c0:c1] = sub + colr * a if additive else sub * (1 - a) + colr * a
+        gsub = self._emis[r0:r1, c0:c1]
+        gl = self._glow if self._glow is not None else 0.0
+        self._emis[r0:r1, c0:c1] = gsub + gl * a if additive else gsub * (1 - a) + gl * a
+        if not is_trans:
+            depth[r0:r1, c0:c1] = np.where(mask, t, dsub)
+
     def _reveal(self, sp, rgba, quad, rows, cols, t, s_, v, vv, uu, cand, dsub, horizon, proj, camz, flash, rays):
         """The inner sides of a card's openings, for a card with `reveal` (a depth): the card is
         drawn as a slab that thick, so through an opening seen at an angle its far side shows -
@@ -1928,7 +2035,7 @@ SCENE_KEYS = {
     'palette', 'auto_levels', 'dither', 'scanlines', 'overbright', 'lightmap_res', 'max_distance',
     'supersample', 'overlays', 'ui', 'post', 'icon_defs', 'viewmodel_defs', 'seed',
     'skyline', 'contact_shadows', 'heights', 'height_unit', 'reflections', 'sky_objects', 'wet',
-    'prefabs', 'prefab_defs', 'wireframes',
+    'prefabs', 'prefab_defs', 'wireframes', 'objects',
     'title', 'description', 'notes',  # free-form metadata, never read
 }
 SHOT_KEYS = {'x', 'y', 'angle', 'look_at', 'fov', 'height', 'pitch', 'flashlight', 'overlays', 'overrides',
@@ -1962,6 +2069,8 @@ def lint_scene(scene):
         check(spec, CELL_KEYS, f'legend {ch!r}')
     for i, pl in enumerate(scene.get('prefabs') or []):
         check(pl, prefabs.PLACEMENT_KEYS, f'prefab {i + 1}')
+    for i, pl in enumerate(scene.get('objects') or []):
+        check(pl, prefabs.objects.PLACEMENT_KEYS, f'object {i + 1}')
     for i, wf in enumerate(scene.get('wireframes') or []):
         check(wf, wires.SPEC_KEYS, f'wireframe {i + 1}')
     for i, shot in enumerate(scene.get('shots') or []):
