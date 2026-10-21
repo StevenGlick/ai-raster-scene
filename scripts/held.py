@@ -94,8 +94,9 @@ def _fist(m, c, axis, out, right=True, r=0.015, beta=15.0, curl=0.85, thumb=(-48
 
     In the handle's frame - x the way the back of the hand faces, y to the front of the fist where the
     knuckles are, z along the handle - each finger runs from its knuckle round the front and the far
-    side, bone by bone at its true length, its tip coming back round toward the eye; the thumb lies
-    across the near side at the head end of the fist, its last joint running on past the handle's edge.
+    side, bone by bone at its true length, its tip coming back round toward the eye (`curl` is how far
+    its last two bones go round: less leaves only the fingertips showing past the handle's edge); the
+    thumb lies across the near side at the head end of the fist, its last joint running on past the edge.
     `thumb` is where its root sits round the handle (degrees from the back of the hand), how far its
     last joint bends round, and how far its tip climbs toward the head. A thin handle lies in the
     hollow of the fist against the palm, the thumb over the curled fingers rather than hugging it. The
@@ -162,6 +163,14 @@ def _fist(m, c, axis, out, right=True, r=0.015, beta=15.0, curl=0.85, thumb=(-48
     m.add(S.sd_round_cone, P(j1), P(j2), 0.0128, 0.0118, **digit)
     m.add(S.sd_round_cone, P(j2), P(j3), 0.0118, 0.0102, **digit)
     return P(wrist - hy * 0.006)
+
+
+def _turned(F, spin):
+    """An item head's frame F turned `spin` degrees in the hand, round the haft: its x (across the view)
+    toward its y (away from the eye)."""
+    s = math.radians(spin)
+    F.r, F.u = math.cos(s) * F.r + math.sin(s) * F.u, math.cos(s) * F.u - math.sin(s) * F.r
+    return F
 
 
 def _flame(rgba, em, p, ox, oy, height):
@@ -257,30 +266,32 @@ def vm_flashlight():
 @_kept
 def vm_axe():
     """A felling axe held up in the right fist like a hammer, the haft leaning back over the shoulder,
-    the blade toward the middle of the view; the thumb over the haft, the back of the hand outward."""
+    the blade turned in the hand to point away from the eye; the thumb over the haft, the back of the
+    hand outward, the wrist straight below and only the fingertips showing round the haft."""
     w, h = 141, 150
     m = S.Model()
     c, a, length, head = _staged((240, 180), (290, 76), 0.50, 0.45)
     m.add(S.sd_round_cone, c - a * 0.07, c + a * (length + 0.02), 0.0135, 0.0125, mat=3)              # the haft
-    F = S.Frame(head, a, up_hint=(0, 0, 1))
+    F = _turned(S.Frame(head, a, up_hint=(0, 0, 1)), 70)
     m.add(S.sd_box, F.P(0.045, 0, 0), (0.05, 0.008, 0.032), F.rot((1, 0, 0), (0, 1, 0)), round_=0.003, mat=4)  # head
     m.add(S.sd_cylinder, F.P(0, 0, -0.03), F.P(0, 0, 0.03), 0.018, round_=0.003, mat=4)              # the eye
-    _arm(m, _fist(m, c, a, _facing(a, 45), r=0.0135), S.screen_point(390, 330, 0.30, FOV))
+    _arm(m, _fist(m, c, a, _facing(a, 22), r=0.0135, curl=0.45), S.screen_point(390, 330, 0.30, FOV))
     return _render(m, w, h, 'right', [COAT, CUFF, SKIN, WOOD, IRON])
 
 
 @_kept
 def vm_crowbar():
-    """A crowbar held up in the right fist like a hammer, leaning back, its claw hooked over at the top."""
+    """A crowbar held up in the right fist like a hammer, leaning back, its claw hooked over at the top
+    and turned in the hand to hook away from the eye."""
     w, h = 141, 150
     m = S.Model()
     c, a, length, head = _staged((242, 180), (288, 80), 0.50, 0.45)
     m.add(S.sd_round_cone, c - a * 0.07, head, 0.0095, 0.0095, mat=3)                                   # the bar
-    F = S.Frame(head, a, up_hint=(0, 0, 1))
+    F = _turned(S.Frame(head, a, up_hint=(0, 0, 1)), 70)
     claw = [F.P(0, 0, 0), F.P(0.012, 0, 0.03), F.P(0.04, 0, 0.044), F.P(0.07, 0, 0.034), F.P(0.086, 0, 0.022)]
     for p0, p1 in zip(claw, claw[1:]):
         m.add(S.sd_round_cone, p0, p1, 0.0095, 0.0088, mat=3)
-    _arm(m, _fist(m, c, a, _facing(a, 45), r=0.0095), S.screen_point(390, 330, 0.30, FOV))
+    _arm(m, _fist(m, c, a, _facing(a, 22), r=0.0095, curl=0.45), S.screen_point(390, 330, 0.30, FOV))
     return _render(m, w, h, 'right', [COAT, CUFF, SKIN, REDBAR])
 
 
@@ -293,7 +304,7 @@ def vm_torch():
     c, a, length, head = _staged((80, 180), (38, 90), 0.50, 0.45)
     m.add(S.sd_round_cone, c - a * 0.06, c + a * (length - 0.04), 0.0105, 0.0135, mat=3)              # the haft
     m.add(S.sd_round_cone, c + a * (length - 0.05), c + a * (length + 0.01), 0.022, 0.02, mat=4)      # the rags
-    wrist = _fist(m, c, a, _facing(a, 45, base=(-1.0, 0.0, 0.0)), right=False, r=0.0105)
+    wrist = _fist(m, c, a, _facing(a, 22, base=(-1.0, 0.0, 0.0)), right=False, r=0.0105, curl=0.45)
     _arm(m, wrist, S.screen_point(-70, 330, 0.30, FOV))
     rgba, em = _render(m, w, h, 'left', [COAT, CUFF, SKIN, WOOD, CLOTH])
     return _flame(rgba, em, c + a * (length + 0.01), *viewmodel_origin(320, 200, w, h, 'left'), 0.075)
@@ -301,8 +312,9 @@ def vm_torch():
 
 @_kept
 def vm_lantern():
-    """An oil lantern hanging by its bail from the left fist - the back of the hand on top, the fingers
-    curled under the handle, the forearm reaching in from the left - the flame in its glass."""
+    """An oil lantern hanging by its bail from the left fist - the back of the hand on top and held up,
+    not drooping, the fingers curled under the handle, the forearm reaching in from the left - the
+    flame in its glass."""
     w, h = 115, 150
     m = S.Model()
     grip = S.screen_point(56, 94, 0.47, FOV)
@@ -320,7 +332,7 @@ def vm_lantern():
     for p0, p1 in zip(bail, bail[1:]):
         m.add(S.sd_round_cone, p0, p1, 0.0028, 0.0028, mat=3)
     m.add(S.sd_cylinder, ends[0], ends[1], 0.0085, round_=0.003, mat=4)                                  # wooden handle
-    wrist = _fist(m, grip, a, _facing(a, 15, base=(0.0, -1.0, 0.0)), right=False, r=0.0085, beta=10.0)
+    wrist = _fist(m, grip, a, _facing(a, 35, base=(0.0, -1.0, 0.0)), right=False, r=0.0085, beta=10.0)
     _arm(m, wrist, S.screen_point(-120, 300, 0.26, FOV))
     rgba, em = _render(m, w, h, 'left', [COAT, CUFF, SKIN, IRON, WOOD, IRON, GLASS], glow=(6,))
     return _flame(rgba, em, body + (0, 0.012, 0), *viewmodel_origin(320, 200, w, h, 'left'), 0.03)
