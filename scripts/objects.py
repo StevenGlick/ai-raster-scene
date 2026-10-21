@@ -36,7 +36,7 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'rock', 'length', 'height', 'depth', 'pieces', 'trim', 'size', 'seed', 'plants', 'back', 'lining',
                   'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
                   'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset',
-                  'cover', 'chimney', 'plaster'}
+                  'cover', 'chimney', 'plaster', 'gauge', 'ore'}
 
 
 # ------------------------------------------------------------------ parts
@@ -1576,6 +1576,72 @@ def saloon_bar(pl):
     return [p for p in parts if p]
 
 
+IRON_RUST = ramp('#5a4436', dark=0.4, light=1.5)
+IRON_DARK = ramp('#3e3c3e', dark=0.45, light=1.7)
+
+
+@functools.lru_cache(maxsize=None)
+def _iron_side(w, h):
+    """A riveted plate of iron gone to rust: a row of rivets along its top and foot, streaks of rust
+    running down from them."""
+    rng = np.random.default_rng(w * 31 + h)
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.5, top=1.0, bevel=0, mat=0)
+    cv.noise(0.1, cells=4, rng=rng)
+    for y in (2, h - 3):
+        for x in range(3, w - 2, 6):
+            cv.ellipse(x, y, 1.0, 1.0, z=1.0, dome=0.8, mat=1)                      # rivets
+    for _ in range(max(2, w // 10)):                                               # rust run down
+        x = rng.uniform(2, w - 2)
+        cv.stroke([(x, 3), (x + rng.normal(0, 0.6), rng.uniform(h * 0.4, h - 3))], 0.9, z=0.55, dome=0.2, mat=1,
+                  tone=-0.05)
+    cv.box(0, 0, w, 2, z=1.1, top=1.0, bevel=0.4, mat=1, tone=0.06)               # the rolled lip
+    return _finish(cv, [IRON_RUST, IRON_DARK], relief=0.8)
+
+
+def rails(pl):
+    """A narrow track of the kind a mine runs: two iron rails `length` long the way it faces, `gauge`
+    apart (default 0.24), on wooden sleepers every 0.22, laid on the ground - the rails' tops worn
+    bright."""
+    half = float(pl.get('length', 4.0)) / 2
+    g = float(pl.get('gauge', 0.24)) / 2
+    parts = []
+    n = max(1, int(round(2 * half / 0.22)))
+    for k in range(n):                                                # the sleepers, across the track
+        x = -half + (k + 0.5) * 2 * half / n
+        tex = _solid_cached(_texels(2 * g + 0.16), 5, ('#5e4a38', '#54422f', '#665240')[k % 3])
+        edge = _solid_cached(_texels(2 * g + 0.16), 2, '#3a2e24')
+        parts += box((x - 0.035, -g - 0.08, 0.0), (x + 0.035, g + 0.08, 0.03),
+                     {'top': tex, 'front': edge, 'back': edge})
+    for y in (-g, g):                                                 # the rails
+        top = _solid_cached(_texels(2 * half), 2, '#9a9a9e')
+        side = _solid_cached(_texels(2 * half), 2, '#4a3c34')
+        parts += box((-half, y - 0.012, 0.03), (half, y + 0.012, 0.06), {'top': top, 'right': side, 'left': side})
+    return [p for p in parts if p]
+
+
+def ore_cart(pl):
+    """An ore cart: a riveted iron tub on a low frame and four small wheels set to the rails, its
+    length the way it faces; ore heaped in it (`"ore": false` leaves it empty)."""
+    T = _texels
+    L, w, z0, z1 = 0.24, 0.16, 0.1, 0.34
+    side_l, side_w = _iron_side(T(2 * L), T(z1 - z0)), _iron_side(T(2 * w), T(z1 - z0))
+    parts = box((-L, -w, z0), (L, w, z1), {'right': side_l, 'left': side_l, 'front': side_w, 'back': side_w,
+                                           'bottom': _solid_cached(T(2 * w), T(2 * L), '#2e2a28')})
+    parts += box((-L + 0.03, -w + 0.02, z1 - 0.12), (L - 0.03, w - 0.02, z1 - 0.12),
+                 {'top': _solid_cached(T(2 * w - 0.04), T(2 * L - 0.06), '#3a3230')})     # its floor inside
+    frame = _solid_cached(T(2 * L), 3, '#2a2626')
+    parts += box((-L + 0.02, -w + 0.03, 0.06), (L - 0.02, w - 0.03, z0), {f: frame for f in ('front', 'back', 'right', 'left')})
+    for x in (-L + 0.07, L - 0.07):                                   # the wheels, on the rails
+        for y in (-0.13, 0.13):
+            parts += box((x - 0.045, y - 0.012, 0.015), (x + 0.045, y + 0.012, 0.105),
+                         {f: _solid_cached(4, 4, '#262222') for f in ('front', 'back', 'right', 'left', 'top')})
+    if pl.get('ore', True):
+        parts.append(sprite('ore_heap', 0.0, 0.0, z1 - 0.08, scale=0.14))
+    parts.append(shadow(0.0, 0.0, 0.7, 0.45))
+    return [p for p in parts if p]
+
+
 # ------------------------------------------------------------------ crystals
 
 CRYSTAL_HUES = {'cyan': '#5adcf2', 'violet': '#a47af6', 'rose': '#f27cba', 'green': '#62eaa4', 'amber': '#f2b24e',
@@ -1680,4 +1746,5 @@ def crystal_cluster(pl):
 
 OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder, 'column': column,
            'beam': beam, 'crystal_cluster': crystal_cluster, 'trough': trough, 'shed_roof': shed_roof,
-           'gable_roof': gable_roof, 'market_stand': market_stand, 'saloon_bar': saloon_bar}
+           'gable_roof': gable_roof, 'market_stand': market_stand, 'saloon_bar': saloon_bar, 'rails': rails,
+           'ore_cart': ore_cart}

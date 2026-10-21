@@ -21,8 +21,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 194 | 194 | 0 | 0 | 0 |
-| Props | 301 | 301 | 0 | 0 | 0 |
+| Textures | 197 | 197 | 0 | 0 | 0 |
+| Props | 304 | 304 | 0 | 0 | 0 |
 | Characters | 29 | 29 | 0 | 0 | 0 |
 | Decals | 27 | 27 | 0 | 0 | 0 |
 | Skies | 13 | 13 | 0 | 0 | 0 |
@@ -32,15 +32,15 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Objects | 12 | 12 | 0 | 0 | 0 |
+| Objects | 14 | 14 | 0 | 0 | 0 |
 | Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
 | GUI widgets | 18 | 18 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 61 | 61 | 0 | 0 | 0 |
-| **all** | **781** | **781** | **0** | **0** | **0** |
+| Example scenes | 62 | 62 | 0 | 0 | 0 |
+| **all** | **790** | **790** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -69,7 +69,7 @@ New scenes:
 - [ ] Inside a mine, in the same wild west.
 - [ ] Inside the jungle temple.
 
-## Textures (194)
+## Textures (197)
 
 64x64 tiles, drawn in code. "glows" means the texture lights itself (windows, screens, runes), "see-through" that the map shows through its holes, "mirror" that floors made of it reflect.
 
@@ -106,7 +106,7 @@ New scenes:
 |---|---|---|---|---|
 | `wood_panel` | good |  | drowned_library, haunted_house, mansion_library | Redrawn with the toolkit in basics.py: stiles and rails framing two raised panels per unit, all one dark wood, the bevels catching the light, figure streaked along the grain. |
 | `planks` | good |  | bayou, ghost_town, kelp_forest, sky_islands, winter_woods |  |
-| `boards` | good |  | bayou, coast_lighthouse, ghost_town, kelp_forest, rain_alley, tropical_beach |  |
+| `boards` | good |  | bayou, coast_lighthouse, ghost_town, gold_mine, kelp_forest, rain_alley, tropical_beach |  |
 | `logs` | good |  | coast_lighthouse, winter_lake |  |
 | `door_wood` | good |  | bayou, dream_chess, dream_world, haunted_house, salt_flat, winter_lake |  |
 | `bookshelf` | good |  | claude_study, drowned_library, gui_themes, gui_trade, library_medium, mansion_library |  |
@@ -225,8 +225,8 @@ New scenes:
 | `carpet_green` | good |  | - |  |
 | `flagstone` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, haunted_house, neon_street, night_market, rain_alley |  |
 | `obsidian` | good | mirror 0.45 | dream_world, neon_bar, space_station |  |
-| `concrete_floor` | good |  | 61 scenes |  |
-| `rock_floor` | good |  | crystal_cave, doomed, gui_lantern, kelp_forest, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: flatter, smaller masses in brown with grit in the cracks. |
+| `concrete_floor` | good |  | 62 scenes |  |
+| `rock_floor` | good |  | crystal_cave, doomed, gold_mine, gui_lantern, kelp_forest, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: flatter, smaller masses in brown with grit in the cracks. |
 
 ### Ceilings
 
@@ -298,14 +298,14 @@ New scenes:
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
 | `limestone` | good |  | ancient_ruins, tropical_beach |  |
-| `sandstone` | good |  | ghost_town, red_canyon | Drawn with the toolkit in desert.py: beds of red, orange and cream, the hard ones standing out as ledges, cross-bedding, joints, varnish streaking down from the ledges. |
-| `sandstone_pale` | good |  | ghost_town, red_canyon | Drawn with the toolkit in desert.py: the cream cap rock near a canyon rim, for bands among the sandstone. |
+| `sandstone` | good |  | ghost_town, gold_mine, red_canyon | Drawn with the toolkit in desert.py: beds of red, orange and cream, the hard ones standing out as ledges, cross-bedding, joints, varnish streaking down from the ledges. |
+| `sandstone_pale` | good |  | ghost_town, gold_mine, red_canyon | Drawn with the toolkit in desert.py: the cream cap rock near a canyon rim, for bands among the sandstone. |
 | `slot_rock` | good |  | red_canyon | Drawn with the toolkit in desert.py: beds swept into flowing curves of orange, red, cream and violet, polished smooth. |
 | `pueblo_stone` | good |  | red_canyon | Drawn with the toolkit in desert.py: thin sandstone slabs laid in courses in a thick mud mortar, chinked with small stones. |
 | `pueblo_door` | good |  | red_canyon | Drawn with the toolkit in desert.py: the coursed stone with a T-shaped doorway, dark inside, poles laid over its head. |
 | `ruin_paving` | good |  | ancient_ruins, jungle_temple |  |
 | `dry_grass` | good |  | ancient_ruins, autumn_lane | Fewer, larger clumps with more earth between them, so it is not busy at grazing angles. |
-| `desert_wash` | good |  | ghost_town, red_canyon, saloon | Drawn with the toolkit in desert.py: pale sand faintly rippled, washed-down pebbles, patches of crazed dried mud. |
+| `desert_wash` | good |  | ghost_town, gold_mine, red_canyon, saloon | Drawn with the toolkit in desert.py: pale sand faintly rippled, washed-down pebbles, patches of crazed dried mud. |
 | `colonnade` | good | see-through | - | Flat when seen along its length: use `column` objects for a row you look down (the ruins' peristyle now is). |
 | `colonnade_top` | good | see-through | - |  |
 | `colonnade_broken` | good | see-through | - |  |
@@ -331,8 +331,11 @@ New scenes:
 | `saloon_backbar_top` | good |  | saloon | A tall mirror in a carved frame under an arched cresting, a glint across it. |
 | `saloon_window` | good | see-through | saloon | Six open panes in a dark frame: the sun comes through, and a bright street shows. |
 | `tin_ceiling` | good |  | saloon | Pressed tin, cream gone yellow with smoke: square panels each pressed with a rosette. |
+| `mine_rock` | good |  | gold_mine | Drawn with the toolkit in mine.py: brown rock broken into small masses by dark cracks, drill and pick marks. |
+| `mine_rock_vein` | good |  | gold_mine | The rock with a seam of milky quartz running across it in a gentle wave, so cell to cell it joins up into one seam. Use it for a few cells only. |
+| `mine_rock_gold` | good | glows | gold_mine | The seam with gold in it - flecks and a thread - glinting: it glows a little, so a lamp seems to catch it. |
 
-## Props (301)
+## Props (304)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -353,8 +356,8 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `book_stack` | good | 0.22 tall | claude_study, drowned_library, mansion_library |  |
 | `chest` | good | 0.3 tall | castle_keep, kelp_forest | Redrawn with the toolkit in basics.py: oak planks under a rounded lid, iron straps studded with rivets, iron corners, a brass lock plate. |
 | `console` | good | 0.85 tall, glows | bunker_lab, orbital_hangar, space_station |  |
-| `crate` | good | 0.4 tall | bunker_lab, clockwork_city, coast_lighthouse, ghost_town, gui_lantern, gui_themes, gui_trade, hospital_corridor, library_medium, mansion_library, neon_street, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway, village_green, winter_lake, woodland_night | Redrawn with the toolkit in basics.py: planks behind battens and a diagonal brace, nails at the corners, a stencilled arrow. |
-| `barrel` | good | 0.45 tall | bayou, bunker_lab, clockwork_city, coast_lighthouse, ghost_town, gui_lantern, gui_themes, gui_trade, library_medium, mansion_library, neon_street, night_market, rain_alley, rainy_street, saloon, sewer_tunnels, tunnel_encounter, underground_waterway, village_green | Redrawn with the toolkit in basics.py: bulging staves turned on a lathe, three iron hoops, the lid showing at the top. |
+| `crate` | good | 0.4 tall | 20 scenes | Redrawn with the toolkit in basics.py: planks behind battens and a diagonal brace, nails at the corners, a stencilled arrow. |
+| `barrel` | good | 0.45 tall | 20 scenes | Redrawn with the toolkit in basics.py: bulging staves turned on a lathe, three iron hoops, the lid showing at the top. |
 | `locker` | good | 1 tall | bunker_lab |  |
 | `lectern` | good | 0.5 tall | chapel_graveyard |  |
 | `open_book` | good | 0.12 tall, glows, no shadow | claude_study, drowned_library, mansion_library |  |
@@ -372,7 +375,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `chains` | good | 0.6 tall, no shadow | castle_keep |  |
 | `ladder` | good | 1 tall, no shadow | capsule_hotel, drowned_library, red_canyon, sewer_tunnels |  |
 | `pipe_valve` | good | 0.32 tall, no shadow | bunker_lab, clockwork_city, sewer_tunnels |  |
-| `sack` | good | 0.42 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, neon_street, rain_alley, rainy_street, sewer_tunnels, village_green, woodland_night |  |
+| `sack` | good | 0.42 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, gold_mine, neon_street, rain_alley, rainy_street, sewer_tunnels, village_green, woodland_night |  |
 | `bucket` | good | 0.32 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, neon_street, rain_alley, rainy_street, sewer_tunnels |  |
 
 ### Light and fire
@@ -390,7 +393,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `grandfather_clock` | good | 1.6 tall | haunted_house, mansion_library, salt_flat | Drawn with the toolkit in haunted.py: a mahogany case: hood with a broken pediment and finial, a dial near midnight, a glass door on the pendulum. |
 | `balustrade` | good | 0.5 tall | haunted_house | Drawn with the toolkit in haunted.py: turned balusters every eighth of a unit between handrail and base rail, newel posts; three units a card. |
 | `lamp_post` | good | 1.6 tall, glows | clockwork_city, garden_encounter, gui_menus, hospital_garden, post_presets, rain_alley, rainy_street | Thin at a distance. |
-| `lantern` | good | 0.3 tall, glows, no shadow | bayou, chapel_graveyard, coast_lighthouse, garden_encounter, ghost_town, gui_lantern, gui_menus, gui_themes, gui_trade, library_medium, mansion_library, post_presets, tunnel_encounter, underground_waterway, village_green, winter_lake, winter_woods, woodland_night |  |
+| `lantern` | good | 0.3 tall, glows, no shadow | bayou, chapel_graveyard, coast_lighthouse, garden_encounter, ghost_town, gold_mine, gui_lantern, gui_menus, gui_themes, gui_trade, library_medium, mansion_library, post_presets, tunnel_encounter, underground_waterway, village_green, winter_lake, winter_woods, woodland_night |  |
 | `sconce` | good | 0.32 tall, glows, no shadow | castle_keep, claude_study, rainy_street, saloon |  |
 
 ### Nature
@@ -425,7 +428,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `anemone` | good | 0.26 tall | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: a bubble-tip anemone: a red foot, salmon tentacles swollen to magenta bulbs, its pair of clownfish nestled among them. |
 | `tube_sponge` | good | 0.36 tall | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: violet tubes from a shared base, each with its lip and dark open mouth. |
 | `reef_rock` | good | 0.6 tall | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: a mound of live rock in coralline and algae, with a sea fan, staghorn, a tube sponge and brain corals grown on it. |
-| `rocks` | good | 0.22 tall | alien_world, ancient_ruins, bunker_lab, cathedral_ruin, chapel_graveyard, coast_lighthouse, crystal_cave, derelict_ship, ghost_town, kelp_forest, misty_moor, moon_base, rainy_street, red_canyon, sewer_tunnels, tropical_beach, winter_lake, winter_woods, woodland_night | Redrawn: half-sunk stones with lit tops and the odd crack. |
+| `rocks` | good | 0.22 tall | 20 scenes | Redrawn: half-sunk stones with lit tops and the odd crack. |
 | `snowy_pine` | good | 3.4 tall | aurora_palace, winter_lake, winter_woods | Drawn with the toolkit in forest.py: the new spruce with snow lying in clumps along every tier's shoulders, crumbs on the hems and a small cap on the leader; dark needles between, so it still reads at a distance. |
 | `boulder_snow` | good | 0.55 tall | winter_lake, winter_woods | Drawn with the toolkit in forest.py: the boulder under a cushion of snow, deep where the top is flat and thin down the steep sides; in the `snow` scatter set. |
 | `stump` | good | 0.3 tall | tropical_beach, woodland_night | Redrawn with the toolkit in forest.py: a pale ringed cut face, furrowed sides, roots, a cushion of moss. |
@@ -605,18 +608,18 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `column_drum` | good | 0.42 tall | ancient_ruins, cathedral_ruin | Flutes now run back along the drum, so it reads as a column; the end face is lit and stands proud of the body on a shadowed rim, scalloped by the flutes, a worn ring and the dowel hole. |
 | `marble_head` | good | 1.1 tall | ancient_ruins |  |
 | `amphora` | good | 0.36 tall | ancient_ruins |  |
-| `cow_skull` | good | 0.2 tall | ghost_town, red_canyon, saloon | Drawn with the toolkit in desert.py: a bleached longhorn skull: dark sockets and nose, horns curving out and up. |
+| `cow_skull` | good | 0.2 tall | ghost_town, gold_mine, red_canyon, saloon | Drawn with the toolkit in desert.py: a bleached longhorn skull: dark sockets and nose, horns curving out and up. |
 | `clay_pot` | good | 0.34 tall | red_canyon | Drawn with the toolkit in desert.py: a round white pot painted in black bands and a zigzag, turned on a lathe. |
 | `windpump` | good | 4.2 tall | ghost_town | Drawn with the toolkit in desert.py: a lattice tower of four splayed legs, cross-braced, a wheel of galvanised blades with its tail vane. |
 | `water_trough` | good | 0.4 tall | - | Drawn with the toolkit in desert.py: grey boards on short legs, water near the brim. |
 | `wagon_wheel` | good | 0.55 tall | ghost_town | Drawn with the toolkit in desert.py: an iron-shod rim, twelve spokes, a heavy hub. |
 | `cypress` | good | 4 tall | ancient_ruins |  |
-| `saguaro` | good | 3.2 tall | ghost_town, red_canyon | Drawn with the toolkit in desert.py: a ribbed column with two arms bending up, spines along the ribs, white blossoms on the crown. |
-| `prickly_pear` | good | 0.6 tall | ghost_town, red_canyon | Drawn with the toolkit in desert.py: oval pads growing out of one another, spines, magenta fruit along the top. |
-| `tumbleweed` | good | 0.45 tall | ghost_town, red_canyon, saloon | Drawn with the toolkit in desert.py: a loose ball of wiry dry stems, the light coming through. |
+| `saguaro` | good | 3.2 tall | ghost_town, gold_mine, red_canyon | Drawn with the toolkit in desert.py: a ribbed column with two arms bending up, spines along the ribs, white blossoms on the crown. |
+| `prickly_pear` | good | 0.6 tall | ghost_town, gold_mine, red_canyon | Drawn with the toolkit in desert.py: oval pads growing out of one another, spines, magenta fruit along the top. |
+| `tumbleweed` | good | 0.45 tall | ghost_town, gold_mine, red_canyon, saloon | Drawn with the toolkit in desert.py: a loose ball of wiry dry stems, the light coming through. |
 | `olive_tree` | good | 2.2 tall | ancient_ruins |  |
 | `poppies` | good | 0.24 tall | ancient_ruins |  |
-| `dry_tuft` | good | 0.36 tall | ancient_ruins, ghost_town, red_canyon, tropical_beach |  |
+| `dry_tuft` | good | 0.36 tall | ancient_ruins, ghost_town, gold_mine, red_canyon, tropical_beach |  |
 
 ### Beach
 
@@ -701,6 +704,9 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `card_table` | good | 0.3 tall | saloon | A round table of green baize mid-game, seen a little from above: cards, stacks of chips, a bottle and two glasses. |
 | `saloon_chair` | good | 0.32 tall | saloon | A bentwood chair, side on: the hooped back, the round seat, splayed legs. |
 | `spittoon` | good | 0.09 tall | saloon | Brass, squat and bellied, a wide funnel mouth. |
+| `pick_shovel` | good | 0.46 tall | gold_mine | A pick and a shovel leaning together, their hickory handles worn pale. |
+| `dynamite_crate` | good | 0.2 tall | gold_mine | A crate stencilled DYNAMITE, its lid off, red sticks standing in it with their fuses. |
+| `ore_heap` | good | 0.16 tall | gold_mine | Broken ore in a mound, quartz in some lumps, a glint of gold; the `ore_cart` heaps it too. |
 
 ## Characters (29)
 
@@ -733,7 +739,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `runner` | good | neon_bar, neon_rooftop, neon_street, night_market | A cyberpunk: dark hair with a pink streak, a lit cyan visor, a black jacket striped in neon. |
 | `samurai` | good | night_market | A street samurai: topknot, glowing red visor, a long black coat lined in crimson over a grey shirt and a gold belt, a sword slung across the back with its hilt over the shoulder, one chrome arm; back view. |
 | `hacker` | good | capsule_hotel, neon_bar | Hood up in deep violet, cyan goggles glowing in the shadow of it, a deck held in both hands with a green screen, cargo trousers, white sneakers on lit pink soles; back view. |
-| `cowboy` | good | ghost_town, neon_bar, night_market, red_canyon, saloon | A wide-brimmed hat, moustache, red bandana, a vest over a tan shirt, a gun belt, jeans and boots; for the canyon. |
+| `cowboy` | good | ghost_town, gold_mine, neon_bar, night_market, red_canyon, saloon | A wide-brimmed hat, moustache, red bandana, a vest over a tan shirt, a gun belt, jeans and boots; for the canyon. |
 | `witch` | good | aurora_palace, autumn_lane, neon_bar | A crooked pointed hat banded in purple, green skin, glowing yellow eyes, a robe, a lit lantern at her side. |
 | `farmer` | good | village_green | A straw hat, plaid shirt and blue overalls, a pitchfork taller than him. |
 | `pirate` | good | bayou | A gold-edged tricorn, an eye patch and beard, a red coat with gold buttons, a cutlass. |
@@ -759,7 +765,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `cobweb` | good | bunker_lab, castle_keep |  |
 | `rune_mark` | good | - |  |
 | `drain` | good | bunker_lab, neon_street, night_market, rainy_street, sewer_tunnels |  |
-| `contact_shadow` | good | 60 scenes |  |
+| `contact_shadow` | good | 61 scenes |  |
 | `pad_marking` | good | moon_base, orbital_hangar | A painted landing ring with an H and a dashed outer ring, worn in patches. |
 | `rover_tracks` | good | moon_base | Drawn with the toolkit in moon.py: two tracks of chevron treads pressed into dust. |
 | `hazard_stripe` | good | orbital_hangar | A band of yellow and black diagonal stripes, worn through in places. |
@@ -795,7 +801,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `space` | good | moon_base, orbital_hangar, space_station |  |
 | `alien` | good | alien_world |  |
 | `dream` | good | dream_chess, dream_world, drowned_library, hall_of_doors, salt_flat |  |
-| `sunset` | good | bayou, clockwork_city, ghost_town, red_canyon, salt_flat, tropical_beach |  |
+| `sunset` | good | bayou, clockwork_city, ghost_town, gold_mine, red_canyon, salt_flat, tropical_beach |  |
 | `golden` | good | ancient_ruins, autumn_lane, bayou, sky_islands, woodland_night |  |
 | `vector` | good | vector_world | Black to violet with a magenta glow at the horizon and a few stars; pair it with a striped sun. |
 | `aurora` | good | aurora_palace | A clear arctic night with the aurora across it, no two stretches alike: a curtain of green rays of every width and height fringed pink, a pleated teal ribbon, red-tipped rays to the west, a faint high arc; brightest due north; they glow. |
@@ -844,7 +850,7 @@ Named mixes for `scatter`; repeats in the contents act as weights.
 | `jungle` | good | fern x3, monstera, bromeliad x2, heliconia, mushrooms | jungle_temple |  |
 | `beach` | good | coconuts, driftwood, rocks x2, crab, dry_tuft | tropical_beach |  |
 | `ruins` | good | column_drum, rubble, rocks x2, poppies, dry_tuft x2, amphora | ancient_ruins |  |
-| `desert` | good | rocks x3, prickly_pear, tumbleweed, cow_skull, dry_tuft | ghost_town, red_canyon | Rocks with the odd prickly pear, tumbleweed, skull and dry tuft. |
+| `desert` | good | rocks x3, prickly_pear, tumbleweed, cow_skull, dry_tuft | ghost_town, gold_mine, red_canyon | Rocks with the odd prickly pear, tumbleweed, skull and dry tuft. |
 | `swamp` | good | cattails x2, reeds, cypress_knees, rocks | - | Cattails and reeds with cypress knees and the odd rock. |
 | `seabed` | good | rocks x3, crab, boulder | kelp_forest | Rocks with the odd crab and boulder. |
 
@@ -895,7 +901,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
-## Objects (12)
+## Objects (14)
 
 Things too big for a billboard, built in 3D out of flat panels (`scripts/objects.py`).
 
@@ -903,10 +909,10 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 |---|---|---|---|
 | `car` | good | rain_alley | A saloon from panels, laid out as the user drew it: the overall box with the car's outline on its sides, hood and trunk lid across it at the belt (body 60%, glass 40%), the roof, glass windows with seats, dashboard and steering wheel inside, four wheels set in under the body in dark wells, a floor pan and a soft shadow; `paint`, `lights`. Proportions and handles tuned with the user. |
 | `noodle_stand` | good | neon_street | Counter, awning, valance, noren and sign as panels; bowls, pot, tray, lanterns and stools as billboards, with its own lamp and lantern lights. |
-| `rock_wall` | good | aquarium, crystal_cave, ghost_town, neon_bar, red_canyon | Laid out as the user drew it: overlapping pieces along a wall's foot, each in plan a rounded mass of a few broad faces jutting from the wall (the user's sharper zigzag read as spikes; a few spikes and notches are left), each its own height, a trim of faces along its top cut by one long smooth wavy edge, a flat top (inset a texel, so it never shows past the faces), plants on the rim. Kinds `stone`, `reef`, `sandstone`, `snow`, `cave`, `lumen` (glowing moss); `lining` lines every wall face of some map cells. The faces cut from one solid block of stone. Seen from above its tops are flat with the trim standing round them, as Build's were. |
+| `rock_wall` | good | aquarium, crystal_cave, ghost_town, gold_mine, neon_bar, red_canyon | Laid out as the user drew it: overlapping pieces along a wall's foot, each in plan a rounded mass of a few broad faces jutting from the wall (the user's sharper zigzag read as spikes; a few spikes and notches are left), each its own height, a trim of faces along its top cut by one long smooth wavy edge, a flat top (inset a texel, so it never shows past the faces), plants on the rim. Kinds `stone`, `reef`, `sandstone`, `snow`, `cave`, `lumen` (glowing moss); `lining` lines every wall face of some map cells. The faces cut from one solid block of stone. Seen from above its tops are flat with the trim standing round them, as Build's were. |
 | `boulder` | good | aquarium, autumn_lane, coast_lighthouse, crystal_cave, misty_moor, neon_bar, red_canyon, winter_woods, woodland_night | A low-poly mass, every face a triangle: an irregular foot, a belly, drawn-in shoulders, a peak off its centre; closed from every side. Plants on top by count. |
-| `column` | good | ancient_ruins, cathedral_ruin, tropical_beach | A column or a post: a prism of `sides` faces (an octagon by default), tapering if `top` is under 1, a plinth (`base`) and a capital if asked; stone cut from the solid rock as rock is, or `wood` - weathered timber, the grain running up it, dark and grown over below `wet` where it stands in water. Built for the pier's piles first; the cathedral's piers are `ashlar` (dressed stone in drums) with plinths and capitals, one `broken` off ragged. The ruins' columns are Greek: `flutes` (20 faces, each hollowed, so it takes the light on one side and shadow on the other) and `doric` (an echinus widening under a square abacus), in `marble` laid in drums; `fill` lifts a backlit column's dark side. |
-| `beam` | good | ancient_ruins, cathedral_ruin | A squared timber or stone lintel lying level, `length` along the way it faces, its underside at the placement's `z`; timber's grain runs along it. Wall plates on the cathedral's piers, and one fallen on the floor; the architraves and cornices over the ruins' columns. |
+| `column` | good | ancient_ruins, cathedral_ruin, gold_mine, tropical_beach | A column or a post: a prism of `sides` faces (an octagon by default), tapering if `top` is under 1, a plinth (`base`) and a capital if asked; stone cut from the solid rock as rock is, or `wood` - weathered timber, the grain running up it, dark and grown over below `wet` where it stands in water. Built for the pier's piles first; the cathedral's piers are `ashlar` (dressed stone in drums) with plinths and capitals, one `broken` off ragged. The ruins' columns are Greek: `flutes` (20 faces, each hollowed, so it takes the light on one side and shadow on the other) and `doric` (an echinus widening under a square abacus), in `marble` laid in drums; `fill` lifts a backlit column's dark side. |
+| `beam` | good | ancient_ruins, cathedral_ruin, gold_mine | A squared timber or stone lintel lying level, `length` along the way it faces, its underside at the placement's `z`; timber's grain runs along it. Wall plates on the cathedral's piers, and one fallen on the floor; the architraves and cornices over the ruins' columns. |
 | `crystal_cluster` | good | crystal_cave | The user's idea: crystals whose facets refract. Hexagonal prisms with pointed tips from a bed of rock, every facet a panel with its own clarity (clear across the middle, milky toward the base, bright edges) and its own bend: drawn with the glass, each facet shows the frame drawn so far shifted by one offset from the way it is turned (Renderer._bend), so it shows one coherent piece of what is behind, the colours parting a little at the edges. Strongest with glowing things behind. |
 
 ### Not yet sorted
@@ -918,6 +924,8 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `gable_roof` | good | - | A gabled roof of boards with gable ends of upright boards, `walls` under it (`inset` back from its front). The western facade builds one behind every false front (ghost_town): the building's body, low enough for the front to hide. |
 | `market_stand` | good | village_green | The market stall in 3D, as the noodle stand: a trestle table of weathered boards with a striped skirt (the awning's valance, in step), four poles, a striped awning sloping down to the front with a scalloped valance round it; `goods_*` heaped on the table, crates and a sack by it, as billboards. Replaces the `market_stall` billboard in the village. |
 | `saloon_bar` | good | saloon | A saloon's counter in 3D, 0.38 tall: raised mahogany panels between pilasters, a polished top overhanging the drinkers' side, the bartender's shelves behind, a brass foot rail on brackets, bottles on it. |
+| `rails` | good | gold_mine | A narrow track: two iron rails on wooden sleepers every 0.22, their tops worn bright. |
+| `ore_cart` | good | gold_mine | A riveted iron tub gone to rust (`_iron_side`: rivets along its lip and foot, rust running down) on a low frame and four small wheels set to the rails, ore heaped in it. |
 
 ## Held items (8)
 
@@ -967,7 +975,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 
 | theme | status | used in | notes |
 |---|---|---|---|
-| `classic` | good | 53 scenes |  |
+| `classic` | good | 54 scenes |  |
 | `parchment` | good | gui_themes, gui_trade |  |
 | `terminal` | good | bunker_lab, gui_themes, orbital_hangar, space_station |  |
 | `blood` | good | gui_themes |  |
@@ -978,9 +986,9 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 
 | widget | status | used in | notes |
 |---|---|---|---|
-| `bubble` | good | 22 scenes |  |
+| `bubble` | good | 23 scenes |  |
 | `dialog` | good | bunker_lab, chapel_graveyard, claude_study, coast_lighthouse, ghost_corridor, library_medium, neon_bar, orbital_hangar, space_station |  |
-| `caption` | good | 46 scenes |  |
+| `caption` | good | 47 scenes |  |
 | `choice` | good | gui_menus, gui_themes, gui_trade |  |
 | `title` | good | gui_menus |  |
 | `panel` | good | bunker_lab, gui_lantern |  |
@@ -1036,7 +1044,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `mono` | good | - |  |
 | `bone` | good | - |  |
 
-## Example scenes (61)
+## Example scenes (62)
 
 The environments, judged on their gallery images and shots.
 
@@ -1140,10 +1148,12 @@ The environments, judged on their gallery images and shots.
 | scene | status | shots | gallery | notes |
 |---|---|---|---|---|
 | `saloon` | good | 3 | saloon_noon, saloon_cards, saloon_piano | New: the frontier town's saloon - the noon sun through the front windows into dusty air, a card game, and after midnight a ghost at the piano. The day's people are the shots' extra sprites, so the room at night is empty. |
+| `gold_mine` | good | 3 | mine_tunnel, mine_vein, mine_portal | New: the frontier mine - a tunnel timbered in 3D with rails and lanterns, a prospector at a vein of gold, the portal in a hillside of canyon rock at dusk. |
 
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, the gold mine.** The second new scene: a frontier gold mine. A kit, mine.py: `mine_rock` (and with a seam of quartz, and with gold in it, glinting), a pick and shovel, a dynamite crate, an ore heap; objects `rails` and `ore_cart`; the timber sets are `column`s and `beam`s of wood. Lessons: a vein drawn on every tile repeats as a graphic zigzag - it is a gentle wave that joins tile to tile now, on a few cells only; and a wall taller than the ceiling is drawn its full height, over the ceiling (the stope showed its seam twice and no roof), so the mine's inner rock is exactly the roof's height and the hill outside is cells of its own, with a rock wall lifted over the portal. scene_format's `ceiling_height` row said walls should be 'at least' that tall: now 'exactly'.
 - **2026-10-21, the saloon.** The first of the user's new scenes: inside the frontier town's saloon. A new kit, saloon.py: wainscot and flocked paper, the back bar's bottles and mirror, open-paned windows, a pressed-tin ceiling, a piano, a card table, a bentwood chair, a spittoon, a wanted poster; and a `saloon_bar` object in 3D. First drawn 14 by 10 cells it was a hall forty metres long - a unit is nearly three metres - so it is 8 by 6 under a 1.6 ceiling; the windows looked dark until the store across the street went (its shaded front was all they showed); the noon shot looks across the beams toward them.
 - **2026-10-21, the village's roofs.** The user's eleventh: the village's houses read as roofless and flat, the market cart a billboard. The timber style now has a `body` (2.8): the facade code builds each house's roof as a `gable_roof` - behind a gable end, running back from the street with its slopes on the gable card's edges (the card stays the front); over an eaves house, along the street with its eaves 0.15 out over the front (its slope card is gone) and a chimney where the card had one - on plastered walls (`plaster`, the house's colour, `buildings.house_color`) up from the block, inset behind every facade layer (`inset` takes four sides now). New roof covers `thatch` and `tile` (painters `_thatch`, `_tiles`; `ROOFS`, with brick for chimneys), `overhang` per eaves and ends. `market_stand`: a trestle table of boards with a striped skirt (the valance's stripes), an awning on four poles, goods heaped on it (`goods_apples`, `goods_cabbages`, `goods_loaves`, new in village.py) - the keeper kept out in front, where the approved shot had him; behind the table the bubble lost him. `_timber` is never wet (its wet line was measured from the roof's eaves).
 - **2026-10-21, the frontier town.** The user's tenth: depth for the ghost town's buildings, its trough in 3D, the porch frame filled, the mountain walls redone. Three timber objects: `trough`, `shed_roof` and `gable_roof` (with `walls` and `inset`), all of boards - `_wood` gains `boards`: a seam between each and each its own tone, the seams lining up across panels. The facade code builds objects now (World.panels, drawn with the scene's): a western porch's roof (a ceiling at the fascia's height is hidden behind the fascia from the street, so the porch read as a bare frame; a roof sloping down to it shows), and behind each false front its building, a gabled roof low enough for the front to hide from the street (`body`, 5 cells back). The body's walls stand behind every facade layer - first built on the facade's own plane, they covered the windows. Mesas: R lined with `canyon` rock walls, the old walls cut to 5.
