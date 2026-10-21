@@ -1,7 +1,8 @@
 """Dream world: islands adrift in a pastel sky, with a sea of cloud far below.
 
 Shows void floors (the sky carries on under the horizon, and each island's edge drops away as a
-cliff with its own `side` texture), the `dream` sky with a moon and an eye in `sky_objects`, a wall
+cliff with its own `side` texture, a `keel` of rock in 3D hanging under it), the `dream` sky with a moon
+and an eye in `sky_objects`, chess pieces in 3D (`chess_piece`) on the chequered island, a wall
 painted with sky and a door in it, a staircase to nowhere (`heights` with a 0.3 `height_unit`), a
 mirror lake (`reflect` 0.9), and things floating in the air at absolute `z` over the void.
 Run:  python dream_world.py  -> writes dream_world.json
@@ -54,9 +55,6 @@ s = scene(
         {'x': 14.6, 'y': 31.6, 'type': 'door_frame'},
         {'id': 'dreamer', 'x': 12.6, 'y': 28.2, 'type': 'dreamer',
          'light': {'radius': 2.0, 'color': [1.0, 0.8, 0.5], 'intensity': 0.5}},
-        {'x': 8.4, 'y': 31.6, 'type': 'chess_pawn'}, {'x': 15.6, 'y': 33.4, 'type': 'chess_pawn', 'tint': [0.22, 0.2, 0.24]},
-        {'x': 16.6, 'y': 29.4, 'type': 'chess_king', 'tint': [0.22, 0.2, 0.24]},
-        {'x': 7.4, 'y': 28.8, 'type': 'chess_king'},
         {'x': 31.4, 'y': 30.8, 'type': 'tree', 'scale': 2.2},
         {'x': 28.0, 'y': 6.0, 'type': 'sky_whale', 'z': 3.4, 'scale': 3.2},
         {'x': 5.6, 'y': 14.6, 'type': 'koi', 'z': 0.9}, {'x': 4.2, 'y': 16.4, 'type': 'koi', 'z': 1.3, 'flip': True},
@@ -69,10 +67,17 @@ s = scene(
         {'x': 31.0, 'y': 26.0, 'type': 'pocket_watch', 'z': 1.3},
         {'x': 4.0, 'y': 22.0, 'type': 'balloon', 'z': 2.4, 'scale': 2.4},
     ],
+    objects=[{'type': 'chess_piece', 'piece': p, 'side': side, 'x': x, 'y': y, 'height': h, 'angle': a, 'seed': k}
+             for k, (p, side, x, y, h, a) in enumerate((('pawn', 'white', 8.4, 31.6, 0.9, 90), ('pawn', 'black', 15.6, 33.4, 0.9, 270),
+                                                       ('king', 'black', 16.6, 29.4, 1.55, 270),
+                                                       ('king', 'white', 7.4, 28.8, 1.55, 90)))] + [
+        # under every island its rock, from the foot of its cliff to a ragged point
+        {'type': 'keel', 'x': x, 'y': y, 'z': -2.48, 'size': 2 * r + 0.6, 'depth': 1.5 * r, 'roots': True, 'seed': 90 + k}
+        for k, (x, y, r) in enumerate(((12.5, 30.5, 6.5), (24.5, 18.5, 4.6), (5.5, 15.5, 3.6), (31.5, 31.5, 2.6)))],
     camera={'x': 12.4, 'y': 34.6, 'look_at': [10.6, 25.0, 0.9], 'fov': 74},
     shots=[
         {'x': 12.4, 'y': 34.6, 'look_at': [10.6, 25.0, 0.9], 'fov': 74, 'post': glow},
-        {'x': 16.0, 'y': 25.6, 'look_at': [24.5, 18.0, 1.0], 'fov': 64, 'post': glow,
+        {'x': 17.6, 'y': 25.6, 'look_at': [24.5, 18.0, -0.9], 'fov': 78, 'post': glow,   # from out over the void
          'overlays': [{'type': 'caption', 'text': 'Every stair goes somewhere. Not this one.', 'at': 'bottom', 'box': True}]},
         {'x': 5.0, 'y': 18.0, 'look_at': [5.0, 10.0, 0.7], 'fov': 72, 'post': glow},
     ],

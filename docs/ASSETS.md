@@ -502,7 +502,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `salt_pile` | good | 0.12 tall | salt_flat | Drawn in saltflat.py: a small rough shovelful of salt, a clod rolled off its side. |
 | `salt_clods` | good | 0.08 tall | salt_flat | Drawn in saltflat.py: a few lumps of salt left lying, of different sizes. |
 | `waterfall` | good | 6 tall, no shadow | sky_islands | Drawn in skyisles.py: a sheet of falling water, white at its lip, breaking into mist toward its foot; a card. |
-| `island_roots` | good | 2 tall, no shadow | sky_islands | Drawn in skyisles.py: roots and vines dangling under an island's edge; a card. |
+| `island_roots` | good | 2 tall, no shadow | dream_world, sky_islands | Drawn in skyisles.py: roots and vines dangling under an island's edge; a card. |
 | `island_keel` | good | 6 tall, no shadow | - | Drawn in skyisles.py: the rock under a floating island tapering to a ragged point, banded, roots trailing; a billboard. |
 | `rope_rail` | good | 0.42 tall, no shadow | sky_islands | Drawn in skyisles.py: a bridge's railing: a post at every unit and two sagging ropes; a card. |
 | `glow_monstera` | good | 0.75 tall, glows | glow_jungle | Drawn in glowjungle.py: the monstera at night, every leaf traced in cyan light. |
@@ -564,7 +564,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `alien_egg` | good | 0.35 tall, glows | alien_world, derelict_ship | Redrawn with the toolkit in basics.py: a leathery, mottled egg with a wet sheen, veins glowing faintly green, four lips at its crown parting on a glow. |
 | `alien_plant` | good | 1.1 tall, glows | alien_world |  |
 | `balloon` | good | 2.6 tall, no shadow | dream_world |  |
-| `chess_king` | good | 1.55 tall | dream_world | Drawn with the toolkit in dream.py: the tallest piece, crown and cross, turned marble. |
+| `chess_king` | good | 1.55 tall | - | Drawn with the toolkit in dream.py: the tallest piece, crown and cross, turned marble. |
 | `chess_rook` | good | 1.1 tall | - | Drawn with the toolkit in dream.py: a turned tower with a flared, crenellated top. |
 | `chess_knight` | good | 1.2 tall | - | Drawn with the toolkit in dream.py: a horse head and neck on a turned foot, ridged mane, eye and ear. |
 | `chess_bishop` | good | 1.3 tall | - | Drawn with the toolkit in dream.py: a slender stem and a mitre with its slit, a bead on top. |
@@ -577,7 +577,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `jellyfish` | good | 0.9 tall, glows, no shadow | drowned_library, kelp_forest | A bell of light frilled at the rim, oral arms and tentacles; additive and glowing, no shadow. |
 | `sky_lantern` | good | 0.34 tall, glows, aura, no shadow | drowned_library, hall_of_doors | Drawn with the toolkit in dream.py: a tapering paper shade lit from inside, the flame at its foot, a wire ring; aura. |
 | `book_fly` | good | 0.3 tall, no shadow | drowned_library, hall_of_doors, mansion_library | Drawn with the toolkit in dream.py: an open book with its covers raised as wings and its pages fanned. |
-| `chess_pawn` | good | 0.9 tall | dream_world | Drawn with the toolkit in dream.py: a turned marble pawn (lathe profile), faint veins. Tint dark for the other side. |
+| `chess_pawn` | good | 0.9 tall | - | Drawn with the toolkit in dream.py: a turned marble pawn (lathe profile), faint veins. Tint dark for the other side. |
 | `door_frame` | good | 1.1 tall | dream_chess, dream_world, hall_of_doors, salt_flat |  |
 | `floating_rock` | good | 1.6 tall, no shadow | dream_world, sky_islands |  |
 | `koi` | good | 0.35 tall, no shadow | dream_chess, dream_world, drowned_library, hall_of_doors |  |
@@ -928,8 +928,8 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `saloon_bar` | good | saloon | A saloon's counter in 3D, 0.38 tall: raised mahogany panels between pilasters, a polished top overhanging the drinkers' side, the bartender's shelves behind, a brass foot rail on brackets, bottles on it. |
 | `rails` | good | gold_mine | A narrow track: two iron rails on wooden sleepers every 0.22, their tops worn bright. |
 | `ore_cart` | good | gold_mine | A riveted iron tub gone to rust (`_iron_side`: rivets along its lip and foot, rust running down) on a low frame and four small wheels set to the rails, ore heaped in it. |
-| `keel` | good | sky_islands | The rock under a floating island in 3D: an irregular ring at the foot of the cliff drawing in by uneven steps - each corner its own reach - to a point off its centre, crags hanging from its flanks; `island` rock (grey and brown in beds) painted at half a wall's texels, lit from above so its underside is in shade. Replaces the `island_keel` billboards. |
-| `chess_piece` | good | dream_chess | A chess piece in 3D, turned (`_lathe`: each pair of profile points a frustum of 16 faces, smoothly shaded round with a convex `tilt`) in polished marble (`_polished`: lit by the way each texel faces, a sheen toward the light, veins), white or black; the rook's battlements, the queen's coronet and ball, the king's crown and cross; the knight's head carved side on from a slab, its eyes nicked in. Replaces the billboards in dream_chess. |
+| `keel` | good | dream_world, sky_islands | The rock under a floating island in 3D: an irregular ring at the foot of the cliff drawing in by uneven steps - each corner its own reach - to a point off its centre, crags hanging from its flanks; `island` rock (grey and brown in beds) painted at half a wall's texels, lit from above so its underside is in shade. Replaces the `island_keel` billboards. |
+| `chess_piece` | good | dream_chess, dream_world | A chess piece in 3D, turned (`_lathe`: each pair of profile points a frustum of 16 faces, smoothly shaded round with a convex `tilt`) in polished marble (`_polished`: lit by the way each texel faces, a sheen toward the light, veins), white or black; the rook's battlements, the queen's coronet and ball, the king's crown and cross; the knight's head carved side on from a slab, its eyes nicked in. Replaces the billboards in dream_chess. |
 
 ## Held items (8)
 
@@ -1116,7 +1116,7 @@ The environments, judged on their gallery images and shots.
 | `orbital_hangar` | good | 4 | hangar_bay, hangar_control, hangar_reactor, hangar_pilot | A shuttle bay in orbit, its control room and the reactor: the scifi.py hardware, glass panes between mullions onto space and a ringed planet, a window onto the bay, cyan haze and red alarm light. |
 | `alien_world` | good | 3 | alien_landing, alien_monolith |  |
 | `moon_base` | good | 4 | moon_base, moon_rover, moon_night, moon_earth | Greenhouse domes and habitat modules on the grey plain under the Earth: day, the rover, the lunar night, Earthrise over the domes. |
-| `dream_world` | good | 3 | dream_stair, dream_mirror |  |
+| `dream_world` | good | 3 | dream_stair, dream_mirror | Islands in a pastel sky, each with a `keel` of rock in 3D under its cliff; the stair shot is taken from out over the void, so the island floats; chess pieces in 3D on the chequered island. |
 | `dream_chess` | good | 4 | dream_plain, dream_door, dream_hole, dream_clock | A giant chess game in 3D (`chess_piece`, polished white and black marble, mirrored in the floor) on a floating plain of checker_marble under a melting sky clock: arches and stairs in the air, a stair up to a lone door, a hole onto the sky. |
 | `drowned_library` | good | 4 | library_hall, library_reader, library_beams, library_water | Bookshelves three storeys high in still water under tall windows and skylights: beams in dark fog, jellyfish, lanterns, flying books, koi and a whale. |
 | `hall_of_doors` | good | 4 | doors_hall, doors_stair, doors_sky, doors_up | An endless corridor of doors in every colour, three storeys and the ceiling; a door onto the sky, a stair to a door in the air, the sleepwalker. |
@@ -1158,6 +1158,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, the dream world.** The fantasy refresh, third: keels under the dream islands, the chequered island's pieces in 3D; the stair to nowhere shot from out over the void (from the next island its keel was hidden behind that island's floor), so the island visibly floats, the whale and the eye still over it.
 - **2026-10-21, the chess set.** The fantasy refresh, second: the chequered plain's giant chess pieces were billboards. Now `chess_piece` objects: turned from a profile of (radius, height) points, smoothly shaded round (a convex `tilt`: the normal swings across each face as round a cylinder), in polished marble with a sheen and veins - the floor mirrors them. The knight is a head carved side on from a slab, so it is turned a little off the cameras' lines; seen head on it is only the slab's thickness. Its head first faced inward (its panels' winding), so the white knight's head was dark.
 - **2026-10-21, the sky islands.** The fantasy refresh, first: the islands' keels in 3D (`keel`, new: rings of triangles drawing in to a point, crags hanging off them; a new `island` rock kind, and any rock kind can be painted coarser with `density`), and the temple's ring of billboard columns a ruined tholos of fluted Doric `marble` columns with an entablature over the pairs that stand. Tried and dropped: a ring of `rock_wall`s round every island - from the meadows it walled the view in, and the islands lost their look of floating meadows.
 - **2026-10-21, inside the temple.** The third new scene: inside the jungle pyramid. A small kit, temple.py: a `golden_idol` and `treasure`; the pillars and altar are `column`s and a `beam` of stone. One roof cell left open, a sun at 72 degrees through a thick fog with strong shafts, makes the column of light; at first the sun came from the wrong side of the hole and missed the altar (azimuth 100 lit the floor behind it), and the room was too murky to read.

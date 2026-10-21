@@ -207,36 +207,6 @@
    }
   },
   {
-   "x": 8.4,
-   "y": 31.6,
-   "type": "chess_pawn"
-  },
-  {
-   "x": 15.6,
-   "y": 33.4,
-   "type": "chess_pawn",
-   "tint": [
-    0.22,
-    0.2,
-    0.24
-   ]
-  },
-  {
-   "x": 16.6,
-   "y": 29.4,
-   "type": "chess_king",
-   "tint": [
-    0.22,
-    0.2,
-    0.24
-   ]
-  },
-  {
-   "x": 7.4,
-   "y": 28.8,
-   "type": "chess_king"
-  },
-  {
    "x": 31.4,
    "y": 30.8,
    "type": "tree",
@@ -328,6 +298,88 @@
    "scale": 2.4
   }
  ],
+ "objects": [
+  {
+   "type": "chess_piece",
+   "piece": "pawn",
+   "side": "white",
+   "x": 8.4,
+   "y": 31.6,
+   "height": 0.9,
+   "angle": 90,
+   "seed": 0
+  },
+  {
+   "type": "chess_piece",
+   "piece": "pawn",
+   "side": "black",
+   "x": 15.6,
+   "y": 33.4,
+   "height": 0.9,
+   "angle": 270,
+   "seed": 1
+  },
+  {
+   "type": "chess_piece",
+   "piece": "king",
+   "side": "black",
+   "x": 16.6,
+   "y": 29.4,
+   "height": 1.55,
+   "angle": 270,
+   "seed": 2
+  },
+  {
+   "type": "chess_piece",
+   "piece": "king",
+   "side": "white",
+   "x": 7.4,
+   "y": 28.8,
+   "height": 1.55,
+   "angle": 90,
+   "seed": 3
+  },
+  {
+   "type": "keel",
+   "x": 12.5,
+   "y": 30.5,
+   "z": -2.48,
+   "size": 13.6,
+   "depth": 9.75,
+   "roots": true,
+   "seed": 90
+  },
+  {
+   "type": "keel",
+   "x": 24.5,
+   "y": 18.5,
+   "z": -2.48,
+   "size": 9.799999999999999,
+   "depth": 6.8999999999999995,
+   "roots": true,
+   "seed": 91
+  },
+  {
+   "type": "keel",
+   "x": 5.5,
+   "y": 15.5,
+   "z": -2.48,
+   "size": 7.8,
+   "depth": 5.4,
+   "roots": true,
+   "seed": 92
+  },
+  {
+   "type": "keel",
+   "x": 31.5,
+   "y": 31.5,
+   "z": -2.48,
+   "size": 5.8,
+   "depth": 3.9000000000000004,
+   "roots": true,
+   "seed": 93
+  }
+ ],
  "shots": [
   {
    "x": 12.4,
@@ -357,14 +409,14 @@
    ]
   },
   {
-   "x": 16.0,
+   "x": 17.6,
    "y": 25.6,
    "look_at": [
     24.5,
     18.0,
-    1.0
+    -0.9
    ],
-   "fov": 64,
+   "fov": 78,
    "post": [
     {
      "fx": "bloom",

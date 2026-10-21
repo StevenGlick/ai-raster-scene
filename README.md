@@ -411,7 +411,7 @@ Islands adrift in a pastel sky over a sea of cloud, a staircase to nowhere, koi 
 
 | | |
 |---|---|
-| ![A staircase to nowhere on an island in the sky](docs/gallery/dream_stair.png) | ![Koi over a mirror lake](docs/gallery/dream_mirror.png) |
+| ![A staircase to nowhere on an island floating in the sky, its rock hanging under it](docs/gallery/dream_stair.png) | ![Koi over a mirror lake](docs/gallery/dream_mirror.png) |
 | ![Giant chess pieces on a plain of chequered marble under a melting clock](docs/gallery/dream_plain.png) | ![A stair out of the floor up to a door that leads nowhere](docs/gallery/dream_door.png) |
 | ![A hole in the floor with the sky underneath](docs/gallery/dream_hole.png) | ![A clock gone soft, slumped over a marble plinth](docs/gallery/dream_clock.png) |
 
