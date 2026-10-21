@@ -32,7 +32,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Objects | 21 | 21 | 0 | 0 | 0 |
+| Objects | 22 | 22 | 0 | 0 | 0 |
 | Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 68 | 68 | 0 | 0 | 0 |
-| **all** | **808** | **808** | **0** | **0** | **0** |
+| **all** | **809** | **809** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -522,7 +522,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `ice_throne` | good | 1.1 tall | aurora_palace | Drawn in icepalace.py: a throne cut from a block of ice, a high pointed back. |
 | `icicles` | good | 0.4 tall, no shadow | aurora_palace | Drawn in icepalace.py: a row of icicles hanging from an eave; a card. |
 | `ice_shards` | good | 0.5 tall | aurora_palace | Drawn in icepalace.py: shards of ice breaking up through the snow. |
-| `brass_gear` | good | 2 tall, no shadow | clockwork_city | Drawn in clockwork.py: a great toothed brass wheel with spokes and a hub; a card for a wall. |
+| `brass_gear` | good | 2 tall, no shadow | - | Drawn in clockwork.py: a great toothed brass wheel with spokes and a hub; a card for a wall. |
 | `great_clock` | good | 1.6 tall, no shadow | clockwork_city | Drawn in clockwork.py: a tower's great clock: an ivory dial in a brass ring, roman hours; a card. |
 | `stasis_pod` | good | 1 tall, glows | derelict_ship |  |
 | `shuttle` | good | 2.2 tall, glows | orbital_hangar | Drawn with the toolkit in scifi.py: nose-on wedge hull in white and orange, lit cockpit and engine pods, landing legs, panel lines and vents. |
@@ -906,7 +906,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
-## Objects (21)
+## Objects (22)
 
 Things too big for a billboard, built in 3D out of flat panels (`scripts/objects.py`).
 
@@ -938,6 +938,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `lighthouse` | good | coast_lighthouse | A round tower of whitewashed masonry tapering up, smoothly shaded (`lime_white`, `_painted`), a red band (`lime_red`), a gallery on corbels with an iron rail of posts, a lantern room of ten glass panes (the `glass` cover's painter, translucent) with the lamp lit in it (an `orb` and a light), a domed iron cap with a ball. |
 | `stone_lantern` | good | autumn_garden | A garden's stone lantern: a hexagonal foot, a round shaft (smooth), a platform, a firebox of four posts with a flame showing between them and a little light, a wide six-sided roof, a finial. |
 | `standing_stone` | good | misty_moor | A standing stone: a rough slab of `menhir` rock set on end (`size`, `depth`, `height`), its broad faces nearly flat, swelling and drawing in as it rises, leaning a few degrees, its top sloping down from one shoulder with the corners knocked off; low and wide, an altar slab. |
+| `gear` | good | clockwork_city | A gear: a toothed wheel of `brass` (`size`, `depth`, `teeth`, `spokes`), its faces cut to the teeth, rim, spokes and boss, each a shade of its own, the sides of its teeth standing out; verdigris in patches. |
 
 ## Held items (8)
 
@@ -1099,7 +1100,7 @@ The environments, judged on their gallery images and shots.
 | `sky_islands` | good | 5 | isles_temple, isles_bridge, isles_above, isles_golden, isles_falls | Meadows adrift over a sea of cloud: a temple island with a waterfall, keels of rock in 3D, a ruined ring of Doric columns in marble, a plank bridge to an islet of trees, golden hour. Ringing the islands' cliffs with `rock_wall`s was tried and dropped: they turned the floating meadows into a rocky fortress. |
 | `glow_jungle` | good | 4 | glow_pool, glow_head, glow_flowers, glow_path | A clearing at night where every plant glows: a pool of glowing plankton, a stone head lit green, a heliconia burning pink, a path into the jungle. |
 | `aurora_palace` | good | 4 | aurora_lake, aurora_gate, aurora_throne, aurora_shore | A palace of ice on a frozen lake under the aurora: the lake doubling it, the gate, the throne in a hall of frost, the shore. Crystals of ice in 3D now flank the gate, the throne and the shore, bending the aurora; their light makes the palace glow (it was dark blocks). |
-| `clockwork_city` | good | 4 | clock_plaza, clock_orrery, clock_gears, clock_tower | A plaza of brass and brick at sundown: the orrery (wireframes) before the clock tower, gears in the walls, pipes and steam. |
+| `clockwork_city` | good | 4 | clock_plaza, clock_orrery, clock_gears, clock_tower | A plaza of brass and brick at sundown: the orrery (wireframes) before the clock tower, gears of brass in 3D standing out from the walls and under the clock, pipes venting steam, gaslamps, an automaton. |
 | `village_green` | good | 4 | village_market, village_stall, village_well, village_night | A cobbled street of timber-framed houses to a green: a market stall and its keeper, the inn sign, a cart, the well; the inn lit after closing. |
 | `ghost_town` | good | 4 | western_noon, western_saloon, western_ghost, western_windpump | A frontier main street: a cowboy at high noon, the saloon and its barkeep, sundown with lanterns and a ghost, a windpump in the desert. |
 | `misty_moor` | good | 3 | moor_dawn, moor_circle | A stone circle in 3D (`standing_stone`s, leaning, their tops sloping, an altar slab) throwing long shadows and shafts of sun through the dawn mist. |
@@ -1171,6 +1172,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, the clockwork city's gears.** In 3D: `gear` (new object) - a toothed wheel of `brass` (new paint, verdigris in patches), its faces cut to the teeth, rim, spokes and boss, each a shade of its own, the sides of its teeth standing out - in place of the flat `brass_gear` cards on the walls, and one under the tower's clock.
 - **2026-10-21, the basalt coast.** A new scene: a causeway of 400-odd hexagonal `column`s of `basalt` (new rock kind: dark, pale on top, each column's joints at heights of its own) stepping down into a `sea` at sunset, organ pipes up the cliff, every column casting. Three tries: backlit, the tops went black (sun moved to the side); `deep_water`'s blue fought the sunset (the `sea` floor mirrors it).
 - **2026-10-21, the ancient ruins' shadows.** The columns `"casts": true` (not the architraves: a thing that casts stands in the light as if solid from the ground up, so they would shade the gaps between the columns under them): since they became 3D objects the low sun had thrown no shadow of them; now the colonnade's shadows stripe the sacred way at golden hour and the moon's fall across the paving at night, as the scene was meant to have.
 - **2026-10-21, the misty moor.** Its stones in 3D: `standing_stone` (new object) - rough slabs of `menhir` rock (new kind), leaning a little, their tops sloping down from one shoulder, broad faces turned into the circle; the altar a slab lying. Objects can now cast the sun's shadow (`"casts": true`, off by default): the grid-block stones had thrown the long dawn shadows and the shafts in the mist, and without that the fog went flat white.

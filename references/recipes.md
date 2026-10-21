@@ -91,7 +91,7 @@ A corridor one cell wide under a `ceiling_height` of 1, its walls `capsules` and
 
 ### A clockwork city
 
-Blocks of `brick_dark` with a `brass_plate` top storey, runs of `copper_pipes` venting `steam`, a tower with a `great_clock` card on its face (and a `cone` wireframe for a brass spire), `brass_gear` cards against the walls (`angle` square to the wall, mixed sizes, some `flip`ped), `lamp_post`s with warm lights, the `robot` tinted brass for an automaton. An orrery is wireframes: thin brass `torus` rings (`thickness` about 0.016) at different `tilt`s round a `sphere`. `sunset` sky, brown fog, ambient about 0.28, a low warm sun, a gentle light bloom (1.2). See `examples/clockwork_city.py`.
+Blocks of `brick_dark` with a `brass_plate` top storey, runs of `copper_pipes` venting `steam`, a tower with a `great_clock` card on its face (and a `cone` wireframe for a brass spire), `gear` objects standing out from the walls (`angle` so their faces look out from the wall, set `depth / 2` off it; mixed sizes, `teeth` to suit - 16 to 32 - `z` to lift them; the `brass_gear` card is a flat stand-in), `lamp_post`s with warm lights, the `robot` tinted brass for an automaton. An orrery is wireframes: thin brass `torus` rings (`thickness` about 0.016) at different `tilt`s round a `sphere`. `sunset` sky, brown fog, ambient about 0.28, a low warm sun, a gentle light bloom (1.2). See `examples/clockwork_city.py`.
 
 ## Sci-fi and other worlds
 

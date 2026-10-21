@@ -37,7 +37,7 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
                   'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset',
                   'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel', 'ends', 'sail',
-                  'band', 'lit', 'casts'}
+                  'band', 'lit', 'casts', 'teeth', 'spokes'}
 
 
 # ------------------------------------------------------------------ parts
@@ -1298,6 +1298,8 @@ IRONS = {
                      key=(-0.4, 0.45, 0.8), shade=(0.38, 0.55), rust=0.84),
     'lacquer_black': dict(ramps=[ramp('#2a2628', dark=0.6, light=2.2), ramp('#4a3a32', dark=0.5, light=1.6)],
                           key=(-0.4, 0.45, 0.8), shade=(0.3, 0.6), rust=0.9),
+    'brass': dict(ramps=[ramp('#b08a3c', dark=0.4, light=1.55, warm=0.06), ramp('#4f8a6e', dark=0.4, light=1.3)],
+                  key=(-0.4, 0.45, 0.8), shade=(0.34, 0.62), rust=0.8),
 }
 
 
@@ -2138,6 +2140,56 @@ def stone_lantern(pl):
     return [p for p in parts if p]
 
 
+def gear(pl):
+    """A gear: a toothed wheel `size` across (default 2.0) and `depth` thick (default a tenth of its size),
+    standing on its rim (lift it with `z`), its axle along x - turn it with `angle` to face where it
+    should, flat to a wall say. `teeth` round it (default 24) and `spokes` (default 6) - both even, so
+    its two faces agree; a rim, the spokes and a boss at the hub each a shade of their own; of
+    `material`, default `brass` (gone green with verdigris in patches)."""
+    mat = _material(dict(pl, material=pl.get('material', 'brass')))
+    seed = int(pl.get('seed', 1))
+    R = float(pl.get('size', 2.0)) / 2
+    D = float(pl.get('depth', R * 0.2))
+    n = max(2, int(pl.get('teeth', 24)) // 2 * 2)
+    m = max(2, int(pl.get('spokes', 6)) // 2 * 2)
+    root, rim, hub, sw = R * 0.86, R * 0.7, R * 0.24, R * 0.13
+
+    def region(part):
+        def mask(w, h):
+            ys, xs = np.mgrid[0:h, 0:w]
+            u, v = (xs + 0.5) / w * 2 - 1, 1 - (ys + 0.5) / h * 2
+            r, th = np.hypot(u, v) * R, np.arctan2(v, u)
+            d = np.abs((th / (2 * np.pi) * n) % 1.0 - 0.5)               # from the middle of a tooth's pitch
+            edge = np.where(d < 0.16, R, np.where(d > 0.3, root, root + (R - root) * (0.3 - d) / 0.14))
+            if part == 'rim':
+                return (r <= edge) & (r >= rim)
+            if part == 'boss':
+                return r < hub * 0.62
+            off = ((th / (2 * np.pi) * m + 0.5) % 1.0 - 0.5) * 2 * np.pi / m
+            spoke = np.abs(r * np.sin(off)) < sw / 2
+            return (r < rim) & (r >= hub * 0.62) & ((r < hub) | spoke)
+        return mask
+
+    parts = []
+    for x, sgn in ((D / 2, 1), (-D / 2, -1)):                          # its two faces
+        tl, tr, bl = (x, sgn * R, 2 * R), (x, -sgn * R, 2 * R), (x, sgn * R, 0.0)
+        for part, tone in (('rim', 0.04), ('web', -0.1), ('boss', 0.1)):
+            parts.append(_rock(mat, seed, tl, tr, bl, alpha=region(part), tone=tone))
+    p = 2 * np.pi / n                                                  # the sides of its teeth, all round
+    th = np.concatenate([[(k + 0.5) * p - 0.3 * p, (k + 0.5) * p - 0.16 * p, (k + 0.5) * p + 0.16 * p,
+                          (k + 0.5) * p + 0.3 * p] for k in range(n)])
+    rr = np.tile([root, R, R, root], n)
+    ring = np.stack([rr * np.cos(th), R + rr * np.sin(th)], 1)
+    for i in range(len(ring)):
+        (y0, z0), (y1, z1) = ring[i], ring[(i + 1) % len(ring)]
+        A, B, C = np.array([D / 2, y0, z0]), np.array([D / 2, y1, z1]), np.array([-D / 2, y0, z0])
+        out = np.array([0.0, (y0 + y1) / 2, (z0 + z1) / 2 - R])
+        if np.cross(B - A, C - A) @ out < 0:
+            A, B, C = np.array([-D / 2, y0, z0]), np.array([-D / 2, y1, z1]), np.array([D / 2, y0, z0])
+        parts.append(_rock(mat, seed + 1, A, B, C))
+    return [q for q in parts if q]
+
+
 # ------------------------------------------------------------------ chess pieces
 
 def _polished(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
@@ -2395,4 +2447,4 @@ OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'bo
            'gable_roof': gable_roof, 'market_stand': market_stand, 'saloon_bar': saloon_bar, 'rails': rails,
            'ore_cart': ore_cart, 'keel': keel, 'chess_piece': chess_piece, 'ship_hull': ship_hull,
            'longship': longship, 'lighthouse': lighthouse, 'stone_lantern': stone_lantern,
-           'standing_stone': standing_stone}
+           'standing_stone': standing_stone, 'gear': gear}

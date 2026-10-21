@@ -289,58 +289,6 @@
    "z": 4.5
   },
   {
-   "x": 12.6,
-   "y": 12.06,
-   "type": "brass_gear",
-   "angle": 0,
-   "scale": 2.6,
-   "z": 0.9
-  },
-  {
-   "x": 15.0,
-   "y": 12.08,
-   "type": "brass_gear",
-   "angle": 0,
-   "scale": 1.5,
-   "z": 0.3,
-   "flip": true
-  },
-  {
-   "id": "gear",
-   "x": 26.94,
-   "y": 17.0,
-   "type": "brass_gear",
-   "angle": 90,
-   "scale": 3.0,
-   "z": 0.7
-  },
-  {
-   "x": 26.92,
-   "y": 19.6,
-   "type": "brass_gear",
-   "angle": 90,
-   "scale": 1.7,
-   "z": 0.15,
-   "flip": true
-  },
-  {
-   "x": 26.94,
-   "y": 25.5,
-   "type": "brass_gear",
-   "angle": 90,
-   "scale": 2.2,
-   "z": 1.6
-  },
-  {
-   "x": 22.5,
-   "y": 12.06,
-   "type": "brass_gear",
-   "angle": 0,
-   "scale": 2.0,
-   "z": 1.2,
-   "flip": true
-  },
-  {
    "x": 9.6,
    "y": 16.5,
    "type": "steam"
@@ -700,6 +648,79 @@
     0.38
    ],
    "intensity": 0.5
+  }
+ ],
+ "objects": [
+  {
+   "type": "gear",
+   "x": 12.6,
+   "y": 12.16,
+   "z": 0.9,
+   "angle": 90,
+   "size": 2.6,
+   "teeth": 28,
+   "seed": 0
+  },
+  {
+   "type": "gear",
+   "x": 15.0,
+   "y": 12.104999999999999,
+   "z": 0.3,
+   "angle": 90,
+   "size": 1.5,
+   "teeth": 16,
+   "seed": 1
+  },
+  {
+   "type": "gear",
+   "x": 22.5,
+   "y": 12.129999999999999,
+   "z": 1.2,
+   "angle": 90,
+   "size": 2.0,
+   "teeth": 22,
+   "seed": 2
+  },
+  {
+   "type": "gear",
+   "x": 26.82,
+   "y": 17.0,
+   "z": 0.7,
+   "angle": 180,
+   "size": 3.0,
+   "teeth": 32,
+   "seed": 5
+  },
+  {
+   "type": "gear",
+   "x": 26.884999999999998,
+   "y": 19.6,
+   "z": 0.15,
+   "angle": 180,
+   "size": 1.7,
+   "teeth": 18,
+   "seed": 6
+  },
+  {
+   "type": "gear",
+   "x": 26.86,
+   "y": 25.5,
+   "z": 1.6,
+   "angle": 180,
+   "size": 2.2,
+   "teeth": 24,
+   "seed": 7
+  },
+  {
+   "type": "gear",
+   "x": 18.0,
+   "y": 12.11,
+   "z": 2.75,
+   "angle": 90,
+   "size": 1.55,
+   "teeth": 20,
+   "spokes": 4,
+   "seed": 9
   }
  ],
  "shots": [

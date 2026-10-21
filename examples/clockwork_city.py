@@ -4,7 +4,8 @@ venting steam, gaslamps, an automaton on its rounds, and in the middle of it all
 turning round a golden sun, the planets riding them.
 
 Shows the clockwork kit (scripts/clockwork.py): `brass_plate` and `copper_pipes` walls, a `clock_face`
-storey on the little tower, `brass_gear` and `great_clock` cards stood against the walls; the orrery is
+storey on the little tower, a `great_clock` card on the tower, `gear` objects in 3D - brass wheels with teeth,
+spokes and a boss, gone green in patches - standing out from the walls; the orrery is
 wireframes - `torus` rings tilted round a `sphere`, all in brass - on a `cylinder` plinth. With `steam`
 from the pipes and the chimneys, `lamp_post`s, and the `robot` tinted brass for an automaton.
 Run:  python clockwork_city.py  -> writes clockwork_city.json
@@ -59,14 +60,8 @@ for a, r, z, s, c in ((30, 1.65, 2.25, 0.22, BRASS), (150, 1.4, 1.55, 0.17, [0.5
 wireframes.append({'mesh': 'cone', 'x': 18.0, 'y': 10.5, 'z': 8.0, 'size': 2.1, 'scale': [1, 1.4, 1.3], 'sides': 4,
                    'angle': 45, 'solid': True, 'fill': [0.2, 0.13, 0.07], 'color': BRASS, 'intensity': 0.5})  # the tower's spire
 sprites = [
-    # the great clock on the tower, gears turning in the walls
+    # the great clock on the tower
     {'id': 'clock', 'x': 18.0, 'y': 12.04, 'type': 'great_clock', 'angle': 0, 'scale': 1.7, 'z': 4.5},
-    {'x': 12.6, 'y': 12.06, 'type': 'brass_gear', 'angle': 0, 'scale': 2.6, 'z': 0.9},
-    {'x': 15.0, 'y': 12.08, 'type': 'brass_gear', 'angle': 0, 'scale': 1.5, 'z': 0.3, 'flip': True},
-    {'id': 'gear', 'x': 26.94, 'y': 17.0, 'type': 'brass_gear', 'angle': 90, 'scale': 3.0, 'z': 0.7},
-    {'x': 26.92, 'y': 19.6, 'type': 'brass_gear', 'angle': 90, 'scale': 1.7, 'z': 0.15, 'flip': True},
-    {'x': 26.94, 'y': 25.5, 'type': 'brass_gear', 'angle': 90, 'scale': 2.2, 'z': 1.6},
-    {'x': 22.5, 'y': 12.06, 'type': 'brass_gear', 'angle': 0, 'scale': 2.0, 'z': 1.2, 'flip': True},
     # steam from the pipes and the chimneys
     {'x': 9.6, 'y': 16.5, 'type': 'steam'}, {'x': 9.6, 'y': 25.5, 'type': 'steam', 'flip': True},
     {'x': 26.4, 'y': 21.6, 'type': 'steam'},
@@ -78,6 +73,13 @@ sprites = [
     {'x': 10.0, 'y': 28.0, 'type': 'barrel'}, {'x': 10.7, 'y': 28.4, 'type': 'crate'}, {'x': 25.8, 'y': 28.3, 'type': 'barrel'},
     {'x': 10.2, 'y': 13.4, 'type': 'pipe_valve'},
 ]
+# gears in the walls, in 3D: on the north side facing south, on the east facing west - (along, z, size, teeth)
+gears = [{'type': 'gear', 'x': x, 'y': 12.0 + sz * 0.05 + 0.03, 'z': z, 'angle': 90, 'size': sz, 'teeth': t, 'seed': k}
+         for k, (x, z, sz, t) in enumerate(((12.6, 0.9, 2.6, 28), (15.0, 0.3, 1.5, 16), (22.5, 1.2, 2.0, 22)))]
+gears += [{'type': 'gear', 'x': 27.0 - sz * 0.05 - 0.03, 'y': y, 'z': z, 'angle': 180, 'size': sz, 'teeth': t, 'seed': 5 + k}
+          for k, (y, z, sz, t) in enumerate(((17.0, 0.7, 3.0, 32), (19.6, 0.15, 1.7, 18), (25.5, 1.6, 2.2, 24)))]
+gears.append({'type': 'gear', 'x': 18.0, 'y': 12.11, 'z': 2.75, 'angle': 90, 'size': 1.55, 'teeth': 20, 'spokes': 4,
+              'seed': 9})                     # and one on the clock tower, under its face
 lamps = [(10.5, 14.0), (25.5, 14.0), (10.5, 27.0), (25.5, 27.0), (16.0, 13.0), (20.0, 13.0)]
 sprites += [{'x': x, 'y': y, 'type': 'lamp_post'} for x, y in lamps]
 lights = [{'x': x, 'y': y, 'z': 1.5, 'radius': 5.0, 'color': [1.0, 0.72, 0.42], 'intensity': 1.2} for x, y in lamps]
@@ -94,6 +96,7 @@ s = scene(
     fog={'color': [0.42, 0.3, 0.2], 'density': 0.022},
     sprites=sprites,
     wireframes=wireframes,
+    objects=gears,
     camera={'x': 18.0, 'y': 30.0, 'look_at': [18.0, 12.0, 3.0], 'fov': 70},
     shots=[
         {'x': 18.0, 'y': 29.4, 'height': 0.5, 'look_at': [18.0, 12.0, 3.6], 'fov': 72, 'post': [GLOW],

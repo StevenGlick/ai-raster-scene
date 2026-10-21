@@ -1381,6 +1381,10 @@ def check_objects():
     starboard = lambda pns: sum(1 for pn in pns if pn['o'][1] > 0.3)                      # noqa: E731
     port = lambda pns: sum(1 for pn in pns if pn['o'][1] < -0.3)                          # noqa: E731
     assert starboard(stove) < starboard(whole) and port(stove) == port(whole), 'stove in on its starboard side'
+    # 16. a gear is as wide and tall as its size, its faces and the sides of every tooth
+    gp = objects.expand({'map': ['.'], 'objects': [{'type': 'gear', 'x': 0.0, 'y': 0.0, 'size': 2.0, 'teeth': 20}]})['panels']
+    pts = np.array([c for pn in gp for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])
+    assert abs(np.ptp(pts[:, 1]) - 2.0) < 0.05 and abs(pts[:, 2].max() - 2.0) < 0.05 and len(gp) == 6 + 4 * 20, 'a gear'
     # 15. a standing stone stands on end, its broad faces along x; one that casts throws the sun's shadow
     # behind it (the sun in the east: to the west), but never on itself
     st = objects.expand({'map': ['.'], 'objects': [{'type': 'standing_stone', 'x': 0.0, 'y': 0.0, 'height': 2.0,
