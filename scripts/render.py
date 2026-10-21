@@ -1765,6 +1765,8 @@ class Renderer:
         ed = np.where(inside, t * rlen[cols][None, :], 0.0)
         ax, ay, az = pn.get('at', o)
         dyn = sample_lm(self._lm_at(float(ax), float(ay), float(az)), self.lres, hx + n[0] * 0.04, hy + n[1] * 0.04)
+        if pn.get('dyn') is not None:       # the lamps' light is mapped on the floor: a roof's slope over
+            dyn = dyn * float(pn['dyn'])    # them takes little of it
         sun = 0.0
         if self.suns:
             sun = self.sun_at(hx, hy, hz, lambda s2: s2['sin'] * max(0.0, n[2])

@@ -105,6 +105,7 @@ SHOTS = {
     'sewer_thing': ('sewer_tunnels', 3),
     'winter_night': ('winter_lake', 1),
     'winter_day': ('winter_lake', 4),
+    'winter_cabin': ('winter_lake', 5),
     'station_deck': ('space_station', 1),
     'station_corridor': ('space_station', 2),
     'derelict_corridor': ('derelict_ship', 1),

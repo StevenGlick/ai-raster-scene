@@ -216,6 +216,8 @@ The wood under snow: snowy spruce and bare oaks and birches with snow along thei
 | ![A child in the snow at night, a lantern on the footbridge](docs/gallery/winter_lantern.png) | ![The frozen stream mirroring the snowy spruces](docs/gallery/winter_stream.png) |
 | ![The cabin on the ice by moonlight](docs/gallery/winter_night.png) | ![The same lake by day, through shot overrides](docs/gallery/winter_day.png) |
 
+![The cabin close by day: snow lying deep on its roof, wood smoke from the chimney](docs/gallery/winter_cabin.png)
+
 ### Fog and light
 
 A stone circle on the moor at dawn, mist lying in the hollows and the low sun cutting through the stones; and a cathedral fallen open to the sky, sunbeams through its broken windows and dust hanging in the light.

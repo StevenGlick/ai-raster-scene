@@ -14,8 +14,8 @@
   "sssssssssssssssLLLLLLLLLLsssssssssssssss",
   "sssssssssssssssLLLLLLLLLLsssssssssssssss",
   "sssssssssssssssLLWLDDLWLLsssssssssssssss",
-  "ssssssssssssssssssssssssssssssRRssssssss",
-  "sssssssssRRssssssssssssssssssssRssssssss",
+  "ssssssssssssssssssssssssssssssssssssssss",
+  "ssssssssssssssssssssssssssssssssssssssss",
   "ssssssssssssssssssssssssssssssssssssssss",
   "sssssssssssssssssiiiiiiissssssssssssssss",
   "sssssssssssssssiiiiiiiiiiissssssssssssss",
@@ -30,8 +30,8 @@
   "sssssssssssssiiiiiiiiiiiiiiissssssssssss",
   "ssssssssssssssiiiiiiiiiiiiisssssssssssss",
   "ssssssssssssssiiiiiiiiiiiiisssssssssssss",
-  "sssssssssssssssiiiiiiiiiiissssssRRssssss",
-  "ssssssssRssssssssiiiiiiissssssssssssssss",
+  "sssssssssssssssiiiiiiiiiiissssssssssssss",
+  "sssssssssssssssssiiiiiiissssssssssssssss",
   "ssssssssssssssssssssssssssssssssssssssss",
   "ssssssssssssssssssssssssssssssssssssssss",
   "ssssssssssssssssssssssssssssssssssssssss",
@@ -82,11 +82,6 @@
    ],
    "h": 1.5,
    "top": "shingle"
-  },
-  "R": {
-   "wall": "snow_rock",
-   "h": 1.4,
-   "top": "snow"
   }
  },
  "camera": {
@@ -240,6 +235,19 @@
    "z": 0.7
   },
   {
+   "x": 17.5,
+   "y": 6.5,
+   "type": "steam",
+   "z": 3.3,
+   "scale": 1.6,
+   "opacity": 0.9,
+   "tint": [
+    0.55,
+    0.55,
+    0.6
+   ]
+  },
+  {
    "x": 26.0,
    "y": 31.0,
    "type": "snowman"
@@ -272,6 +280,85 @@
     "medium"
    ],
    "seed": 7
+  }
+ ],
+ "objects": [
+  {
+   "type": "gable_roof",
+   "x": 20.0,
+   "y": 6.5,
+   "z": 1.5,
+   "angle": 0,
+   "length": 10.0,
+   "width": 5.0,
+   "rise": 1.5,
+   "cover": "snow",
+   "overhang": [
+    0.35,
+    0.3
+   ],
+   "chimney": 0.25,
+   "seed": 2
+  },
+  {
+   "type": "boulder",
+   "x": 10.0,
+   "y": 10.6,
+   "size": 2.0,
+   "height": 1.2,
+   "rock": "snow",
+   "angle": 30,
+   "seed": 0
+  },
+  {
+   "type": "boulder",
+   "x": 31.2,
+   "y": 9.8,
+   "size": 2.4,
+   "height": 1.4,
+   "rock": "snow",
+   "angle": 200,
+   "seed": 1
+  },
+  {
+   "type": "boulder",
+   "x": 8.6,
+   "y": 26.4,
+   "size": 1.6,
+   "height": 0.9,
+   "rock": "snow",
+   "angle": 120,
+   "seed": 2
+  },
+  {
+   "type": "boulder",
+   "x": 33.0,
+   "y": 25.6,
+   "size": 2.0,
+   "height": 1.1,
+   "rock": "snow",
+   "angle": 300,
+   "seed": 3
+  },
+  {
+   "type": "boulder",
+   "x": 11.6,
+   "y": 11.8,
+   "size": 0.8,
+   "height": 0.45,
+   "rock": "snow",
+   "angle": 80,
+   "seed": 4
+  },
+  {
+   "type": "boulder",
+   "x": 29.6,
+   "y": 10.6,
+   "size": 0.9,
+   "height": 0.5,
+   "rock": "snow",
+   "angle": 250,
+   "seed": 5
   }
  ],
  "shots": [
@@ -346,6 +433,74 @@
     0.75
    ],
    "fov": 70,
+   "overrides": {
+    "sky": "day",
+    "ambient": [
+     0.42,
+     0.44,
+     0.5
+    ],
+    "lights": [
+     {
+      "type": "sun",
+      "azimuth": 215,
+      "elevation": 13,
+      "intensity": 0.9
+     },
+     {
+      "x": 17.5,
+      "y": 9.3,
+      "z": 0.6,
+      "radius": 4.5,
+      "color": [
+       1.0,
+       0.68,
+       0.38
+      ],
+      "intensity": 1.3
+     },
+     {
+      "x": 22.5,
+      "y": 9.3,
+      "z": 0.6,
+      "radius": 4.5,
+      "color": [
+       1.0,
+       0.68,
+       0.38
+      ],
+      "intensity": 1.3
+     },
+     {
+      "x": 19.4,
+      "y": 9.2,
+      "z": 0.8,
+      "radius": 3.5,
+      "color": [
+       1.0,
+       0.68,
+       0.38
+      ],
+      "intensity": 1.0
+     }
+    ],
+    "fog": {
+     "color": [
+      0.75,
+      0.8,
+      0.88
+     ],
+     "density": 0.018,
+     "sky_mix": 0.25
+    }
+   }
+  },
+  {
+   "x": 18.6,
+   "y": 16.0,
+   "angle": 266.39,
+   "pitch": 0.218,
+   "fov": 60,
    "overrides": {
     "sky": "day",
     "ambient": [

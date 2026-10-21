@@ -1388,6 +1388,9 @@ def trough(pl):
     return [p for p in parts if p]
 
 
+ROOF_LAMPS = 0.25    # how much of the lamps below it a roof's top takes (they are mapped on the floor)
+
+
 def shed_roof(pl):
     """A shed roof of boards - over a porch or a boardwalk, a lean-to, an awning: `length` along it,
     reaching `depth` out the way it faces, its front edge at the placement's `z` and its back edge
@@ -1396,7 +1399,9 @@ def shed_roof(pl):
     seed = int(pl.get('seed', 1))
     L, D, r = float(pl.get('length', 2.0)) / 2, float(pl.get('depth', 1.0)) / 2, float(pl.get('rise', 0.3))
     t = 0.04                                                          # as thick as a board
-    parts = [_rock(mat, seed, (D, -L, t), (D, L, t), (-D, -L, r + t)),                   # the top
+    top = _rock(mat, seed, (D, -L, t), (D, L, t), (-D, -L, r + t))
+    top['dyn'] = ROOF_LAMPS                                           # the lamps under it light its underside
+    parts = [top,                                                                       # the top
              _rock(mat, seed + 1, (D, L, 0.0), (D, -L, 0.0), (-D, L, r), tone=-0.06),  # the underside
              _rock(mat, seed + 2, (D, L, t), (D, -L, t), (D, L, 0.0))]                  # its front edge
     return [p for p in parts if p]
@@ -1404,8 +1409,8 @@ def shed_roof(pl):
 
 def gable_roof(pl):
     """A gabled roof: the ridge `length` long the way it faces, `width` across, the eaves at the
-    placement's `z` and the ridge `rise` above them; `cover` is `boards` (the default), `thatch`, `tile`
-    or `slate`. It overhangs by `overhang` - a number, or [at the eaves, at the ends]; its gable ends are
+    placement's `z` and the ridge `rise` above them; `cover` is `boards` (the default), `thatch`, `tile`,
+    `slate` or `snow` (a roof under snow). It overhangs by `overhang` - a number, or [at the eaves, at the ends]; its gable ends are
     closed with upright boards, and under it stand `walls` that tall (0 for none) - the body of a
     building on a lower block, or a shed on the ground - set `inset` in from the roof's ends and
     eaves: a number (from the front end only) or [front, back, left, right]. `chimney` stands one on
@@ -1425,6 +1430,8 @@ def gable_roof(pl):
     drop = o * r / W                                                  # the eaves come down past the walls
     parts = [_rock(roof, seed, (-L - oe, 0.0, r), (L + oe, 0.0, r), (-L - oe, W + o, -drop)),
              _rock(roof, seed + 1, (L + oe, 0.0, r), (-L - oe, 0.0, r), (L + oe, -W - o, -drop))]
+    for p in parts:                                                   # up out of the lamps' reach
+        p['dyn'] = ROOF_LAMPS
     for k, x in enumerate((L, -L)):
         parts.append(_rock_tri(ends, seed + 2 + k, (x, -W, 0.0), (x, W, 0.0), (x, 0.0, r), (x, 0.0, 0.0)))
     h, ins = float(pl.get('walls', 0.0)), pl.get('inset', 0.0)
@@ -1532,12 +1539,44 @@ def _plaster(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
 
 PLASTER = dict(paint=_plaster, key=(-0.4, 0.45, 0.8), shade=(0.4, 0.5))
 
-# Roof covers, painted by _thatch and _tiles and lit like rock; `chimney` is brick in courses.
+def _snow_roof(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
+    """A roof under snow (a panel whose v runs down the slope): snow lying deep in soft drifts, blue in
+    its hollows, thinner at the ridge where the shingles' dark edges show through, and at the eave a
+    rounded lip of it over a dark line of board."""
+    key = np.asarray(rk['key'], np.float32)
+    key /= np.linalg.norm(key)
+    at = np.nonzero(alpha.reshape(-1))[0]
+    ys, xs = at // w, at % w
+    nrm = np.cross(u, v)
+    lit = float(np.clip((nrm / np.linalg.norm(nrm)) @ key, 0, 1))
+    a = (xs + 0.5) / w * np.linalg.norm(u)
+    d = (ys + 0.5) / h * np.linalg.norm(v)
+    P = np.stack([a, d, np.zeros_like(a)], 1)
+    drift = noise3(P / np.array([1.2, 0.5, 1.0], np.float32), 1.0, seed) * 0.6 + noise3(P, 0.25, seed + 1) * 0.4
+    val = rk['shade'][0] + rk['shade'][1] * lit + tone + 0.3 * (drift - 0.5)
+    depth_ = d.max() - d                                             # how far above the eave
+    val = val + 0.08 * np.clip(1 - depth_ / 0.12, 0, 1)            # the lip catches the light
+    thin = (d < 0.25 * (0.6 + noise3(P / np.array([0.5, 1.0, 1.0], np.float32), 1.0, seed + 2)))
+    shingle = thin & (((d / 0.09) % 1.0) > 0.78)                     # their edges, showing at the ridge
+    mat = (shingle | (depth_ < 0.025)).astype(int)                  # the board under the lip
+    bay = BAYER4[ys % 4, xs % 4]
+    rgb = np.zeros((h * w, 3), np.float32)
+    for m, rp in enumerate(rk['ramps']):
+        sel = mat == m
+        idx = np.clip(np.round(val[sel] * (len(rp) - 1) + (bay[sel] - 0.5) * 0.35), 0, len(rp) - 1).astype(int)
+        rgb[at[sel]] = np.asarray(rp, np.float32)[idx]
+    rgba = np.concatenate([rgb.reshape(h, w, 3), alpha.reshape(h, w, 1).astype(np.float32)], -1)
+    return rgba, np.zeros((h, w), np.float32)
+
+
+# Roof covers, painted by _thatch, _tiles and _snow_roof and lit like rock; `chimney` is brick in courses.
 ROOFS = {
     'thatch': dict(paint=_thatch, ramps=[ramp('#a88a52', dark=0.38, light=1.4, warm=0.1), ramp('#7e7a5a', dark=0.4, light=1.3)],
                    key=(-0.4, 0.45, 0.8), shade=(0.36, 0.5)),
     'tile': dict(paint=_tiles, ramps=[ramp('#9a5038', dark=0.36, light=1.35, warm=0.08), ramp('#8a8a5a', dark=0.4, light=1.3)],
                  key=(-0.4, 0.45, 0.8), shade=(0.36, 0.5), course=(0.1, 0.13), lichen=0.06),
+    'snow': dict(paint=_snow_roof, ramps=[SNOW, ramp('#3e3630', dark=0.5, light=1.6)], key=(-0.4, 0.45, 0.8),
+                 shade=(0.44, 0.5)),
     'slate': dict(paint=_tiles, ramps=[ramp('#4a4e5a', dark=0.45, light=1.55, cool=0.2), ramp('#5e6a4c', dark=0.4, light=1.3)],
                   key=(-0.4, 0.45, 0.8), shade=(0.34, 0.52), course=(0.075, 0.15), lichen=0.05),
     'chimney': dict(paint=_tiles, ramps=[ramp('#8a4a36', dark=0.36, light=1.3)], key=(-0.4, 0.45, 0.8),
