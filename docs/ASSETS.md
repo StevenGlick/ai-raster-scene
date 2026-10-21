@@ -21,7 +21,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 186 | 186 | 0 | 0 | 0 |
+| Textures | 188 | 188 | 0 | 0 | 0 |
 | Props | 293 | 293 | 0 | 0 | 0 |
 | Characters | 29 | 29 | 0 | 0 | 0 |
 | Decals | 26 | 26 | 0 | 0 | 0 |
@@ -32,7 +32,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Objects | 2 | 2 | 0 | 0 | 0 |
+| Objects | 4 | 4 | 0 | 0 | 0 |
 | Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 60 | 60 | 0 | 0 | 0 |
-| **all** | **753** | **753** | **0** | **0** | **0** |
+| **all** | **757** | **757** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -54,7 +54,7 @@ Weakest first, and in the order the new scenes need them.
 5. **Small things.** The hands on the held items, the `stain`, `stain_rust` and `moss_patch` decals, the `child` and `dreamer` characters, the `city` skyline, `alien_rock`, `alien_ground`, and the `glowshroom` and `alien_egg` props.
 6. **Second look.** Every asset marked good, checked again on the review sheets and in its scenes, with fresh eyes and the new techniques in hand.
 
-## Textures (186)
+## Textures (188)
 
 64x64 tiles, drawn in code. "glows" means the texture lights itself (windows, screens, runes), "see-through" that the map shows through its holes, "mirror" that floors made of it reflect.
 
@@ -153,6 +153,8 @@ Weakest first, and in the order the new scenes need them.
 | `screen_wall` | good | glows | orbital_hangar | Drawn with the toolkit in scifi.py: monitors four to a unit, each with a trace, readouts, a radar or a wireframe, in cyan, green or amber; glows. |
 | `tunnel_roof` | good | glows | aquarium | Drawn with the toolkit in aquarium.py: deep blue water with the rippled surface far above and its net of light; a dark acrylic seam at every tile; glows. |
 | `jelly_backdrop` | good | glows | aquarium | Drawn with the toolkit in aquarium.py: an even glowing deep blue, faintly mottled, so jellies stand out in front of it. |
+| `open_water` | good | glows | aquarium | Drawn in aquarium.py: the open water painted on the back of a big tank, paler toward the surface, soft shafts in it; the upper storey over `deep_water`, so the rockwork's tops read against it. Dithered for distance: up close its steps show. |
+| `deep_water` | good | glows | aquarium | The lower storey of `open_water`, deepening toward the floor. |
 | `bar_shelves` | good | glows | neon_bar | Drawn with the toolkit in bar.py: two glass shelves of bottles in a dark mirrored recess, each bottle lit from below by a magenta strip; glows. |
 | `capsules` | good | glows | capsule_hotel | Drawn in bar.py: four berths to a unit in white moulded plastic, each with a glowing number plate; lamp-lit bedding, a drawn blind, a screen or dark inside; glows. |
 | `capsules_lit` | good | glows | capsule_hotel | The same berths with more of them occupied and lit; alternate it with `capsules` so the pattern does not march. |
@@ -848,7 +850,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
-## Objects (2)
+## Objects (4)
 
 Things too big for a billboard, built in 3D out of flat panels (`scripts/objects.py`).
 
@@ -856,6 +858,8 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 |---|---|---|---|
 | `car` | good | rain_alley | A saloon from panels, laid out as the user drew it: the overall box with the car's outline on its sides, hood and trunk lid across it at the belt (body 60%, glass 40%), the roof, glass windows with seats, dashboard and steering wheel inside, four wheels set in under the body in dark wells, a floor pan and a soft shadow; `paint`, `lights`. Proportions and handles tuned with the user. |
 | `noodle_stand` | good | neon_street | Counter, awning, valance, noren and sign as panels; bowls, pot, tray, lanterns and stools as billboards, with its own lamp and lantern lights. |
+| `rock_wall` | good | aquarium | Laid out as the user drew it: overlapping pieces along a wall's foot, each in plan a rounded mass of a few broad faces jutting from the wall (the user's sharper zigzag read as spikes; a few spikes and notches are left), each its own height, a trim of faces along its top cut by one long smooth wavy edge, a flat top (inset a texel, so it never shows past the faces), plants on the rim. Kinds `stone`, `reef`, `sandstone`; the faces cut from one solid block of stone. Seen from above its tops are flat with the trim standing round them, as Build's were. |
+| `boulder` | good | aquarium | A low-poly mass, every face a triangle: an irregular foot, a belly, drawn-in shoulders, a peak off its centre; closed from every side. Plants on top by count. |
 
 ## Held items (8)
 
@@ -1002,7 +1006,7 @@ The environments, judged on their gallery images and shots.
 | `autumn_lane` | good | 4 | autumn_lane, autumn_scarecrow, autumn_dusk, autumn_walk | A lane through an autumn wood under a low sun, a field with a scarecrow, pumpkins and hay bales behind a wall; jack-o'-lanterns at dusk. |
 | `bayou` | good | 4 | bayou_dusk, bayou_night, bayou_gator, bayou_heron | A shack on an island in black water between mossy cypresses: sundown, fireflies at night, an alligator, a heron in mist. |
 | `kelp_forest` | good | 4 | sea_kelp, sea_diver, sea_shoal, sea_night | A kelp forest in teal water: a wreck with its mast, a diver with bubbles rising, a shoal; a night dive by flashlight with jellyfish. |
-| `aquarium` | good | 7 | aquarium_hall, aquarium_manta, aquarium_tunnel, aquarium_jellies, aquarium_reef, aquarium_moon, aquarium_diver | A dark hall before the great window (whale shark, manta, a diver cleaning the glass, silhouettes, the floor mirroring it); the manta from below; the tunnel; sea nettles against blue; the reef tank. |
+| `aquarium` | good | 8 | aquarium_hall, aquarium_manta, aquarium_tunnel, aquarium_jellies, aquarium_reef, aquarium_moon, aquarium_diver, aquarium_rockwork | A dark hall before the great window (whale shark, manta, a diver cleaning the glass, silhouettes, the floor mirroring it); the manta from below; the tunnel; sea nettles against blue; the reef tank; inside the ocean tank by a boulder. The big tanks' backs are rockwork against open water. |
 | `coast_lighthouse` | good | 4 | coast_tower, coast_jetty | The shore rocks are the redrawn boulders now, not grey lumps; sand and water redrawn too. |
 | `rainy_street` | good | 4 | street_rain, street_lightning |  |
 | `rain_alley` | good | 5 | alley_street, alley_rain, alley_glass, alley_storm, alley_cars |  |
@@ -1076,6 +1080,8 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, rock.** Rock built in 3D out of panels, as the user laid it out: `rock_wall` (overlapping pieces along a wall's foot, each a rounded mass of broad faces in plan, each its own height, a trim of faces along the top cut by one long wavy edge, a flat top, plants on the rim) and `boulder` (a low-poly mass of triangles), in three kinds - `stone`, `reef` and `sandstone`. Every face is cut from one solid block (`pixelart.cells3` and `noise3`): masses, a few fractures, chips and pits sampled at each texel's place in 3D and lit by the way the face faces, so the stone runs on round a corner. The aquarium's big tanks have rockwork along their walls and boulders on the sand, the walls behind painted as `open_water` over `deep_water`; a new shot, `aquarium_rockwork`, from inside the ocean tank.
+- **2026-10-21, objects.** `scripts/objects.py`: things too big for a billboard built in 3D out of flat panels the renderer draws in true perspective, depth-tested per pixel and lit like walls - a `car` and a `noodle_stand` - with `noodle_bowl`, `stock_pot`, `bowl_stack` and `condiments` for its counter. Cars in the rain alley, the stand in the neon street; new shots `alley_cars` and `neon_counter`.
 - **2026-10-20, held items in 3D.** The six held items were drawn from the wrong side - the hand facing the player, the revolver muzzle-on. Now each is a small 3D model (scripts/sculpt.py: rounded primitives as distance fields, ray-marched from the eye, painted on the colour ramps with dithering, contour lines and an outline) posed in a hand and seen as its holder sees it; their canvases reach the screen edge so the sleeve runs off it.
 - **2026-10-20, the polish list.** The six held items redrawn in held.py (a shaded hand of four fingers, knuckles and a thumb, out of a coat sleeve); `stain`, `stain_rust` and `moss_patch` redrawn; `bamboo`, `thatch`, `canopy` and the `islands` skyline touched up; `foam`, `foam_glow` and the `plaster` facade style judged fine. Nothing is left on the polish list.
 - **2026-10-20, salt piles and the aurora.** `salt_mound` redrawn round-topped and smaller (0.22), with `salt_heap`, `salt_pile` and `salt_clods` beside it - the salt flat's rows now mix them, no two the same size. The `aurora` varied: rays of every width and height in bundles, a pleated ribbon, red-tipped rays, a high arc. Reflections: a still mirror (`smear` under 1) now mirrors each thing about its own foot.

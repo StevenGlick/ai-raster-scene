@@ -486,16 +486,18 @@ def tile_held(name):
 
 
 def tile_object(name):
-    """An object in a plain yard, seen from a front three-quarter and from behind, side by side."""
+    """An object in a plain yard, seen from a front three-quarter and from behind, side by side (a
+    rock wall with its back closed, as it would be standing free)."""
     import render
     import math as m
     yard = {'map': ['#' * 9] + ['#' + '.' * 7 + '#'] * 7 + ['#' * 9], 'sky': 'dusk', 'ambient': [0.5, 0.5, 0.55],
             'legend': {'#': {'wall': 'brick', 'h': 1.0}}, 'default': {'floor': 'concrete_floor'},
-            'objects': [{'type': name, 'x': 4.5, 'y': 4.5}]}
+            'objects': [dict({'type': name, 'x': 4.5, 'y': 4.5}, **({'back': True} if name == 'rock_wall' else {}))]}
     views = []
+    dist, aim = (3.4, 0.55) if name == 'rock_wall' else (2.3, 0.25)       # a rock wall is long and tall
     for bearing in (35, 215):
         b = m.radians(bearing)
-        cam = {'x': 4.5 + m.cos(b) * 2.3, 'y': 4.5 + m.sin(b) * 2.3, 'look_at': [4.5, 4.5, 0.25], 'height': 0.62,
+        cam = {'x': 4.5 + m.cos(b) * dist, 'y': 4.5 + m.sin(b) * dist, 'look_at': [4.5, 4.5, aim], 'height': 0.62,
                'fov': 62}
         views.append(render.render_shot(dict(yard, camera=cam, shots=[cam]), 0).convert('RGB').resize((320, 200)))
     tile = Image.new('RGB', (646, 200), (44, 40, 48))

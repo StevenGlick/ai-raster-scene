@@ -2,15 +2,19 @@
 jellyfish and a reef tank at child height.
 
 Shows the aquarium kit (scripts/aquarium.py) and glass that holds water. The ocean tank is a room
-of `seabed` under a glowing `water_surface` roof, walled in `reef_wall` rockwork, a few cells of
-the roof `glazed` so the sun comes down through the surface in shafts; its window is one long
+of `seabed` under a glowing `water_surface` roof, a few cells of the roof `glazed` so the sun comes
+down through the surface in shafts; its walls are `open_water` over `deep_water`, painted to look
+as if the sea goes on, and along their foot stands rockwork - `rock_wall` objects of `reef` rock,
+overlapping rounded masses jutting out from the wall, each its own height, their tops cut along a long
+wavy edge, corals growing on them - with `boulder`s out on the sand. Its window is one long
 `glass_pane`, floor to ceiling, whose glass has `fog` - the scene's fog carries on behind the
 pane, so the water glows blue round the lamps in the tank and the shafts show, while the air in
 the dark hall stays clear. A `whale_shark` and a `manta_ray` glide past, a `diver` cleans the
 inside of the glass, visitors stand dark against it. The smaller tanks look through `tank_window`
 frames: golden `sea_nettle`s against a glowing `jelly_backdrop`, a reef of `anemone` (with its
 clownfish), `brain_coral`, `staghorn_coral`, `sea_fan`, `tube_sponge`, `angelfish` and
-`blue_tang`. The tunnel has glass down both sides and a `tunnel_roof` overhead.
+`blue_tang` against `reef_wall`. The tunnel has glass down both sides, a `tunnel_roof` overhead and
+rockwork round the tank it runs through.
 Run:  python aquarium.py  -> writes aquarium.json next to this file.
 """
 import os
@@ -21,10 +25,11 @@ from maptools import Grid, scene  # noqa: E402
 
 W, H = 38, 37
 g = Grid(W, H, fill='#')
-g.rect(1, 0, 36, 12, 'R')                            # the ocean tank, walled in rockwork
+g.rect(1, 0, 36, 12, 'R')                            # the ocean tank, its walls painted as open water
 g.rect(2, 3, 35, 11, 'O')
 for x, y in ((8, 5), (9, 5), (15, 4), (16, 4), (16, 5), (22, 6), (23, 6), (29, 4), (30, 4)):
     g.put(x, y, 'o')                                 # glazed: the sun comes down through the surface here
+g.rect(1, 12, 36, 12, 'Q')                           # its front wall, rockwork either side of
 g.rect(10, 12, 27, 12, 'O')                          # the window bay: the pane stands at y = 13
 g.rect(2, 13, 35, 20, 'H')                           # the hall
 g.rect(4, 22, 10, 31, 'J')                           # the jelly gallery, off the hall
@@ -38,7 +43,7 @@ g.rect(2, 28, 2, 29, 'D')
 g.rect(12, 25, 13, 28, 'b')                          # and one in its east wall
 g.rect(12, 26, 12, 27, 'B')
 g.rect(11, 26, 11, 27, 'w')
-g.rect(3, 33, 9, 35, 'R')                            # the reef tank, at the end of the gallery
+g.rect(3, 33, 9, 35, 'Q')                            # the reef tank, at the end of the gallery
 g.rect(4, 33, 8, 34, 'r')
 g.rect(5, 32, 7, 32, 'v')
 g.rect(24, 21, 35, 35, 'R')                          # the tunnel tank
@@ -75,9 +80,8 @@ ocean = [
     {'id': 'diver', 'x': 15.9, 'y': 12.45, 'type': 'diver', 'z': 0.55, 'facing': 90},
     {'x': 15.92, 'y': 12.4, 'type': 'bubbles', 'z': 1.15, 'scale': 0.8},
 ] + [{'x': x, 'y': y, 'type': 'reef_rock', 'scale': s_, 'flip': f}
-     for x, y, s_, f in ((4.0, 8.0, 0.9, False), (11.0, 4.0, 0.8, True), (19.5, 3.6, 0.9, False), (28.0, 3.8, 0.8, True),
-                         (33.0, 7.0, 0.9, True), (24.0, 10.6, 0.55, False), (12.4, 11.3, 0.5, True),
-                         (5.0, 11.2, 0.6, False), (33.5, 11.0, 0.6, True))] + [
+     for x, y, s_, f in ((24.0, 10.6, 0.55, False), (12.4, 11.3, 0.5, True), (5.0, 11.2, 0.6, False),
+                         (33.5, 11.0, 0.6, True))] + [
     {'x': 6.6, 'y': 10.6, 'type': 'sea_fan', 'scale': 0.7},
     {'x': 30.4, 'y': 10.0, 'type': 'sea_fan', 'scale': 0.8, 'flip': True},
     {'x': 16.2, 'y': 11.6, 'type': 'staghorn_coral', 'scale': 0.36},
@@ -131,18 +135,35 @@ tunnel = [
     {'x': 29.9, 'y': 33.9, 'type': 'fish_school', 'z': 0.8, 'scale': 1.0},
     {'x': 26.5, 'y': 23.5, 'type': 'fish_school', 'z': 1.5, 'scale': 0.8, 'flip': True},
     {'x': 33.4, 'y': 32.6, 'type': 'reef_shoal', 'z': 0.4, 'scale': 0.5},
-] + [{'x': x, 'y': y, 'type': 'reef_rock', 'scale': s_, 'flip': f}
-     for x, y, s_, f in ((25.6, 24.0, 0.7, False), (26.0, 28.4, 0.6, True), (25.8, 32.6, 0.8, False),
-                         (33.8, 23.0, 0.7, True), (34.0, 27.2, 0.8, False), (33.6, 31.0, 0.6, True))] + [
     {'x': 27.6, 'y': 27.0, 'type': 'sea_fan', 'scale': 0.6}, {'x': 32.6, 'y': 26.0, 'type': 'staghorn_coral', 'scale': 0.4},
 ]
+live = {'rock': 'reef'}                              # live rock
+rockwork = [                                         # round the foot of the big tanks' walls, and boulders
+    {'type': 'rock_wall', 'x': 19.0, 'y': 3.0, 'angle': 90, 'length': 34.0, 'depth': 1.8, 'height': [0.5, 1.45],
+     'pieces': [1.6, 3.2], 'seed': 3, **live},
+    {'type': 'rock_wall', 'x': 2.0, 'y': 7.5, 'angle': 0, 'length': 9.0, 'depth': 1.4, 'height': [0.6, 1.3],
+     'seed': 5, **live},
+    {'type': 'rock_wall', 'x': 36.0, 'y': 7.5, 'angle': 180, 'length': 9.0, 'depth': 1.4, 'height': [0.6, 1.3],
+     'seed': 6, **live},
+    {'type': 'rock_wall', 'x': 25.0, 'y': 28.5, 'angle': 0, 'length': 13.0, 'depth': 0.9, 'height': [0.6, 1.5],
+     'seed': 11, **live},
+    {'type': 'rock_wall', 'x': 35.0, 'y': 28.5, 'angle': 180, 'length': 13.0, 'depth': 0.9, 'height': [0.6, 1.5],
+     'seed': 12, **live},
+    {'type': 'rock_wall', 'x': 30.0, 'y': 35.0, 'angle': 270, 'length': 10.0, 'depth': 0.9, 'height': [0.7, 1.5],
+     'seed': 13, **live},
+] + [{'type': 'boulder', 'x': x, 'y': y, 'angle': 90, 'size': s_, 'height': h_, 'seed': k, 'plants': n, **live}
+     for x, y, s_, h_, k, n in ((9.5, 6.4, 1.5, 0.9, 21, 3), (22.4, 5.6, 1.7, 1.0, 22, 3), (29.6, 8.2, 1.0, 0.55, 23, 1),
+                                (15.0, 7.6, 0.8, 0.42, 24, 0), (6.6, 9.4, 1.0, 0.6, 2, 0), (25.6, 9.2, 1.3, 0.75, 4, 2),
+                                (13.2, 10.4, 0.6, 0.35, 7, 0), (33.0, 6.6, 0.9, 0.5, 9, 0),
+                                (27.0, 30.4, 0.9, 0.5, 25, 1), (33.0, 24.6, 1.0, 0.6, 26, 1))]
 
 s = scene(
     g,
     title='Aquarium - the ocean tank, the tunnel, the jellies and the reef',
     legend={
         '#': {'wall': 'concrete', 'h': 2.0},
-        'R': {'wall': 'reef_wall', 'h': 2.0},
+        'R': {'wall': ['deep_water', 'open_water'], 'h': 2.0},
+        'Q': {'wall': 'reef_wall', 'h': 2.0},
         'O': {'floor': 'seabed', 'ceil': surface},
         'o': {'floor': 'seabed', 'ceil': surface, 'glazed': True},
         'S': {'floor': 'seabed', 'ceil': surface},
@@ -165,8 +186,8 @@ s = scene(
         [{'type': 'sun', 'azimuth': 270, 'elevation': 62, 'intensity': 1.3}]
         + [{'x': x, 'y': y, 'z': 1.8, 'radius': 7.0, 'color': lamp, 'intensity': 1.2}
            for x, y in ((6, 5), (13, 5), (20, 5), (27, 5), (33, 5), (9, 9.5), (17, 9.5), (25, 9.5), (32, 9.5))]
-        + [{'x': x, 'y': 3.6, 'z': 0.9, 'radius': 3.5, 'color': [0.45, 0.75, 1.0], 'intensity': 0.7}
-           for x in (5, 12, 19, 26, 33)]
+        + [{'x': x, 'y': 5.4, 'z': 0.9, 'radius': 3.5, 'color': [0.45, 0.75, 1.0], 'intensity': 0.7}
+           for x in (5, 12, 19, 26, 33)]                  # on the rockwork
         + [{'x': x, 'y': y, 'z': 1.8, 'radius': 4.5, 'color': lamp, 'intensity': 1.1}
            for x, y in ((27, 24), (27, 29), (27, 33), (33, 24), (33, 29), (33, 33))]
         + [{'x': 2.5, 'y': y, 'z': 0.9, 'radius': 1.8, 'color': [1.0, 0.94, 0.84], 'intensity': 1.5} for y in (25, 29)]
@@ -176,6 +197,7 @@ s = scene(
            {'x': 19.0, 'y': 19.5, 'z': 0.2, 'radius': 3.0, 'color': [1.0, 0.7, 0.4], 'intensity': 0.25},
            {'x': 7.0, 'y': 26.5, 'z': 0.2, 'radius': 3.0, 'color': [1.0, 0.7, 0.4], 'intensity': 0.2}]),
     sprites=panes + ocean + hall + jellies + reef + tunnel,
+    objects=rockwork,
     camera={'x': 19.0, 'y': 20.3, 'look_at': [19.0, 8.0, 0.75], 'fov': 74, 'height': 0.45},
     shots=[
         {'x': 19.0, 'y': 17.6, 'look_at': [19.0, 8.0, 1.05], 'fov': 76, 'height': 0.45},
@@ -189,6 +211,7 @@ s = scene(
                                    'intensity': 0.7}]}},
         {'x': 15.2, 'y': 14.4, 'look_at': [15.9, 12.45, 0.95], 'fov': 60, 'height': 0.55,
          'post': [{'fx': 'dof', 'blur': 1.8}]},
+        {'x': 12.4, 'y': 10.2, 'look_at': [8.8, 4.2, 0.9], 'fov': 62, 'height': 0.5},   # in the tank, by the rocks
     ],
     contact_shadows=0.5,
     supersample=2,

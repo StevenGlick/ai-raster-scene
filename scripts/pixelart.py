@@ -22,8 +22,13 @@ On a tiling canvas every stamp wraps round the edges, so the result tiles withou
     rgb = cv.paint([ramp('#3a7a32')])
 
 Sprites use the same canvas with `wrap=False`; `paint` then also returns an alpha mask.
+
+Something built in 3D out of flat panels (scripts/objects.py) wants its faces cut from one solid
+block of material instead, so a pattern runs on round a corner: `cells3` and `noise3` give the
+shapes and the slopes of that block at each texel's place in 3D.
 """
 import colorsys
+import itertools
 
 import numpy as np
 from PIL import Image, ImageDraw
@@ -398,3 +403,70 @@ def outline_sprite(rgba, color=None, darken=0.38):
     out[ring, :3] = (acc / np.maximum(cnt, 1)[..., None] * darken)[ring]
     out[ring, 3] = 1.0
     return out
+
+
+# ---------------------------------------------------------------- solid noise
+
+_TABLE = np.random.default_rng(20261021).random((6, 4096)).astype(np.float32)   # 0..1 per hashed lattice point
+_PRIMES = (73856093, 19349663, 83492791)
+_AROUND = np.array(list(itertools.product((-1, 0, 1), repeat=3)), np.int64)
+
+
+def table(i, h):
+    """Row i of a fixed table of random numbers 0..1, at the hashes or ids h - a value that belongs
+    to a lattice point, a cell or a pair of cells and is the same wherever it is looked up."""
+    return _TABLE[i][np.asarray(h) & 4095]
+
+
+def cells3(P, cell, seed):
+    """3D cell noise at points P (n x 3): the cells round one jittered point in every box of size
+    `cell` (a number, or three for stretched cells). For each point, its nearest and second-nearest
+    of those points - their distances F1, F2 in boxes (F2 - F1 is 0 where two cells meet), the
+    directions from them to the point (unit vectors, in boxes) and their ids."""
+    Q = (np.asarray(P, np.float64) / cell).astype(np.float32)
+    b = np.floor(Q).astype(np.int64)
+    f = Q - b
+    n = len(Q)
+    sh = seed * 2654435761
+    hx, hy, hz = ({d: (b[:, a] + d) * _PRIMES[a] for d in (-1, 0, 1)} for a in range(3))
+    D = np.empty((27, n), np.float32)
+    for i, (dx, dy, dz) in enumerate(_AROUND):               # squared distance to each neighbour's point
+        k = (hx[dx] ^ hy[dy] ^ hz[dz] ^ sh) & 4095
+        vx, vy, vz = _TABLE[0][k] + (dx - f[:, 0]), _TABLE[1][k] + (dy - f[:, 1]), _TABLE[2][k] + (dz - f[:, 2])
+        D[i] = vx * vx + vy * vy + vz * vz
+    two = np.argpartition(D, 1, axis=0)[:2]
+    idx = np.arange(n)
+    swap = D[two[1], idx] < D[two[0], idx]
+    out = []
+    for ii in (np.where(swap, two[1], two[0]), np.where(swap, two[0], two[1])):
+        o = _AROUND[ii]
+        c = b + o
+        h = ((c[:, 0] * _PRIMES[0]) ^ (c[:, 1] * _PRIMES[1]) ^ (c[:, 2] * _PRIMES[2]) ^ sh) & 0x7fffffff
+        k = h & 4095
+        V = np.stack([_TABLE[0][k] + (o[:, 0] - f[:, 0]), _TABLE[1][k] + (o[:, 1] - f[:, 1]),
+                      _TABLE[2][k] + (o[:, 2] - f[:, 2])], 1)
+        F = np.sqrt((V * V).sum(1))
+        out.append((F, -V / np.maximum(F, 1e-6)[:, None], h))
+    (F1, e1, id1), (F2, e2, id2) = out
+    return F1, F2, e1, e2, id1, id2
+
+
+def noise3(P, scale, seed, grad=False):
+    """Smooth 3D value noise 0..1 at points P (n x 3), its features about `scale` across - and with
+    `grad`, also its slope per unit (n x 3)."""
+    Q = (np.asarray(P, np.float64) / scale).astype(np.float32)
+    b = np.floor(Q).astype(np.int64)
+    f = Q - b
+    s, ds = f * f * (3 - 2 * f), 6 * f * (1 - f)
+    sh = seed * 2654435761
+    hx, hy, hz = ({d: (b[:, a] + d) * _PRIMES[a] for d in (0, 1)} for a in range(3))
+    val = np.zeros(len(Q), np.float32)
+    g = np.zeros((len(Q), 3), np.float32)
+    for o in itertools.product((0, 1), repeat=3):
+        r = _TABLE[3][(hx[o[0]] ^ hy[o[1]] ^ hz[o[2]] ^ sh) & 4095]
+        w = [s[:, a] if o[a] else 1 - s[:, a] for a in range(3)]
+        val += r * w[0] * w[1] * w[2]
+        if grad:
+            dw = [ds[:, a] if o[a] else -ds[:, a] for a in range(3)]
+            g += r[:, None] * np.stack([dw[0] * w[1] * w[2], w[0] * dw[1] * w[2], w[0] * w[1] * dw[2]], 1)
+    return (val, g / scale) if grad else val

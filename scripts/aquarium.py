@@ -3,8 +3,8 @@ big ocean tank - a whale shark, a manta ray, a blacktip reef shark, a green turt
 bright fish of a reef (clownfish, an emperor angelfish, a blue tang, a shoal of anthias), the
 reef itself (brain coral, staghorn, a sea fan, a bubble-tip anemone, tube sponges and a rock
 grown over with all of them), jellyfish for a jelly tank, a lit plaque for the visitors, and the
-textures of the tanks: rockwork, the view up through a tunnel's roof, and a jelly tank's
-glowing blue backdrop.
+textures of the tanks: rockwork, open water for the back of a big tank, the view up through a
+tunnel's roof, and a jelly tank's glowing blue backdrop.
 
 The fish face right (`flip` turns them round) and are lit from above, as fish are in water: dark
 backs, pale bellies. Float them with `z`; they cast no shadows of their own.
@@ -12,7 +12,7 @@ backs, pale bellies. Float them with `z`; they cast no shadows of their own.
 import numpy as np
 
 from biomes import T, _prop, _rng, _tile
-from pixelart import Canvas, outline_sprite, ramp, smooth_noise
+from pixelart import Canvas, dither, outline_sprite, ramp, smooth_noise
 
 TOP = (-0.25, -0.9, 0.6)              # light from above, a little from the left
 
@@ -731,6 +731,31 @@ def tex_jelly_backdrop(name):
     return pal[idx], np.full((T, T), 0.8, np.float32)
 
 
+WATER = ramp('#1c5a7e', n=8, dark=0.28, light=1.75, cool=0.1, warm=0.04)
+
+
+def _open_water(name, z0):
+    """A storey (z0 to z0 + 1) of open water: blue, deep toward the floor and paler toward the light
+    coming down from the surface, soft shafts in it. It glows a little, being lit from above."""
+    rng = _rng(name)
+    z = z0 + 1 - (np.arange(T)[:, None] + 0.5) / T                         # height of each row
+    up = np.clip(z / 2.0, 0, 1)
+    shafts = (smooth_noise(T, T, 5, rng, cells_y=1) * 0.6 + smooth_noise(T, T, 9, rng, cells_y=1) * 0.4) - 0.5
+    v = np.clip(0.1 + 0.8 * up ** 1.2 + 0.16 * shafts * up ** 2 + 0.05 * (smooth_noise(T, T, 4, rng) - 0.5), 0, 1)
+    return dither(v, WATER, 0.7), (0.5 + 0.5 * v).astype(np.float32)
+
+
+def tex_open_water(name):
+    """The open water at the back of a big tank, as aquariums paint it so the tank seems to go on:
+    the upper storey of a wall two high, paler toward the surface. Stack it over `deep_water`."""
+    return _open_water(name, 1.0)
+
+
+def tex_deep_water(name):
+    """The lower storey of `open_water`: the same blue going deep toward the floor."""
+    return _open_water(name, 0.0)
+
+
 def tex_tank_window(name):
     """A viewing window into a tank (see-through): a deep frame of dark painted steel with
     rounded corners round an opening from just above the floor to near the top of the storey.
@@ -753,8 +778,10 @@ def tex_tank_window(name):
 
 
 TEXTURES = {'reef_wall': lambda n: (tex_reef_wall(n), None), 'tunnel_roof': tex_tunnel_roof,
-            'jelly_backdrop': tex_jelly_backdrop, 'tank_window': tex_tank_window}
-TEXTURE_NOISE = {'reef_wall': 0.8, 'tunnel_roof': 0.2, 'jelly_backdrop': 0.1, 'tank_window': 0.3}
+            'jelly_backdrop': tex_jelly_backdrop, 'tank_window': tex_tank_window, 'open_water': tex_open_water,
+            'deep_water': tex_deep_water}
+TEXTURE_NOISE = {'reef_wall': 0.8, 'tunnel_roof': 0.2, 'jelly_backdrop': 0.1, 'tank_window': 0.3, 'open_water': 0.05,
+                 'deep_water': 0.05}
 SPRITES = {'whale_shark': spr_whale_shark, 'manta_ray': spr_manta_ray, 'reef_shark': spr_reef_shark,
            'sea_turtle': spr_sea_turtle, 'clownfish': spr_clownfish, 'angelfish': spr_angelfish,
            'blue_tang': spr_blue_tang, 'reef_shoal': spr_reef_shoal, 'brain_coral': spr_brain_coral,

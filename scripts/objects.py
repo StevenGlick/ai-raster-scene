@@ -1,4 +1,4 @@
-"""Objects: things bigger than a prop, built in 3D out of flat panels - a food stand, a car.
+"""Objects: things bigger than a prop, built in 3D out of flat panels - a food stand, a car, rock.
 
 A sprite is a picture that always turns to face the camera: right for a person or a lamp, but it
 makes anything big a cardboard cut-out with one view. An object is built the way Build-engine maps
@@ -17,16 +17,23 @@ Before anything else reads the scene, `expand` (called by prefabs.expand) turns 
 panels (the scene's `panels`, read only by the renderer), sprites, lights and contact shadows. An
 object is laid out in its own units from its origin on the ground: x forward, y to its right, z up.
 At angle 0 it faces east (+x), at 90 south - the camera's compass. OBJECTS lists the built-ins.
+
+Rock - a `rock_wall` along the foot of a wall, a `boulder` - has its faces cut from one solid
+block of stone (pixelart.cells3), so the stone runs on round a corner and each face takes the
+light by the way it faces; see "rock" below.
 """
 import functools
+import json
 import math
 
 import numpy as np
 
-from pixelart import Canvas, ramp
+from aquarium import ALGAE, CORALLINE, LIVE_ROCK
+from pixelart import BAYER4, Canvas, cells3, noise3, ramp, table
 
 TEXELS = 64                 # texels per world unit, as on the walls
-PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 'title', 'notes'}
+PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 'title', 'notes',
+                  'rock', 'length', 'height', 'depth', 'pieces', 'trim', 'size', 'seed', 'plants', 'back'}
 
 
 # ------------------------------------------------------------------ parts
@@ -91,7 +98,7 @@ def expand(scene):
             x, y, z = p
             return np.array([X + (x * ca - y * sa) * k, Y + (x * sa + y * ca) * k, Z + z * k])
 
-        for part in OBJECTS[pl['type']](pl):
+        for part in _parts(pl):
             kind = part['part']
             if kind == 'panel':
                 tl, tr, bl = world(part['tl']), world(part['tr']), world(part['bl'])
@@ -115,6 +122,20 @@ def expand(scene):
                                       'size': part['size'] * k, 'opacity': part['opacity']})
     out.pop('objects')
     return out
+
+
+_BUILT = {}
+
+
+def _parts(pl):
+    """An object's parts, built once per placement and kept a while: cutting rock takes a moment,
+    and the world and the renderer each expand a scene, and again for a shot with overrides."""
+    key = json.dumps(pl, sort_keys=True, default=str)
+    if key not in _BUILT:
+        if len(_BUILT) >= 64:
+            _BUILT.pop(next(iter(_BUILT)))
+        _BUILT[key] = OBJECTS[pl['type']](pl)
+    return _BUILT[key]
 
 
 # ------------------------------------------------------------------ textures
@@ -684,4 +705,265 @@ def car(pl):
     return parts
 
 
-OBJECTS = {'noodle_stand': noodle_stand, 'car': car}
+# ------------------------------------------------------------------ rock
+
+# What each kind of rock is made of: ramps for the stone, for a crust on it (lichen, coralline)
+# and for weed (moss, algae) where it faces up; the size of its masses and of the chips on them
+# (x, y, z in units - flat cells lie in beds, as sandstone's do); the light painted on it, from
+# above, in front and a little left as the rock faces (nearly straight down, through water) and how
+# dark and how bright that takes it; how much of it is crusted, weedy and pitted; and what grows
+# on top: (prop, lowest, highest), heights in units.
+ROCKS = {
+    'stone': dict(ramps=[ramp('#6e6a64', dark=0.3, light=1.45), ramp('#7a7866', dark=0.35, light=1.3),
+                         ramp('#4e6a32', dark=0.35, light=1.35)],
+                  mass=(0.9, 0.9, 0.7), chip=(0.24, 0.24, 0.2), key=(0.45, 0.4, 0.8), shade=(0.3, 0.62),
+                  crust=0.68, weed=0.62, pores=0.0,
+                  plants=[('fern', 0.22, 0.34), ('grass_tuft', 0.16, 0.26), ('bush', 0.25, 0.4)]),
+    'reef': dict(ramps=[LIVE_ROCK, CORALLINE, ALGAE], mass=(0.8, 0.8, 0.55), chip=(0.2, 0.2, 0.16),
+                 key=(0.3, 0.25, 0.92), shade=(0.17, 0.7), crust=0.62, weed=0.66, pores=0.45,
+                 plants=[('sea_fan', 0.32, 0.52), ('staghorn_coral', 0.24, 0.38), ('tube_sponge', 0.22, 0.36),
+                         ('anemone', 0.16, 0.24), ('brain_coral', 0.14, 0.22)]),
+    'sandstone': dict(ramps=[ramp('#b0704a', dark=0.35, light=1.35, warm=0.1), ramp('#c89a6a', dark=0.4, light=1.25),
+                             ramp('#6a6a3a', dark=0.35, light=1.3)],
+                      mass=(1.2, 1.2, 0.22), chip=(0.4, 0.4, 0.07), key=(0.45, 0.4, 0.8), shade=(0.3, 0.62),
+                      crust=0.62, weed=0.8, pores=0.0, plants=[('dry_tuft', 0.14, 0.22)]),
+}
+ROCK_FOOT = 0.02            # rock runs this far below the ground, so no seam shows at its foot
+
+
+def _dome(gap, e1, e2, cell, k, amp):
+    """The slope (per unit) of a low dome over each cell of `cells3`: `amp` high inside (one height,
+    or one per point), falling smoothly to nothing over the last `k` (in boxes) before its edge."""
+    x = np.clip(gap / k, 0, 1)
+    return (amp * 6 * x * (1 - x) / k)[:, None] * (e2 - e1) / cell
+
+
+def _stone(kind, seed, o, u, v, w, h, alpha, rim=None, tone=0.0):
+    """The texture (rgba, emission) of a panel of rock - its corner o, columns along u, rows along v,
+    w x h texels, solid where `alpha` - cut from one solid block of `kind`: masses of stone, each a
+    little domed and a shade of its own, some of the joins between them cracked; chips on them,
+    some pitted; crusts in patches and weed where the stone faces up; all lit in 3D by the kind's
+    light, so a face takes it by the way it faces. `rim` (per texel, how many texels below the top
+    edge) rounds the stone over toward that edge, so it catches the light there; `tone` lightens or
+    darkens the whole panel."""
+    rk = ROCKS[kind]
+    key = np.asarray(rk['key'], np.float32)
+    key /= np.linalg.norm(key)
+    at = np.nonzero(alpha.reshape(-1))[0]                           # only the texels that are there
+    ys, xs = at // w, at % w
+    P = o + ((xs + 0.5) / w)[:, None] * u + ((ys + 0.5) / h)[:, None] * v
+    nrm = np.cross(u, v)
+    nrm = (nrm / np.linalg.norm(nrm)).astype(np.float32)
+    mass, chip = np.asarray(rk['mass'], np.float32), np.asarray(rk['chip'], np.float32)
+    F1, F2, e1, e2, id1, id2 = cells3(P, mass, seed)
+    f1, f2, c1, c2, cid, _ = cells3(P, chip, seed + 1)
+    gap = F2 - F1                                                   # 0 where two masses meet
+    grad = _dome(gap, e1, e2, mass, 0.35, 0.06) + _dome(f2 - f1, c1, c2, chip, 0.3, 0.035 * table(2, cid) ** 2)
+    grad -= (grad @ nrm)[:, None] * nrm                             # its slope across the face
+    N = nrm - grad
+    if rim is not None:
+        N[:, 2] += 2.0 * (1 - np.clip(rim.reshape(-1)[at] / 6.0, 0, 1)) ** 2
+    N /= np.linalg.norm(N, axis=1, keepdims=True)
+    lit = np.clip(N @ key, 0, 1)
+    crack = (gap < 0.04) & (table(4, np.minimum(id1, id2) * 31 + np.maximum(id1, id2)) < 0.45)   # not every join
+    pits = (f1 < 0.12) & (table(3, cid) < rk['pores'])
+    val = rk['shade'][0] + rk['shade'][1] * lit + tone + (table(5, id1) - 0.5) * 0.12 - 0.22 * crack - 0.3 * pits
+    val -= 0.2 * (1 - np.clip(P[:, 2] / 0.3, 0, 1)) ** 2            # darker at the foot
+    mat = np.zeros(len(P), int)
+    mat[(noise3(P, 0.16, seed + 2) > rk['crust']) & (table(4, id1) < 0.5)] = 1
+    up = np.nonzero(N[:, 2] > 0.6)[0]                               # weed in tufts, where it faces up
+    if up.size:
+        mat[up[noise3(P[up], 0.12, seed + 3) > rk['weed']]] = 2
+    bay = BAYER4[ys % 4, xs % 4]
+    rgb = np.zeros((h * w, 3), np.float32)
+    for m, rp in enumerate(rk['ramps']):
+        sel = mat == m
+        idx = np.clip(np.round(val[sel] * (len(rp) - 1) + (bay[sel] - 0.5) * 0.35), 0, len(rp) - 1).astype(int)
+        idx = np.where((crack | pits)[sel], np.maximum(idx - 1, 0), idx)    # cracks and pits a step darker
+        rgb[at[sel]] = np.asarray(rp, np.float32)[idx]
+    rgba = np.concatenate([rgb.reshape(h, w, 3), alpha.reshape(h, w, 1).astype(np.float32)], -1)
+    return rgba, np.zeros((h, w), np.float32)
+
+
+def _grown(m):
+    """A mask grown by a texel all round, so panels that meet leave no gap between them."""
+    p = np.pad(m, 1)
+    return m | p[:-2, 1:-1] | p[2:, 1:-1] | p[1:-1, :-2] | p[1:-1, 2:]
+
+
+def _inset(m):
+    """A mask drawn in by a texel all round: a top that must not show past the faces round it."""
+    return ~_grown(~m)
+
+
+def _rock(kind, seed, tl, tr, bl, alpha=None, rim=None, tone=0.0):
+    """A panel of rock, its corners as `quad` takes them; `alpha(w, h)` and `rim(w, h)` give its mask
+    and how far below its top edge each texel is, for a texture w x h. None if nothing is solid."""
+    tl, tr, bl = (np.asarray(p, float) for p in (tl, tr, bl))
+    u, v = tr - tl, bl - tl
+    w, h = _texels(np.linalg.norm(u)), _texels(np.linalg.norm(v))
+    a = np.ones((h, w), bool) if alpha is None else alpha(w, h)
+    if not a.any():
+        return None
+    tex = _stone(kind, seed, tl, u, v, w, h, a, None if rim is None else rim(w, h), tone)
+    return quad(tex, tuple(tl), tuple(tr), tuple(bl))
+
+
+def _rock_tri(kind, seed, A, B, C, out):
+    """A triangle of rock, turned to read from the side `out` points to."""
+    A, B, C = (np.asarray(p, float) for p in (A, B, C))
+    if np.cross(B - A, C - A) @ out < 0:
+        B, C = C, B
+    return _rock(kind, seed, A, B, C, alpha=lambda w, h: _grown(_poly(w, h, [(0, 0), (w, 0), (0, h)])))
+
+
+def _span(v):
+    """(low, high) from a pair, or one number for both."""
+    return (float(v), float(v)) if isinstance(v, (int, float)) else (float(v[0]), float(v[1]))
+
+
+def _wave(rng, S):
+    """A long smooth wavy edge along S units of rock: its height 0..1 at a distance s along it - a
+    slow swell, a shorter one and a ripple, at random phases, drawn down toward both ends."""
+    waves = [(amp, rng.uniform(lo, hi), rng.uniform(0, 2 * np.pi))
+             for amp, lo, hi in ((0.26, 1.1, 2.0), (0.16, 0.45, 0.8), (0.06, 0.18, 0.3))]
+
+    def at(s):
+        y = 0.55 + sum(a * np.sin(2 * np.pi * s / lam + ph) for a, lam, ph in waves)
+        k = np.clip(np.minimum(s, S - s) / 0.35, 0, 1)
+        return np.clip(y * (0.35 + 0.65 * k * k * (3 - 2 * k)), 0.06, 1.0)
+    return at
+
+
+def _outline(rng, ya, yb, reach):
+    """One piece of a rock wall in plan, from the wall at y = ya out and back to it at y = yb (ya > yb:
+    left to right as seen from in front, +x): a rounded mass of a few broad faces at gentle angles to
+    one another - full or flat, leaning one way or the other - its points jostled a little, and now
+    and then one pushed out into a spike or pulled in to a notch."""
+    wd = ya - yb
+    n = max(3, int(round(wd / rng.uniform(0.5, 0.75))))              # its faces, each half a unit or more
+    t = (np.arange(1, n) + rng.uniform(-0.25, 0.25, n - 1)) / n      # where its points are, across it
+    t = np.sort(np.clip(t ** rng.uniform(0.75, 1.3), 0.06, 0.94))     # the bulge leaning one way
+    x = reach * np.sin(np.pi * t) ** rng.uniform(0.45, 0.8) * rng.uniform(0.86, 1.08, n - 1)
+    odd = rng.random(n - 1) < 0.12                                    # a few spikes and notches
+    x = np.where(odd, x * rng.choice([0.6, 1.35], n - 1), x)
+    return [(0.0, ya)] + [(float(a), float(ya - b * wd)) for a, b in zip(x, t)] + [(0.0, yb)]
+
+
+def _piece(kind, seed, pts, h, trim, wave, tone, back):
+    """The panels of one piece of a rock wall standing along `pts`, `h` high: its faces, the trim of
+    faces over them cut along `wave`, its flat top, and with `back` its back against the wall."""
+    parts = []
+    s0 = 0.0
+    for a, b in zip(pts, pts[1:]):
+        ln = math.hypot(b[0] - a[0], b[1] - a[1])
+
+        def below(w, hh, top, span, s0=s0, ln=ln):        # texels below the wave, down a panel from `top`
+            edge = trim * (1 - wave(s0 + (np.arange(w) + 0.5) / w * ln))
+            return ((np.arange(hh)[:, None] + 0.5) / hh * span + top - edge[None, :]) * TEXELS
+
+        parts.append(_rock(kind, seed, (a[0], a[1], h + trim), (b[0], b[1], h + trim), (a[0], a[1], h), tone=tone,
+                           alpha=lambda w, hh, f=below: f(w, hh, 0.0, trim) >= -0.5,
+                           rim=lambda w, hh, f=below: f(w, hh, 0.0, trim)))                     # the trim
+        parts.append(_rock(kind, seed, (a[0], a[1], h), (b[0], b[1], h), (a[0], a[1], -ROCK_FOOT), tone=tone,
+                           rim=lambda w, hh, f=below: f(w, hh, trim, h + ROCK_FOOT)))           # the face
+        s0 += ln
+    P = np.asarray(pts, float)
+    (x0, y0), (x1, y1) = P.min(0), P.max(0)
+    shape = lambda w, hh: _inset(_poly(w, hh, [((q[1] - y0) / (y1 - y0) * w, (x1 - q[0]) / (x1 - x0) * hh)  # noqa: E731
+                                               for q in P]))
+    parts.append(_rock(kind, seed, (x1, y0, h), (x1, y1, h), (x0, y0, h), alpha=shape, tone=tone))      # its top
+    if back:
+        parts.append(_rock(kind, seed, (0.0, y0, h), (0.0, y1, h), (0.0, y0, -ROCK_FOOT), tone=tone))
+    return [p for p in parts if p]
+
+
+def rock_wall(pl):
+    """Rockwork along the foot of a wall, as the user laid it out: pieces side by side and overlapping,
+    each in plan a rounded mass of broad faces jutting from the wall, each its own height, a trim of
+    faces along its top cut by one long smooth wavy edge, so no top is straight and level; a flat top
+    on each, and plants growing on them. The wall's foot runs along y, centred on the origin, `length` long,
+    and the rock juts out toward +x up to `depth`. `height` is how tall a piece is (lowest, highest),
+    `pieces` how wide (narrowest, widest), `trim` the trim's height as a share of its piece's, `rock`
+    the kind of rock; `plants` false leaves the tops bare, and `back` true closes each piece's back,
+    for rock standing free of a wall."""
+    kind = pl.get('rock', 'stone')
+    rk = ROCKS[kind]
+    L = float(pl.get('length', 4.0))
+    hlo, hhi = _span(pl.get('height', [0.5, 1.4]))
+    reach = float(pl.get('depth', 0.7))
+    wlo, whi = _span(pl.get('pieces', [1.4, 2.8]))
+    trim_k = float(pl.get('trim', 0.28))
+    seed = int(pl.get('seed', 1))
+    rng = np.random.default_rng(seed)
+    parts, y, last = [], L / 2, None
+    while True:
+        wd = rng.uniform(wlo, whi)
+        yb = y - wd
+        if yb + L / 2 < wlo * 0.5:                                     # too little left for another
+            yb = -L / 2
+        h = rng.uniform(hlo, hhi)
+        if last is not None and hhi > hlo and abs(h - last) < 0.22 * (hhi - hlo):
+            h = hlo + (hhi - hlo) * (((h - hlo) / (hhi - hlo) + 0.5) % 1.0)   # not the height of the last
+        last = h
+        pts = _outline(rng, y, yb, reach * rng.uniform(0.7, 1.0))
+        S = sum(math.hypot(q[0] - p[0], q[1] - p[1]) for p, q in zip(pts, pts[1:]))
+        wave, trim = _wave(rng, S), trim_k * h
+        parts += _piece(kind, seed, pts, h, trim, wave, rng.uniform(-0.06, 0.06), bool(pl.get('back', False)))
+        s = 0.0
+        for p, q in zip(pts, pts[1:]):
+            parts.append(shadow((p[0] + q[0]) / 2, (p[1] + q[1]) / 2, 0.55, 0.35))   # shade at its foot
+            if pl.get('plants', True) and rk['plants'] and p[0] > 0.45 * reach and rng.random() < 0.5:
+                name, lo, hi = rk['plants'][rng.integers(len(rk['plants']))]           # on the rim, at the wave
+                parts.append(sprite(name, p[0] * rng.uniform(0.55, 0.8), p[1] + rng.uniform(-0.08, 0.08),
+                                    h + 0.8 * trim * float(wave(s)), scale=rng.uniform(lo, hi), shadow=False,
+                                    flip=bool(rng.random() < 0.5)))
+            s += math.hypot(q[0] - p[0], q[1] - p[1])
+        if yb <= -L / 2:
+            break
+        y = yb + wd * rng.uniform(0.15, 0.35)                          # the next overlaps it
+    return parts
+
+
+def boulder(pl):
+    """A boulder: a low-poly mass of rock, every face a triangle - an irregular polygon at its foot,
+    bulging a little, drawing in toward its shoulders, up to a peak off its centre. `size` is how wide
+    it is, `height` how tall, `rock` the kind of rock and `plants` how many things grow on top."""
+    kind = pl.get('rock', 'stone')
+    rk = ROCKS[kind]
+    seed = int(pl.get('seed', 1))
+    rng = np.random.default_rng(seed)
+    R = float(pl.get('size', 0.8)) / 2
+    H = float(pl.get('height', R * 1.1))
+    N = int(rng.integers(6, 9))
+    ang = (np.arange(N) + rng.uniform(-0.3, 0.3, N)) * 2 * np.pi / N
+    r0 = R * rng.uniform(0.72, 1.0, N)
+    off = rng.uniform(-0.18, 0.18, 2) * R
+    rings = [(r0 * rng.uniform(0.94, 1.0, N), np.full(N, -ROCK_FOOT), np.zeros(2)),           # its foot
+             (r0 * rng.uniform(0.98, 1.08, N), H * rng.uniform(0.26, 0.42, N), off * 0.3),      # its belly
+             (r0 * rng.uniform(0.55, 0.78, N), H * rng.uniform(0.66, 0.86, N), off)]            # its shoulders
+    rings = [np.stack([r * np.cos(ang) + c[0], r * np.sin(ang) + c[1], z], 1) for r, z, c in rings]
+    peak = np.array([off[0] * 1.3, off[1] * 1.3, H])
+    mid = np.array([0.0, 0.0, H * 0.4])
+    parts = []
+    for lo, hi in zip(rings, rings[1:]):
+        for i in range(N):
+            j = (i + 1) % N
+            A, B, C, D = lo[i], lo[j], hi[j], hi[i]
+            tris = ((A, B, C), (A, C, D)) if rng.random() < 0.5 else ((A, B, D), (B, C, D))
+            parts += [_rock_tri(kind, seed, *t, (A + B + C + D) / 4 - mid) for t in tris]
+    for i in range(N):
+        A, B = rings[-1][i], rings[-1][(i + 1) % N]
+        parts.append(_rock_tri(kind, seed, A, B, peak, (A + B + peak) / 3 - mid))
+    parts = [p for p in parts if p]
+    parts.append(shadow(0.0, 0.0, 2.6 * R, 0.5))
+    n = int(pl.get('plants', 0)) if rk['plants'] else 0
+    for k in range(n):                                                 # what grows on its top
+        name, lo, hi = rk['plants'][rng.integers(len(rk['plants']))]
+        a, r = rng.uniform(0, 2 * np.pi), (0.15 + 0.35 * k / n) * R
+        parts.append(sprite(name, peak[0] + r * np.cos(a), peak[1] + r * np.sin(a), H * (0.95 - 0.5 * r / R),
+                            scale=rng.uniform(lo, hi), shadow=False, flip=bool(rng.random() < 0.5)))
+    return parts
+
+
+OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder}

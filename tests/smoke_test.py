@@ -1189,7 +1189,27 @@ def check_objects():
     r, _ = frame(dict(placed(), sprites=guard))
     behind = r.sprite_stats['g']['visible']
     assert 0.1 * alone < behind < 0.8 * alone, f'hidden in part, pixel by pixel: {behind} of {alone}'
-    print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights)')
+
+    # 4. rock: a wall's pieces each their own height, their tops never level; a boulder closed all
+    # round (its faces' outward areas cancel sideways and add up to its footprint upward); a
+    # placement cut once
+    pl = {'type': 'rock_wall', 'x': 0.5, 'y': 0.5, 'length': 6.0, 'height': [0.5, 1.4], 'seed': 2}
+    wall = objects.expand({'map': ['.'], 'objects': [pl]})['panels']
+    standing = [pn for pn in wall if abs(pn['u'][2]) < 1e-9 and abs(pn['v'][0]) + abs(pn['v'][1]) < 1e-9]
+    tops = [float(pn['o'][2]) for pn in standing]
+    assert max(tops) - min(tops) > 0.3, f'pieces of different heights: {min(tops):.2f}..{max(tops):.2f}'
+    edges = set()
+    for pn in standing:
+        a = pn['rgba'][..., 3] > 0.5
+        if not a.all():                                                  # a trim, cut along the wave
+            edges |= {int(i) for i in a.argmax(0)[a.any(0)]}
+    assert len(edges) > 8, 'the trim cuts the tops along a wavy edge, not a level line'
+    stone = objects.expand({'map': ['.'], 'objects': [{'type': 'boulder', 'x': 0.0, 'y': 0.0, 'size': 1.0,
+                                                       'height': 0.6, 'seed': 3}]})['panels']
+    area = sum(np.cross(pn['u'], pn['v']) / 2 for pn in stone)
+    assert abs(area[0]) < 1e-6 and abs(area[1]) < 1e-6 and 0.3 < area[2] < 1.0, f'closed all round: {area}'
+    assert objects._parts(dict(pl)) is objects._parts(dict(pl)), 'a rock is cut once per placement'
+    print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights, rock)')
 
 
 def check_docs():

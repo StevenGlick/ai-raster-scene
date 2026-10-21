@@ -148,7 +148,7 @@ A forest of giant kelp on the floor of the sea, a shoal of fish turning, the wre
 
 ## The aquarium
 
-A dark hall in front of a great ocean tank, a whale shark and a manta gliding past and a diver cleaning the glass from inside; a tunnel through the water, a gallery of jellyfish and a reef at child height. The glass holds water: the fog carries on behind it, so the tank glows blue round its lamps while the air of the hall stays clear.
+A dark hall in front of a great ocean tank, a whale shark and a manta gliding past and a diver cleaning the glass from inside; a tunnel through the water, a gallery of jellyfish and a reef at child height. The glass holds water: the fog carries on behind it, so the tank glows blue round its lamps while the air of the hall stays clear. Along the foot of the big tanks' walls stands rockwork built in 3D - overlapping rounded masses jutting out from the wall in broad faces, each its own height, their tops cut along one long wavy edge, coral growing on them - with boulders out on the sand, every face cut from one solid block of stone.
 
 ![Visitors dark against the great window, a whale shark and a manta going by, mirrored in the floor](docs/gallery/aquarium_hall.png)
 
@@ -157,6 +157,8 @@ A dark hall in front of a great ocean tank, a whale shark and a manta gliding pa
 | ![Looking up through the glass at a manta against the bright surface](docs/gallery/aquarium_manta.png) | ![The tunnel: glass down both sides, the water over the roof](docs/gallery/aquarium_tunnel.png) |
 | ![Sea nettles drifting in front of the glowing blue of their tank](docs/gallery/aquarium_jellies.png) | ![The reef tank: an anemone and its clownfish, corals, an angelfish, a shoal](docs/gallery/aquarium_reef.png) |
 | ![Moon jellies glowing in a dark tank](docs/gallery/aquarium_moon.png) | ![A diver behind the glass, bubbles rising, a sunbeam on the sand](docs/gallery/aquarium_diver.png) |
+
+![Inside the ocean tank: a boulder grown with coral on the sand, a reef shark gliding past the rockwork](docs/gallery/aquarium_rockwork.png)
 
 ## More settings
 
@@ -235,7 +237,7 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **Layered forest edges**: give the walls of a jungle or a wood a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
 - **Glass**: a pass of its own after everything else, showing what is behind each pane tinted and softly blurred - the frame shrunk to half size and blown back up without smoothing - under a faint reflection
-- **Objects**: things bigger than a prop - a `car`, a `noodle_stand` - built in 3D out of flat panels at any angle, see-through wherever the thing is not, with glass to see inside and billboards among them for the small things; drawn in true perspective, depth-tested per pixel and lit like walls (`scripts/objects.py`)
+- **Objects**: things bigger than a prop - a `car`, a `noodle_stand`, a `rock_wall` of overlapping rounded pieces along a wall's foot, a `boulder` - built in 3D out of flat panels at any angle, see-through wherever the thing is not, with glass to see inside and billboards among them for the small things; drawn in true perspective, depth-tested per pixel and lit like walls; rock is cut from one solid block of stone, so it runs on round a corner (`scripts/objects.py`)
 - **Wireframes**: low-poly meshes - cubes, pyramids, polyhedra, mountains, racers, palms, or your own vertices - drawn as lines of light in true 3D, one pixel wide at any distance, hidden behind what is nearer and mirrored in wet floors; solid ones are black faces edged in light
 - **Prefabs**: named groups placed with one line - a campsite with its light, a palm grove, a beach hut with its walls, door, window, roof and torches - turned, scaled and varied by seed; scenes can define their own
 - **Procedural scatter**: declare debris by set, density and size class and the loader expands it into hundreds of placed props, clumped by a noise field so it drifts and leaves bare patches instead of spreading evenly - and never piles up on a camera or in front of a speaker
@@ -251,7 +253,7 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **Post-processing**: colour grading, bloom (from the whole frame, or only from what gives off light - neon, windows, flames, fireflies, a held lantern, the sun - so it can glow hard), depth of field that focuses on the shot's subject and leaves its colours alone, streaks (the twinkle of a star filter on the brightest lights, or the long blue lines of an anamorphic lens), a lens flare from a sun in the frame, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
 - **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
 - **Pixel art drawn in code**: the jungle, ruins and beach are built from shapes - leaves, stones, planks, blades of grass, carved glyphs - stamped into a height field, lit from one direction, and snapped onto hue-shifted colour ramps with dark edges on their shadow sides (`scripts/pixelart.py`), so they read as pixel art rather than noise. The held items go a step further: each is a small 3D model - capsules for finger bones, cylinders and boxes for a revolver - posed in a hand, rendered from the player's eye and painted onto the same ramps with an outline (`scripts/sculpt.py`), so the perspective is right: the barrel runs away into the view and you see the back of your own hand
-- **No assets to download**: all 186 textures, 289 props, 29 characters, 26 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
+- **No assets to download**: all 188 textures, 293 props, 29 characters, 26 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
 
 ![Character cast](docs/gallery/cast.png)
 

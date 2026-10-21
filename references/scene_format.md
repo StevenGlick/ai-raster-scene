@@ -631,13 +631,16 @@ Defining one (in `prefab_defs`, or the same form in `scripts/prefabs.py` for a b
 
 ## Objects
 
-An object is a thing too big to be a billboard - a car, a food stand - built in 3D out of flat panels, the way Build-engine maps built cars and counters out of flat sprites: panels standing, lying and sloped at any angle, see-through wherever the thing is not (a car's side is its outline, open above the hood), glass you can see the seats through, and among them, for the small things that read best as pictures (bowls on a counter, lanterns), ordinary billboards. Every panel is drawn in true perspective, depth-tested per pixel and lit like a wall, so from any side you see the sides you should, and a figure can stand in front of the counter and behind the awning post. Put them in `objects`:
+An object is a thing too big to be a billboard - a car, a food stand, rock - built in 3D out of flat panels, the way Build-engine maps built cars and counters out of flat sprites: panels standing, lying and sloped at any angle, see-through wherever the thing is not (a car's side is its outline, open above the hood), glass you can see the seats through, and among them, for the small things that read best as pictures (bowls on a counter, lanterns), ordinary billboards. Every panel is drawn in true perspective, depth-tested per pixel and lit like a wall, so from any side you see the sides you should, and a figure can stand in front of the counter and behind the awning post. Put them in `objects`:
 
 ```json
 "objects": [
   {"type": "car", "x": 20.4, "y": 45.6, "angle": 270, "paint": "#9a9ea4"},
   {"type": "car", "x": 22.75, "y": 49.0, "angle": 90, "paint": "#2e3c5a", "lights": true},
-  {"type": "noodle_stand", "x": 17.95, "y": 22.0, "angle": 180}
+  {"type": "noodle_stand", "x": 17.95, "y": 22.0, "angle": 180},
+  {"type": "rock_wall", "x": 19.0, "y": 3.0, "angle": 90, "length": 34, "depth": 1.8, "height": [0.5, 1.45],
+   "rock": "reef", "seed": 3},
+  {"type": "boulder", "x": 9.5, "y": 6.4, "angle": 90, "size": 1.5, "height": 0.9, "rock": "reef", "plants": 3}
 ]
 ```
 | field | meaning |
@@ -649,11 +652,23 @@ An object is a thing too big to be a billboard - a car, a food stand - built in 
 | `scale` | grow or shrink it |
 | `paint` | a car's colour, `#rrggbb` |
 | `lights` | a car: `true` turns its headlamps on, with light on the road ahead (otherwise only its tail lamps glow, faintly). The noodle stand: `false` leaves its lamp and lanterns unlit |
+| `rock` | rock's kind: `stone` (grey, lichen and moss, ferns and grass tufts on top - the default), `reef` (live rock under water: coralline crusts, algae, pits; corals and sea fans on top, lit from straight above), `sandstone` (red rock in beds, dry tufts) |
+| `length` | a rock wall's length along the wall (default 4) |
+| `height` | a rock wall: how tall its pieces are, `[lowest, highest]` (default `[0.5, 1.4]`), each piece its own height between them. A boulder: its height (default 0.55 of its size) |
+| `depth` | how far a rock wall juts out from the wall (default 0.7) |
+| `pieces` | how wide a rock wall's pieces are, `[narrowest, widest]` (default `[1.4, 2.8]`) |
+| `trim` | the wavy trim along a rock wall's top, as a share of each piece's height (default 0.28) |
+| `size` | how wide a boulder is (default 0.8) |
+| `seed` | another arrangement of the same rock |
+| `plants` | a rock wall: `false` leaves its tops bare. A boulder: how many plants grow on top (default 0) |
+| `back` | a rock wall: `true` closes the back of each piece, for rock standing free of a wall |
 
-Built-in objects: `car` (a saloon 1.6 long, 0.6 wide and 0.47 tall - eye height is 0.5: its body a box whose sides are the car's outline, the hood and trunk lid flat across it, the roof, a windscreen, rear and side windows of glass with the seats, dashboard and steering wheel seen through them, four wheels set in under the body in dark wells, a floor pan and a soft shadow under it), `noodle_stand` (a street-food stand 1.4 wide and about 1.2 tall: a counter of lacquered boards under a sloping striped awning on four posts, a scalloped valance, split indigo curtains hanging from its front, a lit sign on the roof, red lanterns with their own light; bowls of noodles, a condiment tray, a stock pot with steam, bowls and bottles on its counter and stools before it, as billboards; it faces its customers. Put a `shopkeeper` behind its counter for a cook).
+Built-in objects: `car` (a saloon 1.6 long, 0.6 wide and 0.47 tall - eye height is 0.5: its body a box whose sides are the car's outline, the hood and trunk lid flat across it, the roof, a windscreen, rear and side windows of glass with the seats, dashboard and steering wheel seen through them, four wheels set in under the body in dark wells, a floor pan and a soft shadow under it), `noodle_stand` (a street-food stand 1.4 wide and about 1.2 tall: a counter of lacquered boards under a sloping striped awning on four posts, a scalloped valance, split indigo curtains hanging from its front, a lit sign on the roof, red lanterns with their own light; bowls of noodles, a condiment tray, a stock pot with steam, bowls and bottles on its counter and stools before it, as billboards; it faces its customers. Put a `shopkeeper` behind its counter for a cook), `rock_wall` (rockwork along the foot of a wall: set it on the wall's foot facing into the room, `length` along it. Pieces side by side and overlapping, each in plan a rounded mass of a few broad faces jutting from the wall (now and then a spike or a notch), each piece its own height, with a trim of faces along its top cut by one long smooth wavy edge so no top is level, a flat top on each and plants growing along its rim), `boulder` (a low-poly mass of rock, every face a triangle: an irregular polygon at its foot, bulging a little, drawing in to its shoulders and up to a peak off its centre - solid and closed from every side, so it can be looked down on; the `boulder` prop in `sprites` is a flat billboard of one, fine in the distance).
 
 - Shoot an object at an angle: its depth is the point of it. Objects light, occlude and mirror in wet floors like everything else; their billboards get contact shadows and their lights join the scene's. They do not cast shadows from the scene's lights.
 - They render fast - a car is about seventy panels, each touching only its own patch of the screen.
+- Rock is cut from one solid block of stone: every face samples the same 3D masses, cracks and chips at its own place in space, so the stone runs on round a corner while each face is lit by the way it faces. Cutting it takes a moment (a few seconds for an aquarium's worth); a placement is cut once and kept, so the shots of a scene share it.
+- A rock wall stands in front of the wall it lines, so whatever is above its tops is the wall itself: give that wall something to read against - open water (`open_water` over `deep_water`), sky, a dark cave wall.
 
 ## Scatter
 
