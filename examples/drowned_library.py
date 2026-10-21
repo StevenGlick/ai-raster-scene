@@ -5,7 +5,8 @@ Shows `bookshelf` walls three storeys high between `tall_window`s (see-through, 
 sunk under still water that mirrors everything; an island with a reading desk; and the air full
 of dream things from scripts/dream.py - `jellyfish` (glowing, additive), `sky_lantern`s drifting
 up, `book_fly`s, koi and open books, and a `sky_whale` drifting down the hall over the water. The sun
-comes in through skylights in the roof: holes with more roof beyond them light the fog in beams.
+comes in through skylights in the roof: holes with more roof beyond them light the fog in beams. Dark
+timber roof beams cross the hall between them (`beam` objects of `wood`), on brackets at the shelves.
 Run:  python drowned_library.py  -> writes drowned_library.json
 """
 import os
@@ -40,6 +41,13 @@ jellies = [(8.2, 9.0, 1.6), (13.4, 13.0, 2.2), (10.0, 25.0, 1.2), (12.6, 30.4, 2
            (11.2, 7.6, 2.5)]
 lanterns = [(9.0, 14.0, 2.4), (12.5, 16.5, 1.8), (8.0, 28.0, 2.6), (13.8, 21.0, 2.7), (10.6, 33.0, 2.0),
             (12.0, 10.4, 1.6), (7.6, 18.0, 2.9), (14.6, 31.0, 1.4)]
+beams = []                                            # the roof's timbers, across the hall between the skylights
+for k, y in enumerate((6.6, 10.5, 15.5, 19.0, 22.5, 26.5, 31.5, 34.6)):
+    beams.append({'type': 'beam', 'x': 11.0, 'y': y, 'z': 2.74, 'angle': 0, 'length': 10.0, 'width': 0.24,
+                  'depth': 0.26, 'material': 'wood', 'seed': k})
+    for x in (6.12, 15.88):                         # a bracket under each end
+        beams.append({'type': 'beam', 'x': x, 'y': y, 'z': 2.42, 'angle': 0, 'length': 0.24, 'width': 0.2,
+                      'depth': 0.32, 'material': 'wood', 'seed': 20 + k})
 dream = [{'fx': 'bloom', 'strength': 0.55, 'threshold': 0.72, 'radius': 8},
          {'fx': 'vignette', 'strength': 0.3, 'color': [0.1, 0.18, 0.22]}]
 
@@ -61,8 +69,8 @@ s = scene(
     sky='dream',
     sky_objects=[{'type': 'moon', 'azimuth': 285, 'elevation': 18, 'size': 4, 'color': [0.95, 0.92, 0.98],
                   'color2': [0.8, 0.78, 0.9], 'lit_from': 200, 'phase': 0.3}],
-    ambient=[0.24, 0.3, 0.34],
-    fog={'color': [0.08, 0.14, 0.17], 'density': 0.045, 'shafts': 2.6, 'glow': 1.0, 'anisotropy': 0.45},
+    ambient=[0.28, 0.34, 0.38],
+    fog={'color': [0.09, 0.15, 0.18], 'density': 0.04, 'shafts': 2.8, 'glow': 1.0, 'anisotropy': 0.45},
     lights=[{'type': 'sun', 'azimuth': 0, 'elevation': 48, 'color': [1.0, 0.92, 0.8], 'intensity': 1.3, 'disc': False},
             {'x': 10.8, 'y': 19.6, 'z': 1.0, 'radius': 3.5, 'color': warm, 'intensity': 1.2}] +
            [{'x': x, 'y': y, 'z': z, 'radius': 3.0, 'color': warm, 'intensity': 0.8} for x, y, z in lanterns[:6]] +
@@ -84,6 +92,7 @@ s = scene(
         {'x': 12.0, 'y': 14.0, 'type': 'koi', 'z': 1.3},
         {'x': 10.6, 'y': 22.5, 'type': 'sky_whale', 'z': 1.5, 'scale': 1.3},     # drifting down the hall
     ],
+    objects=beams,
     camera={'x': 10.5, 'y': 35.2, 'look_at': [10.5, 6.0, 1.6], 'fov': 66},
     shots=[
         {'x': 10.5, 'y': 35.2, 'look_at': [10.5, 6.0, 1.6], 'fov': 66, 'post': dream,
