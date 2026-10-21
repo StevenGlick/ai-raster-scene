@@ -49,8 +49,8 @@ def ghost_town():
         {'x': 6.0, 'y': 30.0, 'type': 'saguaro', 'scale': 2.8},
     ]
     sprites.append({'id': 'barkeep', 'x': 20.3, 'y': 38.4, 'type': 'shopkeeper', 'facing': 0})
-    objects = [{'type': 'trough', 'x': 20.6, 'y': 63.0, 'angle': 90, 'seed': 2},      # troughs of boards, water in them
-               {'type': 'trough', 'x': 18.4, 'y': 25.4, 'seed': 5},
+    objects = [{'type': 'trough', 'x': 20.6, 'y': 63.0, 'angle': 90, 'scale': 0.6, 'seed': 2},   # troughs of boards,
+               {'type': 'trough', 'x': 18.4, 'y': 25.4, 'scale': 0.6, 'seed': 5},                  # water in them
                # the mesas' cliffs in 3D, in beds of red and pale stone, over the old walls cut down
                {'type': 'rock_wall', 'x': 0, 'y': 0, 'lining': 'R', 'rock': 'canyon', 'depth': 1.0,
                 'height': [5.2, 6.0], 'trim': 0.05, 'pieces': [3.0, 6.0], 'seed': 4}]      # broad: mesas, far off

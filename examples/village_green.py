@@ -68,7 +68,7 @@ def village_green():
         fog={'color': [0.72, 0.74, 0.8], 'density': 0.009},
         lights=[SUN],
         sprites=sprites,
-        objects=[{'type': 'market_stand', 'x': 15.5, 'y': 33.6, 'angle': 44}],     # facing up the street
+        objects=[{'type': 'market_stand', 'x': 15.5, 'y': 33.6, 'angle': 44, 'scale': 0.8}],   # facing up the street
         scatter=[{'of': 'grass_tuft', 'on': 'g', 'density': 0.12, 'sizes': {'tiny': 3, 'small': 1}, 'seed': 2}],
         camera={'x': 17.0, 'y': 44.5, 'angle': 270, 'fov': 68, 'height': 0.5},
         shots=[

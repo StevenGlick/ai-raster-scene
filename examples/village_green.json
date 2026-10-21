@@ -255,7 +255,8 @@
    "type": "market_stand",
    "x": 15.5,
    "y": 33.6,
-   "angle": 44
+   "angle": 44,
+   "scale": 0.8
   }
  ],
  "scatter": [
