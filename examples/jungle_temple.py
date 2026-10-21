@@ -1,7 +1,8 @@
 """Jungle temple: a stepped pyramid swallowed by the rainforest, reached by a path under the canopy.
 
 Shows the jungle textures, plants and animals, a `fringe` of layered foliage cards in front of
-every face of the jungle (bushes at the front, a dense wall of trees at the back), plants as
+every face of the jungle (bushes at the front, a dense wall of trees at the back) laid along a
+natural, wandering line (`wander`) rather than the grid's square corners, plants as
 crossed planes, prefabs, sunlight falling in shafts through holes in a leaf ceiling, ground
 mist, a pyramid built from the heights layer and wall stacks (a cornice on the top storey of
 every tier), giant trees standing clear of a rolling canopy, and a view from the top of the
@@ -64,6 +65,13 @@ for y in range(H):
         if g.get(x, y) == 'J':
             swell = math.sin(x * 0.31 + 1.3) + math.sin(y * 0.27 + 0.4) + 0.6 * math.sin((x + y) * 0.53)
             g.put(x, y, CANOPY[min(5, max(0, int((swell + 1.8) * 1.6)))])
+# ...but level within two cells of open ground, so the fringe's trees make the forest's edge and no
+# steps of the canopy show between them like clipped hedges
+edge = [(x, y) for y in range(H) for x in range(W) if g.get(x, y) in CANOPY
+        and any(g.get(x + dx, y + dy) not in CANOPY + 'T'
+                for dx in range(-2, 3) for dy in range(-2, 3) if 0 <= x + dx < W and 0 <= y + dy < H)]
+for x, y in edge:
+    g.put(x, y, 'J')
 
 # tree crowns along the top of the canopy, thick near the clearing, so its edge is a line of
 # rounded crowns against the sky and the view from the pyramid is a sea of them
@@ -87,8 +95,8 @@ s = scene(
     heights=[''.join(r) for r in heights],
     ceiling_height=2.5,
     legend={
-        **{c: {'wall': 'jungle_leaves', 'h': 2.5 + 0.3 * i, 'top': 'canopy_top', 'fringe': 'jungle'}
-           for i, c in enumerate(CANOPY)},
+        **{c: {'wall': 'jungle_leaves', 'h': 2.5 + 0.3 * i, 'top': 'canopy_top',
+               'fringe': {'set': 'jungle', 'depth': 1.4, 'wander': 0.3}} for i, c in enumerate(CANOPY)},
         'T': {'wall': 'jungle_bark', 'h': 3.4, 'top': 'canopy_top'},
         ',': {'floor': 'jungle_floor'},
         'c': {'floor': 'jungle_floor', 'ceil': 'canopy'},
