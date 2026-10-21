@@ -39,8 +39,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 18 | 18 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 66 | 66 | 0 | 0 | 0 |
-| **all** | **805** | **805** | **0** | **0** | **0** |
+| Example scenes | 67 | 66 | 0 | 0 | 1 |
+| **all** | **806** | **805** | **0** | **0** | **1** |
 <!-- /summary -->
 
 ## Pass plan
@@ -96,7 +96,7 @@ New scenes:
 | `marble` | good |  | cathedral_ruin, chapel_graveyard, dream_chess, dream_world, gui_themes, gui_trade, library_medium, mansion_library |  |
 | `marble_dark` | good |  | aquarium | Redrawn with the toolkit in basics.py: dark slabs with long, thin, continuous veins of white and grey drifting across them. |
 | `rock` | good |  | castle_keep, coast_lighthouse, crystal_cave, doomed, fjord, garden_encounter, gui_lantern, gui_menus, hospital_garden, moon_base, post_presets, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: masses of every size, each a facet tilted to the light, split by crevices that wander, widen and close; finer cracks, grain. |
-| `rock_wet` | good |  | crystal_cave, gui_lantern, kelp_forest, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: the same rock darker and blue-grey, with glints of water where the faces catch the light. |
+| `rock_wet` | good |  | crystal_cave, gui_lantern, kelp_forest, sunken_temple, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: the same rock darker and blue-grey, with glints of water where the faces catch the light. |
 | `snow_rock` | good |  | - | Redrawn with the toolkit in basics.py: faceted rock with snow lying on the top of every mass, thick on the flats, and drifted in the crevices. |
 | `sky_wall` | good |  | dream_chess, dream_world, hall_of_doors |  |
 
@@ -197,7 +197,7 @@ New scenes:
 | `ice` | good | mirror 0.38 | winter_lake, winter_woods | Redrawn with the toolkit in basics.py: clear blue with gentle depth, straight fractures with a branch each and a dark side, strings of bubbles, frost. |
 | `water` | good | mirror 0.5 | alien_world, autumn_garden, coast_lighthouse, drowned_library, gui_lantern, sewer_tunnels, temple_inside, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: a deep teal in slow swells and a broken net of light where the ripples gather it; kept dark, so reflections read. |
 | `swamp_water` | good | mirror 0.42 | bayou | Drawn with the toolkit in swamp.py: black-brown water with a skin of duckweed drifting in patches and a few floating leaves; mirror 0.42. |
-| `seabed` | good |  | aquarium, kelp_forest, neon_bar | Drawn with the toolkit in sea.py: pale sand in gentle ripples, shell and pebble, and a broken net of caustic light over it. |
+| `seabed` | good |  | aquarium, kelp_forest, neon_bar, sunken_temple | Drawn with the toolkit in sea.py: pale sand in gentle ripples, shell and pebble, and a broken net of caustic light over it. |
 | `water_surface` | good | glows | aquarium, neon_bar | Drawn with the toolkit in sea.py: the surface from below, rippled and glowing with a net of brighter lines; for an underwater roof. |
 | `reef_wall` | good |  | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: lumps of live rock, patches of pink coralline, coral heads, algae tufts and polyps, dark crevices. |
 | `pine_needles` | good |  | woodland_night | Redrawn with the toolkit in forest.py: criss-crossed needle litter over dark soil, a few green needles, cones and twigs. |
@@ -225,7 +225,7 @@ New scenes:
 | `carpet_green` | good |  | - |  |
 | `flagstone` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, haunted_house, neon_street, night_market, rain_alley |  |
 | `obsidian` | good | mirror 0.45 | dream_world, neon_bar, space_station |  |
-| `concrete_floor` | good |  | 66 scenes |  |
+| `concrete_floor` | good |  | 67 scenes |  |
 | `rock_floor` | good |  | crystal_cave, doomed, gold_mine, gui_lantern, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: flatter, smaller masses in brown with grit in the cracks. |
 
 ### Ceilings
@@ -303,7 +303,7 @@ New scenes:
 | `slot_rock` | good |  | red_canyon | Drawn with the toolkit in desert.py: beds swept into flowing curves of orange, red, cream and violet, polished smooth. |
 | `pueblo_stone` | good |  | red_canyon | Drawn with the toolkit in desert.py: thin sandstone slabs laid in courses in a thick mud mortar, chinked with small stones. |
 | `pueblo_door` | good |  | red_canyon | Drawn with the toolkit in desert.py: the coursed stone with a T-shaped doorway, dark inside, poles laid over its head. |
-| `ruin_paving` | good |  | ancient_ruins, jungle_temple, temple_inside |  |
+| `ruin_paving` | good |  | ancient_ruins, jungle_temple, sunken_temple, temple_inside |  |
 | `dry_grass` | good |  | ancient_ruins, autumn_lane | Fewer, larger clumps with more earth between them, so it is not busy at grazing angles. |
 | `desert_wash` | good |  | ghost_town, gold_mine, red_canyon, saloon | Drawn with the toolkit in desert.py: pale sand faintly rippled, washed-down pebbles, patches of crazed dried mud. |
 | `colonnade` | good | see-through | - | Flat when seen along its length: use `column` objects for a row you look down (the ruins' peristyle now is). |
@@ -402,7 +402,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
-| `boulder` | good | 0.55 tall | chapel_graveyard, kelp_forest | Redrawn with the toolkit in forest.py: a settled rock with a lesser lobe and cracks, moss over its top, lichen spots. |
+| `boulder` | good | 0.55 tall | chapel_graveyard, kelp_forest, sunken_temple | Redrawn with the toolkit in forest.py: a settled rock with a lesser lobe and cracks, moss over its top, lichen spots. |
 | `bush` | good | 0.5 tall | cathedral_ruin, chapel_graveyard, coast_lighthouse, palm_house, woodland_night | Redrawn with the toolkit in forest.py: leaf clusters on fanned twigs, lit on top, dark underneath. |
 | `bush_autumn` | good | 0.5 tall | autumn_garden, autumn_lane | Drawn with the toolkit in forest.py: the bush in rust red and orange. |
 | `bush_snow` | good | 0.45 tall | winter_woods | Drawn with the toolkit in forest.py: a lumpy cushion of snow, blue in its hollows, twigs poking up through it. |
@@ -423,14 +423,14 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `spanish_moss` | good | 1.4 tall, no shadow | bayou | Drawn with the toolkit in swamp.py: a curtain of grey-green strands from a stub of branch, to hang with `z`. |
 | `cypress_knees` | good | 0.3 tall | bayou | Drawn with the toolkit in swamp.py: knobbly cones of root standing out of the water. |
 | `cattails` | good | 1 tall | bayou | Drawn with the toolkit in swamp.py: long blades and stems with brown velvet heads. |
-| `kelp` | good | 5 tall | kelp_forest | Drawn with the toolkit in sea.py: a swaying stipe from its holdfast, long golden blades streaming off small floats, a tangle at the top. |
-| `brain_coral` | good | 0.3 tall | aquarium, kelp_forest, neon_bar | Drawn with the toolkit in aquarium.py: a dome lit on its crown, its surface all meandering ridges (ochre) and grooves (green-brown). |
-| `staghorn_coral` | good | 0.42 tall | aquarium, kelp_forest, neon_bar | Drawn with the toolkit in aquarium.py: a thicket of golden-brown branches forking like antlers, lilac-white growing tips. |
-| `sea_fan` | good | 0.62 tall | aquarium, kelp_forest, neon_bar | Drawn with the toolkit in aquarium.py: a flat purple lace: thicker branches fanning from a short trunk with a fine net of little cells between them. |
-| `anemone` | good | 0.26 tall | aquarium, kelp_forest, neon_bar | Drawn with the toolkit in aquarium.py: a bubble-tip anemone: a red foot, salmon tentacles swollen to magenta bulbs, its pair of clownfish nestled among them. |
-| `tube_sponge` | good | 0.36 tall | aquarium, kelp_forest, neon_bar | Drawn with the toolkit in aquarium.py: violet tubes from a shared base, each with its lip and dark open mouth. |
-| `reef_rock` | good | 0.6 tall | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: a mound of live rock in coralline and algae, with a sea fan, staghorn, a tube sponge and brain corals grown on it. |
-| `rocks` | good | 0.22 tall | 21 scenes | Redrawn: half-sunk stones with lit tops and the odd crack. |
+| `kelp` | good | 5 tall | kelp_forest, sunken_temple | Drawn with the toolkit in sea.py: a swaying stipe from its holdfast, long golden blades streaming off small floats, a tangle at the top. |
+| `brain_coral` | good | 0.3 tall | aquarium, kelp_forest, neon_bar, sunken_temple | Drawn with the toolkit in aquarium.py: a dome lit on its crown, its surface all meandering ridges (ochre) and grooves (green-brown). |
+| `staghorn_coral` | good | 0.42 tall | aquarium, kelp_forest, neon_bar, sunken_temple | Drawn with the toolkit in aquarium.py: a thicket of golden-brown branches forking like antlers, lilac-white growing tips. |
+| `sea_fan` | good | 0.62 tall | aquarium, kelp_forest, neon_bar, sunken_temple | Drawn with the toolkit in aquarium.py: a flat purple lace: thicker branches fanning from a short trunk with a fine net of little cells between them. |
+| `anemone` | good | 0.26 tall | aquarium, kelp_forest, neon_bar, sunken_temple | Drawn with the toolkit in aquarium.py: a bubble-tip anemone: a red foot, salmon tentacles swollen to magenta bulbs, its pair of clownfish nestled among them. |
+| `tube_sponge` | good | 0.36 tall | aquarium, kelp_forest, neon_bar, sunken_temple | Drawn with the toolkit in aquarium.py: violet tubes from a shared base, each with its lip and dark open mouth. |
+| `reef_rock` | good | 0.6 tall | aquarium, neon_bar, sunken_temple | Drawn with the toolkit in aquarium.py: a mound of live rock in coralline and algae, with a sea fan, staghorn, a tube sponge and brain corals grown on it. |
+| `rocks` | good | 0.22 tall | 22 scenes | Redrawn: half-sunk stones with lit tops and the odd crack. |
 | `snowy_pine` | good | 3.4 tall | aurora_palace, winter_lake, winter_woods | Drawn with the toolkit in forest.py: the new spruce with snow lying in clumps along every tier's shoulders, crumbs on the hems and a small cap on the leader; dark needles between, so it still reads at a distance. |
 | `boulder_snow` | good | 0.55 tall | winter_lake, winter_woods | Drawn with the toolkit in forest.py: the boulder under a cushion of snow, deep where the top is flat and thin down the steep sides; in the `snow` scatter set. |
 | `stump` | good | 0.3 tall | tropical_beach, woodland_night | Redrawn with the toolkit in forest.py: a pale ringed cut face, furrowed sides, roots, a cushion of moss. |
@@ -607,8 +607,8 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
 | `broken_column` | good | 1 tall | - |  |
-| `column_drum` | good | 0.42 tall | ancient_ruins, cathedral_ruin | Flutes now run back along the drum, so it reads as a column; the end face is lit and stands proud of the body on a shadowed rim, scalloped by the flutes, a worn ring and the dowel hole. |
-| `marble_head` | good | 1.1 tall | ancient_ruins |  |
+| `column_drum` | good | 0.42 tall | ancient_ruins, cathedral_ruin, sunken_temple | Flutes now run back along the drum, so it reads as a column; the end face is lit and stands proud of the body on a shadowed rim, scalloped by the flutes, a worn ring and the dowel hole. |
+| `marble_head` | good | 1.1 tall | ancient_ruins, sunken_temple |  |
 | `amphora` | good | 0.36 tall | ancient_ruins |  |
 | `cow_skull` | good | 0.2 tall | ghost_town, gold_mine, red_canyon, saloon | Drawn with the toolkit in desert.py: a bleached longhorn skull: dark sockets and nose, horns curving out and up. |
 | `clay_pot` | good | 0.34 tall | red_canyon, temple_inside | Drawn with the toolkit in desert.py: a round white pot painted in black bands and a zigzag, turned on a lathe. |
@@ -643,25 +643,25 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `jaguar` | good | 0.34 tall, glows | glow_jungle, jungle_temple | Redrawn with the toolkit in basics.py: prowling, side on: a long low body, heavy shoulders, a broad head, rosettes spread over a golden coat, a pale belly; the eyes glow. |
 | `macaw` | good | 0.3 tall | jungle_temple, palm_house |  |
 | `goat` | good | 0.34 tall | ancient_ruins, fjord | Redrawn with the toolkit in basics.py: compact and deep-bodied on short sturdy legs, a piebald coat, horns swept back, a beard, the tail flicked up. |
-| `crab` | good | 0.08 tall | kelp_forest, tropical_beach |  |
+| `crab` | good | 0.08 tall | kelp_forest, sunken_temple, tropical_beach |  |
 | `seagull` | good | 0.14 tall, no shadow | fjord, sky_islands, tropical_beach |  |
 | `heron` | good | 0.95 tall | bayou | Drawn with the toolkit in swamp.py: a grey heron: long legs, the neck in an S, a yellow dagger of a beak, the black crest. |
 | `deer` | good | 0.62 tall | winter_woods | Drawn with the toolkit in forest.py: a deer side on: russet coat, pale belly and throat, slim legs, big ears, an antlered head up, a white tail. |
 | `black_cat` | good | 0.13 tall, glows | neon_rooftop | Drawn with the toolkit in rooftop.py: sitting with its back to you, ears up, its tail round its feet, one green eye catching the light. |
 | `alligator` | good | 0.2 tall, glows, no shadow | bayou | Drawn with the toolkit in swamp.py: only the snout, the eyes (which catch the light) and the ridged back above the water. |
 | `fireflies` | good | 1.2 tall, glows, no shadow | bayou | Drawn with the toolkit in swamp.py: a loose swarm of tiny glowing lights with soft halos; additive. |
-| `fish_school` | good | 0.9 tall, no shadow | aquarium, kelp_forest | Drawn with the toolkit in sea.py: thirty-odd silvery fish headed one way, dark backs, thicker in the middle of the shoal. |
+| `fish_school` | good | 0.9 tall, no shadow | aquarium, kelp_forest, sunken_temple | Drawn with the toolkit in sea.py: thirty-odd silvery fish headed one way, dark backs, thicker in the middle of the shoal. |
 | `whale_shark` | good | 1.36 tall, no shadow | aquarium | Drawn with the toolkit in aquarium.py: the broad flat head with its mouth at the front, ridges down the flanks, tall first dorsal, crescent tail; pale spots and broken bars on a blue-grey back, white belly. |
-| `manta_ray` | good | 0.9 tall, no shadow | aquarium | Drawn with the toolkit in aquarium.py: seen from below: pointed wings, curled cephalic fins either side of the mouth, gill slits, a few dark blotches on the white belly shading grey to the dark margins. |
+| `manta_ray` | good | 0.9 tall, no shadow | aquarium, sunken_temple | Drawn with the toolkit in aquarium.py: seen from below: pointed wings, curled cephalic fins either side of the mouth, gill slits, a few dark blotches on the white belly shading grey to the dark margins. |
 | `reef_shark` | good | 0.25 tall, no shadow | aquarium | Drawn with the toolkit in aquarium.py: a blacktip: sleek bronze-grey body, pointed snout, gill slits, white belly, black tips on the dorsal, pectoral and tail. |
-| `sea_turtle` | good | 0.3 tall, no shadow | aquarium | Drawn with the toolkit in aquarium.py: a green turtle from a little above: amber scutes and a rim of small plates, the head reaching forward, long front flippers swept back. |
+| `sea_turtle` | good | 0.3 tall, no shadow | aquarium, sunken_temple | Drawn with the toolkit in aquarium.py: a green turtle from a little above: amber scutes and a rim of small plates, the head reaching forward, long front flippers swept back. |
 | `clownfish` | good | 0.07 tall, no shadow | aquarium | Drawn with the toolkit in aquarium.py: a pair: orange with three black-edged white bands and black-edged fins. |
 | `angelfish` | good | 0.13 tall, no shadow | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: an emperor angelfish: clean diagonal stripes of yellow and blue, a black mask edged pale blue, a blue face, a yellow tail. |
 | `blue_tang` | good | 0.08 tall, no shadow | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: royal blue with the black palette loop, black-edged fins and a yellow tail. |
-| `reef_shoal` | good | 0.5 tall, no shadow | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: three dozen anthias, orange-pink with a few purple and gold, spaced so they never clump. |
+| `reef_shoal` | good | 0.5 tall, no shadow | aquarium, neon_bar, sunken_temple | Drawn with the toolkit in aquarium.py: three dozen anthias, orange-pink with a few purple and gold, spaced so they never clump. |
 | `sea_nettle` | good | 0.45 tall, glows, no shadow | aquarium | Drawn with the toolkit in aquarium.py: a golden bell striped rust to its scalloped rim, long maroon tentacles, four pale frilled arms twisting; half see-through. |
 | `moon_jelly` | good | 0.12 tall, glows, no shadow | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: a clear saucer with the four lilac crescents in a ring, a fringe of short tentacles; additive and glowing. |
-| `bubbles` | good | 1.2 tall, no shadow | aquarium, kelp_forest | Drawn with the toolkit in sea.py: a column of bubbles swelling as they rise, bright rings with a glint; additive. |
+| `bubbles` | good | 1.2 tall, no shadow | aquarium, kelp_forest, sunken_temple | Drawn with the toolkit in sea.py: a column of bubbles swelling as they rise, bright rings with a glint; additive. |
 | `crow` | good | 0.2 tall | autumn_lane, haunted_house, red_canyon, village_green | Drawn with the toolkit in village.py: glossy black with a blue sheen, the head up, a heavy beak. |
 | `bats` | good | 0.6 tall, no shadow | haunted_house | Drawn with the toolkit in haunted.py: black bat silhouettes, wings spread or beating, at different sizes. |
 
@@ -688,8 +688,8 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `swamp_card_1` | good | 1.4 tall | bayou | The front of a swamp fringe: cattails, reeds and cypress knees. |
 | `swamp_card_2` | good | 3 tall | bayou | Young cypresses among cattails and knees (the moss that hung in the air on its own bough is gone). |
 | `swamp_card_3` | good | 3.9 tall | bayou | A looser stand of cypresses hung with moss, cattails and knees at their feet. |
-| `kelp_card_1` | good | 5 tall | kelp_forest | The front of a kelp fringe: a few stalks. |
-| `kelp_card_2` | good | 5.8 tall | kelp_forest | The back: a dense stand of kelp. |
+| `kelp_card_1` | good | 5 tall | kelp_forest, sunken_temple | The front of a kelp fringe: a few stalks. |
+| `kelp_card_2` | good | 5.8 tall | kelp_forest, sunken_temple | The back: a dense stand of kelp. |
 | `palm_trunk` | good | 3.2 tall | tropical_beach | The palm without its crown, for palm_3d. |
 | `palm_crown` | good | 3.2 tall, no shadow | tropical_beach | The palm's crown alone, in the same frame as the trunk. |
 | `glass_pane` | good | 1 tall | aquarium, neon_bar, orbital_hangar | A plain pane for the glass pass. |
@@ -740,7 +740,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `explorer` | good | aquarium, aurora_palace, glow_jungle, jungle_temple, red_canyon, sky_islands, temple_inside |  |
 | `hoplite` | good | ancient_ruins |  |
 | `castaway` | good | tropical_beach |  |
-| `diver` | good | aquarium, kelp_forest | A brass diving helmet with a round faceplate and an air hose, a canvas suit, a weight belt, heavy boots. |
+| `diver` | good | aquarium, kelp_forest, sunken_temple | A brass diving helmet with a round faceplate and an air hose, a canvas suit, a weight belt, heavy boots. |
 | `runner` | good | neon_bar, neon_rooftop, neon_street, night_market | A cyberpunk: dark hair with a pink streak, a lit cyan visor, a black jacket striped in neon. |
 | `samurai` | good | autumn_garden, night_market | A street samurai: topknot, glowing red visor, a long black coat lined in crimson over a grey shirt and a gold belt, a sword slung across the back with its hilt over the shoulder, one chrome arm; back view. |
 | `hacker` | good | capsule_hotel, neon_bar | Hood up in deep violet, cyan goggles glowing in the shadow of it, a deck held in both hands with a green screen, cargo trousers, white sneakers on lit pink soles; back view. |
@@ -770,7 +770,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `cobweb` | good | bunker_lab, castle_keep, temple_inside |  |
 | `rune_mark` | good | - |  |
 | `drain` | good | bunker_lab, neon_street, night_market, rainy_street, sewer_tunnels |  |
-| `contact_shadow` | good | 65 scenes |  |
+| `contact_shadow` | good | 66 scenes |  |
 | `pad_marking` | good | moon_base, orbital_hangar | A painted landing ring with an H and a dashed outer ring, worn in patches. |
 | `rover_tracks` | good | moon_base | Drawn with the toolkit in moon.py: two tracks of chevron treads pressed into dust. |
 | `hazard_stripe` | good | orbital_hangar | A band of yellow and black diagonal stripes, worn through in places. |
@@ -800,7 +800,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `night` | good | 21 scenes |  |
 | `dusk` | good | autumn_garden, autumn_lane, coast_lighthouse, misty_moor |  |
 | `storm` | good | coast_lighthouse, rain_alley, rainy_street | Could use darker cloud masses. |
-| `day` | good | aquarium, cathedral_ruin, fjord, ghost_town, jungle_temple, kelp_forest, palm_house, red_canyon, saloon, salt_flat, sky_islands, temple_inside, tropical_beach, village_green, winter_lake, winter_woods |  |
+| `day` | good | aquarium, cathedral_ruin, fjord, ghost_town, jungle_temple, kelp_forest, palm_house, red_canyon, saloon, salt_flat, sky_islands, sunken_temple, temple_inside, tropical_beach, village_green, winter_lake, winter_woods |  |
 | `overcast` | good | doomed, winter_woods |  |
 | `blood` | good | - |  |
 | `space` | good | moon_base, orbital_hangar, space_station |  |
@@ -857,7 +857,7 @@ Named mixes for `scatter`; repeats in the contents act as weights.
 | `ruins` | good | column_drum, rubble, rocks x2, poppies, dry_tuft x2, amphora | ancient_ruins |  |
 | `desert` | good | rocks x3, prickly_pear, tumbleweed, cow_skull, dry_tuft | ghost_town, gold_mine, red_canyon | Rocks with the odd prickly pear, tumbleweed, skull and dry tuft. |
 | `swamp` | good | cattails x2, reeds, cypress_knees, rocks | - | Cattails and reeds with cypress knees and the odd rock. |
-| `seabed` | good | rocks x3, crab, boulder | kelp_forest | Rocks with the odd crab and boulder. |
+| `seabed` | good | rocks x3, crab, boulder | kelp_forest, sunken_temple | Rocks with the odd crab and boulder. |
 
 ## Fringe sets (7)
 
@@ -870,7 +870,7 @@ The cards a `fringe` wall stands in front of its open faces, back to front.
 | `forest_autumn` | good | autumn_card_4, autumn_card_3, autumn_card_2, autumn_card_1 | autumn_garden, autumn_lane | The forest fringe in October: oak, birch and bush turned, the spruce among them still green. |
 | `forest_snow` | good | winter_card_4, winter_card_3, winter_card_2, winter_card_1 | winter_woods | The forest fringe in winter: snowy spruce, bare oak and birch with snow on their limbs, bushes under snow. |
 | `swamp` | good | swamp_card_4, swamp_card_3, swamp_card_2, swamp_card_1 | bayou | Four cards: cattails and knees, then young cypresses, then a looser stand, then a dense one. The bayou spreads them three cells deep with `wander`. |
-| `kelp` | good | kelp_card_2, kelp_card_1 | kelp_forest | Two cards: a few stalks, then a dense stand. |
+| `kelp` | good | kelp_card_2, kelp_card_1 | kelp_forest, sunken_temple | Two cards: a few stalks, then a dense stand. |
 | `glow_jungle` | good | glow_jungle_card_4, glow_jungle_card_3, glow_jungle_card_2, glow_jungle_card_1 | glow_jungle | Four cards: the jungle fringe at night, faintly edged and specked with light. |
 
 ## Facade styles (6)
@@ -915,9 +915,9 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `car` | good | rain_alley | A saloon from panels, laid out as the user drew it: the overall box with the car's outline on its sides, hood and trunk lid across it at the belt (body 60%, glass 40%), the roof, glass windows with seats, dashboard and steering wheel inside, four wheels set in under the body in dark wells, a floor pan and a soft shadow; `paint`, `lights`. Proportions and handles tuned with the user. |
 | `noodle_stand` | good | neon_street | Counter, awning, valance, noren and sign as panels; bowls, pot, tray, lanterns and stools as billboards, with its own lamp and lantern lights. |
 | `rock_wall` | good | aquarium, crystal_cave, fjord, ghost_town, gold_mine, neon_bar, red_canyon | Laid out as the user drew it: overlapping pieces along a wall's foot, each in plan a rounded mass of a few broad faces jutting from the wall (the user's sharper zigzag read as spikes; a few spikes and notches are left), each its own height, a trim of faces along its top cut by one long smooth wavy edge, a flat top (inset a texel, so it never shows past the faces), plants on the rim. Kinds `stone`, `reef`, `sandstone`, `snow`, `cave`, `lumen` (glowing moss); `lining` lines every wall face of some map cells. The faces cut from one solid block of stone. Seen from above its tops are flat with the trim standing round them, as Build's were. |
-| `boulder` | good | aquarium, autumn_garden, autumn_lane, coast_lighthouse, crystal_cave, kelp_forest, misty_moor, neon_bar, red_canyon, winter_lake, winter_woods, woodland_night | A low-poly mass, every face a triangle: an irregular foot, a belly, drawn-in shoulders, a peak off its centre; closed from every side. Plants on top by count. |
-| `column` | good | ancient_ruins, autumn_garden, castle_keep, cathedral_ruin, gold_mine, hall_of_doors, palm_house, sky_islands, temple_inside, tropical_beach | A column or a post: a prism of `sides` faces (an octagon by default), tapering if `top` is under 1, a plinth (`base`) and a capital if asked; stone cut from the solid rock as rock is, or `wood` - weathered timber, the grain running up it, dark and grown over below `wet` where it stands in water. Built for the pier's piles first; the cathedral's piers are `ashlar` (dressed stone in drums) with plinths and capitals, one `broken` off ragged. The ruins' columns are Greek: `flutes` (20 faces, each hollowed, so it takes the light on one side and shadow on the other) and `doric` (an echinus widening under a square abacus), in `marble` laid in drums; `fill` lifts a backlit column's dark side. |
-| `beam` | good | ancient_ruins, autumn_garden, castle_keep, cathedral_ruin, drowned_library, gold_mine, hall_of_doors, palm_house, sky_islands, temple_inside | A squared timber or stone lintel lying level, `length` along the way it faces, its underside at the placement's `z`; timber's grain runs along it. Wall plates on the cathedral's piers, and one fallen on the floor; the architraves and cornices over the ruins' columns. |
+| `boulder` | good | aquarium, autumn_garden, autumn_lane, coast_lighthouse, crystal_cave, kelp_forest, misty_moor, neon_bar, red_canyon, sunken_temple, winter_lake, winter_woods, woodland_night | A low-poly mass, every face a triangle: an irregular foot, a belly, drawn-in shoulders, a peak off its centre; closed from every side. Plants on top by count. |
+| `column` | good | ancient_ruins, autumn_garden, castle_keep, cathedral_ruin, gold_mine, hall_of_doors, palm_house, sky_islands, sunken_temple, temple_inside, tropical_beach | A column or a post: a prism of `sides` faces (an octagon by default), tapering if `top` is under 1, a plinth (`base`) and a capital if asked; stone cut from the solid rock as rock is, or `wood` - weathered timber, the grain running up it, dark and grown over below `wet` where it stands in water. Built for the pier's piles first; the cathedral's piers are `ashlar` (dressed stone in drums) with plinths and capitals, one `broken` off ragged. The ruins' columns are Greek: `flutes` (20 faces, each hollowed, so it takes the light on one side and shadow on the other) and `doric` (an echinus widening under a square abacus), in `marble` laid in drums; `fill` lifts a backlit column's dark side. |
+| `beam` | good | ancient_ruins, autumn_garden, castle_keep, cathedral_ruin, drowned_library, gold_mine, hall_of_doors, palm_house, sky_islands, sunken_temple, temple_inside | A squared timber or stone lintel lying level, `length` along the way it faces, its underside at the placement's `z`; timber's grain runs along it. Wall plates on the cathedral's piers, and one fallen on the floor; the architraves and cornices over the ruins' columns. |
 | `crystal_cluster` | good | alien_world, aurora_palace, crystal_cave | The user's idea: crystals whose facets refract. Hexagonal prisms with pointed tips from a bed of rock, every facet a panel with its own clarity (clear across the middle, milky toward the base, bright edges) and its own bend: drawn with the glass, each facet shows the frame drawn so far shifted by one offset from the way it is turned (Renderer._bend), so it shows one coherent piece of what is behind, the colours parting a little at the edges. Strongest with glowing things behind. |
 
 ### Not yet sorted
@@ -986,7 +986,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 
 | theme | status | used in | notes |
 |---|---|---|---|
-| `classic` | good | 58 scenes |  |
+| `classic` | good | 59 scenes |  |
 | `parchment` | good | gui_themes, gui_trade |  |
 | `terminal` | good | bunker_lab, gui_themes, orbital_hangar, space_station |  |
 | `blood` | good | gui_themes |  |
@@ -999,7 +999,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 |---|---|---|---|
 | `bubble` | good | 24 scenes |  |
 | `dialog` | good | bunker_lab, chapel_graveyard, claude_study, coast_lighthouse, ghost_corridor, library_medium, neon_bar, orbital_hangar, space_station |  |
-| `caption` | good | 51 scenes |  |
+| `caption` | good | 52 scenes |  |
 | `choice` | good | gui_menus, gui_themes, gui_trade |  |
 | `title` | good | gui_menus |  |
 | `panel` | good | bunker_lab, gui_lantern |  |
@@ -1055,7 +1055,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `mono` | good | - |  |
 | `bone` | good | - |  |
 
-## Example scenes (66)
+## Example scenes (67)
 
 The environments, judged on their gallery images and shots.
 
@@ -1164,10 +1164,12 @@ The environments, judged on their gallery images and shots.
 | `fjord` | good | 3 | fjord_day, fjord_dusk, fjord_water | New: a longship on the shingle at the head of a fjord, cliffs in 3D on both sides, a longhouse under thatch, another ship at anchor - by day, at dusk by the fire, and from the water. |
 | `palm_house` | good | 3 | palm_path, palm_fountain, palm_back | New: a Victorian glasshouse full of palms, its roof of glass in 3D (`gable_roof`, `cover` and `ends` of `glass`, drawn as glass) on iron columns and ribs (`iron_white`), the sun pouring in, a fountain under the ridge. |
 | `autumn_garden` | good | 3 | garden_gate, garden_pond, garden_dusk | New: a Japanese garden in autumn - a red gate, stone lanterns, maples, a pond and bridge, a tea house under grey tiles; at dusk the lanterns lit. |
+| `sunken_temple` | new | 3 | sunken_temple, sunken_colonnade, sunken_head |  |
 
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, the sunken temple.** A new scene from pieces already made: the ruins' fluted marble columns and architraves set on the sea floor in the kelp forest's water, coral on the stones, a manta ray, the diver at the marble head. (A 3D moon-base dome of glass was tried just before and dropped: it was no better than the drawn domes.)
 - **2026-10-21, the aurora palace.** The last of the fantasy scenes: `crystal_cluster`s of `ice` on beds of snow rock flank the gate, the throne and the lake's shore - every facet bending the aurora, and their pale light making the ice walls and the throne glow where they were dark blocks; doubled in the polished ice.
 - **2026-10-21, the autumn garden.** A new scene: a Japanese garden in autumn - a gate of `lime_red` columns and beams with a `lacquer_black` top beam (new paint), `stone_lantern`s (new object: foot, shaft, platform, a firebox lit between four posts, a six-sided roof, a finial), a tea house under `slate`, a pond with a plank bridge and red rails, boulders, maples. First drawn, the camera stood in the gate and the garden read empty: the gate moved up the path to frame the view whole, maples came in close round the pond (one moved out of the second shot's line), and the dusk shot moved onto the path, where the lanterns line the way.
 - **2026-10-21, the lighthouse.** The coast's lighthouse was a square tower of wall cells nine high. It is a `lighthouse` object now (new): a round whitewashed tower tapering up, a red band, a gallery with its rail, a lantern room of glass with the lamp lit in it, a domed cap; painted masonry `lime_white` and `lime_red`. The tower shot tilts up a little (`pitch` 0.24) to take in the lantern, with a bloom on the lights.

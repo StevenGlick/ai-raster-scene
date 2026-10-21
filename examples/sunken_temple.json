@@ -1,0 +1,968 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKsssssssssssKKKKKKKKKKK",
+  "KKKKKKsssssssssssssssssssssssKKKKK",
+  "KKKKKKsssssssssssssssssssssssKKKKK",
+  "KKKKKKsssssBBBBBBBBBBBBssssssKKKKK",
+  "KKKKKKsssssBBBBBBBBBBBBssssssKKKKK",
+  "KKKKKKsssssBBBBBBBBBBBBssssssKKKKK",
+  "KKKKKssssssBBBBBBBBBBBBsssssssKKKK",
+  "KKKKKssssssBBBBBBBBBBBBsssssssKKKK",
+  "KKKKsssssssBBBBBBBBBBBBssssssssKKK",
+  "KKKKsssssssBBBBBBBBBBBBssssssssKKK",
+  "KKKKsssssssBBBBBBBBBBBBssssssssKKK",
+  "KKKKsssssssBBBBBBBBBBBBssssssssKKK",
+  "KKKKsssssssBBBBBBBBBBBBssssssssKKK",
+  "KKKKsssssssBBBBBBBBBBBBssssssssKKK",
+  "KKKKsssssssBBBBBBBBBBBBssssssssKKK",
+  "KKKKsssssssssssssssssssssssssssKKK",
+  "KKKKsssssssssssssssssssssssssssKKK",
+  "KKKKsssssssssssssssssssssssssssKKK",
+  "KKKKsssssssssssssssssssssssssssKKK",
+  "KKKKKsssssssssssssssssssssssssKKKK",
+  "KKKKKsssssssssssssssssssssssssKKKK",
+  "KKKKKKsssssssssssssssssssssssKKKKK",
+  "KKKKKKsssssssssssssssssssssssKKKKK",
+  "KKKKKKsssssssssssssssssssssssKKKKK",
+  "KKKKKKsssssssssssssssssssssssKKKKK",
+  "KKKKKKsssssssssssssssssssssssKKKKK",
+  "KKKKKKsssssssssssssssssssssssKKKKK",
+  "KKKKKKsssssssssssssssssssssssKKKKK",
+  "KKKKKKsssssssssssssssssssssssKKKKK",
+  "KKKKKKsssssssssssssssssssssssKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
+ ],
+ "legend": {
+  "K": {
+   "wall": "rock_wet",
+   "h": 0.8,
+   "top": "seabed",
+   "fringe": {
+    "set": "kelp",
+    "depth": 1.2,
+    "wander": 0.3
+   }
+  },
+  "s": {
+   "floor": "seabed"
+  },
+  "B": {
+   "wall": {
+    "base": "ruin_paving",
+    "tint": [
+     0.78,
+     0.88,
+     0.84
+    ]
+   },
+   "h": 0.3,
+   "top": {
+    "base": "ruin_paving",
+    "tint": [
+     0.78,
+     0.88,
+     0.84
+    ]
+   }
+  }
+ },
+ "camera": {
+  "x": 16.2,
+  "y": 30.2,
+  "look_at": [
+   17.0,
+   13.0,
+   1.8
+  ],
+  "fov": 66
+ },
+ "title": "Sunken temple - marble on the floor of the sea",
+ "sky": "day",
+ "ambient": [
+  0.1,
+  0.22,
+  0.24
+ ],
+ "fog": {
+  "color": [
+   0.0,
+   0.16,
+   0.2
+  ],
+  "density": 0.045,
+  "shafts": 1.4,
+  "anisotropy": 0.35
+ },
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 100,
+   "elevation": 66,
+   "intensity": 1.2
+  }
+ ],
+ "post": [
+  {
+   "fx": "grade",
+   "tint": [
+    0.74,
+    0.98,
+    1.05
+   ],
+   "saturation": 1.1
+  },
+  {
+   "fx": "vignette",
+   "strength": 0.4
+  }
+ ],
+ "sprites": [
+  {
+   "x": 23.71,
+   "y": 30.62,
+   "type": "kelp",
+   "scale": 4.82,
+   "flip": true
+  },
+  {
+   "x": 7.19,
+   "y": 18.73,
+   "type": "kelp",
+   "scale": 4.65,
+   "flip": true
+  },
+  {
+   "x": 7.07,
+   "y": 35.98,
+   "type": "kelp",
+   "scale": 5.04,
+   "flip": true
+  },
+  {
+   "x": 25.75,
+   "y": 31.64,
+   "type": "kelp",
+   "scale": 4.63,
+   "flip": true
+  },
+  {
+   "x": 25.35,
+   "y": 9.8,
+   "type": "kelp",
+   "scale": 5.09,
+   "flip": false
+  },
+  {
+   "x": 11.0,
+   "y": 33.07,
+   "type": "kelp",
+   "scale": 5.4,
+   "flip": true
+  },
+  {
+   "x": 21.56,
+   "y": 8.03,
+   "type": "kelp",
+   "scale": 4.81,
+   "flip": true
+  },
+  {
+   "x": 9.28,
+   "y": 27.56,
+   "type": "kelp",
+   "scale": 4.72,
+   "flip": false
+  },
+  {
+   "x": 6.32,
+   "y": 34.13,
+   "type": "kelp",
+   "scale": 4.14,
+   "flip": false
+  },
+  {
+   "x": 14.09,
+   "y": 34.63,
+   "type": "kelp",
+   "scale": 4.64,
+   "flip": false
+  },
+  {
+   "x": 22.31,
+   "y": 26.88,
+   "type": "kelp",
+   "scale": 5.09,
+   "flip": true
+  },
+  {
+   "x": 10.88,
+   "y": 25.95,
+   "type": "kelp",
+   "scale": 4.17,
+   "flip": false
+  },
+  {
+   "x": 14.37,
+   "y": 27.97,
+   "type": "kelp",
+   "scale": 4.98,
+   "flip": false
+  },
+  {
+   "x": 27.82,
+   "y": 28.26,
+   "type": "kelp",
+   "scale": 5.29,
+   "flip": true
+  },
+  {
+   "x": 21.68,
+   "y": 31.73,
+   "type": "kelp",
+   "scale": 4.64,
+   "flip": false
+  },
+  {
+   "x": 6.02,
+   "y": 19.77,
+   "type": "kelp",
+   "scale": 5.01,
+   "flip": false
+  },
+  {
+   "x": 26.32,
+   "y": 17.17,
+   "type": "kelp",
+   "scale": 5.58,
+   "flip": true
+  },
+  {
+   "x": 24.11,
+   "y": 12.4,
+   "type": "kelp",
+   "scale": 4.65,
+   "flip": true
+  },
+  {
+   "x": 24.88,
+   "y": 31.21,
+   "type": "kelp",
+   "scale": 4.22,
+   "flip": false
+  },
+  {
+   "x": 25.02,
+   "y": 15.8,
+   "type": "kelp",
+   "scale": 4.72,
+   "flip": true
+  },
+  {
+   "x": 6.06,
+   "y": 13.46,
+   "type": "kelp",
+   "scale": 4.55,
+   "flip": false
+  },
+  {
+   "x": 25.57,
+   "y": 21.45,
+   "type": "kelp",
+   "scale": 4.73,
+   "flip": false
+  },
+  {
+   "x": 24.89,
+   "y": 17.44,
+   "type": "kelp",
+   "scale": 5.27,
+   "flip": true
+  },
+  {
+   "x": 21.34,
+   "y": 8.16,
+   "type": "kelp",
+   "scale": 4.06,
+   "flip": true
+  },
+  {
+   "x": 7.08,
+   "y": 14.08,
+   "type": "kelp",
+   "scale": 4.96,
+   "flip": false
+  },
+  {
+   "x": 12.4,
+   "y": 11.2,
+   "type": "staghorn_coral",
+   "z": 0.3,
+   "flip": false
+  },
+  {
+   "x": 14.6,
+   "y": 11.4,
+   "type": "brain_coral",
+   "z": 0.3,
+   "flip": true
+  },
+  {
+   "x": 19.4,
+   "y": 11.3,
+   "type": "sea_fan",
+   "z": 0.3,
+   "flip": false
+  },
+  {
+   "x": 21.6,
+   "y": 13.6,
+   "type": "anemone",
+   "z": 0.3,
+   "flip": true
+  },
+  {
+   "x": 12.2,
+   "y": 16.0,
+   "type": "tube_sponge",
+   "z": 0.3,
+   "flip": false
+  },
+  {
+   "x": 21.4,
+   "y": 18.4,
+   "type": "staghorn_coral",
+   "z": 0.3,
+   "flip": true
+  },
+  {
+   "x": 16.6,
+   "y": 15.0,
+   "type": "reef_rock",
+   "z": 0.3,
+   "flip": false
+  },
+  {
+   "x": 14.0,
+   "y": 19.6,
+   "type": "sea_fan",
+   "z": 0.3,
+   "flip": true
+  },
+  {
+   "x": 19.8,
+   "y": 20.4,
+   "type": "brain_coral",
+   "z": 0.3,
+   "flip": false
+  },
+  {
+   "x": 9.4,
+   "y": 18.0,
+   "type": "column_drum",
+   "flip": false
+  },
+  {
+   "x": 10.0,
+   "y": 24.0,
+   "type": "column_drum",
+   "flip": true
+  },
+  {
+   "x": 24.0,
+   "y": 16.4,
+   "type": "column_drum",
+   "flip": false
+  },
+  {
+   "x": 23.6,
+   "y": 24.6,
+   "type": "column_drum",
+   "flip": true
+  },
+  {
+   "x": 14.4,
+   "y": 25.6,
+   "type": "column_drum",
+   "flip": false
+  },
+  {
+   "id": "head",
+   "x": 19.6,
+   "y": 26.4,
+   "type": "marble_head",
+   "tint": [
+    0.82,
+    0.92,
+    0.9
+   ]
+  },
+  {
+   "x": 18.6,
+   "y": 26.9,
+   "type": "staghorn_coral"
+  },
+  {
+   "x": 20.6,
+   "y": 27.0,
+   "type": "anemone"
+  },
+  {
+   "x": 16.0,
+   "y": 18.0,
+   "type": "manta_ray",
+   "z": 3.6,
+   "scale": 1.6
+  },
+  {
+   "x": 13.0,
+   "y": 14.0,
+   "type": "reef_shoal",
+   "z": 1.6
+  },
+  {
+   "x": 21.0,
+   "y": 16.0,
+   "type": "fish_school",
+   "z": 2.2,
+   "flip": true
+  },
+  {
+   "x": 9.0,
+   "y": 26.0,
+   "type": "fish_school",
+   "z": 2.8
+  },
+  {
+   "x": 24.0,
+   "y": 28.0,
+   "type": "sea_turtle",
+   "z": 1.4,
+   "scale": 0.5
+  },
+  {
+   "id": "diver",
+   "x": 18.4,
+   "y": 28.2,
+   "type": "diver",
+   "facing": 45
+  },
+  {
+   "x": 18.45,
+   "y": 28.15,
+   "type": "bubbles",
+   "z": 0.62,
+   "scale": 1.6
+  }
+ ],
+ "objects": [
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 11.5,
+   "y": 10.5,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 2.6,
+   "doric": true,
+   "capital": 0.3,
+   "broken": 0,
+   "seed": 0
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 13.7,
+   "y": 10.5,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 2.6,
+   "doric": true,
+   "capital": 0.3,
+   "broken": 0,
+   "seed": 1
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 15.9,
+   "y": 10.5,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 2.6,
+   "doric": true,
+   "capital": 0.3,
+   "broken": 0,
+   "seed": 2
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 18.1,
+   "y": 10.5,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 2.6,
+   "doric": true,
+   "capital": 0.3,
+   "broken": 0,
+   "seed": 3
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 20.3,
+   "y": 10.5,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 2.6,
+   "doric": true,
+   "capital": 0.3,
+   "broken": 0,
+   "seed": 4
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 22.5,
+   "y": 10.5,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 2.6,
+   "doric": true,
+   "capital": 0.3,
+   "broken": 0,
+   "seed": 5
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 22.5,
+   "y": 12.7,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 2.6,
+   "doric": true,
+   "capital": 0.3,
+   "broken": 0,
+   "seed": 6
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 22.5,
+   "y": 14.9,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 1.1,
+   "doric": false,
+   "capital": 0.3,
+   "broken": 0.25,
+   "seed": 7
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 22.5,
+   "y": 17.1,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 1.6,
+   "doric": false,
+   "capital": 0.3,
+   "broken": 0.25,
+   "seed": 8
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 22.5,
+   "y": 19.3,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 2.6,
+   "doric": true,
+   "capital": 0.3,
+   "broken": 0,
+   "seed": 9
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 22.5,
+   "y": 21.5,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 1.1,
+   "doric": false,
+   "capital": 0.3,
+   "broken": 0.25,
+   "seed": 10
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 20.3,
+   "y": 21.5,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 2.6,
+   "doric": true,
+   "capital": 0.3,
+   "broken": 0,
+   "seed": 11
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 18.1,
+   "y": 21.5,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 0.6,
+   "doric": false,
+   "capital": 0.3,
+   "broken": 0.25,
+   "seed": 12
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 15.899999999999999,
+   "y": 21.5,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 1.1,
+   "doric": false,
+   "capital": 0.3,
+   "broken": 0.25,
+   "seed": 13
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 13.7,
+   "y": 21.5,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 1.6,
+   "doric": false,
+   "capital": 0.3,
+   "broken": 0.25,
+   "seed": 14
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 11.5,
+   "y": 21.5,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 0.6,
+   "doric": false,
+   "capital": 0.3,
+   "broken": 0.25,
+   "seed": 15
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 11.5,
+   "y": 19.3,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 2.6,
+   "doric": true,
+   "capital": 0.3,
+   "broken": 0,
+   "seed": 16
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 11.5,
+   "y": 17.1,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 1.6,
+   "doric": false,
+   "capital": 0.3,
+   "broken": 0.25,
+   "seed": 17
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 11.5,
+   "y": 14.899999999999999,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 2.6,
+   "doric": true,
+   "capital": 0.3,
+   "broken": 0,
+   "seed": 18
+  },
+  {
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "fill": 0.6,
+   "type": "column",
+   "x": 11.5,
+   "y": 12.7,
+   "z": 0.3,
+   "radius": 0.26,
+   "height": 2.6,
+   "doric": true,
+   "capital": 0.3,
+   "broken": 0,
+   "seed": 19
+  },
+  {
+   "type": "beam",
+   "x": 12.6,
+   "y": 10.5,
+   "z": 2.9,
+   "angle": 0,
+   "length": 2.6,
+   "width": 0.5,
+   "depth": 0.34,
+   "material": "marble",
+   "fill": 0.6,
+   "seed": 115
+  },
+  {
+   "type": "beam",
+   "x": 14.799999999999999,
+   "y": 10.5,
+   "z": 2.9,
+   "angle": 0,
+   "length": 2.6,
+   "width": 0.5,
+   "depth": 0.34,
+   "material": "marble",
+   "fill": 0.6,
+   "seed": 137
+  },
+  {
+   "type": "beam",
+   "x": 17.0,
+   "y": 10.5,
+   "z": 2.9,
+   "angle": 0,
+   "length": 2.6,
+   "width": 0.5,
+   "depth": 0.34,
+   "material": "marble",
+   "fill": 0.6,
+   "seed": 159
+  },
+  {
+   "type": "beam",
+   "x": 19.200000000000003,
+   "y": 10.5,
+   "z": 2.9,
+   "angle": 0,
+   "length": 2.6,
+   "width": 0.5,
+   "depth": 0.34,
+   "material": "marble",
+   "fill": 0.6,
+   "seed": 181
+  },
+  {
+   "type": "beam",
+   "x": 21.400000000000002,
+   "y": 10.5,
+   "z": 2.9,
+   "angle": 0,
+   "length": 2.6,
+   "width": 0.5,
+   "depth": 0.34,
+   "material": "marble",
+   "fill": 0.6,
+   "seed": 203
+  },
+  {
+   "type": "beam",
+   "x": 16.8,
+   "y": 24.8,
+   "z": 0.0,
+   "angle": 24,
+   "length": 2.4,
+   "width": 0.5,
+   "depth": 0.34,
+   "material": "marble",
+   "fill": 0.6,
+   "seed": 90
+  },
+  {
+   "type": "boulder",
+   "x": 7.4,
+   "y": 14.0,
+   "size": 2.2,
+   "height": 1.2,
+   "rock": "reef",
+   "angle": 30,
+   "plants": 4,
+   "seed": 50
+  },
+  {
+   "type": "boulder",
+   "x": 27.0,
+   "y": 13.0,
+   "size": 2.6,
+   "height": 1.0,
+   "rock": "reef",
+   "angle": 120,
+   "plants": 4,
+   "seed": 51
+  },
+  {
+   "type": "boulder",
+   "x": 8.0,
+   "y": 30.0,
+   "size": 2.0,
+   "height": 0.9,
+   "rock": "reef",
+   "angle": 220,
+   "plants": 4,
+   "seed": 52
+  },
+  {
+   "type": "boulder",
+   "x": 26.6,
+   "y": 31.0,
+   "size": 2.4,
+   "height": 1.1,
+   "rock": "reef",
+   "angle": 300,
+   "plants": 4,
+   "seed": 53
+  }
+ ],
+ "scatter": [
+  {
+   "of": "seabed",
+   "on": "s",
+   "density": 0.12,
+   "sizes": {
+    "tiny": 3,
+    "small": 2
+   },
+   "seed": 4
+  }
+ ],
+ "shots": [
+  {
+   "x": 16.2,
+   "y": 30.2,
+   "height": 0.8,
+   "look_at": [
+    17.0,
+    13.0,
+    1.8
+   ],
+   "fov": 66,
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "The temple under the sea",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 14.8,
+   "y": 17.0,
+   "height": 0.7,
+   "look_at": [
+    16.0,
+    10.5,
+    3.2
+   ],
+   "fov": 70
+  },
+  {
+   "x": 15.6,
+   "y": 29.6,
+   "height": 0.8,
+   "look_at": "head",
+   "fov": 60
+  }
+ ],
+ "contact_shadows": 0.5,
+ "supersample": 2
+}

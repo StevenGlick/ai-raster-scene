@@ -74,7 +74,7 @@ Sixty example scenes in [`examples/`](examples/), every one a single JSON file y
 - **[Cities](#cities)** - [streets in the rain](#city-streets) · [the neon city](#the-neon-city) · [a night market](#the-night-market) · [a bar](#the-bar) · [the rooftops](#the-rooftops) · [a capsule hotel](#the-capsule-hotel) · [a village](#the-village) · [a frontier town](#the-frontier-town) · [a clockwork city](#the-clockwork-city)
 - **[Woods and weather](#woods-and-weather)** - [the woods at night](#the-woods-at-night) · [autumn](#autumn) · [the autumn garden](#the-autumn-garden) · [winter](#winter) · [fog and light](#fog-and-light) · [the palm house](#the-palm-house) · [the bayou](#the-bayou)
 - **[Jungle, desert and coast](#jungle-desert-and-coast)** - [jungle, ruins and the beach](#jungle-ruins-and-the-beach) · [the glowing jungle](#the-glowing-jungle) · [the desert](#the-desert) · [the salt flat](#the-salt-flat) · [the fjord](#the-fjord) · [the lighthouse](#the-lighthouse)
-- **[Underground and undersea](#underground-and-undersea)** - [the crystal cave](#the-crystal-cave) · [under the sea](#under-the-sea) · [the aquarium](#the-aquarium)
+- **[Underground and undersea](#underground-and-undersea)** - [the crystal cave](#the-crystal-cave) · [under the sea](#under-the-sea) · [the sunken temple](#the-sunken-temple) · [the aquarium](#the-aquarium)
 - **[Haunts and old stones](#haunts-and-old-stones)** - [the haunted house](#the-haunted-house) · [the castle and the chapel](#the-castle-and-the-chapel) · [encounters](#encounters)
 - **[Space and other worlds](#space-and-other-worlds)** - [stations and ships](#stations-and-ships) · [the Moon](#the-moon) · [Vector World](#vector-world) · [Doomed](#doomed)
 - **[Dreams and wonders](#dreams-and-wonders)** - [dreams](#dreams) · [the drowned library](#the-drowned-library) · [the hall of doors](#the-hall-of-doors) · [the sky islands](#the-sky-islands) · [the aurora palace](#the-aurora-palace) · [ask Claude](#ask-claude)
@@ -346,6 +346,16 @@ A forest of giant kelp on the floor of the sea, a shoal of fish turning, the wre
 |---|---|
 | ![Kelp standing up through teal water, the wreck beyond](docs/gallery/sea_kelp.png) | ![A diver by the wreck, bubbles rising from the helmet](docs/gallery/sea_diver.png) |
 | ![A shoal of fish among the kelp](docs/gallery/sea_shoal.png) | ![A night dive: the wreck by flashlight, jellyfish glowing](docs/gallery/sea_night.png) |
+
+### The sunken temple
+
+A temple of marble on the floor of the sea: fluted columns still standing on their platform under a run of architrave, others fallen in drums across the sand, coral grown over the stones, kelp swaying round it, a manta ray gliding over - and a diver at the great fallen head.
+
+![The temple under the sea: columns standing in teal water, a manta ray gliding over, kelp all round](docs/gallery/sunken_temple.png)
+
+| | |
+|---|---|
+| ![Looking up at the colonnade's architrave, kelp between the columns](docs/gallery/sunken_colonnade.png) | ![A diver at the great marble head on the sea floor](docs/gallery/sunken_head.png) |
 
 ### The aquarium
 
