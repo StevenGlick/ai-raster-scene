@@ -65,9 +65,9 @@ From going through the catalog. One scene at a time, each done properly; no rush
 
 New scenes:
 
-- [ ] A saloon interior, in the frontier town.
-- [ ] Inside a mine, in the same wild west.
-- [ ] Inside the jungle temple.
+- [x] A saloon interior, in the frontier town. Done: `saloon` - a long mahogany bar (`saloon_bar`), the back bar's bottles and mirror, a piano, card tables, a tin ceiling, the noon sun through the front windows into dusty air.
+- [x] Inside a mine, in the same wild west. Done: `gold_mine` - a tunnel timbered in 3D, `rails` and an `ore_cart`, lanterns, a prospector at a vein of gold, the portal in the hillside.
+- [x] Inside the jungle temple. Done: `temple_inside` - a passage of carved stone to the idol of the jaguar in a shaft of light, an explorer reaching for it, treasure.
 
 ## Textures (199)
 
