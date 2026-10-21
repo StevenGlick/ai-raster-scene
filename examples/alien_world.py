@@ -2,7 +2,8 @@
 
 Shows the `alien` sky with `sky_objects` (a ringed gas giant and two moons), an alien sun casting
 long shadows, a purple mountain skyline, glowing `alien_rock` outcrops, a reflective pool, the
-`alien` scatter set, and a raised plateau with steps (`heights`) carrying a monolith.
+`alien` scatter set, and a raised plateau with steps (`heights`) carrying a monolith; crystals in 3D
+(`crystal_cluster` objects) by the glowing pool and flanking the plateau's step, bending the light.
 Run:  python alien_world.py  -> writes alien_world.json
 """
 import os
@@ -62,8 +63,11 @@ s = scene(
         {'id': 'native', 'x': 15.2, 'y': 12.3, 'type': 'alien'},
         {'x': 19.4, 'y': 18.4, 'type': 'alien_plant'}, {'x': 25.8, 'y': 21.0, 'type': 'alien_plant', 'scale': 1.2},
         {'x': 24.4, 'y': 17.4, 'type': 'alien_plant', 'scale': 0.8, 'flip': True},
-        {'x': 20.0, 'y': 23.4, 'type': 'crystal', 'scale': 0.5}, {'x': 18.8, 'y': 21.2, 'type': 'crystal'},
     ],
+    # crystals in 3D, every facet bending the light: by the glowing pool, and flanking the plateau's step
+    objects=[{'type': 'crystal_cluster', 'x': x, 'y': y, 'color': c, 'size': sz, 'count': n, 'seed': k}
+             for k, (x, y, c, sz, n) in enumerate(((19.0, 21.4, 'cyan', 1.3, 6), (20.4, 23.7, 'violet', 0.8, 4),
+                                                   (11.7, 15.1, 'violet', 1.4, 7), (15.4, 15.2, 'cyan', 1.0, 5)))],
     scatter=[{'of': 'alien', 'on': '.', 'density': 0.16, 'clump': 1.4, 'sizes': ['small', 'medium', 'large'],
               'seed': 6}],
     camera={'x': 11.0, 'y': 34.0, 'look_at': [15.0, 20.0, 0.8], 'fov': 72},
