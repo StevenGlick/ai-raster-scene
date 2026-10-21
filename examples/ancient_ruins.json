@@ -821,7 +821,6 @@
    "depth": 0.3,
    "material": "marble",
    "fill": 1.0,
-   "casts": true,
    "seed": 198
   },
   {
@@ -835,7 +834,6 @@
    "depth": 0.12,
    "material": "marble",
    "fill": 1.0,
-   "casts": true,
    "seed": 198
   },
   {

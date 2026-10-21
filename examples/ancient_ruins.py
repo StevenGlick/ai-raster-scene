@@ -5,7 +5,7 @@ Doric columns of marble standing on the stylobate (`column` objects with `flutes
 laid in drums), stone architraves and cornices (`beam`s) still lying across the runs that stand, others
 snapped off (`broken`) or fallen to drums; a collapsing cella; more columns along the sacred way and in
 fallen groups; cypresses and olives; the low sun throwing the colonnade's shadow in stripes (the
-columns and architraves `"casts": true`), and shafts of light between the columns.
+columns `"casts": true`), and shafts of light between the columns.
 Run:  python ancient_ruins.py  -> writes ancient_ruins.json
 """
 import math
@@ -100,7 +100,7 @@ for side in ([(x, TY0) for x in range(TX0, TX1 + 1)], [(x, TY1) for x in range(T
         for z, w, d in ((2.3, 0.46, 0.3), (2.6, 0.6, 0.12)):           # architrave, then cornice
             columns.append({'type': 'beam', 'x': cx, 'y': cy, 'z': z, 'angle': 0 if along_x else 90,
                             'length': n - 1 + 0.62, 'width': w, 'depth': d, 'material': 'marble', 'fill': 1.0,
-                            'casts': True, 'seed': x0 * 7 + y0})
+                            'seed': x0 * 7 + y0})
 
 legend = {
     ',': {'floor': 'dry_grass'},
