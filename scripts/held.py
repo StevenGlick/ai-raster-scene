@@ -64,38 +64,38 @@ def _arm(m, wrist, elbow, cuff_at=0.12):
 
 
 def _fist(m, c, axis, away, elbow, right=True, hr=0.015):
-    """A hand closed round a handle of radius hr whose axis runs through c toward `axis` (the item's
-    head). The fingers wrap the side toward `away` - out of the player's sight - from knuckles along the
-    back of the hand, which faces out (right for a right hand); the thumb crosses over the index finger;
-    the wrist is opposite the fingers and the forearm runs back to `elbow`."""
-    m.group('hand', 0.0035)
+    """A hand closed round a handle of radius hr through c, running toward `axis` (the item's head), as
+    its owner sees it. `away` is roughly the direction from the eye to the hand: the four fingers cup
+    round that side of the handle and under it, only the top of the index finger showing; the thumb
+    crosses the near side at the top of the fist, from the back of the hand (which faces out: right
+    for a right hand) toward the inside; the forearm runs from under the fist back to `elbow`."""
+    m.group('hand', 0.004)
     hand = dict(mat=M_SKIN, group='hand')
     a = S.unit(axis)
     c = np.asarray(c, float)
     away = np.asarray(away, float)
-    f = S.unit(away - (away @ a) * a)
-    o = S.unit(np.cross(f, a)) * (1 if right else -1)
+    f = S.unit(away - (away @ a) * a)                     # where the fingers cup
+    o = S.unit(np.cross(f, a)) * (1 if right else -1)     # the back of the hand
     R = hr + 0.0085
 
     def at(phi, rad, s):
+        """A point round the handle: phi 0 at the back of the hand, 90 the far side, -90 the near."""
         ph = math.radians(phi)
         return c + a * s + (math.cos(ph) * o + math.sin(ph) * f) * rad
 
-    for k, sc in enumerate((1.0, 1.0, 0.93, 0.84)):                  # index (nearest the head) to little
-        s = (1.5 - k) * 0.0205
-        pts = [at(28, R + 0.007, s), at(95, R, s), at(160, R, s), at(214, R - 0.002, s)]
-        rad = [0.0093 * sc, 0.0086 * sc, 0.0078 * sc, 0.0068 * sc]
+    for k, sc in enumerate((1.0, 1.0, 0.93, 0.84)):                  # index, just under the thumb, to little
+        s = 0.004 - k * 0.0205
+        pts = [at(20, R + 0.008, s), at(90, R + 0.001, s), at(158, R, s), at(205, R - 0.002, s)]
+        rad = [0.0093 * sc, 0.0087 * sc, 0.0079 * sc, 0.0069 * sc]
         for i in range(3):
             m.add(S.sd_round_cone, pts[i], pts[i + 1], rad[i], rad[i + 1], **hand)
     rot = np.stack([a, f, o])
-    m.add(S.sd_ellipsoid, c + o * (R * 0.85) - f * 0.026 - a * 0.004, (0.040, 0.034, 0.013), rot, **hand)  # back
-    m.add(S.sd_ellipsoid, c - o * (R * 0.5) - f * 0.03 + a * 0.012, (0.022, 0.026, 0.013), rot, **hand)   # ball of thumb
-    b0 = c - o * 0.004 - f * 0.042 + a * 0.02
-    b1 = c - o * (R + 0.002) - f * 0.004 + a * 0.03
-    b2 = c + o * 0.002 + f * (R + 0.003) + a * 0.033
-    m.add(S.sd_round_cone, b0, b1, 0.012, 0.0102, **hand)                                      # the thumb
-    m.add(S.sd_round_cone, b1, b2, 0.0102, 0.0083, **hand)
-    _arm(m, c + o * 0.006 - f * 0.058, elbow)
+    m.add(S.sd_ellipsoid, at(-10, R * 0.75, -0.024), (0.044, 0.026, 0.014), rot, **hand)    # back of the hand
+    m.add(S.sd_ellipsoid, at(-80, R * 0.55, -0.012), (0.034, 0.016, 0.018), rot, **hand)    # the palm, near side
+    thumb = [at(-30, R + 0.004, 0.012), at(-85, R + 0.003, 0.027), at(-140, R + 0.001, 0.031)]
+    m.add(S.sd_round_cone, thumb[0], thumb[1], 0.0128, 0.0108, **hand)                       # the thumb
+    m.add(S.sd_round_cone, thumb[1], thumb[2], 0.0108, 0.0088, **hand)
+    _arm(m, c - a * 0.062 + o * 0.006 - f * 0.006, elbow)
 
 
 def _flame(rgba, em, p, ox, oy, height):
@@ -168,11 +168,10 @@ def vm_revolver():
     for p0, p1, ra, rb in zip(index, index[1:], (0.0092, 0.0085, 0.0076), (0.0085, 0.0076, 0.0066)):
         m.add(S.sd_round_cone, p0, p1, ra, rb, **hand)                                                 # on the trigger
     m.add(S.sd_ellipsoid, gp(0.023, -0.006, -0.004), (0.011, 0.041, 0.031), grip_rot, **hand)          # back of the hand
-    m.add(S.sd_ellipsoid, gp(0.0, -0.018, -0.022), (0.018, 0.03, 0.012), grip_rot, **hand)             # palm on the strap
-    m.add(S.sd_ellipsoid, gp(-0.016, -0.010, -0.011), (0.011, 0.026, 0.016), grip_rot, **hand)         # ball of the thumb
-    t0, t1, t2 = gp(-0.012, -0.036, -0.016), G.P(-0.0125, -0.022, -0.005), G.P(-0.0125, -0.019, 0.021)
-    m.add(S.sd_round_cone, t0, t1, 0.0112, 0.0095, **hand)                                             # the thumb
-    m.add(S.sd_round_cone, t1, t2, 0.0095, 0.0080, **hand)
+    m.add(S.sd_ellipsoid, gp(0.002, -0.014, -0.02), (0.02, 0.034, 0.014), grip_rot, **hand)            # palm on the strap
+    t0, t1, t2 = gp(-0.008, -0.03, -0.018), G.P(-0.0135, -0.024, -0.006), G.P(-0.0135, -0.021, 0.010)
+    m.add(S.sd_round_cone, t0, t1, 0.0128, 0.0112, **hand)                                             # the thumb
+    m.add(S.sd_round_cone, t1, t2, 0.0112, 0.0098, **hand)
     _arm(m, gp(0.004, 0.02, -0.03), S.screen_point(400, 360, 0.22, FOV), cuff_at=0.1)
     return _render(m, w, h, 'right', [COAT, CUFF, SKIN, GUNMETAL, WOOD])
 
@@ -199,11 +198,10 @@ def vm_axe():
     m.add(S.sd_round_cone, c - a * 0.07, c + a * (length + 0.02), 0.0135, 0.0125, mat=3)              # the haft
     F = S.Frame(head, a, up_hint=(0, 0, 1))
     flat = F.rot((1, 0, 0), (0, 1, 0))
-    m.add(S.sd_box, F.P(-0.045, 0, 0), (0.05, 0.008, 0.032), flat, round_=0.003, mat=4)               # the head
-    m.add(S.sd_box, F.P(-0.094, 0, 0), (0.004, 0.0035, 0.046), flat, round_=0.002, mat=5)             # its edge
+    m.add(S.sd_box, F.P(0.045, 0, 0), (0.05, 0.008, 0.032), flat, round_=0.003, mat=4)                # the head
     m.add(S.sd_cylinder, F.P(0, 0, -0.03), F.P(0, 0, 0.03), 0.018, round_=0.003, mat=4)              # the eye
     _fist(m, c, a, S.unit(c), S.screen_point(400, 330, 0.32, FOV), right=True)
-    return _render(m, w, h, 'right', [COAT, CUFF, SKIN, WOOD, IRON, METAL])
+    return _render(m, w, h, 'right', [COAT, CUFF, SKIN, WOOD, IRON])
 
 
 @_kept
@@ -214,7 +212,7 @@ def vm_crowbar():
     c, a, length, head = _staged((282, 190), (222, 82), 0.40, 0.50)
     m.add(S.sd_round_cone, c - a * 0.07, head, 0.0095, 0.0095, mat=3)                                   # the bar
     F = S.Frame(head, a, up_hint=(0, 0, 1))
-    claw = [F.P(0, 0, 0), F.P(-0.012, 0, 0.03), F.P(-0.04, 0, 0.042), F.P(-0.062, 0, 0.03)]
+    claw = [F.P(0, 0, 0), F.P(0.012, 0, 0.03), F.P(0.04, 0, 0.044), F.P(0.07, 0, 0.034), F.P(0.086, 0, 0.022)]
     for p0, p1 in zip(claw, claw[1:]):
         m.add(S.sd_round_cone, p0, p1, 0.0095, 0.0088, mat=3)
     _fist(m, c, a, S.unit(c), S.screen_point(400, 330, 0.32, FOV), right=True, hr=0.0095)
@@ -251,7 +249,7 @@ def vm_lantern():
     for p0, p1 in zip(bail, bail[1:]):
         m.add(S.sd_round_cone, p0, p1, 0.0028, 0.0028, mat=3)
     m.add(S.sd_cylinder, grip + (-0.034, 0, 0), grip + (0.034, 0, 0), 0.0085, round_=0.003, mat=4)       # wooden handle
-    _fist(m, grip, (1.0, 0.0, 0.0), (0.0, 0.25, 1.0), S.screen_point(-150, 175, 0.34, FOV), right=False, hr=0.0085)
+    _fist(m, grip, (1.0, 0.0, 0.0), (0.0, 0.0, 1.0), S.screen_point(-150, 150, 0.34, FOV), right=False, hr=0.0085)
     rgba, em = _render(m, w, h, 'left', [COAT, CUFF, SKIN, IRON, WOOD, IRON, GLASS], glow=(6,))
     return _flame(rgba, em, body + (0, 0.012, 0), *viewmodel_origin(320, 200, w, h, 'left'), 0.03)
 
