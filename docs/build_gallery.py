@@ -96,6 +96,7 @@ SHOTS = {
     'bunker_crt': ('bunker_lab', 3),
     'castle_throne': ('castle_keep', 1),
     'castle_gate': ('castle_keep', 4),
+    'castle_hall': ('castle_keep', 6),
     'chapel_yard': ('chapel_graveyard', 1),
     'chapel_nave': ('chapel_graveyard', 3),
     'cave_beast': ('crystal_cave', 3),

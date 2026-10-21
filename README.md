@@ -349,6 +349,8 @@ A castle keep with its throne on a stepped dais and a portcullis you can see thr
 | | |
 |---|---|
 | ![The throne room on its raised dais](docs/gallery/castle_throne.png) | ![The portcullis: a see-through wall](docs/gallery/castle_gate.png) |
+
+![The great hall from its foot: round pillars of dressed stone and timber beams framing the throne](docs/gallery/castle_hall.png)
 | ![The churchyard under the moon, with a treeline skyline](docs/gallery/chapel_yard.png) | ![The nave: stained glass and a stepped altar](docs/gallery/chapel_nave.png) |
 
 ### Encounters

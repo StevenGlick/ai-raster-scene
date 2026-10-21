@@ -2,7 +2,8 @@
 
 Shows true block heights (the dais and its steps come from the `heights` layer), see-through
 walls (the portcullis and the cell bars), stacked wall storeys (stained glass above stone),
-contact shadows and look_at framing. Run:  python castle_keep.py  -> writes castle_keep.json
+contact shadows and look_at framing; the hall's pillars are round in 3D (`column` objects of `ashlar`,
+with bases and capitals) and timber beams cross the hall over them under the ceiling (`beam`s). Run:  python castle_keep.py  -> writes castle_keep.json
 """
 import os
 import sys
@@ -16,8 +17,12 @@ g = Grid(24, 34, fill='#')
 g.room(1, 1, 22, 20, '#', '.')                       # the throne room
 for y in (4, 8, 12, 16):
     g.put(1, y, 'W'); g.put(22, y, 'W')               # stained glass high in both long walls
-for (x, y) in ((6, 7), (6, 11), (6, 15), (17, 7), (17, 11), (17, 15)):
-    g.put(x, y, 'C')                                  # pillars
+PILLARS = [(6.5, 7.5), (6.5, 11.5), (6.5, 15.5), (17.5, 7.5), (17.5, 11.5), (17.5, 15.5)]
+hall = [{'type': 'column', 'x': x, 'y': y, 'material': 'ashlar', 'sides': 12, 'radius': 0.3, 'height': 2.0,
+         'base': 0.18, 'capital': 0.16, 'sink': 0.0, 'seed': k} for k, (x, y) in enumerate(PILLARS)]   # pillars
+for k, y in enumerate((7.5, 11.5, 15.5)):              # beams across the hall, resting on them
+    hall.append({'type': 'beam', 'x': 12.0, 'y': y, 'z': 1.8, 'angle': 0, 'length': 21.0, 'width': 0.26,
+                 'depth': 0.2, 'material': 'wood', 'seed': 10 + k})
 g.rect(7, 2, 16, 4, 'D')                              # the dais...
 g.rect(8, 5, 15, 5, 'E')                              # ...and its two steps
 g.rect(9, 6, 14, 6, 'E')
@@ -49,7 +54,6 @@ s = scene(
         '#': {'wall': 'castle', 'h': 2.0},
         'W': {'wall': ['castle', 'stained_glass'], 'h': 2.0},
         'G': {'wall': ['castle', 'stained_glass'], 'h': 2.0},
-        'C': {'wall': 'castle', 'h': 2.0},
         '.': {'floor': 'flagstone', 'ceil': 'beams'},
         'r': {'floor': 'carpet', 'ceil': 'beams'},
         'D': {'wall': 'castle', 'top': 'carpet'},
@@ -87,6 +91,7 @@ s = scene(
         {'x': 10.4, 'y': 3.4, 'z': 1.4, 'radius': 3.5, 'color': [1.0, 0.72, 0.4], 'intensity': 0.9},  # the candelabras
         {'x': 13.6, 'y': 3.4, 'z': 1.4, 'radius': 3.5, 'color': [1.0, 0.72, 0.4], 'intensity': 0.9},
     ],
+    objects=hall,
     sprites=[
         {'x': 12.0, 'y': 2.9, 'type': 'throne', 'scale': 1.3},                     # on the dais
         {'x': 9.6, 'y': 2.3, 'type': 'banner', 'z': 0.9, 'scale': 1.1},              # banners either side of it
@@ -136,6 +141,7 @@ s = scene(
          'overlays': [{'type': 'prompt', 'key': 'E', 'text': 'Raise the portcullis'}]},
         {'x': 11.2, 'y': 25.6, 'look_at': [8.45, 24.6, 0.42], 'fov': 62,
          'post': [{'fx': 'vignette', 'strength': 0.55}]},
+        {'x': 12.0, 'y': 18.6, 'look_at': [12.0, 3.0, 0.9], 'fov': 66, 'post': [GLOW]},   # the hall, from its foot
     ],
     contact_shadows=0.55,
     supersample=2,
