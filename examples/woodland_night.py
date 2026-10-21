@@ -2,7 +2,8 @@
 
 Shows the `forest` fringe - every edge of the wood is layered cards of spruce, oak, birch and
 undergrowth in front of a low `forest_deep` wall (trunks receding into the dark), so the treeline against the sky is tree tops -
-trees standing free along the road, a moon whose light keeps its shadows in volumetric fog
+trees standing free along the road, mossy `boulder`s with ferns on them by the road and round the
+clearing, a moon whose light keeps its shadows in volumetric fog
 (beams across the road, halos round the fire and the lantern), and the same wood at dawn
 through shot overrides: a low sun through a gap in the trees, mist lying in the clearing.
 Run:  python woodland_night.py  -> writes woodland_night.json next to this file.
@@ -60,7 +61,6 @@ def woodland():
             {'x': 15.3, 'y': 29.0, 'type': 'bush'}, {'x': 19.9, 'y': 20.6, 'type': 'bush'},
             {'x': 9.5, 'y': 13.5, 'type': 'bush'}, {'x': 13.6, 'y': 12.0, 'type': 'fern'},
             {'x': 18.6, 'y': 23.2, 'type': 'mushrooms'}, {'x': 11.4, 'y': 10.5, 'type': 'mushrooms'},
-            {'x': 10.4, 'y': 18.6, 'type': 'boulder'}, {'x': 23.4, 'y': 10.0, 'type': 'boulder'},
             # the clearing: the fire, the one who keeps it, his camp
             {'x': 26.5, 'y': 10.5, 'type': 'campfire', 'scale': 0.8},
             {'id': 'watcher', 'x': 27.6, 'y': 12.2, 'type': 'cultist',
@@ -73,6 +73,12 @@ def woodland():
             # and far up the north road, something standing in the moonlight
             {'x': 11.2, 'y': 7.6, 'type': 'ghost', 'facing': 90},
         ],
+        objects=[{'type': 'boulder', 'x': x, 'y': y, 'angle': a, 'size': s_, 'height': h_, 'seed': k, 'plants': n}
+                 for k, (x, y, a, s_, h_, n) in enumerate((                  # boulders, mossy, ferns on them
+                     (10.4, 18.6, 40, 0.9, 0.55, 1), (23.4, 10.0, 160, 1.2, 0.7, 2), (20.8, 24.2, 200, 0.8, 0.45, 0),
+                     (14.6, 23.6, 10, 0.6, 0.35, 0), (9.0, 15.4, 0, 1.0, 0.6, 1), (13.6, 6.4, 170, 0.8, 0.5, 1),
+                     (29.8, 8.4, 200, 1.4, 0.8, 2), (22.8, 7.6, 20, 0.9, 0.5, 0), (30.6, 12.8, 220, 0.7, 0.4, 0),
+                     (20.3, 24.9, 250, 1.0, 0.55, 1), (18.95, 26.9, 230, 0.75, 0.42, 0)))],
         decals=[
             {'tex': 'puddle', 'surface': 'floor', 'x': 17.2, 'y': 27.4, 'size': 1.8},
             {'tex': 'puddle_dark', 'surface': 'floor', 'x': 16.6, 'y': 22.6, 'size': 1.5},

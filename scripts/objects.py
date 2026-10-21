@@ -29,11 +29,12 @@ import math
 import numpy as np
 
 from aquarium import ALGAE, CORALLINE, LIVE_ROCK
-from pixelart import BAYER4, Canvas, cells3, noise3, ramp, table
+from pixelart import BAYER4, Canvas, cells3, noise3, ramp, rgb, table
 
 TEXELS = 64                 # texels per world unit, as on the walls
 PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 'title', 'notes',
-                  'rock', 'length', 'height', 'depth', 'pieces', 'trim', 'size', 'seed', 'plants', 'back'}
+                  'rock', 'length', 'height', 'depth', 'pieces', 'trim', 'size', 'seed', 'plants', 'back', 'lining',
+                  'count', 'spread', 'color', 'refract', 'glow', 'base'}
 
 
 # ------------------------------------------------------------------ parts
@@ -86,7 +87,7 @@ def expand(scene):
     out = dict(scene)
     for key in ('sprites', 'lights', 'decals', 'panels'):
         out[key] = list(scene.get(key) or [])
-    for pl in scene['objects']:
+    for pl in [q for p in scene['objects'] for q in (_lining(scene, p) if p.get('lining') else [p])]:
         if pl['type'] not in OBJECTS:
             raise KeyError(f"unknown object {pl['type']!r} - the built-ins are {', '.join(sorted(OBJECTS))}")
         X, Y, Z = float(pl['x']), float(pl['y']), float(pl.get('z', 0.0))
@@ -104,6 +105,8 @@ def expand(scene):
                 tl, tr, bl = world(part['tl']), world(part['tr']), world(part['bl'])
                 pn = {key: val for key, val in part.items() if key not in ('part', 'tex', 'tl', 'tr', 'bl')}
                 pn.update(o=tl, u=tr - tl, v=bl - tl, rgba=part['tex'][0], em=part['tex'][1], at=(X, Y, Z))
+                if 'refract' in pn:
+                    pn['refract'] = float(pn['refract']) * k
                 out['panels'].append(pn)
             elif kind == 'sprite':
                 p = world((part['dx'], part['dy'], part['z']))
@@ -121,6 +124,49 @@ def expand(scene):
                 out['decals'].append({'tex': 'contact_shadow', 'surface': 'floor', 'x': float(p[0]), 'y': float(p[1]),
                                       'size': part['size'] * k, 'opacity': part['opacity']})
     out.pop('objects')
+    return out
+
+
+def _lining(scene, pl):
+    """A rock wall placed with `lining` (map characters): one rock wall along every straight run of
+    those cells' faces that look onto open ground (as fringes find them: ground with no wall a person
+    could not step over), facing out from it - none where a shot's camera stands within its reach."""
+    rows, legend = scene['map'], scene.get('legend', {})
+    default = scene.get('default', {'floor': 'concrete_floor'})
+    H, W = len(rows), max(len(r) for r in rows)
+    grid = [r.ljust(W) for r in rows]
+
+    def ground(x, y):
+        if not (0 <= x < W and 0 <= y < H):
+            return False
+        spec = legend.get(grid[y][x], default)
+        return ('wall' not in spec or float(spec.get('h', 1.0)) < 0.5) and not spec.get('void')
+    faces = {}
+    for y in range(H):
+        for x in range(W):
+            if grid[y][x] in pl['lining']:
+                for d, ox, oy in (('n', 0, -1), ('s', 0, 1), ('w', -1, 0), ('e', 1, 0)):
+                    if ground(x + ox, y + oy):
+                        faces.setdefault((d, y if d in 'ns' else x), []).append(x if d in 'ns' else y)
+    cams = [(float(c['x']), float(c['y'])) for c in [scene.get('camera') or {}] + list(scene.get('shots') or [])
+            if 'x' in c and 'y' in c]
+    reach = float(pl.get('depth', 0.7)) + 0.4
+    out = []
+    for (d, line), poss in sorted(faces.items()):
+        poss = sorted(poss)
+        a = poss[0]
+        for p, q in zip(poss, poss[1:] + [None]):
+            if q == p + 1:
+                continue
+            mid, L = (a + p + 1) / 2, p - a + 1
+            x, y, ang = {'s': (mid, line + 1, 90), 'n': (mid, line, 270), 'e': (line + 1, mid, 0), 'w': (line, mid, 180)}[d]
+            c, s = math.cos(math.radians(ang)), math.sin(math.radians(ang))
+            if not any(abs((cy - y) * c - (cx - x) * s) < L / 2 + 0.3 and -0.2 < (cx - x) * c + (cy - y) * s < reach
+                       for cx, cy in cams):
+                run = {k: v for k, v in pl.items() if k != 'lining'}
+                out.append(dict(run, x=x, y=y, angle=ang, length=L,
+                                seed=int(pl.get('seed', 1)) * 7919 + 'nswe'.index(d) * 1009 + line * 131 + a))
+            a = q
     return out
 
 
@@ -708,17 +754,20 @@ def car(pl):
 # ------------------------------------------------------------------ rock
 
 # What each kind of rock is made of: ramps for the stone, for a crust on it (lichen, coralline)
-# and for weed (moss, algae) where it faces up; the size of its masses and of the chips on them
-# (x, y, z in units - flat cells lie in beds, as sandstone's do); the light painted on it, from
-# above, in front and a little left as the rock faces (nearly straight down, through water) and how
-# dark and how bright that takes it; how much of it is crusted, weedy and pitted; and what grows
-# on top: (prop, lowest, highest), heights in units.
+# and for weed (moss, algae, snow) where it faces up; the size of its masses and of the chips on
+# them (x, y, z in units - flat cells lie in beds, as sandstone's do); the light painted on it,
+# from above, in front and a little left as the rock faces (nearly straight down, through water)
+# and how dark and how bright that takes it; how much of it is crusted, weedy and pitted, and how
+# nearly level a face must be for the weed to settle (`up`); which materials glow and how much;
+# and what grows on top: (prop, lowest, highest), heights in units.
+SNOW = ramp(['#8e9ab2', '#a8b4ca', '#c2ccdc', '#d8e0ea', '#eaeff5', '#f8fafc'])
+CAVE = ramp('#4a4652', dark=0.3, light=1.5, cool=0.12)
 ROCKS = {
     'stone': dict(ramps=[ramp('#6e6a64', dark=0.3, light=1.45), ramp('#7a7866', dark=0.35, light=1.3),
                          ramp('#4e6a32', dark=0.35, light=1.35)],
                   mass=(0.9, 0.9, 0.7), chip=(0.24, 0.24, 0.2), key=(0.45, 0.4, 0.8), shade=(0.3, 0.62),
                   crust=0.68, weed=0.62, pores=0.0,
-                  plants=[('fern', 0.22, 0.34), ('grass_tuft', 0.16, 0.26), ('bush', 0.25, 0.4)]),
+                  plants=[('fern', 0.22, 0.34), ('grass_tuft', 0.16, 0.26)]),
     'reef': dict(ramps=[LIVE_ROCK, CORALLINE, ALGAE], mass=(0.8, 0.8, 0.55), chip=(0.2, 0.2, 0.16),
                  key=(0.3, 0.25, 0.92), shade=(0.17, 0.7), crust=0.62, weed=0.66, pores=0.45,
                  plants=[('sea_fan', 0.32, 0.52), ('staghorn_coral', 0.24, 0.38), ('tube_sponge', 0.22, 0.36),
@@ -727,6 +776,16 @@ ROCKS = {
                              ramp('#6a6a3a', dark=0.35, light=1.3)],
                       mass=(1.2, 1.2, 0.22), chip=(0.4, 0.4, 0.07), key=(0.45, 0.4, 0.8), shade=(0.3, 0.62),
                       crust=0.62, weed=0.8, pores=0.0, plants=[('dry_tuft', 0.14, 0.22)]),
+    'snow': dict(ramps=[ramp('#686c76', dark=0.3, light=1.45, cool=0.16), ramp('#7c7a6c', dark=0.35, light=1.3), SNOW],
+                 mass=(0.9, 0.9, 0.7), chip=(0.24, 0.24, 0.2), key=(0.45, 0.4, 0.8), shade=(0.3, 0.62),
+                 crust=0.7, weed=0.3, up=0.42, pores=0.0, plants=[]),
+    'cave': dict(ramps=[CAVE, ramp('#8e877a', dark=0.4, light=1.25), ramp('#3c5236', dark=0.35, light=1.35)],
+                 mass=(0.8, 0.8, 0.6), chip=(0.18, 0.18, 0.15), key=(0.35, 0.3, 0.88), shade=(0.22, 0.62),
+                 crust=0.64, weed=0.72, pores=0.35, plants=[('glowshroom', 0.12, 0.2), ('mushrooms', 0.1, 0.16)]),
+    'lumen': dict(ramps=[CAVE, ramp('#8e877a', dark=0.4, light=1.25), ramp('#36c8a6', dark=0.45, light=1.3)],
+                  mass=(0.8, 0.8, 0.6), chip=(0.18, 0.18, 0.15), key=(0.35, 0.3, 0.88), shade=(0.2, 0.6),
+                  crust=0.66, weed=0.58, up=0.5, pores=0.35, glow={2: 0.75},
+                  plants=[('glow_fern', 0.3, 0.46), ('glowshroom', 0.14, 0.22), ('glow_bromeliad', 0.2, 0.3)]),
 }
 ROCK_FOOT = 0.02            # rock runs this far below the ground, so no seam shows at its foot
 
@@ -771,18 +830,20 @@ def _stone(kind, seed, o, u, v, w, h, alpha, rim=None, tone=0.0):
     val -= 0.2 * (1 - np.clip(P[:, 2] / 0.3, 0, 1)) ** 2            # darker at the foot
     mat = np.zeros(len(P), int)
     mat[(noise3(P, 0.16, seed + 2) > rk['crust']) & (table(4, id1) < 0.5)] = 1
-    up = np.nonzero(N[:, 2] > 0.6)[0]                               # weed in tufts, where it faces up
+    up = np.nonzero(N[:, 2] > rk.get('up', 0.6))[0]                 # weed in tufts, where it faces up
     if up.size:
         mat[up[noise3(P[up], 0.12, seed + 3) > rk['weed']]] = 2
     bay = BAYER4[ys % 4, xs % 4]
     rgb = np.zeros((h * w, 3), np.float32)
+    em = np.zeros(h * w, np.float32)
     for m, rp in enumerate(rk['ramps']):
         sel = mat == m
         idx = np.clip(np.round(val[sel] * (len(rp) - 1) + (bay[sel] - 0.5) * 0.35), 0, len(rp) - 1).astype(int)
         idx = np.where((crack | pits)[sel], np.maximum(idx - 1, 0), idx)    # cracks and pits a step darker
         rgb[at[sel]] = np.asarray(rp, np.float32)[idx]
+        em[at[sel]] = rk.get('glow', {}).get(m, 0.0)
     rgba = np.concatenate([rgb.reshape(h, w, 3), alpha.reshape(h, w, 1).astype(np.float32)], -1)
-    return rgba, np.zeros((h, w), np.float32)
+    return rgba, em.reshape(h, w)
 
 
 def _grown(m):
@@ -966,4 +1027,106 @@ def boulder(pl):
     return parts
 
 
-OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder}
+# ------------------------------------------------------------------ crystals
+
+CRYSTAL_HUES = {'cyan': '#5adcf2', 'violet': '#a47af6', 'rose': '#f27cba', 'green': '#62eaa4', 'amber': '#f2b24e',
+                'ice': '#bfe4ff', 'white': '#eef2ff'}
+CRYSTAL_KEY = np.array([0.35, 0.3, 0.88]) / np.linalg.norm([0.35, 0.3, 0.88])
+
+
+def _facet(w, h, hue, lit, clear, seed, tip=False):
+    """The texture of one facet of a crystal, w x h texels (rows from its tip end toward its base):
+    its colour from the crystal's ramp, brighter the more the facet is turned to the light, toward
+    the tip and along its edges; its alpha - how much of the facet itself shows over what is seen
+    through it - `clear` across the middle, clouding toward the base as real crystals do, solid
+    at the edges, with a few streaks of inclusion down it; and a glow."""
+    rng = np.random.default_rng(seed)
+    shape = _grown(_poly(w, h, [(0, 0), (w, 0), (0, h)])) if tip else np.ones((h, w), bool)
+    p = np.pad(shape, 1)                                         # nothing past the texture's border
+    edge = shape & ~(p[:-2, 1:-1] & p[2:, 1:-1] & p[1:-1, :-2] & p[1:-1, 2:])
+    yy, xx = np.mgrid[0:h, 0:w]
+    along = (yy + 0.5) / h                                       # 0 at the tip end, 1 at the base
+    streaks = np.zeros((h, w), bool)
+    for _ in range(rng.integers(0, 3)):                          # inclusions, along the crystal
+        c = rng.integers(0, w)
+        streaks |= (xx == c) & (along > rng.uniform(0.1, 0.5)) & (along < rng.uniform(0.6, 1.0))
+    v = 0.3 + 0.5 * lit + 0.18 * (1 - along) * (not tip) + 0.25 * tip + 0.35 * edge + 0.12 * streaks
+    a = clear + (0.5 - clear) * np.clip((along - 0.65) / 0.35, 0, 1) ** 1.5 * (not tip) + 0.6 * edge + 0.15 * streaks
+    pal = ramp(hue, n=7, dark=0.35, light=1.6, cool=0.12, warm=0.06)
+    idx = np.clip(np.round(np.clip(v, 0, 1) * (len(pal) - 1) + (BAYER4[yy % 4, xx % 4] - 0.5) * 0.5), 0, len(pal) - 1)
+    rgba = np.concatenate([pal[idx.astype(int)], (np.clip(a, 0.06, 0.95) * shape)[..., None]], -1).astype(np.float32)
+    return rgba, (np.clip(v, 0, 1) * shape).astype(np.float32)
+
+
+def _prism(hue, base, axis, length, r, spin, seed, refract, glow):
+    """One crystal: a hexagonal prism `length` long from `base` along `axis`, `r` across its corners,
+    ending in a six-sided point - every face a panel of its own, each with its own clarity and its
+    own bend of the light through it."""
+    rng = np.random.default_rng(seed)
+    axis = axis / np.linalg.norm(axis)
+    e1 = np.cross(axis, [0.0, 0.0, 1.0] if abs(axis[2]) < 0.9 else [1.0, 0.0, 0.0])
+    e1 /= np.linalg.norm(e1)
+    e2 = np.cross(axis, e1)
+    ring = [r * (math.cos(spin + k * math.pi / 3) * e1 + math.sin(spin + k * math.pi / 3) * e2) for k in range(6)]
+    tip = r * rng.uniform(1.3, 1.9)
+    foot, shoulder, apex = base, base + axis * (length - tip), base + axis * length
+    filt = 0.4 + 0.6 * rgb(hue) / rgb(hue).max()                 # the light through it takes its colour
+    parts = []
+    for k in range(6):
+        p, q = ring[k], ring[(k + 1) % 6]
+        out = (p + q) / 2
+        for tri, corners in ((False, (shoulder + p, shoulder + q, foot + p)), (True, (shoulder + p, shoulder + q, apex))):
+            A, B, C = (np.asarray(c, float) for c in corners)
+            facing = out + (axis * r if tri else 0)
+            if np.cross(B - A, C - A) @ facing < 0:              # read from outside
+                A, B, C = B, A, (C if tri else foot + q)
+            u, v = B - A, C - A
+            w, h = _texels(np.linalg.norm(u)), _texels(np.linalg.norm(v))
+            nrm = np.cross(u, v)
+            lit = max(0.0, float(nrm @ CRYSTAL_KEY) / max(np.linalg.norm(nrm), 1e-9))
+            rgba, v_ = _facet(w, h, hue, lit, rng.uniform(0.05, 0.3), int(rng.integers(1 << 30)), tri)
+            parts.append(quad((rgba, glow * (0.35 + 0.65 * v_)), tuple(A), tuple(B), tuple(C), back=0.8,
+                              refract=refract * rng.uniform(0.6, 1.5), filter=[float(c) for c in filt],
+                              disperse=0.25))
+    return parts
+
+
+def crystal_cluster(pl):
+    """A cluster of crystals growing from a bed of rock: `count` hexagonal prisms with pointed tips,
+    the tallest `size` high and near upright, the rest smaller and leaning out, `spread` across.
+    Each facet is a panel that bends the light through it its own way - a facet shows a shifted
+    piece of what lies behind, its neighbours other pieces, the colours parting a little at their
+    edges - tinted, milky toward the base, bright along the edges and glowing. `color` is a name
+    (cyan, violet, rose, green, amber, ice, white) or `#rrggbb`; `refract` how far the light bends
+    (units, default 0.16); `glow` how much the crystals glow; `lights` false leaves out the light
+    they give; `rock` the bed's kind of rock, `base` false leaves it out."""
+    rng = np.random.default_rng(int(pl.get('seed', 1)))
+    size = float(pl.get('size', 0.9))
+    n = int(pl.get('count', 5))
+    spread = float(pl.get('spread', 0.3 * size))
+    hue = CRYSTAL_HUES.get(pl.get('color', 'cyan'), pl.get('color', 'cyan'))
+    refract, glow = float(pl.get('refract', 0.16)), float(pl.get('glow', 0.6))
+    parts = []
+    for k in range(n):
+        length = size * (1.0 if k == 0 else rng.uniform(0.35, 0.8))
+        if k == 0:
+            at, lean = np.zeros(2), rng.uniform(0, 8)
+        else:
+            a = rng.uniform(0, 2 * math.pi)
+            at, lean = spread * rng.uniform(0.4, 1.0) * np.array([math.cos(a), math.sin(a)]), rng.uniform(14, 38)
+        out = math.atan2(at[1], at[0]) + rng.uniform(-0.4, 0.4) if k else rng.uniform(0, 2 * math.pi)
+        tilt = math.radians(lean)
+        axis = np.array([math.sin(tilt) * math.cos(out), math.sin(tilt) * math.sin(out), math.cos(tilt)])
+        base = np.array([at[0], at[1], -0.06 * size])           # set in the rock
+        parts += _prism(hue, base, axis, length, length * rng.uniform(0.1, 0.15), rng.uniform(0, math.pi),
+                        int(rng.integers(1 << 30)), refract, glow)
+    if pl.get('base', True):
+        parts += boulder({'size': 2.6 * spread + 0.25 * size, 'height': 0.14 * size, 'rock': pl.get('rock', 'cave'),
+                          'seed': int(pl.get('seed', 1)) + 500})
+    if pl.get('lights', True):
+        parts.append(light(0.0, 0.0, 0.5 * size, 2.0 + 3.0 * size, [float(c) for c in rgb(hue) / rgb(hue).max()], 1.8))
+    return parts
+
+
+OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder,
+           'crystal_cluster': crystal_cluster}

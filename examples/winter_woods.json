@@ -166,11 +166,6 @@
    "type": "bush_snow"
   },
   {
-   "x": 25.2,
-   "y": 16.0,
-   "type": "boulder_snow"
-  },
-  {
    "id": "deer",
    "x": 22.6,
    "y": 18.3,
@@ -203,6 +198,68 @@
    "x": 15.6,
    "y": 23.2,
    "type": "log"
+  }
+ ],
+ "objects": [
+  {
+   "type": "boulder",
+   "x": 24.6,
+   "y": 16.2,
+   "angle": 120,
+   "size": 1.0,
+   "height": 0.55,
+   "rock": "snow",
+   "seed": 40
+  },
+  {
+   "type": "boulder",
+   "x": 15.9,
+   "y": 33.0,
+   "angle": 20,
+   "size": 0.9,
+   "height": 0.5,
+   "rock": "snow",
+   "seed": 41
+  },
+  {
+   "type": "boulder",
+   "x": 20.5,
+   "y": 35.2,
+   "angle": 200,
+   "size": 0.7,
+   "height": 0.4,
+   "rock": "snow",
+   "seed": 42
+  },
+  {
+   "type": "boulder",
+   "x": 13.4,
+   "y": 21.4,
+   "angle": 80,
+   "size": 1.1,
+   "height": 0.6,
+   "rock": "snow",
+   "seed": 43
+  },
+  {
+   "type": "boulder",
+   "x": 21.8,
+   "y": 14.2,
+   "angle": 160,
+   "size": 0.9,
+   "height": 0.5,
+   "rock": "snow",
+   "seed": 44
+  },
+  {
+   "type": "boulder",
+   "x": 19.2,
+   "y": 9.8,
+   "angle": 300,
+   "size": 0.8,
+   "height": 0.45,
+   "rock": "snow",
+   "seed": 45
   }
  ],
  "scatter": [

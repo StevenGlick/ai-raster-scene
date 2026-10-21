@@ -1304,12 +1304,15 @@ class Renderer:
                     continue
             placed.append((max(float(cty.mean()), 0.05), 0.0,
                            {'_panel': pn, '_box': box, 'blend': pn.get('blend', 'alpha'),
-                            'opacity': pn.get('opacity', 1.0), '_trans': bool(pn.get('translucent'))}))
+                            'opacity': pn.get('opacity', 1.0), '_trans': bool(pn.get('translucent')),
+                            '_bends': pn.get('refract') is not None}))
         # glass and the like: drawn over what is behind them, far to near, without writing depth
         translucent = lambda sp: (sp.get('blend', 'alpha') != 'alpha' or float(sp.get('opacity', 1)) < 1
                                   or sp.get('_trans', False))
-        glass = sorted([p for p in placed if p[2].get('glass')], key=lambda s: -s[0])
-        placed = [p for p in placed if not p[2].get('glass')]
+        # panes of glass and crystals' facets look through to what is drawn before them: they go last
+        seen_through = lambda sp: sp.get('glass') or sp.get('_bends')
+        glass = sorted([p for p in placed if seen_through(p[2])], key=lambda s: -s[0])
+        placed = [p for p in placed if not seen_through(p[2])]
         opaque = sorted([p for p in placed if not translucent(p[2])], key=lambda s: -s[0])
         trans = sorted([p for p in placed if translucent(p[2])], key=lambda s: -s[0])
         self._named = {}
@@ -1554,13 +1557,18 @@ class Renderer:
         seen through the pane, and what fogging the pane at its own depth would give."""
         behind = {}
         fogged = None
-        if self.vol is not None and any(glass_spec(sp['glass'])['fog'] for _, _, sp in glass):
+        if self.vol is not None and any(glass_spec(sp['glass'])['fog'] for _, _, sp in glass if sp.get('glass')):
             self._march(depth.shape, self._ss)
             H, W = depth.shape
             Ts, Ls = self._fog_px(np.arange(H)[:, None], np.arange(W)[None, :], depth)
             fogged = img * Ts[..., None] + Ls
             self._glass_fix = np.zeros_like(img)
         for ty, tx, sp in glass:
+            if '_panel' in sp:                      # a crystal's facet: it bends what is behind it
+                self._draw_panel(img, depth, sp['_panel'], sp['_box'], (self._px, self._py, camz), horizon, proj,
+                                 flash, rays, False)
+                behind.clear()                      # a pane nearer than it sees it
+                continue
             g = glass_spec(sp['glass'])
             if g['blur'] not in behind:            # made once per blur, from the frame without glass
                 k = 2 ** g['blur'] * getattr(self, '_ss', 1)
@@ -1701,7 +1709,8 @@ class Renderer:
         so far, the object's other panels included. It is lit as a wall is: by the light map on the
         side it is seen from, the sun or moon by the way that side faces, a face turned along y
         darker than one turned along x, the underside of a thing darker still. Seen from behind,
-        its texture shows mirrored at `back` of its brightness - the inside of a box.
+        its texture shows mirrored at `back` of its brightness - the inside of a box. A panel with
+        `refract` is a crystal's facet, drawn with the glass: see _bend.
         """
         rdx, rdy, rlen = rays
         r0, r1, c0, c1 = box
@@ -1736,7 +1745,8 @@ class Renderer:
         t = np.where(inside, t, np.inf)
         block = rgba[vv, uu]
         alpha = block[..., 3] * float(pn.get('opacity', 1.0))
-        if not is_trans:
+        bends = pn.get('refract') is not None             # a crystal's facet: alpha is how much of it shows
+        if not is_trans and not bends:
             alpha = (alpha > 0.5).astype(np.float32)
         dsub = depth[r0:r1, c0:c1]
         mask = inside & (alpha > 0.02) & (t < dsub)
@@ -1761,6 +1771,9 @@ class Renderer:
         tint = np.array(pn.get('tint', [1, 1, 1]), np.float32)
         colr = self.shade(block[..., :3] * (fac * tint), dyn, self.fade_z(hx, hy, hz), ed, emm,
                           flash(rr, cc, ed), sun)
+        if bends:
+            self._bend(img, depth, pn, n, box, t, mask, alpha, colr, cam3, proj)
+            return
         a = (alpha * mask)[..., None]
         sub = img[r0:r1, c0:c1]
         additive = pn.get('blend') == 'additive'
@@ -1770,6 +1783,42 @@ class Renderer:
         self._emis[r0:r1, c0:c1] = gsub + gl * a if additive else gsub * (1 - a) + gl * a
         if not is_trans:
             depth[r0:r1, c0:c1] = np.where(mask, t, dsub)
+
+    def _bend(self, img, depth, pn, n, box, t, mask, alpha, colr, cam3, proj):
+        """A crystal's facet - a panel with `refract` - drawn over what is behind it, bent.
+
+        The whole facet takes one shift: `refract` units at the facet, along the way it is turned
+        across the line of sight (a facet turned left shows what lies to the right, as a lens does),
+        so it shows one coherent piece of the frame drawn so far, displaced, and its neighbours show
+        other pieces - a cut stone. Drawn far to near, a crystal behind it shows through it too. What
+        it lets through is tinted by `filter` and split into its colours by `disperse` (red bent a
+        little further, blue a little less), and the facet's own lit surface lies over that by its
+        texture's alpha - so each facet is as clear or as milky as its texture makes it. A shift that
+        would land on something nearer than the facet looks straight through instead."""
+        r0, r1, c0, c1 = box
+        H, W = depth.shape
+        rows, cols = np.arange(r0, r1)[:, None], np.arange(c0, c1)[None, :]
+        mid = np.asarray(pn['o'], float) + 0.5 * (np.asarray(pn['u'], float) + np.asarray(pn['v'], float))
+        sight = mid - np.asarray(cam3, float)
+        sight /= max(np.linalg.norm(sight), 1e-9)
+        tilt = n - (n @ sight) * sight                         # its turn across the line of sight
+        k = float(pn['refract']) * proj / max(float(np.median(t[mask])), 0.05)
+        sx, sy = -k * (tilt[0] * -self._fy + tilt[1] * self._fx), k * tilt[2]   # rows run down the frame
+        disp = float(pn.get('disperse', 0.0))
+        direct, glowing = img[r0:r1, c0:c1], self._emis[r0:r1, c0:c1]
+        seen, glow = np.empty_like(direct), np.empty_like(direct)
+        for ch, f in enumerate((1 + disp, 1.0, 1 - disp)):
+            rr = np.clip(rows + int(round(sy * f)), 0, H - 1)
+            cc = np.clip(cols + int(round(sx * f)), 0, W - 1)
+            ok = depth[rr, cc] > t                             # only what is behind the facet
+            seen[..., ch] = np.where(ok, img[rr, cc, ch], direct[..., ch])
+            glow[..., ch] = np.where(ok, self._emis[rr, cc, ch], glowing[..., ch])
+        filt = np.asarray(pn.get('filter', [1.0, 1.0, 1.0]), np.float32)
+        a, m = (alpha * mask)[..., None], mask[..., None]
+        own = self._glow if self._glow is not None else 0.0
+        img[r0:r1, c0:c1] = np.where(m, seen * filt * (1 - a) + colr * a, direct)
+        self._emis[r0:r1, c0:c1] = np.where(m, glow * filt * (1 - a) + own * a, glowing)
+        depth[r0:r1, c0:c1] = np.where(mask, t, depth[r0:r1, c0:c1])
 
     def _reveal(self, sp, rgba, quad, rows, cols, t, s_, v, vv, uu, cand, dsub, horizon, proj, camz, flash, rays):
         """The inner sides of a card's openings, for a card with `reveal` (a depth): the card is

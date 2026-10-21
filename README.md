@@ -237,7 +237,7 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 - **Layered forest edges**: give the walls of a jungle or a wood a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
 - **Glass**: a pass of its own after everything else, showing what is behind each pane tinted and softly blurred - the frame shrunk to half size and blown back up without smoothing - under a faint reflection
-- **Objects**: things bigger than a prop - a `car`, a `noodle_stand`, a `rock_wall` of overlapping rounded pieces along a wall's foot, a `boulder` - built in 3D out of flat panels at any angle, see-through wherever the thing is not, with glass to see inside and billboards among them for the small things; drawn in true perspective, depth-tested per pixel and lit like walls; rock is cut from one solid block of stone, so it runs on round a corner (`scripts/objects.py`)
+- **Objects**: things bigger than a prop - a `car`, a `noodle_stand`, a `rock_wall` of overlapping rounded pieces along a wall's foot, a `boulder`, a `crystal_cluster` whose every facet bends the light through it - built in 3D out of flat panels at any angle, see-through wherever the thing is not, with glass to see inside and billboards among them for the small things; drawn in true perspective, depth-tested per pixel and lit like walls; rock is cut from one solid block of stone, so it runs on round a corner (`scripts/objects.py`)
 - **Wireframes**: low-poly meshes - cubes, pyramids, polyhedra, mountains, racers, palms, or your own vertices - drawn as lines of light in true 3D, one pixel wide at any distance, hidden behind what is nearer and mirrored in wet floors; solid ones are black faces edged in light
 - **Prefabs**: named groups placed with one line - a campsite with its light, a palm grove, a beach hut with its walls, door, window, roof and torches - turned, scaled and varied by seed; scenes can define their own
 - **Procedural scatter**: declare debris by set, density and size class and the loader expands it into hundreds of placed props, clumped by a noise field so it drifts and leaves bare patches instead of spreading evenly - and never piles up on a camera or in front of a speaker
@@ -314,6 +314,16 @@ A clearing in the rainforest at night where everything that grows has light in i
 |---|---|
 | ![A black pool swirling with glowing plankton, the glowing plants round it doubled in the water](docs/gallery/glow_pool.png) | ![An old stone head at the water's edge, lit green by the glow, mirrored in the pool](docs/gallery/glow_head.png) |
 | ![A heliconia traced in light, its flowers burning pink, glowing pods beside it, the jungle soft behind](docs/gallery/glow_flowers.png) | ![A path into the glowing jungle between walls of light-specked leaves](docs/gallery/glow_path.png) |
+
+## The crystal cave
+
+A great cavern under the hill: a lake of glowing water, a crystal taller than a man on the island in its middle, clusters of crystals round its walls and plants that give their own light along the shore. The crystals are built in 3D, every facet a panel of its own - and every facet bends the light through it its own way, showing its own shifted piece of the cave behind it, the colours parting at its edges, the way cut stone does.
+
+![The lake under the hill: the great crystal on its island, doubled in the glowing water, something wading toward it](docs/gallery/crystal_cave.png)
+
+| | |
+|---|---|
+| ![The great crystal close up: each facet shows its own bent piece of the cave behind](docs/gallery/crystal_close.png) | ![Violet crystals on the shore, the great crystal across the water, something standing in the lake](docs/gallery/crystal_violet.png) |
 
 ## The sky islands
 

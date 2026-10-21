@@ -5,7 +5,8 @@ the bridge.
 Shows the `forest_snow` fringe - snowy spruces, bare oaks and birches with snow along their
 limbs and bushes buried in it - in front of `forest_deep_snow` walls, `snow` drifts underfoot, a
 frozen stream (`ice` sunk with `drop`, its banks of snow), a footbridge of low `planks` blocks,
-`tree_winter` and `birch_winter` standing free, a `deer`, a snowman; and the `snow` post effect.
+`tree_winter` and `birch_winter` standing free, `boulder`s of `snow` rock (snow lying on every face
+that is near level), a `deer`, a snowman; and the `snow` post effect.
 Run:  python winter_woods.py  -> writes winter_woods.json next to this file.
 """
 import os
@@ -39,7 +40,7 @@ def winter_woods():
         {'x': 24.6, 'y': 21.6, 'type': 'snowy_pine', 'scale': 2.6},
         {'x': 10.6, 'y': 14.4, 'type': 'birch_winter'},
         {'x': 15.0, 'y': 31.0, 'type': 'bush_snow'}, {'x': 21.0, 'y': 29.4, 'type': 'bush_snow', 'flip': True},
-        {'x': 12.2, 'y': 15.6, 'type': 'bush_snow'}, {'x': 25.2, 'y': 16.0, 'type': 'boulder_snow'},
+        {'x': 12.2, 'y': 15.6, 'type': 'bush_snow'},
         # the stream: the deer on the ice, reeds frozen in it
         {'id': 'deer', 'x': 22.6, 'y': 18.3, 'type': 'deer', 'flip': True},
         {'x': 9.0, 'y': 19.6, 'type': 'reeds'}, {'x': 27.4, 'y': 17.2, 'type': 'reeds'},
@@ -65,6 +66,10 @@ def winter_woods():
              'shafts': 0.5, 'anisotropy': 0.3},
         lights=[SUN],
         sprites=sprites,
+        objects=[{'type': 'boulder', 'x': x, 'y': y, 'angle': a, 'size': s_, 'height': h_, 'rock': 'snow', 'seed': 40 + k}
+                 for k, (x, y, a, s_, h_) in enumerate((                     # boulders capped with snow
+                     (24.6, 16.2, 120, 1.0, 0.55), (15.9, 33.0, 20, 0.9, 0.5), (20.5, 35.2, 200, 0.7, 0.4),
+                     (13.4, 21.4, 80, 1.1, 0.6), (21.8, 14.2, 160, 0.9, 0.5), (19.2, 9.8, 300, 0.8, 0.45)))],
         scatter=[{'of': 'snow', 'on': ',', 'density': 0.12, 'sizes': {'tiny': 3, 'small': 2}, 'seed': 5}],
         camera={'x': 17.6, 'y': 38.0, 'angle': 270, 'fov': 66, 'height': 0.5},
         shots=[

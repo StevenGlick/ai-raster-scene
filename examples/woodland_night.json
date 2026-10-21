@@ -226,16 +226,6 @@
    "type": "mushrooms"
   },
   {
-   "x": 10.4,
-   "y": 18.6,
-   "type": "boulder"
-  },
-  {
-   "x": 23.4,
-   "y": 10.0,
-   "type": "boulder"
-  },
-  {
    "x": 26.5,
    "y": 10.5,
    "type": "campfire",
@@ -307,6 +297,118 @@
    "y": 7.6,
    "type": "ghost",
    "facing": 90
+  }
+ ],
+ "objects": [
+  {
+   "type": "boulder",
+   "x": 10.4,
+   "y": 18.6,
+   "angle": 40,
+   "size": 0.9,
+   "height": 0.55,
+   "seed": 0,
+   "plants": 1
+  },
+  {
+   "type": "boulder",
+   "x": 23.4,
+   "y": 10.0,
+   "angle": 160,
+   "size": 1.2,
+   "height": 0.7,
+   "seed": 1,
+   "plants": 2
+  },
+  {
+   "type": "boulder",
+   "x": 20.8,
+   "y": 24.2,
+   "angle": 200,
+   "size": 0.8,
+   "height": 0.45,
+   "seed": 2,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 14.6,
+   "y": 23.6,
+   "angle": 10,
+   "size": 0.6,
+   "height": 0.35,
+   "seed": 3,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 9.0,
+   "y": 15.4,
+   "angle": 0,
+   "size": 1.0,
+   "height": 0.6,
+   "seed": 4,
+   "plants": 1
+  },
+  {
+   "type": "boulder",
+   "x": 13.6,
+   "y": 6.4,
+   "angle": 170,
+   "size": 0.8,
+   "height": 0.5,
+   "seed": 5,
+   "plants": 1
+  },
+  {
+   "type": "boulder",
+   "x": 29.8,
+   "y": 8.4,
+   "angle": 200,
+   "size": 1.4,
+   "height": 0.8,
+   "seed": 6,
+   "plants": 2
+  },
+  {
+   "type": "boulder",
+   "x": 22.8,
+   "y": 7.6,
+   "angle": 20,
+   "size": 0.9,
+   "height": 0.5,
+   "seed": 7,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 30.6,
+   "y": 12.8,
+   "angle": 220,
+   "size": 0.7,
+   "height": 0.4,
+   "seed": 8,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 20.3,
+   "y": 24.9,
+   "angle": 250,
+   "size": 1.0,
+   "height": 0.55,
+   "seed": 9,
+   "plants": 1
+  },
+  {
+   "type": "boulder",
+   "x": 18.95,
+   "y": 26.9,
+   "angle": 230,
+   "size": 0.75,
+   "height": 0.42,
+   "seed": 10,
+   "plants": 0
   }
  ],
  "decals": [

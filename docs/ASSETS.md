@@ -32,7 +32,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Objects | 4 | 4 | 0 | 0 | 0 |
+| Objects | 5 | 5 | 0 | 0 | 0 |
 | Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 60 | 60 | 0 | 0 | 0 |
-| **all** | **757** | **757** | **0** | **0** | **0** |
+| **all** | **758** | **758** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -140,8 +140,8 @@ Weakest first, and in the order the new scenes need them.
 | `meadow` | good |  | sky_islands | Drawn in skyisles.py: grass in tufts with tiny white, yellow and pink flowers, for an island's top. |
 | `island_rock` | good |  | sky_islands | Drawn in skyisles.py: rock in bands of grey and brown with roots working through it, for an island's side. |
 | `glow_leaves` | good | glows | glow_jungle | Drawn in glowjungle.py: the jungle wall at night: dark blue-green leaves, ribs and tips glowing. |
-| `lumen_floor` | good | glows | glow_jungle | Drawn in glowjungle.py: dark leaf litter with glowing moss and fungus specks. |
-| `glow_water` | good | glows, mirror 0.55 | glow_jungle | Drawn in glowjungle.py: black water with plankton glowing in swirling streams; reflects. |
+| `lumen_floor` | good | glows | crystal_cave, glow_jungle | Drawn in glowjungle.py: dark leaf litter with glowing moss and fungus specks. |
+| `glow_water` | good | glows, mirror 0.55 | crystal_cave, glow_jungle | Drawn in glowjungle.py: black water with plankton glowing in swirling streams; reflects. |
 | `ice_block` | good |  | aurora_palace | Drawn in icepalace.py: big blocks of blue ice, frosted faces paler at their edges, deep joints, cracks. |
 | `frost_wall` | good |  | aurora_palace | Drawn in icepalace.py: ice grown over with feathery frost. |
 | `ice_floor` | good | mirror 0.6 | aurora_palace | Drawn in icepalace.py: polished ice over dark water, cracked white; reflects. |
@@ -180,7 +180,7 @@ Weakest first, and in the order the new scenes need them.
 | `sand` | good |  | coast_lighthouse | Redrawn with the toolkit in basics.py: wind ripples with a lit face and a shaded lee, wandering, a shell fragment or two, dark grains. |
 | `snow` | good |  | aurora_palace, winter_lake, winter_woods | Redrawn with the toolkit in basics.py: drifts sculpted by the wind, their lee sides in blue shadow, faint ripples, glitter. |
 | `ice` | good | mirror 0.38 | winter_lake, winter_woods | Redrawn with the toolkit in basics.py: clear blue with gentle depth, straight fractures with a branch each and a dark side, strings of bubbles, frost. |
-| `water` | good | mirror 0.5 | alien_world, coast_lighthouse, crystal_cave, drowned_library, gui_lantern, sewer_tunnels, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: a deep teal in slow swells and a broken net of light where the ripples gather it; kept dark, so reflections read. |
+| `water` | good | mirror 0.5 | alien_world, coast_lighthouse, drowned_library, gui_lantern, sewer_tunnels, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: a deep teal in slow swells and a broken net of light where the ripples gather it; kept dark, so reflections read. |
 | `swamp_water` | good | mirror 0.42 | bayou | Drawn with the toolkit in swamp.py: black-brown water with a skin of duckweed drifting in patches and a few floating leaves; mirror 0.42. |
 | `seabed` | good |  | aquarium, kelp_forest, neon_bar | Drawn with the toolkit in sea.py: pale sand in gentle ripples, shell and pebble, and a broken net of caustic light over it. |
 | `water_surface` | good | glows | aquarium, neon_bar | Drawn with the toolkit in sea.py: the surface from below, rippled and glowing with a net of brighter lines; for an underwater roof. |
@@ -371,7 +371,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
-| `boulder` | good | 0.55 tall | chapel_graveyard, coast_lighthouse, kelp_forest, misty_moor, woodland_night | Redrawn with the toolkit in forest.py: a settled rock with a lesser lobe and cracks, moss over its top, lichen spots. |
+| `boulder` | good | 0.55 tall | chapel_graveyard, coast_lighthouse, kelp_forest, misty_moor | Redrawn with the toolkit in forest.py: a settled rock with a lesser lobe and cracks, moss over its top, lichen spots. |
 | `bush` | good | 0.5 tall | cathedral_ruin, chapel_graveyard, coast_lighthouse, woodland_night | Redrawn with the toolkit in forest.py: leaf clusters on fanned twigs, lit on top, dark underneath. |
 | `bush_autumn` | good | 0.5 tall | autumn_lane | Drawn with the toolkit in forest.py: the bush in rust red and orange. |
 | `bush_snow` | good | 0.45 tall | winter_woods | Drawn with the toolkit in forest.py: a lumpy cushion of snow, blue in its hollows, twigs poking up through it. |
@@ -384,7 +384,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `grass_tuft` | good | 0.4 tall | autumn_lane, cathedral_ruin, chapel_graveyard, coast_lighthouse, misty_moor, rainy_street, tropical_beach, village_green, woodland_night | Redrawn: thin arching blades. |
 | `ivy_hang` | good | 0.8 tall, no shadow | cathedral_ruin, rainy_street |  |
 | `log` | good | 0.28 tall | cathedral_ruin, tropical_beach, winter_lake, winter_woods, woodland_night | Redrawn with the toolkit in forest.py: bark in long ridges, a branch stub, moss along the top, a pale ringed end. |
-| `mushrooms` | good | 0.12 tall | autumn_lane, cathedral_ruin, chapel_graveyard, jungle_temple, woodland_night |  |
+| `mushrooms` | good | 0.12 tall | autumn_lane, cathedral_ruin, chapel_graveyard, crystal_cave, jungle_temple, woodland_night |  |
 | `palm` | good | 3.2 tall | garden_encounter, gui_menus, hospital_garden, post_presets, tropical_beach | Redrawn with the pixel-art toolkit: a ringed trunk, arching ragged fronds, coconuts. |
 | `pine` | good | 3.4 tall | autumn_lane, coast_lighthouse, sky_islands, woodland_night | Redrawn with the toolkit in forest.py: a spruce, tier on tier of drooping boughs with ragged hems over a straight trunk. |
 | `reeds` | good | 0.8 tall | coast_lighthouse, winter_woods |  |
@@ -477,12 +477,12 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `island_keel` | good | 6 tall, no shadow | sky_islands | Drawn in skyisles.py: the rock under a floating island tapering to a ragged point, banded, roots trailing; a billboard. |
 | `rope_rail` | good | 0.42 tall, no shadow | sky_islands | Drawn in skyisles.py: a bridge's railing: a post at every unit and two sagging ropes; a card. |
 | `glow_monstera` | good | 0.75 tall, glows | glow_jungle | Drawn in glowjungle.py: the monstera at night, every leaf traced in cyan light. |
-| `glow_fern` | good | 0.42 tall, glows | glow_jungle | Drawn in glowjungle.py: the fern at night, its fronds edged in light. |
+| `glow_fern` | good | 0.42 tall, glows | crystal_cave, glow_jungle | Drawn in glowjungle.py: the fern at night, its fronds edged in light. |
 | `glow_tree_fern` | good | 2.4 tall, glows | glow_jungle | Drawn in glowjungle.py: the tree fern at night, traced in blue light. |
 | `glow_heliconia` | good | 1.1 tall, glows | glow_jungle | Drawn in glowjungle.py: the heliconia at night: leaves edged in green light, the flowers burning pink. |
-| `glow_bromeliad` | good | 0.22 tall, glows | glow_jungle | Drawn in glowjungle.py: the bromeliad at night: violet light, a magenta heart. |
+| `glow_bromeliad` | good | 0.22 tall, glows | crystal_cave, glow_jungle | Drawn in glowjungle.py: the bromeliad at night: violet light, a magenta heart. |
 | `glow_liana` | good | 2.4 tall, glows | glow_jungle | Drawn in glowjungle.py: the liana at night, hanging, edged in blue. |
-| `glow_pods` | good | 1.1 tall, glows | glow_jungle | Drawn in glowjungle.py: a curling stalk hung with seed pods glowing from inside. |
+| `glow_pods` | good | 1.1 tall, glows | crystal_cave, glow_jungle | Drawn in glowjungle.py: a curling stalk hung with seed pods glowing from inside. |
 | `glow_jungle_card_1` | good | 1.4 tall, glows, no shadow | glow_jungle | Drawn in glowjungle.py: jungle card 1 at night, faintly edged and specked with light. |
 | `glow_jungle_card_2` | good | 3.4 tall, glows, no shadow | glow_jungle | Drawn in glowjungle.py: jungle card 2 at night, faintly edged and specked with light. |
 | `glow_jungle_card_3` | good | 4 tall, glows, no shadow | glow_jungle | Drawn in glowjungle.py: jungle card 3 at night, faintly edged and specked with light. |
@@ -850,7 +850,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
-## Objects (4)
+## Objects (5)
 
 Things too big for a billboard, built in 3D out of flat panels (`scripts/objects.py`).
 
@@ -858,8 +858,9 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 |---|---|---|---|
 | `car` | good | rain_alley | A saloon from panels, laid out as the user drew it: the overall box with the car's outline on its sides, hood and trunk lid across it at the belt (body 60%, glass 40%), the roof, glass windows with seats, dashboard and steering wheel inside, four wheels set in under the body in dark wells, a floor pan and a soft shadow; `paint`, `lights`. Proportions and handles tuned with the user. |
 | `noodle_stand` | good | neon_street | Counter, awning, valance, noren and sign as panels; bowls, pot, tray, lanterns and stools as billboards, with its own lamp and lantern lights. |
-| `rock_wall` | good | aquarium | Laid out as the user drew it: overlapping pieces along a wall's foot, each in plan a rounded mass of a few broad faces jutting from the wall (the user's sharper zigzag read as spikes; a few spikes and notches are left), each its own height, a trim of faces along its top cut by one long smooth wavy edge, a flat top (inset a texel, so it never shows past the faces), plants on the rim. Kinds `stone`, `reef`, `sandstone`; the faces cut from one solid block of stone. Seen from above its tops are flat with the trim standing round them, as Build's were. |
-| `boulder` | good | aquarium | A low-poly mass, every face a triangle: an irregular foot, a belly, drawn-in shoulders, a peak off its centre; closed from every side. Plants on top by count. |
+| `rock_wall` | good | aquarium, crystal_cave, red_canyon | Laid out as the user drew it: overlapping pieces along a wall's foot, each in plan a rounded mass of a few broad faces jutting from the wall (the user's sharper zigzag read as spikes; a few spikes and notches are left), each its own height, a trim of faces along its top cut by one long smooth wavy edge, a flat top (inset a texel, so it never shows past the faces), plants on the rim. Kinds `stone`, `reef`, `sandstone`, `snow`, `cave`, `lumen` (glowing moss); `lining` lines every wall face of some map cells. The faces cut from one solid block of stone. Seen from above its tops are flat with the trim standing round them, as Build's were. |
+| `boulder` | good | aquarium, autumn_lane, crystal_cave, red_canyon, winter_woods, woodland_night | A low-poly mass, every face a triangle: an irregular foot, a belly, drawn-in shoulders, a peak off its centre; closed from every side. Plants on top by count. |
+| `crystal_cluster` | good | crystal_cave | The user's idea: crystals whose facets refract. Hexagonal prisms with pointed tips from a bed of rock, every facet a panel with its own clarity (clear across the middle, milky toward the base, bright edges) and its own bend: drawn with the glass, each facet shows the frame drawn so far shifted by one offset from the way it is turned (Renderer._bend), so it shows one coherent piece of what is behind, the colours parting a little at the edges. Strongest with glowing things behind. |
 
 ## Held items (8)
 
@@ -1035,7 +1036,7 @@ The environments, judged on their gallery images and shots.
 |---|---|---|---|---|
 | `castle_keep` | good | 5 | castle_throne, castle_gate | The throne hall closer: a great stained-glass window, banners and candelabras behind a larger throne, guards at the steps, the knight to one side. |
 | `cathedral_ruin` | good | 3 | cathedral_beam, cathedral_pilgrim | The beam through the fallen roof, rafters still spanning the hole with ivy hanging from it, column drums and rubble in the light; shot from the aisle. |
-| `crystal_cave` | good | 3 | cave_beast |  |
+| `crystal_cave` | good | 5 | cave_beast, crystal_cave, crystal_violet, crystal_close | Rebuilt round crystal clusters that refract: a great cavern with a lake of glowing water, the great crystal on its island, clusters round the walls, the walls lined with cave rock and glowing-moss rock, the glowing jungle's plants along the shore; the survey robot and the beast wading before the great crystal. |
 
 ### Space, alien and dream
 
@@ -1080,6 +1081,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, rock elsewhere and crystals.** Rock walls take `lining` (map characters: a rock wall along every straight run of their faces onto open ground) and three more kinds, `snow`, `cave` and `lumen` (glowing moss). The red canyon's walls are lined with fallen sandstone, with sandstone boulders in the wash; the night wood, the autumn lane and the winter woods have 3D boulders (mossy, ferns on top; snow-capped in winter) in place of billboards. Crystals refract, as the user designed it: `crystal_cluster`, each facet its own panel with its own clarity and its own shift of what is behind it (Renderer._bend). The crystal cave rebuilt round them, with the glowing jungle's plants; new shots `crystal_cave`, `crystal_violet`, `crystal_close`.
 - **2026-10-21, rock.** Rock built in 3D out of panels, as the user laid it out: `rock_wall` (overlapping pieces along a wall's foot, each a rounded mass of broad faces in plan, each its own height, a trim of faces along the top cut by one long wavy edge, a flat top, plants on the rim) and `boulder` (a low-poly mass of triangles), in three kinds - `stone`, `reef` and `sandstone`. Every face is cut from one solid block (`pixelart.cells3` and `noise3`): masses, a few fractures, chips and pits sampled at each texel's place in 3D and lit by the way the face faces, so the stone runs on round a corner. The aquarium's big tanks have rockwork along their walls and boulders on the sand, the walls behind painted as `open_water` over `deep_water`; a new shot, `aquarium_rockwork`, from inside the ocean tank.
 - **2026-10-21, objects.** `scripts/objects.py`: things too big for a billboard built in 3D out of flat panels the renderer draws in true perspective, depth-tested per pixel and lit like walls - a `car` and a `noodle_stand` - with `noodle_bowl`, `stock_pot`, `bowl_stack` and `condiments` for its counter. Cars in the rain alley, the stand in the neon street; new shots `alley_cars` and `neon_counter`.
 - **2026-10-20, held items in 3D.** The six held items were drawn from the wrong side - the hand facing the player, the revolver muzzle-on. Now each is a small 3D model (scripts/sculpt.py: rounded primitives as distance fields, ray-marched from the eye, painted on the colour ramps with dithering, contour lines and an outline) posed in a hand and seen as its holder sees it; their canvases reach the screen edge so the sleeve runs off it.

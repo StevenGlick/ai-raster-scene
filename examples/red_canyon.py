@@ -3,8 +3,10 @@ slot canyon where the sun comes down in a single beam.
 
 Shows the desert kit - `sandstone` walls stacked with bands of `sandstone_pale`, a `desert_wash`
 floor dressed with the `desert` scatter set, saguaro and prickly pear, the coursed stone and
-T-shaped doors of a cliff dwelling (`pueblo_stone`, `pueblo_door`) with ladders and painted pots -
-and a slot canyon of `slot_rock`: its cells roofed at `ceiling_height` with a few left open, so
+T-shaped doors of a cliff dwelling (`pueblo_stone`, `pueblo_door`) with ladders and painted pots,
+rock fallen from the walls lying along their foot (a `rock_wall` of `sandstone` with `lining`, so
+every face of the canyon gets one) and sandstone `boulder`s in the wash - and a slot canyon of
+`slot_rock`: its cells roofed at `ceiling_height` with a few left open, so
 that a high sun comes down through the gaps in beams of dust (shot overrides give it a sun and a
 fog of its own). The last shot is the same wash at sunset.
 Run:  python red_canyon.py  -> writes red_canyon.json next to this file.
@@ -99,6 +101,11 @@ def red_canyon():
         fog={'color': [0.78, 0.66, 0.56], 'density': 0.008},
         lights=[SUN],
         sprites=sprites,
+        objects=[{'type': 'rock_wall', 'lining': 'RQU', 'rock': 'sandstone', 'depth': 1.4, 'height': [0.9, 2.6],
+                  'pieces': [1.2, 2.6], 'seed': 4}]                       # fallen rock along the walls' foot
+        + [{'type': 'boulder', 'x': x, 'y': y, 'angle': 90, 'size': s_, 'height': h_, 'rock': 'sandstone', 'seed': k}
+           for k, (x, y, s_, h_) in enumerate(((16.4, 46.2, 1.1, 0.6), (22.4, 43.4, 0.8, 0.45), (21.2, 32.8, 1.4, 0.8),
+                                               (17.0, 38.8, 0.6, 0.35), (23.2, 26.8, 1.0, 0.55), (19.6, 21.2, 0.7, 0.4)))],
         scatter=[{'of': 'desert', 'on': 'w', 'density': 0.25, 'sizes': {'tiny': 4, 'small': 3, 'medium': 1}, 'seed': 6}],
         camera={'x': 19.5, 'y': 56.4, 'angle': 270, 'fov': 66, 'height': 0.5},
         shots=[

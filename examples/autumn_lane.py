@@ -2,7 +2,8 @@
 
 Shows the `forest_autumn` fringe - oak, birch and bush turned orange, gold and rust, the spruce
 among them still green - in front of `forest_deep_autumn` walls; a floor of `leaves_fallen` on
-the verges, with the `autumn` scatter set; a stubble field with hay bales, pumpkins, a scarecrow and crows behind a wall; a low
+the verges, with the `autumn` scatter set and mossy `boulder`s; a stubble field with hay bales, pumpkins,
+a scarecrow, crows and a boulder or two behind a wall; a low
 sun off to the side, so the shadows of the trees lie across the lane in shafts of golden haze;
 and the gateway at dusk through shot overrides, jack-o'-lanterns lit on the gateposts and along
 the wall (`extra_sprites`).
@@ -73,6 +74,10 @@ def autumn_lane():
              'shafts': 0.7, 'anisotropy': 0.2},
         lights=[SUN],
         sprites=sprites,
+        objects=[{'type': 'boulder', 'x': x, 'y': y, 'angle': a, 'size': s_, 'height': h_, 'seed': 30 + k, 'plants': n}
+                 for k, (x, y, a, s_, h_, n) in enumerate((                  # boulders on the verges and in the field
+                     (22.9, 40.4, 200, 1.0, 0.55, 1), (18.4, 35.0, 340, 0.8, 0.45, 0), (23.2, 30.6, 190, 1.1, 0.6, 1),
+                     (18.6, 42.6, 10, 1.1, 0.6, 2), (7.8, 18.6, 60, 1.2, 0.65, 2), (5.6, 20.4, 60, 0.8, 0.45, 0)))],
         scatter=[{'of': 'autumn', 'on': ',', 'density': 0.3, 'clump': 1.4, 'seed': 3}],
         camera={'x': 20.0, 'y': 46.6, 'angle': 270, 'fov': 66, 'height': 0.5},
         shots=[

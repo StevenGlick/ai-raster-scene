@@ -1209,7 +1209,32 @@ def check_objects():
     area = sum(np.cross(pn['u'], pn['v']) / 2 for pn in stone)
     assert abs(area[0]) < 1e-6 and abs(area[1]) < 1e-6 and 0.3 < area[2] < 1.0, f'closed all round: {area}'
     assert objects._parts(dict(pl)) is objects._parts(dict(pl)), 'a rock is cut once per placement'
-    print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights, rock)')
+
+    # 5. a lining: a rock wall along each straight run of the cells' faces onto open ground - a room
+    # 4 cells by 3 has four - facing into the room, none where a camera stands
+    box_ = {'map': ['######', '#....#', '#....#', '#....#', '######'], 'legend': {'#': {'wall': 'rock'}},
+            'objects': [{'type': 'rock_wall', 'lining': '#', 'plants': False}]}
+    runs = objects._lining(box_, box_['objects'][0])
+    assert sorted((r['angle'], r['length']) for r in runs) == [(0, 3), (90, 4), (180, 3), (270, 4)], runs
+    inside = objects.expand(box_)['panels']
+    assert all(1 - 1e-6 <= pn['o'][0] <= 5 + 1e-6 and 1 - 1e-6 <= pn['o'][1] <= 4 + 1e-6 for pn in inside)
+    assert len(objects._lining(dict(box_, camera={'x': 1.3, 'y': 2.5}), box_['objects'][0])) == 3, 'clear of a camera'
+
+    # 6. a crystal bends what is behind it: with `refract` and without, the frame differs only where
+    # the crystal is, and there a good part of it differs
+    def crystal(rf):
+        sc = dict(room, objects=[{'type': 'crystal_cluster', 'x': 6.0, 'y': 5.5, 'size': 1.2, 'count': 3, 'seed': 2,
+                                  'refract': rf, 'lights': False}],
+                  legend=dict(room['legend'], **{'#': {'wall': 'stained_glass', 'h': 1.0}}))
+        return frame(sc)[1]
+    _, plain = frame(dict(room, legend=dict(room['legend'], **{'#': {'wall': 'stained_glass', 'h': 1.0}})))
+    bent, straight = crystal(0.16), crystal(0.0)
+    where = (np.abs(bent - plain).max(-1) > 0.02) | (np.abs(straight - plain).max(-1) > 0.02)
+    changed = np.abs(bent - straight).max(-1) > 0.02
+    assert where.sum() > 500 and not (changed & ~where).any(), 'only the crystal changes'
+    assert changed[where].mean() > 0.2, f'its facets bend the view: {changed[where].mean():.2f} of it'
+    print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights, '
+          f'rock, linings, crystals bend the light)')
 
 
 def check_docs():

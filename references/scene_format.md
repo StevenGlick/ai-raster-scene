@@ -631,7 +631,7 @@ Defining one (in `prefab_defs`, or the same form in `scripts/prefabs.py` for a b
 
 ## Objects
 
-An object is a thing too big to be a billboard - a car, a food stand, rock - built in 3D out of flat panels, the way Build-engine maps built cars and counters out of flat sprites: panels standing, lying and sloped at any angle, see-through wherever the thing is not (a car's side is its outline, open above the hood), glass you can see the seats through, and among them, for the small things that read best as pictures (bowls on a counter, lanterns), ordinary billboards. Every panel is drawn in true perspective, depth-tested per pixel and lit like a wall, so from any side you see the sides you should, and a figure can stand in front of the counter and behind the awning post. Put them in `objects`:
+An object is a thing too big to be a billboard - a car, a food stand, rock, crystals - built in 3D out of flat panels, the way Build-engine maps built cars and counters out of flat sprites: panels standing, lying and sloped at any angle, see-through wherever the thing is not (a car's side is its outline, open above the hood), glass you can see the seats through, and among them, for the small things that read best as pictures (bowls on a counter, lanterns), ordinary billboards. Every panel is drawn in true perspective, depth-tested per pixel and lit like a wall, so from any side you see the sides you should, and a figure can stand in front of the counter and behind the awning post. Put them in `objects`:
 
 ```json
 "objects": [
@@ -640,7 +640,9 @@ An object is a thing too big to be a billboard - a car, a food stand, rock - bui
   {"type": "noodle_stand", "x": 17.95, "y": 22.0, "angle": 180},
   {"type": "rock_wall", "x": 19.0, "y": 3.0, "angle": 90, "length": 34, "depth": 1.8, "height": [0.5, 1.45],
    "rock": "reef", "seed": 3},
-  {"type": "boulder", "x": 9.5, "y": 6.4, "angle": 90, "size": 1.5, "height": 0.9, "rock": "reef", "plants": 3}
+  {"type": "boulder", "x": 9.5, "y": 6.4, "angle": 90, "size": 1.5, "height": 0.9, "rock": "reef", "plants": 3},
+  {"type": "rock_wall", "lining": "RQU", "rock": "sandstone", "depth": 1.4, "height": [0.9, 2.6], "seed": 4},
+  {"type": "crystal_cluster", "x": 20.0, "y": 10.4, "color": "cyan", "size": 2.4, "count": 7}
 ]
 ```
 | field | meaning |
@@ -651,23 +653,31 @@ An object is a thing too big to be a billboard - a car, a food stand, rock - bui
 | `angle` | the way it faces, in compass degrees: 0 east, 90 south |
 | `scale` | grow or shrink it |
 | `paint` | a car's colour, `#rrggbb` |
-| `lights` | a car: `true` turns its headlamps on, with light on the road ahead (otherwise only its tail lamps glow, faintly). The noodle stand: `false` leaves its lamp and lanterns unlit |
-| `rock` | rock's kind: `stone` (grey, lichen and moss, ferns and grass tufts on top - the default), `reef` (live rock under water: coralline crusts, algae, pits; corals and sea fans on top, lit from straight above), `sandstone` (red rock in beds, dry tufts) |
+| `lights` | a car: `true` turns its headlamps on, with light on the road ahead (otherwise only its tail lamps glow, faintly). The noodle stand and a crystal cluster: `false` leaves out the light they give |
+| `rock` | rock's kind: `stone` (grey, lichen and moss, ferns and grass tufts on top - the default), `reef` (live rock under water: coralline crusts, algae, pits; corals and sea fans on top, lit from straight above), `sandstone` (red rock in beds, dry tufts), `snow` (grey stone, snow lying on every face that is near level), `cave` (dark violet-grey, pitted, mushrooms and glowshrooms on top), `lumen` (cave rock grown with moss that glows, glowing ferns on top). A crystal cluster's bed of rock (default `cave`) |
 | `length` | a rock wall's length along the wall (default 4) |
+| `lining` | a rock wall: map characters, instead of `x`, `y`, `angle` and `length` - a rock wall along every straight run of those cells' faces that look onto open ground, facing out from it (none where a shot's camera stands within its reach). `"lining": "#"` lines a whole cave |
 | `height` | a rock wall: how tall its pieces are, `[lowest, highest]` (default `[0.5, 1.4]`), each piece its own height between them. A boulder: its height (default 0.55 of its size) |
 | `depth` | how far a rock wall juts out from the wall (default 0.7) |
 | `pieces` | how wide a rock wall's pieces are, `[narrowest, widest]` (default `[1.4, 2.8]`) |
 | `trim` | the wavy trim along a rock wall's top, as a share of each piece's height (default 0.28) |
-| `size` | how wide a boulder is (default 0.8) |
+| `size` | how wide a boulder is (default 0.8). A crystal cluster: how tall its tallest crystal is (default 0.9) |
+| `count` | how many crystals a cluster has (default 5; 1 for a single crystal) |
+| `spread` | how far a cluster's crystals stand from its middle (default 0.3 of its size) |
+| `color` | crystals' colour: `cyan` (the default), `violet`, `rose`, `green`, `amber`, `ice`, `white` or `#rrggbb` |
+| `refract` | how far a crystal's facets bend the light through them, in units (default 0.16; 0 for plain glass) |
+| `glow` | how much crystals glow (default 0.6) |
+| `base` | a crystal cluster: `false` leaves out its bed of rock |
 | `seed` | another arrangement of the same rock |
 | `plants` | a rock wall: `false` leaves its tops bare. A boulder: how many plants grow on top (default 0) |
 | `back` | a rock wall: `true` closes the back of each piece, for rock standing free of a wall |
 
-Built-in objects: `car` (a saloon 1.6 long, 0.6 wide and 0.47 tall - eye height is 0.5: its body a box whose sides are the car's outline, the hood and trunk lid flat across it, the roof, a windscreen, rear and side windows of glass with the seats, dashboard and steering wheel seen through them, four wheels set in under the body in dark wells, a floor pan and a soft shadow under it), `noodle_stand` (a street-food stand 1.4 wide and about 1.2 tall: a counter of lacquered boards under a sloping striped awning on four posts, a scalloped valance, split indigo curtains hanging from its front, a lit sign on the roof, red lanterns with their own light; bowls of noodles, a condiment tray, a stock pot with steam, bowls and bottles on its counter and stools before it, as billboards; it faces its customers. Put a `shopkeeper` behind its counter for a cook), `rock_wall` (rockwork along the foot of a wall: set it on the wall's foot facing into the room, `length` along it. Pieces side by side and overlapping, each in plan a rounded mass of a few broad faces jutting from the wall (now and then a spike or a notch), each piece its own height, with a trim of faces along its top cut by one long smooth wavy edge so no top is level, a flat top on each and plants growing along its rim), `boulder` (a low-poly mass of rock, every face a triangle: an irregular polygon at its foot, bulging a little, drawing in to its shoulders and up to a peak off its centre - solid and closed from every side, so it can be looked down on; the `boulder` prop in `sprites` is a flat billboard of one, fine in the distance).
+Built-in objects: `car` (a saloon 1.6 long, 0.6 wide and 0.47 tall - eye height is 0.5: its body a box whose sides are the car's outline, the hood and trunk lid flat across it, the roof, a windscreen, rear and side windows of glass with the seats, dashboard and steering wheel seen through them, four wheels set in under the body in dark wells, a floor pan and a soft shadow under it), `noodle_stand` (a street-food stand 1.4 wide and about 1.2 tall: a counter of lacquered boards under a sloping striped awning on four posts, a scalloped valance, split indigo curtains hanging from its front, a lit sign on the roof, red lanterns with their own light; bowls of noodles, a condiment tray, a stock pot with steam, bowls and bottles on its counter and stools before it, as billboards; it faces its customers. Put a `shopkeeper` behind its counter for a cook), `rock_wall` (rockwork along the foot of a wall: set it on the wall's foot facing into the room, `length` along it. Pieces side by side and overlapping, each in plan a rounded mass of a few broad faces jutting from the wall (now and then a spike or a notch), each piece its own height, with a trim of faces along its top cut by one long smooth wavy edge so no top is level, a flat top on each and plants growing along its rim), `boulder` (a low-poly mass of rock, every face a triangle: an irregular polygon at its foot, bulging a little, drawing in to its shoulders and up to a peak off its centre - solid and closed from every side, so it can be looked down on; the `boulder` prop in `sprites` is a flat billboard of one, fine in the distance), `crystal_cluster` (hexagonal crystals with pointed tips growing from a bed of rock, the tallest near upright and the rest leaning out; each carries a light of its colour. Every facet is its own panel with its own clarity - clear across the middle, milky toward the base, bright along the edges - and bends the light through it its own way: it shows one coherent piece of what is behind it, shifted by the way the facet is turned, its neighbours other pieces, the colours parting a little at the edges - so a crystal reads as cut stone from any side, and a crystal behind it shows through it bent).
 
 - Shoot an object at an angle: its depth is the point of it. Objects light, occlude and mirror in wet floors like everything else; their billboards get contact shadows and their lights join the scene's. They do not cast shadows from the scene's lights.
 - They render fast - a car is about seventy panels, each touching only its own patch of the screen.
 - Rock is cut from one solid block of stone: every face samples the same 3D masses, cracks and chips at its own place in space, so the stone runs on round a corner while each face is lit by the way it faces. Cutting it takes a moment (a few seconds for an aquarium's worth); a placement is cut once and kept, so the shots of a scene share it.
+- Crystals are drawn last, with glass, far to near, each facet over the frame as drawn so far: put bright things behind them - glowing plants, other crystals, a lit lake - and the bending shows; in front of a plain wall it is subtle. A shift that would land on something nearer than the crystal looks straight through instead.
 - A rock wall stands in front of the wall it lines, so whatever is above its tops is the wall itself: give that wall something to read against - open water (`open_water` over `deep_water`), sky, a dark cave wall.
 
 ## Scatter
