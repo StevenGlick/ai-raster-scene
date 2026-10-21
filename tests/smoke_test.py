@@ -1381,6 +1381,11 @@ def check_objects():
     starboard = lambda pns: sum(1 for pn in pns if pn['o'][1] > 0.3)                      # noqa: E731
     port = lambda pns: sum(1 for pn in pns if pn['o'][1] < -0.3)                          # noqa: E731
     assert starboard(stove) < starboard(whole) and port(stove) == port(whole), 'stove in on its starboard side'
+    # 14. a lighthouse and a stone lantern: lit, they give a light; put out, none
+    for kind in ('lighthouse', 'stone_lantern'):
+        on = objects.expand({'map': ['.'], 'objects': [{'type': kind, 'x': 0.0, 'y': 0.0}]})
+        off = objects.expand({'map': ['.'], 'objects': [{'type': kind, 'x': 0.0, 'y': 0.0, 'lit': False}]})
+        assert on.get('lights') and not off.get('lights'), kind
     # 13. a longship: its sail set or furled, its shields along both sides
     ship = objects.expand({'map': ['.'], 'objects': [{'type': 'longship', 'x': 0.0, 'y': 0.0, 'length': 7.0}]})
     furled = objects.expand({'map': ['.'], 'objects': [{'type': 'longship', 'x': 0.0, 'y': 0.0, 'length': 7.0,

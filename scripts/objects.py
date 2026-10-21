@@ -1233,6 +1233,8 @@ IRONS = {
                        key=(-0.4, 0.45, 0.8), shade=(0.4, 0.52), rust=0.8),
     'lime_red': dict(ramps=[ramp('#a8382c', dark=0.38, light=1.3), ramp('#8a6a5a', dark=0.4, light=1.2)],
                      key=(-0.4, 0.45, 0.8), shade=(0.38, 0.55), rust=0.84),
+    'lacquer_black': dict(ramps=[ramp('#2a2628', dark=0.6, light=2.2), ramp('#4a3a32', dark=0.5, light=1.6)],
+                          key=(-0.4, 0.45, 0.8), shade=(0.3, 0.6), rust=0.9),
 }
 
 
@@ -2037,6 +2039,40 @@ def lighthouse(pl):
     return [p for p in parts if p]
 
 
+def stone_lantern(pl):
+    """A stone lantern for a garden: a hexagonal foot, a round shaft, a platform, a firebox of four posts
+    with the flame showing between them (`lit`, default true: it glows and gives a little light), a wide
+    six-sided roof sweeping out, a ball finial; `height` tall (default 1.1), of `material` (default
+    `stone`) - the moss grows on its tops."""
+    mat = _material(dict(pl, material=pl.get('material', 'stone')))
+    seed = int(pl.get('seed', 1))
+    H = float(pl.get('height', 1.1))
+    u = H / 1.1
+    ph = math.pi / 6
+    parts = []
+    parts += _prism_faces(mat, seed, 6, 0.2 * u, 0.17 * u, 0.0, 0.1 * u, ph, block=True)                    # the foot
+    parts.append(_disc(mat, seed + 1, 6, 0.17 * u, 0.1 * u, ph))
+    parts += _prism_faces(mat, seed + 2, 12, 0.07 * u, 0.06 * u, 0.1 * u, 0.5 * u, 0.0, flute=-math.tan(math.pi / 12),
+                          block=True)                                                                           # the shaft
+    parts += _prism_faces(mat, seed + 3, 6, 0.08 * u, 0.2 * u, 0.5 * u, 0.58 * u, ph, block=True)             # the platform
+    parts.append(_disc(mat, seed + 4, 6, 0.2 * u, 0.58 * u, ph))
+    for k in range(4):                                                # the firebox's posts
+        a = math.pi / 4 + k * math.pi / 2
+        x, y = 0.11 * u * math.cos(a), 0.11 * u * math.sin(a)
+        parts += box((x - 0.025 * u, y - 0.025 * u, 0.58 * u), (x + 0.025 * u, y + 0.025 * u, 0.8 * u),
+                     {f: _solid_cached(3, 14, '#7a7a6e') for f in ('front', 'back', 'right', 'left')})
+    parts += _prism_faces(mat, seed + 5, 6, 0.3 * u, 0.12 * u, 0.8 * u, 0.92 * u, ph, block=True, tone=-0.02)  # the roof
+    parts.append(_disc(mat, seed + 6, 6, 0.3 * u, 0.8 * u, ph, below=True))
+    parts += _prism_faces(mat, seed + 7, 6, 0.12 * u, 0.03 * u, 0.92 * u, 0.98 * u, ph, block=True)
+    parts += _prism_faces(mat, seed + 8, 8, 0.045 * u, 0.045 * u, 0.98 * u, 1.04 * u, 0.0, block=True)        # the finial
+    parts += _prism_faces(mat, seed + 9, 8, 0.045 * u, 0.0, 1.04 * u, H, 0.0, block=True)
+    if pl.get('lit', True):                                           # the flame in the firebox
+        parts.append(sprite('candles', 0.0, 0.0, 0.58 * u, scale=0.16 * u, shadow=False))
+        parts.append(light(0.0, 0.0, 0.7 * u, 2.2 * u, (1.0, 0.7, 0.38), 0.9))
+    parts.append(shadow(0.0, 0.0, 0.6 * u, 0.5))
+    return [p for p in parts if p]
+
+
 # ------------------------------------------------------------------ chess pieces
 
 def _polished(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
@@ -2293,4 +2329,4 @@ OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'bo
            'beam': beam, 'crystal_cluster': crystal_cluster, 'trough': trough, 'shed_roof': shed_roof,
            'gable_roof': gable_roof, 'market_stand': market_stand, 'saloon_bar': saloon_bar, 'rails': rails,
            'ore_cart': ore_cart, 'keel': keel, 'chess_piece': chess_piece, 'ship_hull': ship_hull,
-           'longship': longship, 'lighthouse': lighthouse}
+           'longship': longship, 'lighthouse': lighthouse, 'stone_lantern': stone_lantern}

@@ -72,7 +72,7 @@ Rows are y (south is down), columns are x, one cell is one unit, eye height is 0
 Sixty example scenes in [`examples/`](examples/), every one a single JSON file you can open, change and render:
 
 - **[Cities](#cities)** - [streets in the rain](#city-streets) · [the neon city](#the-neon-city) · [a night market](#the-night-market) · [a bar](#the-bar) · [the rooftops](#the-rooftops) · [a capsule hotel](#the-capsule-hotel) · [a village](#the-village) · [a frontier town](#the-frontier-town) · [a clockwork city](#the-clockwork-city)
-- **[Woods and weather](#woods-and-weather)** - [the woods at night](#the-woods-at-night) · [autumn](#autumn) · [winter](#winter) · [fog and light](#fog-and-light) · [the palm house](#the-palm-house) · [the bayou](#the-bayou)
+- **[Woods and weather](#woods-and-weather)** - [the woods at night](#the-woods-at-night) · [autumn](#autumn) · [the autumn garden](#the-autumn-garden) · [winter](#winter) · [fog and light](#fog-and-light) · [the palm house](#the-palm-house) · [the bayou](#the-bayou)
 - **[Jungle, desert and coast](#jungle-desert-and-coast)** - [jungle, ruins and the beach](#jungle-ruins-and-the-beach) · [the glowing jungle](#the-glowing-jungle) · [the desert](#the-desert) · [the salt flat](#the-salt-flat) · [the fjord](#the-fjord) · [the lighthouse](#the-lighthouse)
 - **[Underground and undersea](#underground-and-undersea)** - [the crystal cave](#the-crystal-cave) · [under the sea](#under-the-sea) · [the aquarium](#the-aquarium)
 - **[Haunts and old stones](#haunts-and-old-stones)** - [the haunted house](#the-haunted-house) · [the castle and the chapel](#the-castle-and-the-chapel) · [encounters](#encounters)
@@ -205,6 +205,16 @@ The wood turns: oak, birch and bush gone orange, gold and rust with the spruce s
 |---|---|
 | ![A lane through an autumn wood, the low sun at its end, leaves falling, a child walking home](docs/gallery/autumn_lane.png) | ![A scarecrow in the stubble with a crow on its arm](docs/gallery/autumn_scarecrow.png) |
 | ![Jack-o'-lanterns on the gateposts at dusk](docs/gallery/autumn_dusk.png) | ![The child on the lane: can we go the long way?](docs/gallery/autumn_walk.png) |
+
+### The autumn garden
+
+A Japanese garden in autumn: a red gate on the gravel path, stone lanterns, maples turned scarlet and gold, a pond with a plank bridge and boulders of mossy stone, a tea house under a roof of grey tiles - and at dusk, the lanterns lit along the way.
+
+![Through the red gate: the gravel path between maples to the tea house, stone lanterns either side](docs/gallery/garden_gate.png)
+
+| | |
+|---|---|
+| ![Across the pond: the bridge's red rails, a mossy boulder, a lantern, the tea house beyond](docs/gallery/garden_pond.png) | ![Dusk: the lanterns lit along the path to the tea house](docs/gallery/garden_dusk.png) |
 
 ### Winter
 
@@ -547,7 +557,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Layered forest edges**: give the walls of a jungle or a wood a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth; with `wander` the layers follow a natural, rounded line instead of the grid's square corners
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
 - **Glass**: a pass of its own after everything else, showing what is behind each pane tinted and softly blurred - the frame shrunk to half size and blown back up without smoothing - under a faint reflection
-- **Objects**: things bigger than a prop - a `car`, a `noodle_stand`, a `rock_wall` of overlapping rounded pieces along a wall's foot, a `boulder`, a `column` of stone or wood and a `beam` to lay across them, a `trough`, a `shed_roof` and a `gable_roof` of weathered boards (or thatch, or clay tiles, with a chimney), a `market_stand`, a `saloon_bar`, `rails` and an `ore_cart`, a `keel` of rock to hang under a floating island, a `chess_piece` turned in polished marble, a wrecked `ship_hull`, a `longship` under sail, a `lighthouse` with its lamp lit, a roof of `glass` between iron glazing bars, a `crystal_cluster` whose every facet bends the light through it - built in 3D out of flat panels at any angle, see-through wherever the thing is not, with glass to see inside and billboards among them for the small things; drawn in true perspective, depth-tested per pixel and lit like walls; rock is cut from one solid block of stone, so it runs on round a corner (`scripts/objects.py`)
+- **Objects**: things bigger than a prop - a `car`, a `noodle_stand`, a `rock_wall` of overlapping rounded pieces along a wall's foot, a `boulder`, a `column` of stone or wood and a `beam` to lay across them, a `trough`, a `shed_roof` and a `gable_roof` of weathered boards (or thatch, or clay tiles, with a chimney), a `market_stand`, a `saloon_bar`, `rails` and an `ore_cart`, a `keel` of rock to hang under a floating island, a `chess_piece` turned in polished marble, a wrecked `ship_hull`, a `longship` under sail, a `lighthouse` with its lamp lit, a `stone_lantern`, a roof of `glass` between iron glazing bars, a `crystal_cluster` whose every facet bends the light through it - built in 3D out of flat panels at any angle, see-through wherever the thing is not, with glass to see inside and billboards among them for the small things; drawn in true perspective, depth-tested per pixel and lit like walls; rock is cut from one solid block of stone, so it runs on round a corner (`scripts/objects.py`)
 - **Wireframes**: low-poly meshes - cubes, pyramids, polyhedra, mountains, racers, palms, or your own vertices - drawn as lines of light in true 3D, one pixel wide at any distance, hidden behind what is nearer and mirrored in wet floors; solid ones are black faces edged in light
 - **Prefabs**: named groups placed with one line - a campsite with its light, a palm grove, a beach hut with its walls, door, window, roof and torches - turned, scaled and varied by seed; scenes can define their own
 - **Procedural scatter**: declare debris by set, density and size class and the loader expands it into hundreds of placed props, clumped by a noise field so it drifts and leaves bare patches instead of spreading evenly - and never piles up on a camera or in front of a speaker
