@@ -45,14 +45,29 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 
 ## Pass plan
 
-Weakest first, and in the order the new scenes need them.
+Passes 1-5 - nature, stone and ruins, water and ice, interiors, the small things - are done (see the pass log). What is left is the second look: every scene, shot by shot, from a catalog of current renders (2026-10-21, all 60 example scenes), with the new techniques - objects, solid rock, crystals, layered facades and fringes - in hand.
 
-1. **Nature.** The plant and ground textures are the weakest part of the set: foliage, hedge, grass and dirt are coloured noise, and bark has a seam. Rework `foliage`, `foliage_autumn`, `hedge`, `grass`, `dirt`, `bark`, `bark_pine` and the `tree` and `bush` props; polish `moss`, `gravel`, `sand`, `pine_needles` and the `flowers`, `boulder` and `log` props. The pixel-art toolkit (`scripts/pixelart.py`) that drew the jungle, ruins and beach is the way to do it: clusters of shaped leaves lit from above rather than noise.
-2. **Stone and ruins.** `rock`, `rock_wet`, `rock_floor`, `snow_rock`, `cobble`, `marble_dark`, `ivy`, `shingle`; the `column`, `statue` and `fountain` props; the standing stones in misty_moor and the roof hole in cathedral_ruin.
-3. **Water and ice.** `water` (depth, caustics, a ripple that tiles), `ice`; the `rowboat` and `buoy` props; the shore rocks in coast_lighthouse.
-4. **Interiors.** `plaster`, `plaster_white`, `ceiling_plaster`, `acoustic`, `beams`, `wood_panel`, `curtain`, `curtain_black`, `corrugated`; the `barrel`, `broken_barrel`, `crate`, `chest`, `bed`, `bench`, `table` and `wheelchair` props; the castle_keep throne hall.
-5. **Small things.** The hands on the held items, the `stain`, `stain_rust` and `moss_patch` decals, the `child` and `dreamer` characters, the `city` skyline, `alien_rock`, `alien_ground`, and the `glowshroom` and `alien_egg` props.
-6. **Second look.** Every asset marked good, checked again on the review sheets and in its scenes, with fresh eyes and the new techniques in hand.
+### The user's list (2026-10-21)
+
+From going through the catalog. One scene at a time, each done properly; no rush.
+
+- [x] **coast_lighthouse** - the billboard boulders swapped for 3D ones. Done: the scatter's larger billboard boulders became 3D ones where they lay (a third bigger, as a 3D rock carries less bulk than a billboard of its height), with more at the water's edge, the foot of the cliffs and before every shot; the scatter keeps only small rocks. At dusk they take the scene's light, so the waterline reads darker than the old mossy domes did.
+- [x] **misty_moor** - the billboard boulders swapped for 3D ones, and a boulder or two more in the foreground of the shots. Done: mossy boulders framing each shot and out on the moor, and the scatter's larger ones swapped where they lay.
+- [ ] **tropical_beach** - posts under the pier; the tree line given layers if it has none.
+- [ ] **neon_bar** - the reef tank in the back wall done like the aquarium at a small scale: open water behind, a little live rock, perhaps one small boulder at the back. Keep the density; adding too much would throw off the balance.
+- [ ] **red_canyon** - the canyon walls themselves updated (the fallen rock along their foot is done).
+- [ ] **ghost_town** - the buildings that have no depth fixed, drawn with the layered facade technique of the city; the horse trough in 3D; shot 2: the empty space under the frame in front of the building filled - planks overhead for shade, or a deck; shot 4: the mountain walls updated, as for the canyon.
+- [ ] **village_green** - the market cart rebuilt in 3D, as the noodle stand was; the houses need roofs with depth (they read as if roofless); the buildings drawn with the layered facade technique.
+- [ ] **cathedral_ruin** - the pillars modelled in 3D (octagonal) instead of billboards, and moved inward to where they would carry the roof.
+- [ ] **ancient_ruins** - the pillars remodelled in 3D, as for the cathedral; perhaps the fallen statue's head in 3D too (not a priority). A scene to give more love.
+- [ ] **bayou** - the trees redone with the jungle's layered fringe, its layers spread further apart, so the trees look properly 3D.
+- [ ] **jungle_temple** - the tree line broken up as the aquarium's rock wall was: a natural, polygonal edge instead of the hard grid angles. A scene to give more love.
+
+New scenes:
+
+- [ ] A saloon interior, in the frontier town.
+- [ ] Inside a mine, in the same wild west.
+- [ ] Inside the jungle temple.
 
 ## Textures (188)
 
@@ -371,7 +386,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
-| `boulder` | good | 0.55 tall | chapel_graveyard, coast_lighthouse, kelp_forest, misty_moor | Redrawn with the toolkit in forest.py: a settled rock with a lesser lobe and cracks, moss over its top, lichen spots. |
+| `boulder` | good | 0.55 tall | chapel_graveyard, kelp_forest | Redrawn with the toolkit in forest.py: a settled rock with a lesser lobe and cracks, moss over its top, lichen spots. |
 | `bush` | good | 0.5 tall | cathedral_ruin, chapel_graveyard, coast_lighthouse, woodland_night | Redrawn with the toolkit in forest.py: leaf clusters on fanned twigs, lit on top, dark underneath. |
 | `bush_autumn` | good | 0.5 tall | autumn_lane | Drawn with the toolkit in forest.py: the bush in rust red and orange. |
 | `bush_snow` | good | 0.45 tall | winter_woods | Drawn with the toolkit in forest.py: a lumpy cushion of snow, blue in its hollows, twigs poking up through it. |
@@ -784,13 +799,13 @@ Named mixes for `scatter`; repeats in the contents act as weights.
 
 | set | status | contents | used in | notes |
 |---|---|---|---|---|
-| `stones` | good | rocks x3, boulder | chapel_graveyard, coast_lighthouse, misty_moor |  |
+| `stones` | good | rocks x3, boulder | chapel_graveyard |  |
 | `snow` | good | rocks x3, boulder_snow | winter_lake, winter_woods | The stones set for winter: its boulder is under snow, not moss. |
 | `rubble` | good | rubble x2, rocks, broken_barrel | cathedral_ruin, rainy_street |  |
 | `forest` | good | rocks x2, log, stump, mushrooms, grass_tuft x2, fern, bush | woodland_night |  |
 | `undergrowth` | good | grass_tuft x3, fern, bush, mushrooms | cathedral_ruin, chapel_graveyard, woodland_night |  |
 | `autumn` | good | grass_tuft x2, fern, bush_autumn x2, mushrooms | autumn_lane | The undergrowth set for the fall: its bush turned. |
-| `shore` | good | rocks x3, boulder, reeds, bones | coast_lighthouse |  |
+| `shore` | good | rocks x3, boulder, reeds, bones | - |  |
 | `litter` | good | sack, bucket, crate, barrel, broken_barrel, bones | neon_street, rain_alley |  |
 | `wreckage` | good | rubble x2, broken_barrel, rocks, bones, sack, bucket | bunker_lab, cathedral_ruin, derelict_ship, sewer_tunnels |  |
 | `cave` | good | rocks x3, stalagmite, glowshroom, crystal, bones | crystal_cave |  |
@@ -859,7 +874,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `car` | good | rain_alley | A saloon from panels, laid out as the user drew it: the overall box with the car's outline on its sides, hood and trunk lid across it at the belt (body 60%, glass 40%), the roof, glass windows with seats, dashboard and steering wheel inside, four wheels set in under the body in dark wells, a floor pan and a soft shadow; `paint`, `lights`. Proportions and handles tuned with the user. |
 | `noodle_stand` | good | neon_street | Counter, awning, valance, noren and sign as panels; bowls, pot, tray, lanterns and stools as billboards, with its own lamp and lantern lights. |
 | `rock_wall` | good | aquarium, crystal_cave, red_canyon | Laid out as the user drew it: overlapping pieces along a wall's foot, each in plan a rounded mass of a few broad faces jutting from the wall (the user's sharper zigzag read as spikes; a few spikes and notches are left), each its own height, a trim of faces along its top cut by one long smooth wavy edge, a flat top (inset a texel, so it never shows past the faces), plants on the rim. Kinds `stone`, `reef`, `sandstone`, `snow`, `cave`, `lumen` (glowing moss); `lining` lines every wall face of some map cells. The faces cut from one solid block of stone. Seen from above its tops are flat with the trim standing round them, as Build's were. |
-| `boulder` | good | aquarium, autumn_lane, crystal_cave, red_canyon, winter_woods, woodland_night | A low-poly mass, every face a triangle: an irregular foot, a belly, drawn-in shoulders, a peak off its centre; closed from every side. Plants on top by count. |
+| `boulder` | good | aquarium, autumn_lane, coast_lighthouse, crystal_cave, misty_moor, red_canyon, winter_woods, woodland_night | A low-poly mass, every face a triangle: an irregular foot, a belly, drawn-in shoulders, a peak off its centre; closed from every side. Plants on top by count. |
 | `crystal_cluster` | good | crystal_cave | The user's idea: crystals whose facets refract. Hexagonal prisms with pointed tips from a bed of rock, every facet a panel with its own clarity (clear across the middle, milky toward the base, bright edges) and its own bend: drawn with the glass, each facet shows the frame drawn so far shifted by one offset from the way it is turned (Renderer._bend), so it shows one coherent piece of what is behind, the colours parting a little at the edges. Strongest with glowing things behind. |
 
 ## Held items (8)
@@ -1081,6 +1096,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, boulders on the moor and the coast.** The first two of the user's list: 3D boulders in place of billboards on the misty moor (framing the wanderer in the first shot) and round the lighthouse. Fixed on the way: the light painted on rock turned with each object, so a boulder placed facing north was dark on the side the camera saw; it is now a direction in the world, the same for every rock in a scene (objects at angle 90, most of the aquarium, render exactly as before).
 - **2026-10-21, rock elsewhere and crystals.** Rock walls take `lining` (map characters: a rock wall along every straight run of their faces onto open ground) and three more kinds, `snow`, `cave` and `lumen` (glowing moss). The red canyon's walls are lined with fallen sandstone, with sandstone boulders in the wash; the night wood, the autumn lane and the winter woods have 3D boulders (mossy, ferns on top; snow-capped in winter) in place of billboards. Crystals refract, as the user designed it: `crystal_cluster`, each facet its own panel with its own clarity and its own shift of what is behind it (Renderer._bend). The crystal cave rebuilt round them, with the glowing jungle's plants; new shots `crystal_cave`, `crystal_violet`, `crystal_close`.
 - **2026-10-21, rock.** Rock built in 3D out of panels, as the user laid it out: `rock_wall` (overlapping pieces along a wall's foot, each a rounded mass of broad faces in plan, each its own height, a trim of faces along the top cut by one long wavy edge, a flat top, plants on the rim) and `boulder` (a low-poly mass of triangles), in three kinds - `stone`, `reef` and `sandstone`. Every face is cut from one solid block (`pixelart.cells3` and `noise3`): masses, a few fractures, chips and pits sampled at each texel's place in 3D and lit by the way the face faces, so the stone runs on round a corner. The aquarium's big tanks have rockwork along their walls and boulders on the sand, the walls behind painted as `open_water` over `deep_water`; a new shot, `aquarium_rockwork`, from inside the ocean tank.
 - **2026-10-21, objects.** `scripts/objects.py`: things too big for a billboard built in 3D out of flat panels the renderer draws in true perspective, depth-tested per pixel and lit like walls - a `car` and a `noodle_stand` - with `noodle_bowl`, `stock_pot`, `bowl_stack` and `condiments` for its counter. Cars in the rain alley, the stand in the neon street; new shots `alley_cars` and `neon_counter`.

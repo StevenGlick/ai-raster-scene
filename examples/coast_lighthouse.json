@@ -193,30 +193,10 @@
    "type": "crate"
   },
   {
-   "x": 12.4,
-   "y": 22.6,
-   "type": "boulder"
-  },
-  {
-   "x": 28.5,
-   "y": 24.5,
-   "type": "boulder"
-  },
-  {
-   "x": 20.2,
-   "y": 21.5,
-   "type": "boulder"
-  },
-  {
    "x": 15.4,
    "y": 22.6,
    "type": "rowboat",
    "scale": 0.5
-  },
-  {
-   "x": 7.5,
-   "y": 23.5,
-   "type": "boulder"
   },
   {
    "x": 19.5,
@@ -436,7 +416,7 @@
  ],
  "scatter": [
   {
-   "of": "stones",
+   "of": "rocks",
    "on": "s",
    "density": 1.7,
    "clump": 1.15,
@@ -449,14 +429,20 @@
    "seed": 1
   },
   {
-   "of": "shore",
+   "of": [
+    "rocks",
+    "rocks",
+    "rocks",
+    "reeds",
+    "bones"
+   ],
    "on": "g",
    "density": 0.9,
    "clump": 1.1,
    "seed": 2
   },
   {
-   "of": "stones",
+   "of": "rocks",
    "on": "J",
    "density": 0.12,
    "sizes": [
@@ -527,5 +513,466 @@
    ]
   }
  ],
- "supersample": 2
+ "supersample": 2,
+ "objects": [
+  {
+   "type": "boulder",
+   "x": 15.8,
+   "y": 24.1,
+   "angle": 30,
+   "size": 0.9,
+   "height": 0.5,
+   "seed": 80
+  },
+  {
+   "type": "boulder",
+   "x": 14.7,
+   "y": 20.5,
+   "angle": 150,
+   "size": 1.2,
+   "height": 0.65,
+   "seed": 81
+  },
+  {
+   "type": "boulder",
+   "x": 20.2,
+   "y": 21.5,
+   "angle": 270,
+   "size": 1.1,
+   "height": 0.6,
+   "seed": 82
+  },
+  {
+   "type": "boulder",
+   "x": 23.7,
+   "y": 17.3,
+   "angle": 90,
+   "size": 0.8,
+   "height": 0.42,
+   "seed": 83
+  },
+  {
+   "type": "boulder",
+   "x": 27.6,
+   "y": 17.3,
+   "angle": 0,
+   "size": 0.85,
+   "height": 0.48,
+   "seed": 84
+  },
+  {
+   "type": "boulder",
+   "x": 28.0,
+   "y": 15.4,
+   "angle": 200,
+   "size": 0.8,
+   "height": 0.42,
+   "seed": 85
+  },
+  {
+   "type": "boulder",
+   "x": 22.8,
+   "y": 23.0,
+   "angle": 100,
+   "size": 0.9,
+   "height": 0.5,
+   "seed": 86
+  },
+  {
+   "type": "boulder",
+   "x": 26.2,
+   "y": 23.6,
+   "angle": 300,
+   "size": 1.1,
+   "height": 0.6,
+   "seed": 87
+  },
+  {
+   "type": "boulder",
+   "x": 29.0,
+   "y": 22.0,
+   "angle": 60,
+   "size": 1.2,
+   "height": 0.65,
+   "seed": 88
+  },
+  {
+   "type": "boulder",
+   "x": 13.1,
+   "y": 23.6,
+   "angle": 220,
+   "size": 0.8,
+   "height": 0.45,
+   "seed": 89
+  },
+  {
+   "type": "boulder",
+   "x": 10.4,
+   "y": 22.2,
+   "angle": 140,
+   "size": 1.0,
+   "height": 0.55,
+   "seed": 90
+  },
+  {
+   "type": "boulder",
+   "x": 3.6,
+   "y": 15.4,
+   "angle": 10,
+   "size": 1.1,
+   "height": 0.55,
+   "seed": 91
+  },
+  {
+   "type": "boulder",
+   "x": 8.6,
+   "y": 15.2,
+   "angle": 180,
+   "size": 0.8,
+   "height": 0.42,
+   "seed": 92
+  },
+  {
+   "type": "boulder",
+   "x": 11.2,
+   "y": 14.6,
+   "angle": 250,
+   "size": 1.0,
+   "height": 0.5,
+   "seed": 93
+  },
+  {
+   "type": "boulder",
+   "x": 13.8,
+   "y": 13.6,
+   "angle": 330,
+   "size": 0.8,
+   "height": 0.45,
+   "seed": 94
+  },
+  {
+   "type": "boulder",
+   "x": 21.8,
+   "y": 13.8,
+   "angle": 40,
+   "size": 0.7,
+   "height": 0.4,
+   "seed": 95
+  },
+  {
+   "type": "boulder",
+   "x": 32.0,
+   "y": 15.8,
+   "angle": 160,
+   "size": 1.2,
+   "height": 0.6,
+   "seed": 96
+  },
+  {
+   "type": "boulder",
+   "x": 22.4,
+   "y": 19.4,
+   "angle": 210,
+   "size": 0.8,
+   "height": 0.45,
+   "seed": 97
+  },
+  {
+   "type": "boulder",
+   "x": 6.8,
+   "y": 27.0,
+   "angle": 120,
+   "size": 1.3,
+   "height": 0.8,
+   "seed": 98
+  },
+  {
+   "type": "boulder",
+   "x": 28.5,
+   "y": 24.5,
+   "angle": 20,
+   "size": 1.2,
+   "height": 0.7,
+   "seed": 99
+  },
+  {
+   "type": "boulder",
+   "x": 14.81,
+   "y": 25.7,
+   "angle": 137,
+   "size": 1.21,
+   "height": 0.88,
+   "seed": 100
+  },
+  {
+   "type": "boulder",
+   "x": 13.21,
+   "y": 15.11,
+   "angle": 274,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 101
+  },
+  {
+   "type": "boulder",
+   "x": 19.83,
+   "y": 29.42,
+   "angle": 51,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 102
+  },
+  {
+   "type": "boulder",
+   "x": 8.23,
+   "y": 25.78,
+   "angle": 325,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 103
+  },
+  {
+   "type": "boulder",
+   "x": 18.75,
+   "y": 8.32,
+   "angle": 102,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 104
+  },
+  {
+   "type": "boulder",
+   "x": 4.62,
+   "y": 18.4,
+   "angle": 239,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 105
+  },
+  {
+   "type": "boulder",
+   "x": 6.4,
+   "y": 15.15,
+   "angle": 16,
+   "size": 1.21,
+   "height": 0.88,
+   "seed": 106
+  },
+  {
+   "type": "boulder",
+   "x": 16.63,
+   "y": 8.34,
+   "angle": 153,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 107
+  },
+  {
+   "type": "boulder",
+   "x": 19.22,
+   "y": 9.43,
+   "angle": 290,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 108
+  },
+  {
+   "type": "boulder",
+   "x": 25.33,
+   "y": 29.3,
+   "angle": 67,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 109
+  },
+  {
+   "type": "boulder",
+   "x": 19.7,
+   "y": 13.54,
+   "angle": 204,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 110
+  },
+  {
+   "type": "boulder",
+   "x": 7.42,
+   "y": 15.68,
+   "angle": 341,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 111
+  },
+  {
+   "type": "boulder",
+   "x": 14.74,
+   "y": 11.5,
+   "angle": 118,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 112
+  },
+  {
+   "type": "boulder",
+   "x": 29.44,
+   "y": 23.59,
+   "angle": 255,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 113
+  },
+  {
+   "type": "boulder",
+   "x": 17.64,
+   "y": 8.78,
+   "angle": 32,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 114
+  },
+  {
+   "type": "boulder",
+   "x": 27.29,
+   "y": 25.36,
+   "angle": 169,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 115
+  },
+  {
+   "type": "boulder",
+   "x": 13.71,
+   "y": 9.37,
+   "angle": 306,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 116
+  },
+  {
+   "type": "boulder",
+   "x": 16.51,
+   "y": 14.55,
+   "angle": 83,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 117
+  },
+  {
+   "type": "boulder",
+   "x": 18.36,
+   "y": 28.61,
+   "angle": 220,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 118
+  },
+  {
+   "type": "boulder",
+   "x": 35.54,
+   "y": 16.65,
+   "angle": 357,
+   "size": 1.21,
+   "height": 0.88,
+   "seed": 119
+  },
+  {
+   "type": "boulder",
+   "x": 5.25,
+   "y": 15.22,
+   "angle": 134,
+   "size": 1.21,
+   "height": 0.88,
+   "seed": 120
+  },
+  {
+   "type": "boulder",
+   "x": 11.61,
+   "y": 22.56,
+   "angle": 271,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 121
+  },
+  {
+   "type": "boulder",
+   "x": 17.77,
+   "y": 29.52,
+   "angle": 48,
+   "size": 1.21,
+   "height": 0.88,
+   "seed": 122
+  },
+  {
+   "type": "boulder",
+   "x": 14.31,
+   "y": 8.51,
+   "angle": 185,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 123
+  },
+  {
+   "type": "boulder",
+   "x": 28.25,
+   "y": 28.64,
+   "angle": 322,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 124
+  },
+  {
+   "type": "boulder",
+   "x": 8.58,
+   "y": 24.64,
+   "angle": 99,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 125
+  },
+  {
+   "type": "boulder",
+   "x": 6.61,
+   "y": 16.5,
+   "angle": 236,
+   "size": 1.21,
+   "height": 0.88,
+   "seed": 126
+  },
+  {
+   "type": "boulder",
+   "x": 14.39,
+   "y": 12.65,
+   "angle": 13,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 127
+  },
+  {
+   "type": "boulder",
+   "x": 13.26,
+   "y": 14.45,
+   "angle": 150,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 128
+  },
+  {
+   "type": "boulder",
+   "x": 23.66,
+   "y": 16.33,
+   "angle": 287,
+   "size": 1.21,
+   "height": 0.88,
+   "seed": 129
+  },
+  {
+   "type": "boulder",
+   "x": 20.43,
+   "y": 16.34,
+   "angle": 64,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 130
+  }
+ ]
 }

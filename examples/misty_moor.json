@@ -302,9 +302,251 @@
    "flip": true
   }
  ],
+ "objects": [
+  {
+   "type": "boulder",
+   "x": 20.5,
+   "y": 28.0,
+   "angle": 20,
+   "size": 0.9,
+   "height": 0.5,
+   "seed": 60,
+   "plants": 2
+  },
+  {
+   "type": "boulder",
+   "x": 23.5,
+   "y": 27.7,
+   "angle": 200,
+   "size": 0.7,
+   "height": 0.38,
+   "seed": 61,
+   "plants": 1
+  },
+  {
+   "type": "boulder",
+   "x": 23.0,
+   "y": 18.6,
+   "angle": 120,
+   "size": 0.65,
+   "height": 0.36,
+   "seed": 62,
+   "plants": 1
+  },
+  {
+   "type": "boulder",
+   "x": 29.0,
+   "y": 33.4,
+   "angle": 300,
+   "size": 1.2,
+   "height": 0.65,
+   "seed": 63,
+   "plants": 2
+  },
+  {
+   "type": "boulder",
+   "x": 27.2,
+   "y": 31.0,
+   "angle": 80,
+   "size": 0.6,
+   "height": 0.32,
+   "seed": 64,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 12.6,
+   "y": 20.8,
+   "angle": 40,
+   "size": 1.0,
+   "height": 0.55,
+   "seed": 65,
+   "plants": 1
+  },
+  {
+   "type": "boulder",
+   "x": 33.4,
+   "y": 22.6,
+   "angle": 160,
+   "size": 1.3,
+   "height": 0.7,
+   "seed": 66,
+   "plants": 2
+  },
+  {
+   "type": "boulder",
+   "x": 16.6,
+   "y": 9.4,
+   "angle": 250,
+   "size": 0.9,
+   "height": 0.5,
+   "seed": 67,
+   "plants": 1
+  },
+  {
+   "type": "boulder",
+   "x": 28.2,
+   "y": 8.2,
+   "angle": 10,
+   "size": 1.1,
+   "height": 0.6,
+   "seed": 68,
+   "plants": 1
+  },
+  {
+   "type": "boulder",
+   "x": 9.6,
+   "y": 13.8,
+   "angle": 300,
+   "size": 0.8,
+   "height": 0.45,
+   "seed": 69,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 36.0,
+   "y": 28.0,
+   "angle": 90,
+   "size": 1.0,
+   "height": 0.55,
+   "seed": 70,
+   "plants": 1
+  },
+  {
+   "type": "boulder",
+   "x": 14.6,
+   "y": 31.8,
+   "angle": 200,
+   "size": 0.9,
+   "height": 0.5,
+   "seed": 71,
+   "plants": 1
+  },
+  {
+   "type": "boulder",
+   "x": 40.58,
+   "y": 19.8,
+   "angle": 0,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 72,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 27.24,
+   "y": 20.66,
+   "angle": 137,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 73,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 24.32,
+   "y": 12.56,
+   "angle": 274,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 74,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 9.47,
+   "y": 12.24,
+   "angle": 51,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 75,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 26.53,
+   "y": 29.63,
+   "angle": 188,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 76,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 23.41,
+   "y": 24.7,
+   "angle": 325,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 77,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 43.4,
+   "y": 24.42,
+   "angle": 102,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 78,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 25.29,
+   "y": 11.92,
+   "angle": 239,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 79,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 29.3,
+   "y": 19.58,
+   "angle": 16,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 80,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 40.84,
+   "y": 31.44,
+   "angle": 153,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 81,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 17.35,
+   "y": 25.27,
+   "angle": 290,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 82,
+   "plants": 0
+  },
+  {
+   "type": "boulder",
+   "x": 39.35,
+   "y": 39.66,
+   "angle": 67,
+   "size": 0.92,
+   "height": 0.68,
+   "seed": 83,
+   "plants": 0
+  }
+ ],
  "scatter": [
   {
-   "of": "stones",
+   "of": "rocks",
    "on": ",",
    "density": 0.12,
    "sizes": [

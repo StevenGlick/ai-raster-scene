@@ -1209,6 +1209,18 @@ def check_objects():
     area = sum(np.cross(pn['u'], pn['v']) / 2 for pn in stone)
     assert abs(area[0]) < 1e-6 and abs(area[1]) < 1e-6 and 0.3 < area[2] < 1.0, f'closed all round: {area}'
     assert objects._parts(dict(pl)) is objects._parts(dict(pl)), 'a rock is cut once per placement'
+    key = np.array(objects.ROCKS['stone']['key'][:2])                   # the light painted on rock is a
+    for angle in (0, 180):                                               # direction in the world: turned
+        lit, shade = [], []                                              # either way, a boulder is lit
+        for pn in objects.expand({'map': ['.'], 'objects': [{'type': 'boulder', 'x': 0.0, 'y': 0.0, 'seed': 5,
+                                                             'angle': angle}]})['panels']:
+            n = np.cross(pn['u'], pn['v'])
+            n = n / np.linalg.norm(n)
+            solid = pn['rgba'][..., 3] > 0.5
+            if abs(n[2]) < 0.6 and solid.any():                          # its sides, by the way they face
+                (lit if n[:2] @ key > 0.2 else shade if n[:2] @ key < -0.2 else []).append(
+                    float(pn['rgba'][..., :3][solid].mean()))
+        assert np.mean(lit) > np.mean(shade) + 0.05, f'lit from the same side at angle {angle}: {lit} {shade}'
 
     # 5. a lining: a rock wall along each straight run of the cells' faces onto open ground - a room
     # 4 cells by 3 has four - facing into the room, none where a camera stands
