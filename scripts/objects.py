@@ -1185,12 +1185,50 @@ def keel(pl):
 # ------------------------------------------------------------------ columns and posts
 
 def _material(pl):
-    """What a column is made of - a kind of rock (`material` names it, cut from solid stone as rock is)
-    or `wood` - with its light turned to the placement, as for rock."""
+    """What a column is made of - a kind of rock (`material` names it, cut from solid stone as rock is),
+    `wood`, or painted cast `iron` (`iron_white`, `iron_green`) - with its light turned to the placement,
+    as for rock."""
     name = pl.get('material', 'stone')
     if name in WOODS:
         return dict(WOODS[name], paint=_wood, key=_turned(WOODS[name]['key'], pl))
+    if name in IRONS:
+        return dict(IRONS[name], paint=_painted, key=_turned(IRONS[name]['key'], pl))
     return _rock_kind({'rock': name, 'angle': pl.get('angle', 0.0)})
+
+
+def _painted(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
+    """Painted metal - cast iron in a glasshouse: smooth, lit by the way it faces (with `tilt`, round), a
+    sheen toward the light, the paint chipped to rust here and there."""
+    key = np.asarray(rk['key'], np.float32)
+    key /= np.linalg.norm(key)
+    at = np.nonzero(alpha.reshape(-1))[0]
+    ys, xs = at // w, at % w
+    P = o + ((xs + 0.5) / w)[:, None] * u + ((ys + 0.5) / h)[:, None] * v
+    nrm = np.cross(u, v)
+    N = np.repeat((nrm / np.linalg.norm(nrm)).astype(np.float32)[None, :], len(at), 0)
+    if tilt is not None:
+        N += tilt.reshape(-1)[at][:, None] * (u / np.linalg.norm(u)).astype(np.float32)[None, :]
+    N /= np.linalg.norm(N, axis=1, keepdims=True)
+    lit = np.clip(N @ key, 0, 1)
+    val = rk['shade'][0] + rk['shade'][1] * lit + 0.2 * np.clip((lit - 0.85) / 0.15, 0, 1) + tone
+    mat = (noise3(P, 0.06, seed) > rk.get('rust', 0.86)).astype(int)
+    bay = BAYER4[ys % 4, xs % 4]
+    rgb = np.zeros((h * w, 3), np.float32)
+    for m, rp in enumerate(rk['ramps']):
+        sel = mat == m
+        idx = np.clip(np.round(val[sel] * (len(rp) - 1) + (bay[sel] - 0.5) * 0.3), 0, len(rp) - 1).astype(int)
+        rgb[at[sel]] = np.asarray(rp, np.float32)[idx]
+    rgba = np.concatenate([rgb.reshape(h, w, 3), alpha.reshape(h, w, 1).astype(np.float32)], -1)
+    return rgba, np.zeros((h, w), np.float32)
+
+
+# Painted cast iron, for a glasshouse's columns, ribs and glazing bars. Painted by _painted.
+IRONS = {
+    'iron_white': dict(ramps=[ramp('#e2e0d6', dark=0.45, light=1.12), ramp('#8a5a3a', dark=0.4, light=1.3)],
+                       key=(-0.4, 0.45, 0.8), shade=(0.42, 0.5)),
+    'iron_green': dict(ramps=[ramp('#3a5a48', dark=0.4, light=1.5), ramp('#7a4a32', dark=0.4, light=1.3)],
+                       key=(-0.4, 0.45, 0.8), shade=(0.38, 0.55)),
+}
 
 
 def _ring(n, r, z, phase):
@@ -1410,7 +1448,8 @@ def shed_roof(pl):
 def gable_roof(pl):
     """A gabled roof: the ridge `length` long the way it faces, `width` across, the eaves at the
     placement's `z` and the ridge `rise` above them; `cover` is `boards` (the default), `thatch`, `tile`,
-    `slate` or `snow` (a roof under snow). It overhangs by `overhang` - a number, or [at the eaves, at the ends]; its gable ends are
+    `slate`, `snow` (a roof under snow) or `glass` (panes between white iron glazing bars, drawn as glass:
+    the sky shows through it and the sun comes in under it). It overhangs by `overhang` - a number, or [at the eaves, at the ends]; its gable ends are
     closed with upright boards, and under it stand `walls` that tall (0 for none) - the body of a
     building on a lower block, or a shed on the ground - set `inset` in from the roof's ends and
     eaves: a number (from the front end only) or [front, back, left, right]. `chimney` stands one on
@@ -1420,7 +1459,8 @@ def gable_roof(pl):
     cover = pl.get('cover', 'boards')
     roof = (_timber(pl, (0.025, 0.4, 0.4), 0.14) if cover == 'boards'
             else dict(ROOFS[cover], key=_turned(ROOFS[cover]['key'], pl)))
-    ends = (_rock_kind(dict(pl, rock=pl['ends'])) if pl.get('ends')
+    ends = (dict(ROOFS['glass'], key=_turned(ROOFS['glass']['key'], pl)) if pl.get('ends') == 'glass'
+            else _rock_kind(dict(pl, rock=pl['ends'])) if pl.get('ends')
             else dict(PLASTER, ramps=[ramp(pl['plaster'], dark=0.4, light=1.3)], key=_turned(PLASTER['key'], pl))
             if pl.get('plaster') else _timber(pl, (0.025, 0.025, 0.4), 0.16))
     seed = int(pl.get('seed', 1))
@@ -1432,8 +1472,12 @@ def gable_roof(pl):
              _rock(roof, seed + 1, (L + oe, 0.0, r), (-L - oe, 0.0, r), (L + oe, -W - o, -drop))]
     for p in parts:                                                   # up out of the lamps' reach
         p['dyn'] = ROOF_LAMPS
+        if cover == 'glass':
+            p['translucent'] = True
     for k, x in enumerate((L, -L)):
         parts.append(_rock_tri(ends, seed + 2 + k, (x, -W, 0.0), (x, W, 0.0), (x, 0.0, r), (x, 0.0, 0.0)))
+        if pl.get('ends') == 'glass' and parts[-1]:
+            parts[-1]['translucent'] = True
     h, ins = float(pl.get('walls', 0.0)), pl.get('inset', 0.0)
     ins = (float(ins), 0.0, 0.0, 0.0) if isinstance(ins, (int, float)) else tuple(float(v) for v in ins)
     f, b, lf, rt = L - ins[0], -L + ins[1], -W + ins[2], W - ins[3]
@@ -1569,7 +1613,24 @@ def _snow_roof(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
     return rgba, np.zeros((h, w), np.float32)
 
 
-# Roof covers, painted by _thatch, _tiles and _snow_roof and lit like rock; `chimney` is brick in courses.
+def _glass_roof(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
+    """Glazing: panes of glass, faintly green and catching the sky, between white iron glazing bars
+    running down the slope and a few across - painted with each texel's own opacity, to be drawn as glass."""
+    at = np.nonzero(alpha.reshape(-1))[0]
+    ys, xs = at // w, at % w
+    a = (xs + 0.5) / w * np.linalg.norm(u)
+    d = (ys + 0.5) / h * np.linalg.norm(v)
+    bar = ((a % rk['bars'][0]) < 0.035) | ((d % rk['bars'][1]) < 0.03)
+    rgb = np.zeros((h * w, 3), np.float32)
+    op = np.zeros(h * w, np.float32)
+    bar_c = np.asarray(rk['ramps'][0], np.float32)
+    rgb[at] = np.where(bar[:, None], bar_c[-2], rk['glass'])
+    op[at] = np.where(bar, 1.0, rk['opacity'] + 0.06 * noise3(np.stack([a, d, np.zeros_like(a)], 1), 0.6, seed))
+    rgba = np.concatenate([rgb.reshape(h, w, 3), (op * alpha.reshape(-1)).reshape(h, w, 1)], -1)
+    return rgba, np.zeros((h, w), np.float32)
+
+
+# Roof covers, painted by _thatch, _tiles, _snow_roof and _glass_roof and lit like rock; `chimney` is brick in courses.
 ROOFS = {
     'thatch': dict(paint=_thatch, ramps=[ramp('#a88a52', dark=0.38, light=1.4, warm=0.1), ramp('#7e7a5a', dark=0.4, light=1.3)],
                    key=(-0.4, 0.45, 0.8), shade=(0.36, 0.5)),
@@ -1577,6 +1638,8 @@ ROOFS = {
                  key=(-0.4, 0.45, 0.8), shade=(0.36, 0.5), course=(0.1, 0.13), lichen=0.06),
     'snow': dict(paint=_snow_roof, ramps=[SNOW, ramp('#3e3630', dark=0.5, light=1.6)], key=(-0.4, 0.45, 0.8),
                  shade=(0.44, 0.5)),
+    'glass': dict(paint=_glass_roof, ramps=[ramp('#e2e0d6', dark=0.45, light=1.12)], key=(-0.4, 0.45, 0.8),
+                  shade=(0.44, 0.5), glass=np.array([0.78, 0.9, 0.86], np.float32), opacity=0.16, bars=(0.36, 0.9)),
     'slate': dict(paint=_tiles, ramps=[ramp('#4a4e5a', dark=0.45, light=1.55, cool=0.2), ramp('#5e6a4c', dark=0.4, light=1.3)],
                   key=(-0.4, 0.45, 0.8), shade=(0.34, 0.52), course=(0.075, 0.15), lichen=0.05),
     'chimney': dict(paint=_tiles, ramps=[ramp('#8a4a36', dark=0.36, light=1.3)], key=(-0.4, 0.45, 0.8),

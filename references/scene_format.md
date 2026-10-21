@@ -678,7 +678,7 @@ An object is a thing too big to be a billboard - a car, a food stand, rock, crys
 | `refract` | how far a crystal's facets bend the light through them, in units (default 0.16; 0 for plain glass) |
 | `glow` | how much crystals glow (default 0.6) |
 | `base` | a crystal cluster: `false` leaves out its bed of rock. A column: the height of a wider plinth under it |
-| `material` | a column or a beam: a kind of rock (`stone`, `sandstone`, `snow`, `cave`, ... - cut from solid stone as rock is), `ashlar` (pale dressed stone laid in courses - a column in drums), `marble` (cream-white, in drums, a golden patina in patches) or `wood` (weathered timber, its grain running along it, dark and grown over where it stands in water) |
+| `material` | a column or a beam: a kind of rock (`stone`, `sandstone`, `snow`, `cave`, ... - cut from solid stone as rock is), `ashlar` (pale dressed stone laid in courses - a column in drums), `iron_white` and `iron_green` (painted cast iron, for a glasshouse), `marble` (cream-white, in drums, a golden patina in patches) or `wood` (weathered timber, its grain running along it, dark and grown over where it stands in water) |
 | `sides` | a column's faces (default 8, an octagon) |
 | `radius` | a column's radius at its foot, across the corners (default 0.12) |
 | `top` | a column's radius at its head, as a share of its foot's (default 1: no taper) |
@@ -693,9 +693,9 @@ An object is a thing too big to be a billboard - a car, a food stand, rock, crys
 | `overhang` | a gabled roof: how far its slopes reach past the walls (default 0.12), or `[at the eaves, at the ends]` |
 | `walls` | a gabled roof: how tall the walls under it are (default 0: none) - a shed on the ground, or a building's body on a lower block |
 | `inset` | a gabled roof: how far its walls stand back from its front end (default 0), or `[front, back, left, right]` from its ends and eaves |
-| `cover` | a gabled roof: `boards` (the default), `thatch` (reed ends in streaks of gold and brown, laid in courses, greener at the ridge), `tile` (clay tiles in staggered courses, each its own shade, lichen on a few), `slate` (dark blue-grey slates in narrow courses) or `snow` (a roof under snow: soft drifts, the shingles showing at the ridge, a rounded lip at the eave) |
+| `cover` | a gabled roof: `boards` (the default), `thatch` (reed ends in streaks of gold and brown, laid in courses, greener at the ridge), `tile` (clay tiles in staggered courses, each its own shade, lichen on a few), `slate` (dark blue-grey slates in narrow courses), `snow` (a roof under snow: soft drifts, the shingles showing at the ridge, a rounded lip at the eave) or `glass` (panes between white iron glazing bars, drawn as glass: the sky shows through, and the sun comes in under it as no cell is roofed) |
 | `chimney` | a gabled roof: a brick chimney through the ridge, this far along it from the back (0-1), or a list of places for several; stouter on a bigger roof |
-| `ends` | a gabled roof: its gable ends (and walls) of stone - a rock kind such as `ashlar` - instead of boards |
+| `ends` | a gabled roof: its gable ends (and walls) of stone - a rock kind such as `ashlar` - instead of boards, or `glass` |
 | `plaster` | a gabled roof: its walls and gable ends plaster of this colour (`#rrggbb`) instead of boards |
 | `gauge` | rails: how far apart (default 0.24) |
 | `roots` | a keel: `false` leaves out the roots trailing from its top |

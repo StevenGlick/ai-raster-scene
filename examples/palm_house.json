@@ -1,0 +1,625 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "oooooooooooooooooooooooo",
+  "oooooooooooooooooooooooo",
+  "oooooooooooooooooooooooo",
+  "oooooooooooooooooooooooo",
+  "oooooooooooooooooooooooo",
+  "ooooooGGGGGGGGGGGGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGbttttttttbGoooooo",
+  "ooooooGbttttttttbGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGbbbbttbbbbGoooooo",
+  "ooooooGGGGGttGGGGGoooooo",
+  "oooooooooooppooooooooooo",
+  "oooooooooooppooooooooooo",
+  "oooooooooooppooooooooooo",
+  "oooooooooooppooooooooooo",
+  "oooooooooooppooooooooooo",
+  "oooooooooooppooooooooooo",
+  "oooooooooooppooooooooooo",
+  "oooooooooooppooooooooooo",
+  "oooooooooooppooooooooooo"
+ ],
+ "legend": {
+  "o": {
+   "floor": "grass"
+  },
+  "G": {
+   "wall": [
+    "glasshouse",
+    "glasshouse"
+   ],
+   "h": 2.2
+  },
+  "b": {
+   "floor": "jungle_floor"
+  },
+  "t": {
+   "floor": "encaustic"
+  },
+  "p": {
+   "floor": "gravel"
+  }
+ },
+ "camera": {
+  "x": 11.9,
+  "y": 23.4,
+  "look_at": [
+   12.0,
+   6.0,
+   1.4
+  ],
+  "fov": 70
+ },
+ "title": "Palm house - the glasshouse full of palms",
+ "sky": "day",
+ "ambient": [
+  0.42,
+  0.44,
+  0.4
+ ],
+ "fog": {
+  "color": [
+   0.82,
+   0.88,
+   0.8
+  ],
+  "density": 0.012,
+  "sky_mix": 0.2
+ },
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 120,
+   "elevation": 48,
+   "color": [
+    1.0,
+    0.95,
+    0.84
+   ],
+   "intensity": 1.1
+  }
+ ],
+ "sprites": [
+  {
+   "x": 12.0,
+   "y": 15.0,
+   "type": "fountain",
+   "scale": 1.0
+  },
+  {
+   "x": 14.4,
+   "y": 15.4,
+   "type": "bench",
+   "scale": 0.36
+  },
+  {
+   "x": 8.6,
+   "y": 8.4,
+   "type": "palm",
+   "scale": 4.4
+  },
+  {
+   "x": 15.4,
+   "y": 9.6,
+   "type": "palm",
+   "scale": 4.6,
+   "flip": true
+  },
+  {
+   "x": 8.4,
+   "y": 19.8,
+   "type": "palm",
+   "scale": 4.2,
+   "flip": true
+  },
+  {
+   "x": 15.6,
+   "y": 21.0,
+   "type": "palm_lean",
+   "scale": 3.8
+  },
+  {
+   "x": 9.6,
+   "y": 16.2,
+   "type": "palm",
+   "scale": 4.8
+  },
+  {
+   "x": 14.6,
+   "y": 13.4,
+   "type": "palm_lean",
+   "scale": 4.2,
+   "flip": true
+  },
+  {
+   "x": 9.0,
+   "y": 12.6,
+   "type": "tree_fern",
+   "scale": 2.2
+  },
+  {
+   "x": 15.0,
+   "y": 18.0,
+   "type": "tree_fern",
+   "scale": 2.4,
+   "flip": true
+  },
+  {
+   "x": 7.8,
+   "y": 16.6,
+   "type": "banana_plant"
+  },
+  {
+   "x": 16.0,
+   "y": 12.4,
+   "type": "banana_plant",
+   "flip": true
+  },
+  {
+   "x": 9.6,
+   "y": 22.4,
+   "type": "banana_plant",
+   "scale": 1.5
+  },
+  {
+   "x": 10.2,
+   "y": 7.0,
+   "type": "monstera",
+   "flip": false
+  },
+  {
+   "x": 13.8,
+   "y": 7.4,
+   "type": "heliconia",
+   "flip": true
+  },
+  {
+   "x": 10.3,
+   "y": 10.2,
+   "type": "fern",
+   "flip": false
+  },
+  {
+   "x": 13.7,
+   "y": 10.8,
+   "type": "monstera",
+   "flip": true
+  },
+  {
+   "x": 10.2,
+   "y": 13.0,
+   "type": "heliconia",
+   "flip": false
+  },
+  {
+   "x": 13.8,
+   "y": 13.2,
+   "type": "fern",
+   "flip": true
+  },
+  {
+   "x": 10.3,
+   "y": 17.2,
+   "type": "monstera",
+   "flip": false
+  },
+  {
+   "x": 13.7,
+   "y": 16.8,
+   "type": "heliconia",
+   "flip": true
+  },
+  {
+   "x": 10.2,
+   "y": 20.4,
+   "type": "fern",
+   "flip": false
+  },
+  {
+   "x": 13.8,
+   "y": 20.2,
+   "type": "monstera",
+   "flip": true
+  },
+  {
+   "x": 10.3,
+   "y": 23.2,
+   "type": "heliconia",
+   "flip": false
+  },
+  {
+   "x": 13.7,
+   "y": 23.4,
+   "type": "fern",
+   "flip": true
+  },
+  {
+   "x": 8.2,
+   "y": 10.6,
+   "type": "fern",
+   "flip": false
+  },
+  {
+   "x": 15.8,
+   "y": 15.0,
+   "type": "monstera",
+   "flip": true
+  },
+  {
+   "x": 8.0,
+   "y": 23.0,
+   "type": "monstera",
+   "flip": false
+  },
+  {
+   "x": 16.0,
+   "y": 6.8,
+   "type": "fern",
+   "flip": true
+  },
+  {
+   "x": 10.3,
+   "y": 14.6,
+   "type": "bromeliad"
+  },
+  {
+   "x": 13.7,
+   "y": 15.6,
+   "type": "bromeliad"
+  },
+  {
+   "id": "gardener",
+   "x": 13.6,
+   "y": 19.6,
+   "type": "farmer",
+   "facing": 200
+  },
+  {
+   "id": "visitor",
+   "x": 11.6,
+   "y": 17.4,
+   "type": "child",
+   "facing": 270
+  },
+  {
+   "x": 11.0,
+   "y": 12.55,
+   "type": "macaw",
+   "z": 2.12
+  },
+  {
+   "x": 3.0,
+   "y": 8.0,
+   "type": "tree",
+   "scale": 3.4
+  },
+  {
+   "x": 21.0,
+   "y": 12.0,
+   "type": "tree",
+   "scale": 3.0,
+   "flip": true
+  },
+  {
+   "x": 2.6,
+   "y": 22.0,
+   "type": "birch"
+  },
+  {
+   "x": 21.4,
+   "y": 26.0,
+   "type": "tree",
+   "scale": 3.2
+  },
+  {
+   "x": 9.0,
+   "y": 28.0,
+   "type": "flowers"
+  },
+  {
+   "x": 14.6,
+   "y": 27.4,
+   "type": "flowers"
+  },
+  {
+   "x": 9.6,
+   "y": 30.4,
+   "type": "bush"
+  },
+  {
+   "x": 14.4,
+   "y": 30.8,
+   "type": "bush",
+   "flip": true
+  }
+ ],
+ "objects": [
+  {
+   "type": "gable_roof",
+   "x": 12.0,
+   "y": 15.0,
+   "z": 2.2,
+   "angle": 90,
+   "length": 20.0,
+   "width": 12.0,
+   "rise": 2.8,
+   "cover": "glass",
+   "ends": "glass",
+   "overhang": [
+    0.15,
+    0.1
+   ],
+   "seed": 2
+  },
+  {
+   "type": "column",
+   "x": 10.4,
+   "y": 8.0,
+   "material": "iron_white",
+   "sides": 8,
+   "radius": 0.07,
+   "height": 2.2,
+   "base": 0.14,
+   "capital": 0.1,
+   "sink": 0.0,
+   "fill": 0.8,
+   "seed": 10
+  },
+  {
+   "type": "column",
+   "x": 13.6,
+   "y": 8.0,
+   "material": "iron_white",
+   "sides": 8,
+   "radius": 0.07,
+   "height": 2.2,
+   "base": 0.14,
+   "capital": 0.1,
+   "sink": 0.0,
+   "fill": 0.8,
+   "seed": 13
+  },
+  {
+   "type": "column",
+   "x": 10.4,
+   "y": 11.5,
+   "material": "iron_white",
+   "sides": 8,
+   "radius": 0.07,
+   "height": 2.2,
+   "base": 0.14,
+   "capital": 0.1,
+   "sink": 0.0,
+   "fill": 0.8,
+   "seed": 20
+  },
+  {
+   "type": "column",
+   "x": 13.6,
+   "y": 11.5,
+   "material": "iron_white",
+   "sides": 8,
+   "radius": 0.07,
+   "height": 2.2,
+   "base": 0.14,
+   "capital": 0.1,
+   "sink": 0.0,
+   "fill": 0.8,
+   "seed": 23
+  },
+  {
+   "type": "column",
+   "x": 10.4,
+   "y": 18.5,
+   "material": "iron_white",
+   "sides": 8,
+   "radius": 0.07,
+   "height": 2.2,
+   "base": 0.14,
+   "capital": 0.1,
+   "sink": 0.0,
+   "fill": 0.8,
+   "seed": 30
+  },
+  {
+   "type": "column",
+   "x": 13.6,
+   "y": 18.5,
+   "material": "iron_white",
+   "sides": 8,
+   "radius": 0.07,
+   "height": 2.2,
+   "base": 0.14,
+   "capital": 0.1,
+   "sink": 0.0,
+   "fill": 0.8,
+   "seed": 33
+  },
+  {
+   "type": "column",
+   "x": 10.4,
+   "y": 22.0,
+   "material": "iron_white",
+   "sides": 8,
+   "radius": 0.07,
+   "height": 2.2,
+   "base": 0.14,
+   "capital": 0.1,
+   "sink": 0.0,
+   "fill": 0.8,
+   "seed": 40
+  },
+  {
+   "type": "column",
+   "x": 13.6,
+   "y": 22.0,
+   "material": "iron_white",
+   "sides": 8,
+   "radius": 0.07,
+   "height": 2.2,
+   "base": 0.14,
+   "capital": 0.1,
+   "sink": 0.0,
+   "fill": 0.8,
+   "seed": 43
+  },
+  {
+   "type": "beam",
+   "x": 12.0,
+   "y": 7.5,
+   "z": 2.12,
+   "angle": 0,
+   "length": 12.0,
+   "width": 0.06,
+   "depth": 0.08,
+   "material": "iron_white",
+   "fill": 0.8,
+   "seed": 40
+  },
+  {
+   "type": "beam",
+   "x": 12.0,
+   "y": 10.5,
+   "z": 2.12,
+   "angle": 0,
+   "length": 12.0,
+   "width": 0.06,
+   "depth": 0.08,
+   "material": "iron_white",
+   "fill": 0.8,
+   "seed": 41
+  },
+  {
+   "type": "beam",
+   "x": 12.0,
+   "y": 13.5,
+   "z": 2.12,
+   "angle": 0,
+   "length": 12.0,
+   "width": 0.06,
+   "depth": 0.08,
+   "material": "iron_white",
+   "fill": 0.8,
+   "seed": 42
+  },
+  {
+   "type": "beam",
+   "x": 12.0,
+   "y": 16.5,
+   "z": 2.12,
+   "angle": 0,
+   "length": 12.0,
+   "width": 0.06,
+   "depth": 0.08,
+   "material": "iron_white",
+   "fill": 0.8,
+   "seed": 43
+  },
+  {
+   "type": "beam",
+   "x": 12.0,
+   "y": 19.5,
+   "z": 2.12,
+   "angle": 0,
+   "length": 12.0,
+   "width": 0.06,
+   "depth": 0.08,
+   "material": "iron_white",
+   "fill": 0.8,
+   "seed": 44
+  },
+  {
+   "type": "beam",
+   "x": 12.0,
+   "y": 22.5,
+   "z": 2.12,
+   "angle": 0,
+   "length": 12.0,
+   "width": 0.06,
+   "depth": 0.08,
+   "material": "iron_white",
+   "fill": 0.8,
+   "seed": 45
+  }
+ ],
+ "scatter": [
+  {
+   "of": [
+    "grass_tuft",
+    "grass_tuft",
+    "flowers"
+   ],
+   "on": "o",
+   "density": 0.08,
+   "sizes": [
+    "tiny",
+    "small"
+   ],
+   "seed": 3
+  }
+ ],
+ "shots": [
+  {
+   "x": 11.9,
+   "y": 23.4,
+   "look_at": [
+    12.0,
+    6.0,
+    1.4
+   ],
+   "fov": 70,
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "The palm house",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 12.4,
+   "y": 19.2,
+   "height": 0.5,
+   "look_at": [
+    12.0,
+    12.0,
+    2.5
+   ],
+   "fov": 74
+  },
+  {
+   "x": 12.6,
+   "y": 7.2,
+   "look_at": [
+    11.6,
+    18.0,
+    1.6
+   ],
+   "fov": 72
+  }
+ ],
+ "contact_shadows": 0.45,
+ "supersample": 2
+}

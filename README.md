@@ -72,8 +72,8 @@ Rows are y (south is down), columns are x, one cell is one unit, eye height is 0
 Sixty example scenes in [`examples/`](examples/), every one a single JSON file you can open, change and render:
 
 - **[Cities](#cities)** - [streets in the rain](#city-streets) · [the neon city](#the-neon-city) · [a night market](#the-night-market) · [a bar](#the-bar) · [the rooftops](#the-rooftops) · [a capsule hotel](#the-capsule-hotel) · [a village](#the-village) · [a frontier town](#the-frontier-town) · [a clockwork city](#the-clockwork-city)
-- **[Woods and weather](#woods-and-weather)** - [the woods at night](#the-woods-at-night) · [autumn](#autumn) · [winter](#winter) · [fog and light](#fog-and-light) · [the bayou](#the-bayou)
-- **[Jungle, desert and coast](#jungle-desert-and-coast)** - [jungle, ruins and the beach](#jungle-ruins-and-the-beach) · [the glowing jungle](#the-glowing-jungle) · [the desert](#the-desert) · [the salt flat](#the-salt-flat) · [the lighthouse](#the-lighthouse)
+- **[Woods and weather](#woods-and-weather)** - [the woods at night](#the-woods-at-night) · [autumn](#autumn) · [winter](#winter) · [fog and light](#fog-and-light) · [the palm house](#the-palm-house) · [the bayou](#the-bayou)
+- **[Jungle, desert and coast](#jungle-desert-and-coast)** - [jungle, ruins and the beach](#jungle-ruins-and-the-beach) · [the glowing jungle](#the-glowing-jungle) · [the desert](#the-desert) · [the salt flat](#the-salt-flat) · [the fjord](#the-fjord) · [the lighthouse](#the-lighthouse)
 - **[Underground and undersea](#underground-and-undersea)** - [the crystal cave](#the-crystal-cave) · [under the sea](#under-the-sea) · [the aquarium](#the-aquarium)
 - **[Haunts and old stones](#haunts-and-old-stones)** - [the haunted house](#the-haunted-house) · [the castle and the chapel](#the-castle-and-the-chapel) · [encounters](#encounters)
 - **[Space and other worlds](#space-and-other-worlds)** - [stations and ships](#stations-and-ships) · [the Moon](#the-moon) · [Vector World](#vector-world) · [Doomed](#doomed)
@@ -227,6 +227,16 @@ A stone circle on the moor at dawn, mist lying in the hollows and the low sun cu
 | ![A stone circle at dawn, mist lying low, a knight seen from behind](docs/gallery/moor_dawn.png) | ![The low sun through the stones](docs/gallery/moor_circle.png) |
 | ![A sunbeam through the fallen roof of a cathedral](docs/gallery/cathedral_beam.png) | ![A pilgrim standing in the light](docs/gallery/cathedral_pilgrim.png) |
 
+### The palm house
+
+A Victorian glasshouse full of palms: white cast iron and glass, the sun pouring in through the roof onto tree ferns and banana plants, a fountain under the ridge, a path of encaustic tiles.
+
+![The palm house: palms reaching up into the glass roof, iron columns, a path of encaustic tiles to the fountain](docs/gallery/palm_path.png)
+
+| | |
+|---|---|
+| ![Under the palms by the fountain, the glazing bars against the sky](docs/gallery/palm_fountain.png) | ![From the far end, back toward the door, the iron dark against the light](docs/gallery/palm_back.png) |
+
 ### The bayou
 
 Black water under bald cypresses hung with Spanish moss, a shack on its island with a lamp in the window - at sundown, at night with the fireflies out, the eyes of something in the water, a heron in the morning mist.
@@ -288,6 +298,16 @@ A dry lake bed of salt after rain: a film of still water over the crust mirrors 
 |---|---|
 | ![A door standing on its own in the mirror, a clock and an armchair](docs/gallery/salt_door.png) | ![Noon: rows of raked salt - mounds, heaps and clods - on a white island of cracked crust, the sky in the water](docs/gallery/salt_noon.png) |
 | ![Night: the moon and every star doubled in the flat](docs/gallery/salt_night.png) | ![A whale drifting over the mirror in a pastel dream sky](docs/gallery/salt_whale.png) |
+
+### The fjord
+
+A longship drawn up on the shingle at the head of a fjord, its striped sail set and its shields along the side, cliffs of grey stone rising sheer on both sides, another ship riding at anchor; a longhouse of logs under thatch on the grass above, smoke from its roof - by day, at dusk by the fire, and from out on the water.
+
+![The head of the fjord: a longship on the shingle, its sail set, cliffs rising on both sides](docs/gallery/fjord_day.png)
+
+| | |
+|---|---|
+| ![Dusk: the fire on the shingle lighting the longship's shields, the cliffs black against a pink sky](docs/gallery/fjord_dusk.png) | ![From the water: the longship's bow and sail, the longhouse under thatch, all mirrored in the fjord](docs/gallery/fjord_water.png) |
 
 ### The lighthouse
 
@@ -437,16 +457,6 @@ A corridor that does not end: doors in every wall, storey above storey, doors in
 | ![An endless hall of doors in every colour, a sleepwalker going on down it](docs/gallery/doors_hall.png) | ![A stair rising out of the floor to a door hung in the air](docs/gallery/doors_stair.png) |
 | ![A door in the wall that has opened onto the sky](docs/gallery/doors_sky.png) | ![Looking up: doors in the ceiling, koi drifting under them](docs/gallery/doors_up.png) |
 
-### The fjord
-
-A longship drawn up on the shingle at the head of a fjord, its striped sail set and its shields along the side, cliffs of grey stone rising sheer on both sides, another ship riding at anchor; a longhouse of logs under thatch on the grass above, smoke from its roof - by day, at dusk by the fire, and from out on the water.
-
-![The head of the fjord: a longship on the shingle, its sail set, cliffs rising on both sides](docs/gallery/fjord_day.png)
-
-| | |
-|---|---|
-| ![Dusk: the fire on the shingle lighting the longship's shields, the cliffs black against a pink sky](docs/gallery/fjord_dusk.png) | ![From the water: the longship's bow and sail, the longhouse under thatch, all mirrored in the fjord](docs/gallery/fjord_water.png) |
-
 ### The sky islands
 
 Meadows adrift high over a sea of cloud: a ruined ring of marble columns on the highest island, a stream running off its edge into a waterfall that turns to mist long before it reaches the clouds, roots trailing from the islands' keels of rock - solid, faceted, built in 3D - a plank bridge with rope rails across to an islet of trees, and rocks floating loose in the air.
@@ -537,7 +547,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Layered forest edges**: give the walls of a jungle or a wood a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth; with `wander` the layers follow a natural, rounded line instead of the grid's square corners
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
 - **Glass**: a pass of its own after everything else, showing what is behind each pane tinted and softly blurred - the frame shrunk to half size and blown back up without smoothing - under a faint reflection
-- **Objects**: things bigger than a prop - a `car`, a `noodle_stand`, a `rock_wall` of overlapping rounded pieces along a wall's foot, a `boulder`, a `column` of stone or wood and a `beam` to lay across them, a `trough`, a `shed_roof` and a `gable_roof` of weathered boards (or thatch, or clay tiles, with a chimney), a `market_stand`, a `saloon_bar`, `rails` and an `ore_cart`, a `keel` of rock to hang under a floating island, a `chess_piece` turned in polished marble, a wrecked `ship_hull`, a `longship` under sail, a `crystal_cluster` whose every facet bends the light through it - built in 3D out of flat panels at any angle, see-through wherever the thing is not, with glass to see inside and billboards among them for the small things; drawn in true perspective, depth-tested per pixel and lit like walls; rock is cut from one solid block of stone, so it runs on round a corner (`scripts/objects.py`)
+- **Objects**: things bigger than a prop - a `car`, a `noodle_stand`, a `rock_wall` of overlapping rounded pieces along a wall's foot, a `boulder`, a `column` of stone or wood and a `beam` to lay across them, a `trough`, a `shed_roof` and a `gable_roof` of weathered boards (or thatch, or clay tiles, with a chimney), a `market_stand`, a `saloon_bar`, `rails` and an `ore_cart`, a `keel` of rock to hang under a floating island, a `chess_piece` turned in polished marble, a wrecked `ship_hull`, a `longship` under sail, a roof of `glass` between iron glazing bars, a `crystal_cluster` whose every facet bends the light through it - built in 3D out of flat panels at any angle, see-through wherever the thing is not, with glass to see inside and billboards among them for the small things; drawn in true perspective, depth-tested per pixel and lit like walls; rock is cut from one solid block of stone, so it runs on round a corner (`scripts/objects.py`)
 - **Wireframes**: low-poly meshes - cubes, pyramids, polyhedra, mountains, racers, palms, or your own vertices - drawn as lines of light in true 3D, one pixel wide at any distance, hidden behind what is nearer and mirrored in wet floors; solid ones are black faces edged in light
 - **Prefabs**: named groups placed with one line - a campsite with its light, a palm grove, a beach hut with its walls, door, window, roof and torches - turned, scaled and varied by seed; scenes can define their own
 - **Procedural scatter**: declare debris by set, density and size class and the loader expands it into hundreds of placed props, clumped by a noise field so it drifts and leaves bare patches instead of spreading evenly - and never piles up on a camera or in front of a speaker
@@ -553,7 +563,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Post-processing**: colour grading, bloom (from the whole frame, or only from what gives off light - neon, windows, flames, fireflies, a held lantern, the sun - so it can glow hard), depth of field that focuses on the shot's subject and leaves its colours alone, streaks (the twinkle of a star filter on the brightest lights, or the long blue lines of an anamorphic lens), a lens flare from a sun in the frame, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
 - **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
 - **Pixel art drawn in code**: the jungle, ruins and beach are built from shapes - leaves, stones, planks, blades of grass, carved glyphs - stamped into a height field, lit from one direction, and snapped onto hue-shifted colour ramps with dark edges on their shadow sides (`scripts/pixelart.py`), so they read as pixel art rather than noise. The held items go a step further: each is a small 3D model - capsules for finger bones, cylinders and boxes for a revolver - posed in a hand, rendered from the player's eye and painted onto the same ramps with an outline (`scripts/sculpt.py`), so the perspective is right: the barrel runs away into the view and you see the back of your own hand
-- **No assets to download**: all 197 textures, 307 props, 29 characters, 27 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
+- **No assets to download**: all 199 textures, 307 props, 29 characters, 27 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
 
 ![Character cast](docs/gallery/cast.png)
 

@@ -268,6 +268,7 @@ KITS = (
     'mine',        # a gold mine: rock with veins of quartz and gold, a pick and shovel, dynamite, ore
     'temple',      # inside the jungle temple: a golden idol, treasure
     'norse',       # the north: a round shield (the longship is an object)
+    'glasshouse',  # a Victorian palm house: walls of glass in white iron, encaustic tiles
 )
 FRINGES = {}
 for _name in KITS:
