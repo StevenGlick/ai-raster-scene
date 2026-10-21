@@ -6,7 +6,9 @@ Shows `door_hall` (a painted door in a papered wall) tinted to make doors of eve
 for the walls at every storey and for the ceiling too; `sky_wall` cells where a door has opened
 onto the sky; a `checker_marble` floor that mirrors it all; a `stair_float` rising to a
 `door_frame` hung in the air; koi, books and lanterns drifting; and a soft pastel light in a pale
-fog with a gentle bloom.
+fog with a gentle bloom. The walls stand out in relief: a pilaster of cream marble between every two
+doors and a cornice along every storey (`column` and `beam` objects), so the corridor's rhythm catches
+the light.
 Run:  python hall_of_doors.py  -> writes hall_of_doors.json next to this file.
 """
 import os
@@ -56,6 +58,16 @@ def hall_of_doors():
         {'x': 6.7, 'y': 39.0, 'type': 'melting_clock', 'z': 0.9, 'planes': 1, 'angle': 90, 'length': 0.7},
         {'x': 2.6, 'y': 38.0, 'type': 'paper_boat'},
     ]
+    relief = []                                     # pilasters between the doors, cornices along the storeys
+    for x, a in ((2.0, 0), (7.0, 180)):
+        for y in range(1, 46):
+            relief.append({'type': 'column', 'x': x + (0.045 if a == 0 else -0.045), 'y': float(y), 'sides': 4,
+                           'radius': 0.075, 'height': 3.0, 'base': 0.14, 'material': 'marble', 'sink': 0.0,
+                           'seed': y})
+        for z in (0.98, 1.98, 2.9):
+            relief.append({'type': 'beam', 'x': x + (0.03 if a == 0 else -0.03), 'y': 22.5, 'z': z, 'angle': 90,
+                           'length': 44.0, 'width': 0.07, 'depth': 0.06 if z < 2.5 else 0.1, 'material': 'marble',
+                           'seed': int(z * 10)})
     lights = [{'x': 4.5, 'y': y, 'z': 1.8, 'radius': 7.0, 'color': [1.0, 0.86, 0.7], 'intensity': 0.9}
               for y in (40.0, 32.0, 24.0, 16.0, 8.0)]
     lights += [{'x': 4.5, 'y': 1.5, 'z': 1.5, 'radius': 6.0, 'color': [0.8, 0.88, 1.0], 'intensity': 0.5},
@@ -70,6 +82,7 @@ def hall_of_doors():
         fog={'color': [0.8, 0.76, 0.88], 'density': 0.03, 'glow': 0.25},
         lights=lights,
         sprites=sprites,
+        objects=relief,
         camera={'x': 4.5, 'y': 43.8, 'angle': 270, 'fov': 62, 'height': 0.5},
         shots=[
             {'x': 4.5, 'y': 43.8, 'angle': 270, 'post': [{'fx': 'bloom', 'threshold': 0.7, 'strength': 0.4, 'radius': 6}],
