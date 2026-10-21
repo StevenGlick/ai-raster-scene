@@ -1370,6 +1370,17 @@ def check_objects():
     pts = np.array([c for pn in kl for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])
     assert pts[:, 2].max() <= 1e-6 and abs(pts[:, 2].min() + 3.0) < 0.05, 'from its z down to its point'
     assert np.hypot(pts[:, 0], pts[:, 1]).max() <= 2.0 * 1.07, 'no wider than its size'
+    # 12. a ship's hull: as long as asked along the way it faces, broken open on its starboard side only
+    def hull(**kw):
+        pns = objects.expand({'map': ['.'], 'objects': [dict({'type': 'ship_hull', 'x': 0.0, 'y': 0.0, 'length': 5.0,
+                                                              'width': 1.6, 'depth': 1.0}, **kw)]})['panels']
+        return pns, np.array([c for pn in pns for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])
+    whole, pts = hull()
+    assert abs(np.ptp(pts[:, 0]) - 5.0) < 0.2 and np.ptp(pts[:, 1]) < 1.8, 'as long and wide as asked'
+    stove, _ = hull(broken=0.6, seed=2)
+    starboard = lambda pns: sum(1 for pn in pns if pn['o'][1] > 0.3)                      # noqa: E731
+    port = lambda pns: sum(1 for pn in pns if pn['o'][1] < -0.3)                          # noqa: E731
+    assert starboard(stove) < starboard(whole) and port(stove) == port(whole), 'stove in on its starboard side'
     # 11. a chess piece is turned round its axis, no taller than asked (a pawn's ball stops a little short);
     # a knight's head looks the way it faces
     for kind in ('pawn', 'rook', 'bishop', 'queen', 'king'):

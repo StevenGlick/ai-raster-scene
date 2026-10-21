@@ -36,7 +36,7 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'rock', 'length', 'height', 'depth', 'pieces', 'trim', 'size', 'seed', 'plants', 'back', 'lining',
                   'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
                   'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset',
-                  'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side'}
+                  'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel'}
 
 
 # ------------------------------------------------------------------ parts
@@ -1704,6 +1704,76 @@ def ore_cart(pl):
     return [p for p in parts if p]
 
 
+# ------------------------------------------------------------------ a ship's hull
+
+def ship_hull(pl):
+    """A wooden ship's hull, open (no deck): `length` long the way it faces (the bow), `width` across at
+    its widest, `depth` from the keel to the gunwale - a square stern, the sides curving out from the keel
+    to their widest a little aft of the middle and in to a pointed bow whose stem sweeps up, the gunwale
+    rising toward both ends; planked in boards along its length, ribs inside. `heel` lists it over (degrees,
+    toward its starboard side, +y), `broken` (0-1) staves in that much of its starboard side, the ribs
+    showing; sink it into a sea floor with a negative `z`."""
+    wood = _timber(dict(pl, material=pl.get('material', 'wood')), (0.4, 0.025, 0.025), 0.12)
+    rib = _timber(dict(pl, material=pl.get('material', 'wood')), (0.025, 0.025, 0.4), 0.5)
+    seed = int(pl.get('seed', 1))
+    rng = np.random.default_rng(seed)
+    L, B, D = float(pl.get('length', 5.0)), float(pl.get('width', 1.6)), float(pl.get('depth', 1.0))
+    heel = math.radians(float(pl.get('heel', 0.0)))
+    broken = float(pl.get('broken', 0.0))
+    n, m = 14, 5                                                      # stations along it, points up each side
+    ch, sh = math.cos(heel), math.sin(heel)
+
+    def at(t, j, side):
+        """The hull's surface at station t (0 stern, 1 bow), j of m up from the keel, side +1 or -1."""
+        w = B / 2 * ((0.8 + 0.2 * math.sin(math.pi / 2 * t / 0.42)) if t <= 0.42
+                     else max(0.0, math.cos(math.pi / 2 * (t - 0.42) / 0.58)) ** 0.75)
+        kz = 0.45 * D * max(0.0, (t - 0.8) / 0.2) ** 2                 # the stem sweeps up
+        hz = D * (1 + 0.16 * (2 * t - 1) ** 2)                         # the gunwale's sheer
+        th = math.pi / 2 * j / m
+        y, z = side * w * math.sin(th), kz + (hz - kz) * (1 - math.cos(th))
+        x = (t - 0.5) * L
+        return np.array([x, y * ch - z * sh, y * sh + z * ch])
+
+    ts = [k / (n - 1) for k in range(n)]
+    hole = (0.38, 0.38 + 0.42 * broken)                               # where the starboard side is stove in
+    parts = []
+    for side in (1, -1):
+        for i in range(n - 1):
+            for j in range(m):
+                if side > 0 and hole[0] <= ts[i] < hole[1] and j >= 1 and rng.random() < 0.85:
+                    continue                                          # stove in
+                A, Bq, C, E = at(ts[i], j, side), at(ts[i + 1], j, side), at(ts[i + 1], j + 1, side), at(ts[i], j + 1, side)
+                mid = np.array([(A[0] + Bq[0]) / 2, 0.0, D * 0.9])
+                mid = np.array([mid[0], -mid[2] * sh, mid[2] * ch])
+                out = (A + Bq + C + E) / 4 - mid
+                parts += [_rock_tri(wood, seed + i, A, Bq, C, out), _rock_tri(wood, seed + i, A, C, E, out)]
+    for i in range(1, n - 1, 2):                                      # ribs inside, every other station
+        for j in range(m):
+            for side in (1, -1):
+                A, C = at(ts[i], j, side), at(ts[i], j + 1, side)
+                dx = np.array([0.04, 0.0, 0.0])
+                inward = -(A + C) / 2 + np.array([(A[0] + C[0]) / 2, -D * 0.9 * sh, D * 0.9 * ch])
+                step = 0.035 * inward / max(np.linalg.norm(inward), 1e-6)     # just inside the planks
+                A, C = A + step, C + step
+                parts.append(_rock_tri(rib, seed + 50, A - dx, A + dx, C + dx, inward))
+                parts.append(_rock_tri(rib, seed + 50, A - dx, C + dx, C - dx, inward))
+    keel = at(0.0, 0, 1)                                              # the transom, closing the stern
+    for side in (1, -1):
+        for j in range(1, m):
+            A, C = at(0.0, j, side), at(0.0, j + 1, side)
+            parts.append(_rock_tri(wood, seed + 70, keel, A, C, np.array([-1.0, 0.0, 0.0])))
+    for side in (1, -1):                                              # a rail along the gunwale
+        for i in range(n - 1):
+            A, Bq = at(ts[i], m, side), at(ts[i + 1], m, side)
+            if side > 0 and hole[0] <= ts[i] < hole[1]:
+                continue
+            up = np.array([0.0, -0.06 * sh, 0.06 * ch])
+            parts.append(_rock(wood, seed + 80, A + up, Bq + up, A))
+    parts = [p for p in parts if p]
+    parts.append(shadow(0.0, 0.0, L * 0.9, 0.5))
+    return parts
+
+
 # ------------------------------------------------------------------ chess pieces
 
 def _polished(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
@@ -1959,4 +2029,4 @@ def crystal_cluster(pl):
 OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder, 'column': column,
            'beam': beam, 'crystal_cluster': crystal_cluster, 'trough': trough, 'shed_roof': shed_roof,
            'gable_roof': gable_roof, 'market_stand': market_stand, 'saloon_bar': saloon_bar, 'rails': rails,
-           'ore_cart': ore_cart, 'keel': keel, 'chess_piece': chess_piece}
+           'ore_cart': ore_cart, 'keel': keel, 'chess_piece': chess_piece, 'ship_hull': ship_hull}
