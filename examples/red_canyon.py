@@ -1,11 +1,13 @@
 """Red canyon: a dry wash between walls of layered sandstone, the ruins of a cliff dwelling, and a
 slot canyon where the sun comes down in a single beam.
 
-Shows the desert kit - `sandstone` walls stacked with bands of `sandstone_pale`, a `desert_wash`
-floor dressed with the `desert` scatter set, saguaro and prickly pear, the coursed stone and
-T-shaped doors of a cliff dwelling (`pueblo_stone`, `pueblo_door`) with ladders and painted pots,
-rock fallen from the walls lying along their foot (a `rock_wall` of `sandstone` with `lining`, so
-every face of the canyon gets one) and sandstone `boulder`s in the wash - and a slot canyon of
+Shows the desert kit - cliffs built in 3D: every face of the canyon lined (`lining`) with a tall
+`rock_wall` of `canyon` rock, in beds of red and pale stone streaked dark with desert varnish, its
+pieces jutting and stepping so the rim against the sky is ragged, over cores of `sandstone` walls
+stacked with bands of `sandstone_pale`; a `desert_wash` floor dressed with the `desert` scatter set,
+saguaro and prickly pear, the coursed stone and T-shaped doors of a cliff dwelling (`pueblo_stone`,
+`pueblo_door`) with ladders and painted pots, rock fallen from the cliffs lying along their foot (a
+low `rock_wall` of `sandstone`) and sandstone `boulder`s in the wash - and a slot canyon of
 `slot_rock`: its cells roofed at `ceiling_height` with a few left open, so
 that a high sun comes down through the gaps in beams of dust (shot overrides give it a sun and a
 fog of its own). The last shot is the same wash at sunset.
@@ -81,9 +83,9 @@ def red_canyon():
     return scene(
         g,
         legend={
-            'R': {'wall': ROCK, 'h': 6.5, 'top': 'desert_wash'},
-            'Q': {'wall': ROCK, 'h': 7.4, 'top': 'desert_wash'},
-            'U': {'wall': ROCK, 'h': 5.6, 'top': 'desert_wash'},
+            'R': {'wall': ROCK, 'h': 5.2, 'top': 'desert_wash'},          # the cliffs' cores: the rock walls
+            'Q': {'wall': ROCK, 'h': 5.2, 'top': 'desert_wash'},          # lining them rise over them and
+            'U': {'wall': ROCK, 'h': 5.2, 'top': 'desert_wash'},          # make the rim
             'Z': {'wall': 'slot_rock', 'h': 6.5, 'top': 'desert_wash'},
             'w': {'floor': 'desert_wash'},
             'S': {'floor': 'desert_wash', 'ceil': 'slot_rock'},
@@ -101,7 +103,12 @@ def red_canyon():
         fog={'color': [0.78, 0.66, 0.56], 'density': 0.008},
         lights=[SUN],
         sprites=sprites,
-        objects=[{'type': 'rock_wall', 'lining': 'RQU', 'rock': 'sandstone', 'depth': 1.4, 'height': [0.9, 2.6],
+        objects=[{'type': 'rock_wall', 'lining': 'RQU', 'rock': 'canyon', 'depth': 0.9, 'height': [6.0, 7.4],
+                  'trim': 0.035, 'pieces': [1.6, 3.2], 'plants': False, 'seed': 9},      # the cliffs, in beds
+                 {'type': 'rock_wall', 'x': 10.0, 'y': 29.5, 'angle': 0, 'length': 12.0, 'rock': 'canyon',
+                  'depth': 0.6, 'height': [5.6, 7.4], 'trim': 0.035, 'pieces': [1.6, 2.8], 'plants': False,
+                  'seed': 10},                                            # the cliff over the dwelling
+                 {'type': 'rock_wall', 'lining': 'RQU', 'rock': 'sandstone', 'depth': 1.4, 'height': [0.9, 2.6],
                   'pieces': [1.2, 2.6], 'seed': 4}]                       # fallen rock along the walls' foot
         + [{'type': 'boulder', 'x': x, 'y': y, 'angle': 90, 'size': s_, 'height': h_, 'rock': 'sandstone', 'seed': k}
            for k, (x, y, s_, h_) in enumerate(((16.4, 46.2, 1.1, 0.6), (22.4, 43.4, 0.8, 0.45), (21.2, 32.8, 1.4, 0.8),

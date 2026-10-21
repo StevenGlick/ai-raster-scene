@@ -777,6 +777,10 @@ ROCKS = {
                              ramp('#6a6a3a', dark=0.35, light=1.3)],
                       mass=(1.2, 1.2, 0.22), chip=(0.4, 0.4, 0.07), key=(-0.4, 0.45, 0.8), shade=(0.3, 0.62),
                       crust=0.62, weed=0.8, pores=0.0, plants=[('dry_tuft', 0.14, 0.22)]),
+    'canyon': dict(ramps=[ramp('#b8683e', dark=0.38, light=1.4, warm=0.1), ramp('#e6c696', dark=0.45, light=1.18),
+                          ramp('#6a6a3a', dark=0.35, light=1.3)],
+                   mass=(1.4, 1.4, 0.3), chip=(0.45, 0.45, 0.09), key=(-0.22, 0.26, 0.94), shade=(0.46, 0.52),
+                   crust=0.9, weed=0.85, pores=0.0, strata=(1.4, 0.4), varnish=0.16, plants=[('dry_tuft', 0.14, 0.22)]),
     'snow': dict(ramps=[ramp('#686c76', dark=0.3, light=1.45, cool=0.16), ramp('#7c7a6c', dark=0.35, light=1.3), SNOW],
                  mass=(0.9, 0.9, 0.7), chip=(0.24, 0.24, 0.2), key=(-0.4, 0.45, 0.8), shade=(0.3, 0.62),
                  crust=0.7, weed=0.3, up=0.42, pores=0.0, plants=[]),
@@ -845,6 +849,15 @@ def _stone(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0):
     val -= 0.2 * (1 - np.clip(P[:, 2] / 0.3, 0, 1)) ** 2            # darker at the foot
     mat = np.zeros(len(P), int)
     mat[(noise3(P, 0.16, seed + 2) > rk['crust']) & (table(4, id1) < 0.5)] = 1
+    if 'strata' in rk:                                              # beds of pale stone, by height, wandering a little
+        period, pale = rk['strata']
+        wob = 0.22 * (noise3(P, 1.8, seed + 7) - 0.5)
+        bed = (P[:, 2] / period + wob) % 1.0
+        mat[bed < pale] = 1
+        val = val + 0.07 * np.cos(2 * np.pi * (P[:, 2] / (period * 0.31) + wob))   # thinner bands of tone
+    if rk.get('varnish'):                                           # desert varnish: dark streaks run down the face
+        streak = noise3(P / np.array([0.1, 0.1, 2.2], np.float32), 1.0, seed + 8)
+        val = val - rk['varnish'] * np.clip((streak - 0.52) / 0.25, 0, 1) * np.clip(P[:, 2] / 2.5, 0, 1)
     up = np.nonzero(N[:, 2] > rk.get('up', 0.6))[0]                 # weed in tufts, where it faces up
     if up.size:
         mat[up[noise3(P[up], 0.12, seed + 3) > rk['weed']]] = 2
