@@ -254,19 +254,24 @@ def spr_fireflies():
     return rgba, em
 
 
+SWAMP_CARDS = {1: 1.4, 2: 3.0, 3: 3.9, 4: 4.6}       # each layer's height
+
+
 def _swamp_card(layer):
-    """One layer of a swamp's edge, 1 (front) to 3 (back): cattails, knees and moss; then young
-    cypresses; then a dense stand of cypresses hung with moss."""
+    """One layer of a swamp's edge, 1 (front) to 4 (back): cattails, knees and reeds at the water's
+    edge; then a few young cypresses among cattails; then a looser stand of cypresses hung with moss;
+    then a dense stand of tall ones, darker as they go back."""
     from assets import get_sprite
     rng = np.random.default_rng(600 + layer)
-    height = {1: 1.4, 2: 3.4, 3: 4.6}[layer]
+    height = SWAMP_CARDS[layer]
     H = int(height * CARD_PX)
     card = np.zeros((H, CARD_W, 4), np.float32)
     plan = {1: {'cattails': 9, 'cypress_knees': 5, 'reeds': 4},
-            2: {'bald_cypress': 3, 'cattails': 5, 'spanish_moss': 3},
-            3: {'bald_cypress': 9, 'cattails': 4}}[layer]
-    tall = {'bald_cypress': (2.6, 4.4), 'cattails': (0.7, 1.1), 'cypress_knees': (0.25, 0.4), 'reeds': (0.5, 0.8),
-            'spanish_moss': (1.4, 2.2)}
+            2: {'bald_cypress': 2, 'cattails': 6, 'cypress_knees': 3},
+            3: {'bald_cypress': 5, 'cattails': 4, 'cypress_knees': 2},
+            4: {'bald_cypress': 12, 'cattails': 4}}[layer]
+    tall = {'bald_cypress': {2: (1.6, 2.8), 3: (2.2, 3.7)}.get(layer, (3.0, 4.4)), 'cattails': (0.7, 1.1),
+            'cypress_knees': (0.25, 0.4), 'reeds': (0.5, 0.8)}
     stamps = []
     for kind, k in plan.items():
         lo, hi = tall[kind]
@@ -275,9 +280,8 @@ def _swamp_card(layer):
             x = (off + (i + rng.uniform(0.15, 0.85)) * CARD_W / k) % CARD_W
             stamps.append((x, kind, rng.uniform(lo, min(hi, height - 0.15))))
     for x, kind, tl in sorted(stamps, key=lambda s: -s[2]):
-        bottom = H if kind != 'spanish_moss' else int(H * 0.55)
-        _stamp(card, get_sprite(kind)[0], x, bottom, tl, flip=bool(rng.random() < 0.5))
-    card[..., :3] *= {1: 1.0, 2: 0.86, 3: 0.72}[layer]
+        _stamp(card, get_sprite(kind)[0], x, H, tl, flip=bool(rng.random() < 0.5))
+    card[..., :3] *= {1: 1.0, 2: 0.9, 3: 0.8, 4: 0.7}[layer]
     card[..., 3] = (card[..., 3] > 0.5).astype(np.float32)
     return card, np.zeros(card.shape[:2], np.float32)
 
@@ -291,10 +295,10 @@ TEXTURE_NOISE = {'swamp_water': 0.6, 'bog': 2.2, 'swamp_deep': 1.6}
 TEXTURE_REFLECT = {'swamp_water': 0.42}
 SPRITES = {'bald_cypress': spr_bald_cypress, 'spanish_moss': spr_spanish_moss, 'cypress_knees': spr_cypress_knees,
            'cattails': spr_cattails, 'heron': spr_heron, 'alligator': spr_alligator, 'fireflies': spr_fireflies}
-SPRITES.update({f'swamp_card_{k}': (lambda k=k: _swamp_card(k)) for k in (1, 2, 3)})
+SPRITES.update({f'swamp_card_{k}': (lambda k=k: _swamp_card(k)) for k in SWAMP_CARDS})
 SPRITE_HEIGHT = {'bald_cypress': 4.2, 'spanish_moss': 1.4, 'cypress_knees': 0.3, 'cattails': 1.0, 'heron': 0.95,
-                 'alligator': 0.2, 'fireflies': 1.2, 'swamp_card_1': 1.4, 'swamp_card_2': 3.4, 'swamp_card_3': 4.6}
+                 'alligator': 0.2, 'fireflies': 1.2, **{f'swamp_card_{k}': h for k, h in SWAMP_CARDS.items()}}
 PROP_DEFAULTS = {'fireflies': {'blend': 'additive', 'shadow': False}}
 NO_CONTACT_SHADOW = {'spanish_moss', 'fireflies', 'alligator'}
-FRINGES = {'swamp': ['swamp_card_3', 'swamp_card_2', 'swamp_card_1']}
+FRINGES = {'swamp': ['swamp_card_4', 'swamp_card_3', 'swamp_card_2', 'swamp_card_1']}
 DEBRIS_SETS = {'swamp': ['cattails', 'cattails', 'reeds', 'cypress_knees', 'rocks']}

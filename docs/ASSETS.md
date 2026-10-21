@@ -22,7 +22,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
 | Textures | 188 | 188 | 0 | 0 | 0 |
-| Props | 293 | 293 | 0 | 0 | 0 |
+| Props | 294 | 294 | 0 | 0 | 0 |
 | Characters | 29 | 29 | 0 | 0 | 0 |
 | Decals | 26 | 26 | 0 | 0 | 0 |
 | Skies | 13 | 13 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 60 | 60 | 0 | 0 | 0 |
-| **all** | **760** | **760** | **0** | **0** | **0** |
+| **all** | **761** | **761** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -60,7 +60,7 @@ From going through the catalog. One scene at a time, each done properly; no rush
 - [ ] **village_green** - the market cart rebuilt in 3D, as the noodle stand was; the houses need roofs with depth (they read as if roofless); the buildings drawn with the layered facade technique.
 - [x] **cathedral_ruin** - the pillars modelled in 3D (octagonal) instead of billboards, and moved inward to where they would carry the roof. Done: two arcades of octagonal piers of `ashlar` (dressed stone in drums, plinths and capitals) 3.2 in from each wall between the windows, carrying timber wall plates (`beam`) under the roof; the pier under the fallen roof broken off ragged, its plate down on the floor; the pews between the arcades, behind the cameras.
 - [x] **ancient_ruins** - the pillars remodelled in 3D, as for the cathedral; perhaps the fallen statue's head in 3D too (not a priority). A scene to give more love. Done: the peristyle and the sacred way's columns are fluted Doric columns of `marble` in 3D (`flutes`, `doric`), laid in drums, architraves and cornices (`beam`) across the runs that stand, the rest snapped off (`broken`) or fallen; the `ruined_columns` prefab in 3D; `fill` so the backlit columns are not black; a new shot, `ruins_columns`. The statue's head is still a billboard.
-- [ ] **bayou** - the trees redone with the jungle's layered fringe, its layers spread further apart, so the trees look properly 3D.
+- [x] **bayou** - the trees redone with the jungle's layered fringe, its layers spread further apart, so the trees look properly 3D. Done: the swamp fringe in four layers (a new middle stand; no more moss curtains hanging in the air on their own bough, which read as signboards over the trees) spread three cells out from the wall along a natural, wandering line (`wander`, new) - the heron's shot now looks into a misty forest of trunks at every depth, and the canopy behind the shack is whole.
 - [ ] **jungle_temple** - the tree line broken up as the aquarium's rock wall was: a natural, polygonal edge instead of the hard grid angles. A scene to give more love.
 
 New scenes:
@@ -321,7 +321,7 @@ New scenes:
 | `bamboo` | good |  | tropical_beach | A node in each third of every pole, so they stagger from pole to pole instead of lining up across them. |
 | `thatch` | good |  | tropical_beach | Each row stands out over the one under it and shades its top, so the rows read. |
 
-## Props (293)
+## Props (294)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -670,13 +670,19 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `winter_card_3` | good | 4 tall | winter_woods | Snowy spruce, bare oak and birch with gaps between them. |
 | `winter_card_4` | good | 4.8 tall | winter_woods | The back: a dense stand of snowy spruce with bare oaks. |
 | `swamp_card_1` | good | 1.4 tall | bayou | The front of a swamp fringe: cattails, reeds and cypress knees. |
-| `swamp_card_2` | good | 3.4 tall | bayou | Young cypresses and moss with cattails in front. |
-| `swamp_card_3` | good | 4.6 tall | bayou | The back: a dense stand of bald cypresses hung with moss. |
+| `swamp_card_2` | good | 3 tall | bayou | Young cypresses among cattails and knees (the moss that hung in the air on its own bough is gone). |
+| `swamp_card_3` | good | 3.9 tall | bayou | A looser stand of cypresses hung with moss, cattails and knees at their feet. |
 | `kelp_card_1` | good | 5 tall | kelp_forest | The front of a kelp fringe: a few stalks. |
 | `kelp_card_2` | good | 5.8 tall | kelp_forest | The back: a dense stand of kelp. |
 | `palm_trunk` | good | 3.2 tall | tropical_beach | The palm without its crown, for palm_3d. |
 | `palm_crown` | good | 3.2 tall, no shadow | tropical_beach | The palm's crown alone, in the same frame as the trunk. |
 | `glass_pane` | good | 1 tall | aquarium, neon_bar, orbital_hangar | A plain pane for the glass pass. |
+
+### Not yet sorted
+
+| prop | status | traits | used in | notes |
+|---|---|---|---|---|
+| `swamp_card_4` | good | 4.6 tall | bayou | The back: a dense stand of tall bald cypresses hung with moss, their crowns high enough to hide the wall's top. |
 
 ## Characters (29)
 
@@ -828,7 +834,7 @@ The cards a `fringe` wall stands in front of its open faces, back to front.
 | `forest` | good | forest_card_4, forest_card_3, forest_card_2, forest_card_1 | haunted_house, woodland_night | Four cards: bushes, ferns and grass at the front, a dense wall of spruce and oak at the back. Keep the wall behind lower (2-2.6) than the trees. |
 | `forest_autumn` | good | autumn_card_4, autumn_card_3, autumn_card_2, autumn_card_1 | autumn_lane | The forest fringe in October: oak, birch and bush turned, the spruce among them still green. |
 | `forest_snow` | good | winter_card_4, winter_card_3, winter_card_2, winter_card_1 | winter_woods | The forest fringe in winter: snowy spruce, bare oak and birch with snow on their limbs, bushes under snow. |
-| `swamp` | good | swamp_card_3, swamp_card_2, swamp_card_1 | bayou | Three cards: cattails and knees, then young cypresses and moss, then a dense stand. |
+| `swamp` | good | swamp_card_4, swamp_card_3, swamp_card_2, swamp_card_1 | bayou | Four cards: cattails and knees, then young cypresses, then a looser stand, then a dense one. The bayou spreads them three cells deep with `wander`. |
 | `kelp` | good | kelp_card_2, kelp_card_1 | kelp_forest | Two cards: a few stalks, then a dense stand. |
 | `glow_jungle` | good | glow_jungle_card_4, glow_jungle_card_3, glow_jungle_card_2, glow_jungle_card_1 | glow_jungle | Four cards: the jungle fringe at night, faintly edged and specked with light. |
 
@@ -1098,6 +1104,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, the bayou's trees.** The user's eighth: the swamp's layers spread further apart. A fringe can now `wander`: each layer one line the same distance out from the forest all along (marching squares on the distance from it, sampled four to a cell), round at the corners, wandering in and out on smooth noise, cut into straight cards (`_chords`: never under 0.6, so a sharp bend makes no sliver - a slice of forest seen face on reads as a tower) that carry the picture on from one to the next and fade out seen almost edge on (`edge_fade`, new). Layers stop at other walls; all but the back one keep 0.75 clear of them, so the shack has trees behind it and none squeezed beside it, and pieces broken where a layer grazes a corner are joined (no slit of sky). The swamp set in four layers, its back stand denser and taller so the wall's flat top never shows, and without the floating moss.
 - **2026-10-21, the temple's columns.** The user's seventh: the ancient ruins' columns in 3D. `column` gains `flutes` (every face hollowed: its normal bends across it, `tilt` in _stone, so it takes the light on one side and shadow on the other) and `"doric": true` (an echinus - frustums can now widen upward - under a square abacus); a `marble` stone in drums. The peristyle's painted see-through colonnade walls became columns on the stylobate with architraves and cornices (`beam`) over every run of three that still stand; the sacred way's and the fallen groups' columns too (prefabs can now carry `objects`). Backlit by the low sun the columns went black, so objects take `fill`: light from the sky and the ground on the faces the sun misses, a multiple of the scene's ambient, so it dims at night. A fluted column is one stone round: every face cut from the same block, so a drum is one tone and its patina runs on round it (cut a face at a time, the patches stopped at the faces' edges and read as holes); marble seldom cracks. New shot `ruins_columns`, the fallen group in the sun from the west - turned by `angle` and `pitch` and stood where no scatter is, because a shot keeps scatter off its camera and its sight lines and a new one reshuffled the poppies out of `ruins_head`. The statue's head is still a billboard.
 - **2026-10-21, the cathedral's arcades.** The user's sixth: the nave on two rows of octagonal stone piers moved in from the walls to carry the roof - `column` objects in a new `ashlar` stone (pale, laid in courses, `courses`, so a column reads as drums), with plinths and capitals - carrying timber wall plates, a new `beam` object; the pier where the roof fell in broken off (`broken`: each corner stops at its own height, the break a fan of rough triangles) and a length of its plate down on the floor. Shot 2's camera moved into the aisle and the pews behind the cameras, so the arcades and the light read.
 - **2026-10-21, the canyon's cliffs.** The user's fifth: the red canyon's walls built in 3D - every face lined with a tall `rock_wall` of a new `canyon` rock kind (its stone in beds by height, `strata`, with dark `varnish` streaks running down), over the old banded walls cut down to cores - so the cliffs jut, step and catch the light by facet, and the rim is ragged. The slot canyon is unchanged.

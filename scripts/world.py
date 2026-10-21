@@ -11,6 +11,7 @@ import numpy as np
 import assets
 import buildings
 import prefabs
+from pixelart import noise3
 
 # ------------------------------------------------------------------ cameras
 
@@ -342,6 +343,16 @@ class World:
     def _cam_spots(self, scene):
         return [(cx, cy) for cx, cy, r in self._keep_clear(scene) if r == 1.0]
 
+    def _fringe_cards(self, spec):
+        """The cards of a fringe, back to front."""
+        name = spec.get('set')
+        if 'cards' in spec:
+            return list(spec['cards'])
+        if name in assets.FRINGES:
+            return list(assets.FRINGES[name])
+        raise KeyError(f"unknown fringe set {name!r}. Sets: {', '.join(sorted(assets.FRINGES))}, "
+                       f"or give \"cards\" (sprite names, back to front)")
+
     def _fringe(self, scene):
         """Layered foliage cards standing in front of every face of a `fringe` wall that looks
         onto open ground.
@@ -350,21 +361,19 @@ class World:
         densest just off the wall, the sparsest at the front, spread over `depth` (a cell by
         default). Each layer wraps round outside corners and is trimmed in inside ones, so it
         follows the wall's outline at its own distance, and a card that would pass through a
-        camera is left out.
+        camera is left out. A fringe that `wander`s is laid along the outline rounded instead
+        (_fringe_natural).
         """
         if not self._fringes:
             return []
         cams = self._cam_spots(scene)
         out = []
+        natural = {}
         for spec, d, line, a, b in self._face_runs(self._fringes):
-            name = spec.get('set')
-            if 'cards' in spec:
-                cards = list(spec['cards'])
-            elif name in assets.FRINGES:
-                cards = list(assets.FRINGES[name])
-            else:
-                raise KeyError(f"unknown fringe set {name!r}. Sets: {', '.join(sorted(assets.FRINGES))}, "
-                               f"or give \"cards\" (sprite names, back to front)")
+            if float(spec.get('wander', 0)) > 0:
+                natural[json.dumps(spec, sort_keys=True)] = spec
+                continue
+            cards = self._fringe_cards(spec)
             depth, hk, seed = float(spec.get('depth', 1.0)), float(spec.get('height', 1.0)), int(spec.get('seed', 0))
             for k, card in enumerate(cards):
                 off = depth * (k + 0.5) / len(cards)
@@ -379,6 +388,78 @@ class World:
                 if any(_seg_dist(cx, cy, *q[:4]) < 0.35 for cx, cy in cams):
                     continue
                 out.append(sp)
+        for key in sorted(natural):
+            out += self._fringe_natural(natural[key], cams, scene.get('sprite_defs', {}))
+        return out
+
+    def _fringe_natural(self, spec, cams, defs):
+        """The layers of a fringe that `wander`s: each a line the same distance out from the forest
+        all along it - round at its outside corners, where the grid's are square - wandering in and
+        out by up to `wander` (mostly together, so the edge reads as one), and cut into straight
+        cards a cell or so long, so the forest's edge is a natural, polygonal line. A layer stops at
+        any other wall - all but the back one short of it - a scrap of one, in a gap, is left out,
+        and so is a card that would pass through a camera."""
+        cards = self._fringe_cards(spec)
+        depth, hk, seed = float(spec.get('depth', 1.0)), float(spec.get('height', 1.0)), int(spec.get('seed', 0))
+        wander = float(spec['wander'])
+        key = json.dumps(spec, sort_keys=True)
+        mine = np.zeros((self.mh, self.mw), bool)
+        for (y, x), sp in self._fringes.items():
+            mine[y, x] = json.dumps({'set': sp} if isinstance(sp, str) else sp, sort_keys=True) == key
+        ground = np.array([[self._ground_open(x, y) for x in range(self.mw)] for y in range(self.mh)])
+        pad = np.pad(ground, 1)
+        near = np.zeros_like(ground)                       # the forest's cells by open ground, corners too:
+        for dy in (-1, 0, 1):                              # the nearest of the forest is always one of them
+            for dx in (-1, 0, 1):
+                near |= pad[1 + dy:1 + dy + self.mh, 1 + dx:1 + dx + self.mw]
+        R = FRINGE_SAMPLES
+        sy, sx = np.mgrid[0:self.mh * R, 0:self.mw * R]
+        px, py = (sx + 0.5) / R, (sy + 0.5) / R
+        dist = np.full(px.shape, np.inf, np.float32)
+        D = int(math.ceil(depth + wander)) + 1
+        for ey, ex in np.argwhere(mine & near):           # how far out from the forest each sample is
+            y0, y1 = max(0, (ey - D) * R), min(self.mh * R, (ey + 1 + D) * R)
+            x0, x1 = max(0, (ex - D) * R), min(self.mw * R, (ex + 1 + D) * R)
+            wx, wy = px[y0:y1, x0:x1], py[y0:y1, x0:x1]
+            ddx = np.maximum(np.maximum(ex - wx, wx - ex - 1), 0)
+            ddy = np.maximum(np.maximum(ey - wy, wy - ey - 1), 0)
+            np.minimum(dist[y0:y1, x0:x1], np.hypot(ddx, ddy), out=dist[y0:y1, x0:x1])
+        clear = np.full(px.shape, np.inf, np.float32)
+        for ey, ex in np.argwhere(~mine & ~ground & near):  # and how far from any other wall
+            y0, y1 = max(0, (ey - 1) * R), min(self.mh * R, (ey + 2) * R)
+            x0, x1 = max(0, (ex - 1) * R), min(self.mw * R, (ex + 2) * R)
+            wx, wy = px[y0:y1, x0:x1], py[y0:y1, x0:x1]
+            ddx = np.maximum(np.maximum(ex - wx, wx - ex - 1), 0)
+            ddy = np.maximum(np.maximum(ey - wy, wy - ey - 1), 0)
+            np.minimum(clear[y0:y1, x0:x1], np.hypot(ddx, ddy), out=clear[y0:y1, x0:x1])
+        cell_mine, cell_open = mine[sy // R, sx // R], ground[sy // R, sx // R]
+        dist[cell_mine] = 0.0
+        dist[~cell_mine & ~cell_open] = np.nan             # no layer through another wall,
+        keep = clear < FRINGE_KEEP                         # and only the back one close by it
+        pts = np.stack([px.ravel(), py.ravel(), np.zeros(px.size)], 1)
+        common = (noise3(pts, 2.6, seed + 11).reshape(px.shape) - 0.5) * 2
+        out = []
+        for k, card in enumerate(cards):
+            own = (noise3(pts, 1.6, seed + 23 + k).reshape(px.shape) - 0.5) * 2
+            field = dist + wander * (0.7 * common + 0.3 * own)
+            if k:
+                field[keep] = np.nan
+            scale = float(assets.SPRITE_HEIGHT.get(card, 1.0)) * hk
+            th, tw = assets.get_sprite(card, defs)[0].shape[:2]
+            width = scale * tw / th
+            rng = np.random.default_rng([seed, k, 77])
+            for line in _joined(_contours(field, depth * (k + 0.5) / len(cards), R), 0.8):
+                if sum(math.dist(p, q) for p, q in zip(line, line[1:])) < 1.5:
+                    continue                               # a scrap in a gap: a slice of trees, a tower
+                u = float(rng.random())
+                for (x0, y0), (x1, y1) in _chords(line, rng):
+                    L = math.hypot(x1 - x0, y1 - y0)
+                    sp = {'x': (x0 + x1) / 2, 'y': (y0 + y1) / 2, 'angle': math.degrees(math.atan2(y1 - y0, x1 - x0)),
+                          'planes': 1, 'length': L, 'shadow': False, 'type': card, 'scale': scale, 'u0': u % 1.0,
+                          'edge_fade': True}
+                    u += L / width                         # the next card carries the picture on
+                    if L > 0.12 and not any(_seg_dist(cx, cy, x0, y0, x1, y1) < 0.35 for cx, cy in cams):
+                        out.append(sp)
         return out
 
     # layers of a facade, back to front: how far out from the wall's face each stands, as a
@@ -731,6 +812,110 @@ class World:
             self.tex_noise.append(assets.texture_noise(spec))
             self.tex_alpha.append(assets.get_alpha(spec))
         return self._tidx[key]
+
+
+# ------------------------------------------------------------------ natural fringes
+
+FRINGE_SAMPLES = 4     # samples a cell, for the outline a wandering fringe follows
+FRINGE_KEEP = 0.75     # how far its layers but the back one keep from any other wall (no trees in a gap)
+
+
+def _contours(field, level, R):
+    """The lines where `field` (sampled R to a cell, at the middles of its R x R parts) crosses
+    `level`, as polylines of world points: marching squares, a block of four samples at a time,
+    the pieces joined end to end. A NaN sample breaks a line."""
+    ins = field < level
+    a, b, c, d = ins[:-1, :-1], ins[:-1, 1:], ins[1:, 1:], ins[1:, :-1]          # corners: tl, tr, br, bl
+    case = a * 8 + b * 4 + c * 2 + d * 1
+    ok = ~np.isnan(field)
+    ok = ok[:-1, :-1] & ok[:-1, 1:] & ok[1:, 1:] & ok[1:, :-1]
+    # the edges a line crosses in each case - 0 top, 1 right, 2 bottom, 3 left; 5 and 10 are saddles
+    table = {1: [(3, 2)], 2: [(2, 1)], 3: [(3, 1)], 4: [(0, 1)], 6: [(0, 2)], 7: [(3, 0)], 8: [(3, 0)],
+             9: [(0, 2)], 11: [(0, 1)], 12: [(3, 1)], 13: [(2, 1)], 14: [(3, 2)]}
+
+    def edge(j, i, e):
+        return (('h', j, i), ('v', j, i + 1), ('h', j + 1, i), ('v', j, i))[e]
+
+    segs = []
+    for j, i in zip(*np.nonzero(ok & (case != 0) & (case != 15))):
+        cs = int(case[j, i])
+        if cs in (5, 10):                                  # a saddle: settled by the middle of the block
+            mid = (field[j, i] + field[j, i + 1] + field[j + 1, i + 1] + field[j + 1, i]) / 4 < level
+            pairs = [(0, 3), (1, 2)] if mid == (cs == 5) else [(0, 1), (3, 2)]
+        else:
+            pairs = table[cs]
+        segs += [(edge(j, i, e0), edge(j, i, e1)) for e0, e1 in pairs]
+
+    def point(q):
+        kind, j, i = q
+        j2, i2 = (j, i + 1) if kind == 'h' else (j + 1, i)
+        v0, v1 = field[j, i], field[j2, i2]
+        t = float(np.clip((level - v0) / (v1 - v0), 0, 1)) if v1 != v0 else 0.5
+        return ((i + (t if kind == 'h' else 0) + 0.5) / R, (j + (t if kind == 'v' else 0) + 0.5) / R)
+
+    at = {}
+    for n, (q0, q1) in enumerate(segs):
+        at.setdefault(q0, []).append(n)
+        at.setdefault(q1, []).append(n)
+    used = [False] * len(segs)
+    lines = []
+    for start in sorted(at, key=lambda q: (len(at[q]), q)):   # the open ends first, then the loops
+        q, line = start, [start]
+        while True:
+            nxt = [n for n in at[q] if not used[n]]
+            if not nxt:
+                break
+            used[nxt[0]] = True
+            q0, q1 = segs[nxt[0]]
+            q = q1 if q0 == q else q0
+            line.append(q)
+        if len(line) > 1:
+            lines.append([point(q) for q in line])
+    return lines
+
+
+def _joined(lines, gap):
+    """Lines whose ends lie within `gap` of each other joined into one - a layer broken where it
+    grazes the corner of a house carries on past it, with no slit of sky between."""
+    lines = [list(ln) for ln in lines]
+    while True:
+        open_ = [n for n, ln in enumerate(lines) if math.dist(ln[0], ln[-1]) > 1e-9]   # loops are done
+        best = None
+        for a in open_:
+            for b in open_:
+                for ea, eb in ((-1, 0),) if a == b else ((-1, 0), (-1, -1), (0, 0), (0, -1)):
+                    d = math.dist(lines[a][ea], lines[b][eb])
+                    if d < gap and (best is None or d < best[0]):
+                        best = (d, a, b, ea, eb)
+        if best is None:
+            return lines
+        _, a, b, ea, eb = best
+        if a == b:                                         # its own two ends: close it
+            lines[a].append(lines[a][0])
+            continue
+        la = lines[a] if ea == -1 else lines[a][::-1]      # so that la ends where lb starts
+        lb = lines[b] if eb == 0 else lines[b][::-1]
+        lines = [ln for n, ln in enumerate(lines) if n not in (a, b)] + [la + lb]
+
+
+def _chords(line, rng, most=(0.9, 1.6), least=0.6, bow=0.1):
+    """A polyline cut into straight chords: each as long as it can be, up to a length drawn from
+    `most`, while the line stays within `bow` of it - but never under `least`, the last one too, so
+    a sharp bend makes no sliver of a card (a slice of forest that stands like a tower)."""
+    out, s, n = [], 0, len(line)
+    while s < n - 1:
+        e, cap = s + 1, float(rng.uniform(*most))
+        while e + 1 < n:
+            (x0, y0), (x1, y1) = line[s], line[e + 1]
+            if math.dist(line[s], line[e]) >= least and (math.hypot(x1 - x0, y1 - y0) > cap or any(
+                    _seg_dist(*line[m], x0, y0, x1, y1) > bow for m in range(s + 1, e + 1))):
+                break
+            e += 1
+        out.append((line[s], line[e]))
+        s = e
+    if len(out) > 1 and math.dist(*out[-1]) < least:
+        out[-2:] = [(out[-2][0], out[-1][1])]
+    return out
 
 
 # ------------------------------------------------------------------ planar sprites

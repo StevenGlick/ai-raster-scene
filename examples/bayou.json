@@ -42,7 +42,11 @@
   "Y": {
    "wall": "swamp_deep",
    "h": 2.6,
-   "fringe": "swamp"
+   "fringe": {
+    "set": "swamp",
+    "depth": 3.0,
+    "wander": 0.35
+   }
   },
   "~": {
    "floor": "swamp_water",

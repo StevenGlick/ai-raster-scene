@@ -1634,6 +1634,9 @@ class Renderer:
             vv = (v * th).astype(int).clip(0, th - 1)
             block = rgba[vv, uu[None, :]]
             alpha = block[..., 3] * opacity
+            if sp.get('edge_fade'):             # seen almost edge on, it fades out rather than squeeze
+                side = np.abs(denom[cols]) / (np.hypot(rdx[cols], rdy[cols]) * math.hypot(ex, ey))   # its
+                alpha = alpha * np.clip((side - 0.15) / 0.2, 0, 1)[None, :]                         # picture
             if not is_trans:
                 alpha = (alpha > 0.5).astype(np.float32)
             dsub = depth[r0:r1, cols]

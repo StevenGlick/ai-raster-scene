@@ -772,6 +772,31 @@ def check_planes_prefabs():
     assert len(back) == 4, 'the innermost layer wraps the outside corners'
     near = dict(row, camera={'x': 6.0, 'y': 1.6, 'angle': 90})
     assert len(R.World(near).fringe_sprites) < 4, 'a card through a camera position is left out'
+    # a fringe that wanders: each layer a line round the forest at its own distance, round at the
+    # corners, cut into cards that fade seen edge on; only the back one comes near another wall
+    wild = {'map': ['.' * 14] * 5 + ['.....###......'] * 3 + ['.' * 14] * 6,
+            'legend': {'.': {'floor': 'grass'}, 'H': {'wall': 'boards', 'h': 1.5},
+                       '#': {'wall': 'jungle_leaves', 'h': 3, 'fringe': {'set': 'jungle', 'depth': 2.0, 'wander': 0.3}}},
+            'camera': {'x': 6.5, 'y': 4.0, 'angle': 90}}
+    cards = R.World(wild).fringe_sprites
+    names = assets.FRINGES['jungle']
+
+    def ends(sp):
+        hx, hy = math.cos(math.radians(sp['angle'])) * sp['length'] / 2, math.sin(math.radians(sp['angle'])) * sp['length'] / 2
+        return sp['x'] - hx, sp['y'] - hy, sp['x'] + hx, sp['y'] + hy
+
+    def gap(px, py, x0, y0, x1, y1):                   # from a point to a segment
+        t = max(0.0, min(1.0, ((px - x0) * (x1 - x0) + (py - y0) * (y1 - y0)) / ((x1 - x0) ** 2 + (y1 - y0) ** 2)))
+        return math.hypot(px - x0 - t * (x1 - x0), py - y0 - t * (y1 - y0))
+    long = [sum(sp['length'] for sp in cards if sp['type'] == n) for n in names]
+    assert all(long) and long == sorted(long), f'each layer round the forest, the outer ones longer: {long}'
+    assert any(15 < sp['angle'] % 90 < 75 for sp in cards), 'round at the corners, not square'
+    assert all(sp.get('edge_fade') and sp['length'] >= 0.3 for sp in cards), 'cards that fade edge on, no slivers'
+    assert all(gap(6.5, 4.0, *ends(sp)) >= 0.35 for sp in cards), 'a card through a camera position is left out'
+    hut = dict(wild, map=wild['map'][:5] + ['.....###.H....'] + wild['map'][6:])
+    by_hut = [sp for sp in R.World(hut).fringe_sprites if sp['type'] != names[0]
+              and math.hypot(max(9 - sp['x'], 0, sp['x'] - 10), max(5 - sp['y'], 0, sp['y'] - 6)) < 0.6]
+    assert not by_hut, 'only the back layer comes near another wall'
 
     # 4. a prefab with a map turns in quarter turns and gets fresh legend characters
     sc = {'map': ['.' * 11] * 11, 'legend': {'.': {'floor': 'beach_sand'}}, 'camera': {'x': 1.5, 'y': 1.5, 'angle': 0},

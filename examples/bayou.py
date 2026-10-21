@@ -1,11 +1,12 @@
 """Bayou: black water under bald cypresses hung with Spanish moss, a shack on its island with a
 lamp in the window, a rowboat at the landing - at dusk, and again at night with the fireflies out.
 
-Shows the swamp kit - `swamp_deep` walls behind a `swamp` fringe, `swamp_water` sunk a little with
-`drop` (it mirrors, and duckweed drifts on it), `bog` banks, bald cypresses standing in the water
-with their knees round them, cattails, lily pads, a heron, an alligator lying with only its eyes
-and back showing, and `fireflies` (additive, glowing) - and the same water at night through shot
-overrides, the shack's window and lantern doubled in it.
+Shows the swamp kit - `swamp_deep` walls behind a `swamp` fringe of four layers spread three cells
+out along a wandering line (`wander`), so the trees stand at many depths along a natural edge;
+`swamp_water` sunk a little with `drop` (it mirrors, and duckweed drifts on it), `bog` banks, bald
+cypresses standing in the water with their knees round them, cattails, lily pads, a heron, an
+alligator lying with only its eyes and back showing, and `fireflies` (additive, glowing) - and the
+same water at night through shot overrides, the shack's window and lantern doubled in it.
 Run:  python bayou.py  -> writes bayou.json next to this file.
 """
 import os
@@ -65,7 +66,7 @@ def bayou():
     return scene(
         g,
         legend={
-            'Y': {'wall': 'swamp_deep', 'h': 2.6, 'fringe': 'swamp'},
+            'Y': {'wall': 'swamp_deep', 'h': 2.6, 'fringe': {'set': 'swamp', 'depth': 3.0, 'wander': 0.35}},
             '~': {'floor': 'swamp_water', 'drop': 0.12, 'side': 'bog'},
             'b': {'floor': 'bog'},
             'H': {'wall': 'boards', 'h': 1.7, 'top': 'shingle'},

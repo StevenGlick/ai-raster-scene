@@ -25,7 +25,7 @@ Carve a wash out of rock cells stacked in bands (`["sandstone", "sandstone", "sa
 
 ### Swamps and bayous
 
-`swamp_deep` walls (about 2.6) with `"fringe": "swamp"` round open water of `swamp_water` sunk with `drop` 0.12 and a `bog` `side`, `bog` hummocks and an island; `bald_cypress`es standing in the water with `cypress_knees` round them, `cattails`, `lily_pads` decals, a `heron` in the shallows, an `alligator` with only its eyes up; a shack of `boards` with a lit window and a lantern on a porch of low `boards` blocks, a `rowboat` at the landing. Frame the shack between two near cypresses and keep the fog thin (0.008-0.012) or the far side vanishes; at night add `fireflies` and a `bloom`. See `examples/bayou.py`.
+`swamp_deep` walls (about 2.6) with `"fringe": {"set": "swamp", "depth": 3.0, "wander": 0.35}` - four layers of cypresses spread three cells out along a natural line, so the trees stand at every depth - round open water of `swamp_water` sunk with `drop` 0.12 and a `bog` `side`, `bog` hummocks and an island; `bald_cypress`es standing in the water with `cypress_knees` round them, `cattails`, `lily_pads` decals, a `heron` in the shallows, an `alligator` with only its eyes up; a shack of `boards` with a lit window and a lantern on a porch of low `boards` blocks, a `rowboat` at the landing. Frame the shack between two near cypresses and keep the fog thin (0.008-0.012) or the far side vanishes; at night add `fireflies` and a `bloom`. See `examples/bayou.py`.
 
 ### Under the sea
 

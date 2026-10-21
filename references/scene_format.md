@@ -103,18 +103,21 @@ A solid wall of `jungle_leaves` or `foliage` is a flat green face. Give the wall
 "J": {"wall": "jungle_leaves", "h": 3.0, "top": "canopy_top", "fringe": "jungle"}
 "K": {"wall": "jungle_leaves", "h": 3.0, "fringe": {"set": "jungle", "depth": 1.5, "height": 1.2, "seed": 2}}
 "F": {"wall": "foliage", "h": 2.4, "fringe": "forest"}
+"Y": {"wall": "swamp_deep", "h": 2.6, "fringe": {"set": "swamp", "depth": 3.0, "wander": 0.35}}
 ```
 | field | default | meaning |
 |---|---|---|
-| `set` | - | a fringe set: `jungle` (cards `jungle_card_4` .. `jungle_card_1`, back to front: rainforest trees, palms, tree ferns, bushes), `glow_jungle` (the same at night with light in its leaves: `glow_jungle_card_4` .. `glow_jungle_card_1`) `forest` (`forest_card_4` .. `forest_card_1`: spruce, oak and birch, then young trees, then bushes, ferns and grass) `forest_autumn` (`autumn_card_4` .. `autumn_card_1`: the same wood in October - oak, birch and bush turned orange, gold and rust, the spruce among them still green), `forest_snow` (`winter_card_4` .. `winter_card_1`: the wood in winter - snowy spruce, bare oak and birch with snow along their limbs, bushes buried in it), `swamp` (`swamp_card_3` .. `swamp_card_1`: bald cypresses hung with moss, then young ones, then cattails and knees at the water's edge) or `kelp` (`kelp_card_2`, `kelp_card_1`: a dense stand of giant kelp, then a few stalks) |
+| `set` | - | a fringe set: `jungle` (cards `jungle_card_4` .. `jungle_card_1`, back to front: rainforest trees, palms, tree ferns, bushes), `glow_jungle` (the same at night with light in its leaves: `glow_jungle_card_4` .. `glow_jungle_card_1`) `forest` (`forest_card_4` .. `forest_card_1`: spruce, oak and birch, then young trees, then bushes, ferns and grass) `forest_autumn` (`autumn_card_4` .. `autumn_card_1`: the same wood in October - oak, birch and bush turned orange, gold and rust, the spruce among them still green), `forest_snow` (`winter_card_4` .. `winter_card_1`: the wood in winter - snowy spruce, bare oak and birch with snow along their limbs, bushes buried in it), `swamp` (`swamp_card_4` .. `swamp_card_1`: a dense stand of tall bald cypresses hung with moss, then a looser one, then young ones among cattails, then cattails and knees at the water's edge) or `kelp` (`kelp_card_2`, `kelp_card_1`: a dense stand of giant kelp, then a few stalks) |
 | `cards` | - | instead of a set: your own sprite names, back to front (a PNG or a `sprite_defs` card works) |
 | `depth` | `1.0` | how far out from the wall the layers spread, in cells |
 | `height` | `1.0` | a multiplier on the cards' heights |
 | `seed` | `0` | reshuffles where along its card each run starts |
+| `wander` | `0` | lay the layers along the forest's outline rounded - no square corners - each wandering in and out by up to this much (`0.35` is about a third of a cell), cut into straight cards a cell or so long: a natural, polygonal edge instead of the grid's. Give it room: a `depth` of 2-3 cells |
 
 - The trees on the back cards rise to 4.6 units. Keep a `forest` wall lower than that (2-2.6) so the tops of the trees make the skyline, not the flat top of the wall.
 - Plan a ring of open ground a cell deep in front of the walls for the fringe to stand in: make the solid part of the forest a cell smaller than the forest should look. A path through a jungle wants to be two cells wider than it should look.
 - Each straight run of faces gets one card per layer; the layers wrap round outside corners and stop short in inside ones, so each follows the outline at its own distance. A card that would pass through a camera position is left out.
+- With `wander` each layer is instead one line the same distance out from the forest all along - round at its corners - cut into cards that fade out where you see one almost edge on (`edge_fade`). The layers stop at any other wall, all but the back one short of it, so a house in a clearing keeps its trees behind it and none squeezed in beside it.
 - Cards are drawn at the sprite stage: walls behind them show through their gaps, a ceiling over them (a canopy over a path) hides what rises above it, and they cast no shadows.
 
 ### Facades: buildings in layers
@@ -357,6 +360,7 @@ Add any of the keys below and fog becomes **volumetric**. Each pixel marches thr
 | `angle` | from its position | for a planar sprite: the compass direction the (first) card runs along |
 | `length` | its image's width | for a single card: its length in world units; the image repeats along it |
 | `u0` | `0` | for a card: where along its image it starts, 0-1 |
+| `edge_fade` | `false` | for a card: fade it out where it is seen almost edge on, instead of squeezing its whole picture into a narrow block (a wandering fringe's cards do) |
 | `reveal` | none | for a card with see-through openings: how thick it is, in world units, so an opening seen at an angle shows its far side (see Planar sprites) |
 
 ### Planar sprites: crosses, stars and cards
