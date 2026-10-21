@@ -1381,6 +1381,11 @@ def check_objects():
     starboard = lambda pns: sum(1 for pn in pns if pn['o'][1] > 0.3)                      # noqa: E731
     port = lambda pns: sum(1 for pn in pns if pn['o'][1] < -0.3)                          # noqa: E731
     assert starboard(stove) < starboard(whole) and port(stove) == port(whole), 'stove in on its starboard side'
+    # 17. a heap is a cone: as tall as asked, as wide as its size at its foot, narrow at the top
+    hp = objects.expand({'map': ['.'], 'objects': [{'type': 'heap', 'x': 0.0, 'y': 0.0, 'size': 0.6, 'height': 0.4}]})['panels']
+    pts = np.array([c for pn in hp for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])
+    top = pts[pts[:, 2] > 0.3]
+    assert abs(pts[:, 2].max() - 0.4) < 1e-6 and np.ptp(pts[:, 0]) <= 0.6 * 1.05 and np.ptp(top[:, 0]) < 0.3, 'a heap'
     # 16. a gear is as wide and tall as its size, its faces and the sides of every tooth
     gp = objects.expand({'map': ['.'], 'objects': [{'type': 'gear', 'x': 0.0, 'y': 0.0, 'size': 2.0, 'teeth': 20}]})['panels']
     pts = np.array([c for pn in gp for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])

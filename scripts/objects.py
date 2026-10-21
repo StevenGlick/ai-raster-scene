@@ -821,6 +821,10 @@ ROCKS = {
                    mass=(2.0, 2.0, 2.0), chip=(0.12, 0.12, 0.1), key=(-0.4, 0.45, 0.8), shade=(0.3, 0.6),
                    crust=0.7, weed=0.2, up=0.7, pores=0.0, cracks=0.2, courses=0.42, staggered=True,
                    plants=[('grass_tuft', 0.14, 0.22)]),
+    'salt': dict(ramps=[ramp('#ebe6dc', dark=0.55, light=1.08), ramp('#d6ccbc', dark=0.55, light=1.08),
+                        ramp('#f4f0ea', dark=0.55, light=1.06)],
+                 mass=(0.3, 0.3, 0.3), chip=(0.05, 0.05, 0.05), key=(-0.4, 0.45, 0.8), shade=(0.6, 0.42),
+                 crust=0.72, weed=0.7, up=0.75, pores=0.1, cracks=0.0, plants=[]),
 }
 ROCK_FOOT = 0.02            # rock runs this far below the ground, so no seam shows at its foot
 
@@ -1192,6 +1196,41 @@ def keel(pl):
             x, y, z = rings[1][i]
             parts.append(sprite('island_roots', x * 0.95, y * 0.95, z - D * 0.15, scale=R * rng.uniform(0.35, 0.5),
                                 shadow=False, flip=bool(rng.random() < 0.5)))
+    return parts
+
+
+def heap(pl):
+    """A heap of something loose - salt raked up to dry, sand, spoil: an irregular cone `size` across at
+    its foot (default 0.5) and `height` tall (default 0.6 of its size), lumpy, drawing in by uneven steps
+    to a blunt top a little off its centre; every face a triangle of `rock` (default `salt`: white grains,
+    pitted)."""
+    rk = _rock_kind(dict(pl, rock=pl.get('rock', 'salt')))
+    seed = int(pl.get('seed', 1))
+    rng = np.random.default_rng(seed)
+    R = float(pl.get('size', 0.5)) / 2
+    H = float(pl.get('height', R * 1.2))
+    N = int(rng.integers(8, 11))
+    ang = (np.arange(N) + rng.uniform(-0.25, 0.25, N)) * 2 * np.pi / N
+    tip = rng.uniform(-0.12, 0.12, 2) * R
+    levels = [(np.full(N, -ROCK_FOOT), rng.uniform(0.9, 1.0, N)),
+              (H * (0.36 + rng.uniform(-0.03, 0.03, N)), 0.68 * rng.uniform(0.95, 1.04, N)),
+              (H * (0.72 + rng.uniform(-0.03, 0.03, N)), 0.34 * rng.uniform(0.92, 1.06, N))]
+    rings = [np.stack([R * k * np.cos(ang) + tip[0] * z / H, R * k * np.sin(ang) + tip[1] * z / H, z], 1)
+             for z, k in levels]
+    peak = np.array([tip[0], tip[1], H])
+    mid = np.array([tip[0] * 0.3, tip[1] * 0.3, H * 0.3])
+    parts = []
+    for lo, hi in zip(rings, rings[1:]):
+        for i in range(N):
+            j = (i + 1) % N
+            A, B, C, D = lo[i], lo[j], hi[j], hi[i]
+            tris = ((A, B, C), (A, C, D)) if rng.random() < 0.5 else ((A, B, D), (B, C, D))
+            parts += [_rock_tri(rk, seed, *t, (A + B + C + D) / 4 - mid) for t in tris]
+    for i in range(N):
+        A, B = rings[-1][i], rings[-1][(i + 1) % N]
+        parts.append(_rock_tri(rk, seed, A, B, peak, (A + B + peak) / 3 - mid))
+    parts = [p for p in parts if p]
+    parts.append(shadow(0.0, 0.0, 2.4 * R, 0.45))
     return parts
 
 
@@ -2447,4 +2486,4 @@ OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'bo
            'gable_roof': gable_roof, 'market_stand': market_stand, 'saloon_bar': saloon_bar, 'rails': rails,
            'ore_cart': ore_cart, 'keel': keel, 'chess_piece': chess_piece, 'ship_hull': ship_hull,
            'longship': longship, 'lighthouse': lighthouse, 'stone_lantern': stone_lantern,
-           'standing_stone': standing_stone, 'gear': gear}
+           'standing_stone': standing_stone, 'gear': gear, 'heap': heap}

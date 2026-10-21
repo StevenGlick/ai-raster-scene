@@ -131,7 +131,7 @@ A map of `void` with islands drawn on it (`"floor": "meadow", "side": "island_ro
 
 ### A mirror salt flat
 
-A big open map of `salt_water` with `reflect` 0.9 and `"reflections": {"ripple": 0, "smear": 0}` (a still mirror), islands of dry `salt_flat` with `reflect` 0, rows of `salt_mound`s (vary each `scale` a little) with a `salt_heap` or `salt_pile` among them and `salt_clods` about, a little house of `salt_brick`; a `sunset`, `day`, `night` or `dream` sky with a low sun and `"skyline": "mountains"`, all doubled; a low camera (`height` 0.3) and one figure close enough to read with their reflection. Surreal touches stand well on it: a `door_frame`, an `armchair`, a `grandfather_clock`, a `sky_whale`. See `examples/salt_flat.py`.
+A big open map of `salt_water` with `reflect` 0.9 and `"reflections": {"ripple": 0, "smear": 0}` (a still mirror), islands of dry `salt_flat` with `reflect` 0, rows of `heap` objects of `salt` (0.15 to 0.3 tall, 1.75 times as wide, each a little different, `fill` 0.8 so their shaded sides stay white; the `salt_mound`, `salt_heap` and `salt_pile` cards are flat stand-ins) and `salt_clods` about, a little house of `salt_brick`; a `sunset`, `day`, `night` or `dream` sky with a low sun and `"skyline": "mountains"`, all doubled; a low camera (`height` 0.3) and one figure close enough to read with their reflection. Surreal touches stand well on it: a `door_frame`, an `armchair`, a `grandfather_clock`, a `sky_whale`. See `examples/salt_flat.py`.
 
 ### An aurora ice palace
 

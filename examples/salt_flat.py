@@ -35,15 +35,17 @@ SUNSET = {'type': 'sun', 'azimuth': 270, 'elevation': 7, 'intensity': 0.9, 'colo
           'disc_color': [1.0, 0.85, 0.6]}
 rnd = random.Random(4)
 SIZE = {'salt_mound': 0.22, 'salt_heap': 0.15, 'salt_pile': 0.12, 'salt_clods': 0.08}
-salt = []
-for j in range(4):                                   # rows of salt raked up to dry, no two alike
+salt, heaps = [], []
+for j in range(4):                                   # rows of salt raked up to dry, no two alike: heaps in 3D
     x, y = 39.2 + 0.5 * (j % 2), 31.4 + 1.15 * j
     while x < 49.0:
         kind = rnd.choices(['salt_mound', 'salt_heap', 'salt_pile'], [7, 1, 1])[0]
         if g.get(int(x), int(y)) == 'd':
-            salt.append({'x': round(x + rnd.uniform(-0.12, 0.12), 2), 'y': round(y + rnd.uniform(-0.12, 0.12), 2),
-                         'type': kind, 'scale': round(SIZE[kind] * rnd.uniform(0.8, 1.15), 3),
-                         'flip': rnd.random() < 0.5})
+            h = SIZE[kind] * rnd.uniform(0.8, 1.15) * 1.15
+            heaps.append({'type': 'heap', 'x': round(x + rnd.uniform(-0.12, 0.12), 2),
+                          'y': round(y + rnd.uniform(-0.12, 0.12), 2), 'height': round(h, 3),
+                          'size': round(h * 1.75, 3), 'fill': 0.8, 'seed': len(heaps)})
+            rnd.random()                             # (as the cards' flip did, so the rest stays as it was)
         x += rnd.uniform(0.9, 1.2)
 for _ in range(8):                                   # and clods lying about between them
     x, y = rnd.uniform(39.0, 48.5), rnd.uniform(30.8, 35.6)
@@ -71,6 +73,7 @@ s = scene(
     fog={'color': [0.86, 0.6, 0.58], 'density': 0.005},
     reflections={'ripple': 0, 'smear': 0},
     sprites=sprites,
+    objects=heaps,
     camera={'x': 32.4, 'y': 48.0, 'look_at': [30.0, 20.0, 0.6], 'fov': 70},
     shots=[
         {'x': 32.4, 'y': 47.0, 'height': 0.32, 'look_at': [30.0, 20.0, 0.7], 'fov': 70,
