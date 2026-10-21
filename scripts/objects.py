@@ -36,7 +36,7 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'rock', 'length', 'height', 'depth', 'pieces', 'trim', 'size', 'seed', 'plants', 'back', 'lining',
                   'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
                   'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset',
-                  'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel'}
+                  'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel', 'ends'}
 
 
 # ------------------------------------------------------------------ parts
@@ -1404,18 +1404,20 @@ def shed_roof(pl):
 
 def gable_roof(pl):
     """A gabled roof: the ridge `length` long the way it faces, `width` across, the eaves at the
-    placement's `z` and the ridge `rise` above them; `cover` is `boards` (the default), `thatch` or
-    `tile`. It overhangs by `overhang` - a number, or [at the eaves, at the ends]; its gable ends are
+    placement's `z` and the ridge `rise` above them; `cover` is `boards` (the default), `thatch`, `tile`
+    or `slate`. It overhangs by `overhang` - a number, or [at the eaves, at the ends]; its gable ends are
     closed with upright boards, and under it stand `walls` that tall (0 for none) - the body of a
     building on a lower block, or a shed on the ground - set `inset` in from the roof's ends and
     eaves: a number (from the front end only) or [front, back, left, right]. `chimney` stands one on
-    the ridge, that far along it from the back (0..1); `plaster` (a colour) makes the walls and gable
-    ends plaster of that colour instead of boards."""
+    the ridge, that far along it from the back (0..1) - or a list of such places, one for each;
+    `plaster` (a colour) makes the walls and gable ends plaster of that colour instead of boards, and
+    `ends` (a kind of rock: `ashlar`, `stone`, ...) makes them stone."""
     cover = pl.get('cover', 'boards')
     roof = (_timber(pl, (0.025, 0.4, 0.4), 0.14) if cover == 'boards'
             else dict(ROOFS[cover], key=_turned(ROOFS[cover]['key'], pl)))
-    ends = (_timber(pl, (0.025, 0.025, 0.4), 0.16) if not pl.get('plaster')
-            else dict(PLASTER, ramps=[ramp(pl['plaster'], dark=0.4, light=1.3)], key=_turned(PLASTER['key'], pl)))
+    ends = (_rock_kind(dict(pl, rock=pl['ends'])) if pl.get('ends')
+            else dict(PLASTER, ramps=[ramp(pl['plaster'], dark=0.4, light=1.3)], key=_turned(PLASTER['key'], pl))
+            if pl.get('plaster') else _timber(pl, (0.025, 0.025, 0.4), 0.16))
     seed = int(pl.get('seed', 1))
     L, W, r = float(pl.get('length', 3.0)) / 2, float(pl.get('width', 2.0)) / 2, float(pl.get('rise', 0.8))
     o = pl.get('overhang', 0.12)
@@ -1432,9 +1434,12 @@ def gable_roof(pl):
         for k, c in enumerate((((f, rt, 0.0), (f, lf, 0.0), (f, rt, -h)), ((b, lf, 0.0), (b, rt, 0.0), (b, lf, -h)),
                                ((b, rt, 0.0), (f, rt, 0.0), (b, rt, -h)), ((f, lf, 0.0), (b, lf, 0.0), (f, lf, -h)))):
             parts.append(_rock(ends, seed + 4 + k, *c))
-    if pl.get('chimney') is not None:                                 # a chimney of brick through the ridge
-        x = -L + 2 * L * float(pl['chimney'])
-        c0, c1, ztop = 0.13, 0.13, r + 0.36
+    chims = pl.get('chimney')
+    for place in ([] if chims is None else chims if isinstance(chims, (list, tuple)) else [chims]):
+        x = -L + 2 * L * float(place)                                 # a chimney of brick through the ridge,
+        big = max(1.0, r / 0.9) ** 0.5                                # stouter on a bigger roof
+        c0 = c1 = 0.13 * big
+        ztop = r + 0.36 * big
         brick = ROOFS['chimney']
         for k, c in enumerate((((x + c0, c1, ztop), (x + c0, -c1, ztop), (x + c0, c1, r * 0.4)),
                                ((x - c0, -c1, ztop), (x - c0, c1, ztop), (x - c0, -c1, r * 0.4)),
@@ -1533,6 +1538,8 @@ ROOFS = {
                    key=(-0.4, 0.45, 0.8), shade=(0.36, 0.5)),
     'tile': dict(paint=_tiles, ramps=[ramp('#9a5038', dark=0.36, light=1.35, warm=0.08), ramp('#8a8a5a', dark=0.4, light=1.3)],
                  key=(-0.4, 0.45, 0.8), shade=(0.36, 0.5), course=(0.1, 0.13), lichen=0.06),
+    'slate': dict(paint=_tiles, ramps=[ramp('#4a4e5a', dark=0.45, light=1.55, cool=0.2), ramp('#5e6a4c', dark=0.4, light=1.3)],
+                  key=(-0.4, 0.45, 0.8), shade=(0.34, 0.52), course=(0.075, 0.15), lichen=0.05),
     'chimney': dict(paint=_tiles, ramps=[ramp('#8a4a36', dark=0.36, light=1.3)], key=(-0.4, 0.45, 0.8),
                     shade=(0.38, 0.5), course=(0.06, 0.12)),
 }

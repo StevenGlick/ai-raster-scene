@@ -923,7 +923,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 |---|---|---|---|
 | `trough` | good | ghost_town | A horse trough of weathered boards (`_wood` with `boards`: a seam between each, each its own tone), a rim, still water a hand below it, a soft shadow. Replaces the `water_trough` billboard in the ghost town. |
 | `shed_roof` | good | - | A roof of boards sloping down to its front edge, the boards running down the slope. The western facade builds one over every porch (ghost_town), sloping from the front down to the fascia so it shows from the street. |
-| `gable_roof` | good | - | A gabled roof of boards with gable ends of upright boards, `walls` under it (`inset` back from its front). The western facade builds one behind every false front (ghost_town): the building's body, low enough for the front to hide. |
+| `gable_roof` | good | chapel_graveyard, haunted_house | A gabled roof of boards with gable ends of upright boards, `walls` under it (`inset` back from its front). The western facade builds one behind every false front (ghost_town): the building's body, low enough for the front to hide. |
 | `market_stand` | good | village_green | The market stall in 3D, as the noodle stand: a trestle table of weathered boards with a striped skirt (the awning's valance, in step), four poles, a striped awning sloping down to the front with a scalloped valance round it; `goods_*` heaped on the table, crates and a sack by it, as billboards. Replaces the `market_stall` billboard in the village. |
 | `saloon_bar` | good | saloon | A saloon's counter in 3D, 0.38 tall: raised mahogany panels between pilasters, a polished top overhanging the drinkers' side, the bartender's shelves behind, a brass foot rail on brackets, bottles on it. |
 | `rails` | good | gold_mine | A narrow track: two iron rails on wooden sleepers every 0.22, their tops worn bright. |
@@ -1063,7 +1063,7 @@ The environments, judged on their gallery images and shots.
 | `hospital_garden` | good | 3 | hospital_garden_01 |  |
 | `library_medium` | good | 1 | library_medium |  |
 | `mansion_library` | good | 2 | - | Taller, under a panelled ceiling (the beams radiated as stripes), shelves two storeys high, furnished: a desk and reader, armchair, globe, telescope, clock, candelabras, books flying. |
-| `haunted_house` | good | 4 | haunted_front, haunted_hall, haunted_parlour, haunted_ghost | Halloween at the old house: the front with jack-o'-lanterns and bats, the hall's grand stair and landing, the parlour, the ghost on the stairs. |
+| `haunted_house` | good | 4 | haunted_front, haunted_hall, haunted_parlour, haunted_ghost | Halloween at the old house: the front with jack-o'-lanterns and bats, the hall's grand stair and landing, the parlour, the ghost on the stairs. Roofed in 3D now: a steep `slate` roof over the house with two brick chimneys, the tower over the door its own gable - the house read as a flat-topped box. |
 | `tunnel_encounter` | good | 2 | tunnel_01 |  |
 | `underground_waterway` | good | 4 | waterway_01 | A thinner fog with halos and lanterns at the far end: the channel recedes into lit stone, the boat and its reflection read. |
 | `sewer_tunnels` | good | 3 | sewer_thing |  |
@@ -1098,7 +1098,7 @@ The environments, judged on their gallery images and shots.
 | `misty_moor` | good | 3 | moor_dawn, moor_circle | Stones of varied heights with weathered menhir faces and slanted, chipped stone_cap tops in dawn mist. |
 | `winter_lake` | good | 4 | winter_night, winter_day | Ice redrawn (fractures, depth) and snow redrawn (drifts); the snowy spruce and snow-capped boulders. |
 | `winter_woods` | good | 4 | winter_lane, winter_deer, winter_lantern, winter_stream | A snowbound wood: the lane, a deer on a frozen stream in falling snow, a child by a lantern-lit footbridge, trees mirrored in the ice. |
-| `chapel_graveyard` | good | 4 | chapel_yard, chapel_nave | The yard is a little sparse. |
+| `chapel_graveyard` | good | 4 | chapel_yard, chapel_nave | The yard is a little sparse. Roofed in 3D now: a steep `slate` roof down the nave, its gable over the door in pale stone (`ends`: `ashlar`). |
 
 ### Castles, ruins and caves
 
@@ -1159,6 +1159,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, roofs for the old houses.** The haunted house and the churchyard chapel were flat-topped boxes - the village's fault, the user's word was 'roofless'. Both have steep roofs of `slate` in 3D (a new cover: dark blue-grey, narrow courses): the house's with two brick chimneys (`chimney` takes a list; chimneys grow stouter on a bigger roof) and the tower's own gable, the chapel's with its front gable in pale stone (`ends`, new: gable ends of a rock kind). Inside, the ceilings hide the roofs: the interior shots are unchanged to the pixel.
 - **2026-10-21, the wreck.** After the user's list and the fantasy refresh, a look over the scenes not touched today: the kelp forest's wreck was a ring of plank walls round a low block, its rock outcrops blocks too. A new object, `ship_hull` - planked and ribbed, stern, curving sides, a bow whose stem sweeps up, `heel` and `broken` - lies listing in the sand turned toward the cameras (broadside on, at first, it read as a wall), and the outcrops are boulders of live reef rock.
 - **2026-10-21, the hall of doors.** The fantasy refresh, fifth: its walls of doors were flat paint. Now a pilaster of cream marble stands between every two doors, on a base, and a cornice runs along every storey - 90 `column`s and 6 `beam`s - so the corridor's rhythm stands out and catches the light down its length.
 - **2026-10-21, the drowned library.** The fantasy refresh, fourth: its ceiling was one flat dark plane - now dark timber roof beams cross the hall between the skylights, on brackets at the shelves, catching the light from the holes; the ambient a little higher and the fog a little thinner, so the shelves read.

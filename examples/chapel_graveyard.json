@@ -593,6 +593,25 @@
    "seed": 5
   }
  ],
+ "objects": [
+  {
+   "type": "gable_roof",
+   "x": 17.0,
+   "y": 7.0,
+   "z": 3.2,
+   "angle": 90,
+   "length": 12.0,
+   "width": 16.0,
+   "rise": 5.2,
+   "cover": "slate",
+   "ends": "ashlar",
+   "overhang": [
+    0.3,
+    0.15
+   ],
+   "seed": 7
+  }
+ ],
  "shots": [
   {
    "x": 13.2,

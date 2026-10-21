@@ -2,7 +2,9 @@
 iron fence and dead trees, bats against the moon - and inside, the hall with its grand staircase,
 where the family portraits watch and someone is waiting on the landing.
 
-Shows a grand staircase built from the `heights` layer (a flight of steps with `carpet` treads up
+The house wears a steep roof of slate in 3D over its walls, two chimneys of brick, and the tower over
+the door its own gable (`gable_roof` objects with `"cover": "slate"`). Shows a grand staircase built
+from the `heights` layer (a flight of steps with `carpet` treads up
 to a landing at 1.4, a `balustrade` stood along its edge as cards at that height), a double-height
 hall (`ceiling_height` 3), stacked walls of panelling and wallpaper, a fireplace, the haunted
 props - `portrait`, `candelabra`, `grandfather_clock`, `cobweb` across the corners, `bats` - and
@@ -118,6 +120,11 @@ def haunted_house():
         fog={'color': [0.06, 0.07, 0.1], 'density': 0.02, 'glow': 0.7},
         lights=[{'type': 'moon', 'azimuth': 275, 'elevation': 24, 'intensity': 0.5}] + hall_lights + yard_lights,
         sprites=sprites,
+        objects=[  # the roof: steep slate over the house, its gable ends east and west; the tower's own gable
+            {'type': 'gable_roof', 'x': 12.0, 'y': 12.5, 'z': 3.0, 'angle': 0, 'length': 20.0, 'width': 19.0,
+             'rise': 5.0, 'cover': 'slate', 'overhang': [0.3, 0.2], 'chimney': [0.2, 0.8], 'seed': 3},
+            {'type': 'gable_roof', 'x': 12.0, 'y': 21.6, 'z': 4.6, 'angle': 90, 'length': 1.4, 'width': 4.0,
+             'rise': 1.8, 'cover': 'slate', 'overhang': [0.2, 0.15], 'seed': 5}],
         camera={'x': 11.95, 'y': 36.6, 'angle': 270, 'fov': 66, 'height': 0.5},
         shots=[
             {'x': 11.95, 'y': 36.6, 'angle': 270, 'post': [GLOW],

@@ -94,6 +94,9 @@ s = scene(
     scatter=[{'of': 'undergrowth', 'on': ',', 'density': 0.35, 'clump': 1.5, 'sizes': ['tiny', 'small', 'medium'],
               'seed': 4},
              {'of': 'stones', 'on': ',p', 'density': 0.25, 'sizes': ['tiny', 'small'], 'seed': 5}],
+    # its roof: steep slate down the nave, its gable over the door in pale stone
+    objects=[{'type': 'gable_roof', 'x': 17.0, 'y': 7.0, 'z': 3.2, 'angle': 90, 'length': 12.0, 'width': 16.0,
+              'rise': 5.2, 'cover': 'slate', 'ends': 'ashlar', 'overhang': [0.3, 0.15], 'seed': 7}],
     camera={'x': 16.5, 'y': 34.0, 'look_at': [16.5, 6.0, 1.6], 'fov': 72},
     shots=[
         {'x': 13.2, 'y': 31.2, 'look_at': [16.8, 12.0, 1.5], 'fov': 74, 'post': [GLOW],

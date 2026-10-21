@@ -693,8 +693,9 @@ An object is a thing too big to be a billboard - a car, a food stand, rock, crys
 | `overhang` | a gabled roof: how far its slopes reach past the walls (default 0.12), or `[at the eaves, at the ends]` |
 | `walls` | a gabled roof: how tall the walls under it are (default 0: none) - a shed on the ground, or a building's body on a lower block |
 | `inset` | a gabled roof: how far its walls stand back from its front end (default 0), or `[front, back, left, right]` from its ends and eaves |
-| `cover` | a gabled roof: `boards` (the default), `thatch` (reed ends in streaks of gold and brown, laid in courses, greener at the ridge) or `tile` (clay tiles in staggered courses, each its own shade, lichen on a few) |
-| `chimney` | a gabled roof: a brick chimney through the ridge, this far along it from the back (0-1) |
+| `cover` | a gabled roof: `boards` (the default), `thatch` (reed ends in streaks of gold and brown, laid in courses, greener at the ridge), `tile` (clay tiles in staggered courses, each its own shade, lichen on a few) or `slate` (dark blue-grey slates in narrow courses) |
+| `chimney` | a gabled roof: a brick chimney through the ridge, this far along it from the back (0-1), or a list of places for several; stouter on a bigger roof |
+| `ends` | a gabled roof: its gable ends (and walls) of stone - a rock kind such as `ashlar` - instead of boards |
 | `plaster` | a gabled roof: its walls and gable ends plaster of this colour (`#rrggbb`) instead of boards |
 | `gauge` | rails: how far apart (default 0.24) |
 | `roots` | a keel: `false` leaves out the roots trailing from its top |
