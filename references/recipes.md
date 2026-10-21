@@ -33,7 +33,7 @@ Carve a wash out of rock cells stacked in bands (`["sandstone", "sandstone", "sa
 
 ### Under the sea
 
-Make water of the air - a dense teal fog (`[0, 0.15, 0.19]`, density about 0.05) with weak `shafts`, a high sun from behind the camera, and a teal `grade` post (`tint` `[0.74, 0.98, 1.05]`); a `seabed` floor, `kelp` stalks 4-5.6 tall scattered at random with a clearing, low `rock_wet` ledges with `"fringe": "kelp"` round the edge, `fish_school`s at different `z`, the `seabed` scatter set and `starfish`, `shells` and `seaweed` decals; a wreck of low `planks` blocks with a `wreck_mast`, an `anchor` and a `chest`; a `diver` with `bubbles` rising from the helmet. For a night dive: `flashlight`, a black fog and glowing `jellyfish`. See `examples/kelp_forest.py`.
+Make water of the air - a dense teal fog (`[0, 0.15, 0.19]`, density about 0.05) with weak `shafts`, a high sun from behind the camera, and a teal `grade` post (`tint` `[0.74, 0.98, 1.05]`); a `seabed` floor, `kelp` stalks 4-5.6 tall scattered at random with a clearing, low `rock_wet` ledges with `"fringe": "kelp"` round the edge, `fish_school`s at different `z`, the `seabed` scatter set and `starfish`, `shells` and `seaweed` decals; a wreck - a `ship_hull` object listing in the sand (`heel`, its side stove in with `broken`, turned toward the camera) - with a `wreck_mast`, `boulder`s of `reef` rock for outcrops, an `anchor` and a `chest`; a `diver` with `bubbles` rising from the helmet. For a night dive: `flashlight`, a black fog and glowing `jellyfish`. See `examples/kelp_forest.py`.
 
 ### Castles and dungeons
 
