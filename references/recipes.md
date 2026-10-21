@@ -127,7 +127,7 @@ A big open map of `salt_water` with `reflect` 0.9 and `"reflections": {"ripple":
 
 ### An aurora ice palace
 
-`"sky": "aurora"` (rayed curtains of green light, no two stretches alike, a teal ribbon and red-tipped rays among them, brightest due north - aim north to have them over the scene); walls and towers of `ice_block` with an `ice_spire` on each tower top (`z` = the tower's height), `icicles` cards along the wall tops, an open hall of `frost_wall` round an `ice_throne`, `ice_shards` in the snow, `snowy_pine`s; a frozen lake of `ice_floor` with `reflect` 0.85 and `"reflections": {"ripple": 0, "smear": 0}` doubles the aurora. Light the snow green with a `moon` that has `"disc": false` and `color` [0.45, 1, 0.75]; ambient about 0.15; a gentle light bloom (1.3). See `examples/aurora_palace.py`.
+`"sky": "aurora"` (rayed curtains of green light, no two stretches alike, a teal ribbon and red-tipped rays among them, brightest due north - aim north to have them over the scene); walls and towers of `ice_block` with an `ice_spire` on each tower top (`z` = the tower's height), `icicles` cards along the wall tops, an open hall of `frost_wall` round an `ice_throne`, `ice_shards` in the snow, `snowy_pine`s; a frozen lake of `ice_floor` with `reflect` 0.85 and `"reflections": {"ripple": 0, "smear": 0}` doubles the aurora. Light the snow green with a `moon` that has `"disc": false` and `color` [0.45, 1, 0.75]; ambient about 0.15; a gentle light bloom (1.3). Ice `crystal_cluster`s (`"color": "ice"`, `"rock": "snow"`) at the gate and round the throne bend the aurora and light the walls. See `examples/aurora_palace.py`.
 
 ### A glowing jungle (bioluminescent, at night)
 

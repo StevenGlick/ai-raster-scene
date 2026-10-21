@@ -7,7 +7,8 @@ Shows the ice-palace kit (scripts/icepalace.py): the `aurora` sky, `ice_block` w
 `ice_spire` on each, `icicles` hung along the walls, a hall of `frost_wall` round an `ice_throne`,
 `ice_floor` (polished, it reflects) and `ice_shards`; the lake a still mirror
 (`"reflections": {"ripple": 0, "smear": 0}`), the aurora's green on the snow from a moon light with no
-disc, and a light bloom so the curtains glow.
+disc, and a light bloom so the curtains glow; crystals of ice in 3D (`crystal_cluster`s of `ice`) at the gate,
+round the throne and on the shore, every facet bending the aurora's light.
 Run:  python aurora_palace.py  -> writes aurora_palace.json
 """
 import os
@@ -54,6 +55,12 @@ sprites += [{'x': x, 'y': y, 'type': 'ice_shards', 'flip': k % 2 == 1} for k, (x
 sprites += [{'x': x, 'y': y, 'type': 'snowy_pine', 'scale': s} for x, y, s in
             ((5.0, 22.0, 2.6), (8.0, 19.0, 3.0), (41.0, 20.0, 2.8), (44.0, 24.0, 2.4), (2.5, 30.0, 2.8),
              (45.5, 33.0, 2.6), (3.0, 45.0, 2.4), (45.0, 47.0, 2.8), (10.0, 55.0, 2.6), (38.0, 55.5, 3.0))]
+# crystals of ice in 3D, every facet bending the aurora's light: flanking the gate, round the throne, by the lake
+crystals = [{'type': 'crystal_cluster', 'x': x, 'y': y, 'color': 'ice', 'size': sz, 'count': n, 'rock': 'snow',
+             'glow': 0.45, 'seed': k}
+            for k, (x, y, sz, n) in enumerate(((20.6, 20.2, 1.8, 7), (27.4, 20.4, 1.6, 6),       # the gate
+                                               (21.6, 7.8, 1.1, 5), (25.6, 7.9, 1.2, 5),         # the throne
+                                               (12.0, 27.6, 1.3, 5), (35.6, 28.4, 1.5, 6), (18.0, 30.4, 0.8, 4)))]
 AURORA = {'type': 'moon', 'azimuth': 300, 'elevation': 40, 'intensity': 0.45, 'color': [0.45, 1.0, 0.75],
           'disc': False}
 GLOW = {'fx': 'bloom', 'source': 'light', 'strength': 1.3, 'radius': 3, 'spread': 0.6}
@@ -69,6 +76,7 @@ s = scene(
     fog={'color': [0.04, 0.08, 0.12], 'density': 0.008},
     reflections={'ripple': 0, 'smear': 0},
     sprites=sprites,
+    objects=crystals,
     camera={'x': 24.0, 'y': 55.0, 'look_at': [24.0, 10.0, 2.0], 'fov': 72},
     shots=[
         {'x': 24.0, 'y': 52.0, 'height': 0.4, 'look_at': [24.0, 11.0, 3.6], 'fov': 72, 'post': [GLOW],
