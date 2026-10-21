@@ -1370,6 +1370,17 @@ def check_objects():
     pts = np.array([c for pn in kl for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])
     assert pts[:, 2].max() <= 1e-6 and abs(pts[:, 2].min() + 3.0) < 0.05, 'from its z down to its point'
     assert np.hypot(pts[:, 0], pts[:, 1]).max() <= 2.0 * 1.07, 'no wider than its size'
+    # 11. a chess piece is turned round its axis, no taller than asked (a pawn's ball stops a little short);
+    # a knight's head looks the way it faces
+    for kind in ('pawn', 'rook', 'bishop', 'queen', 'king'):
+        cp = objects.expand({'map': ['.'], 'objects': [{'type': 'chess_piece', 'piece': kind, 'x': 0.0, 'y': 0.0,
+                                                        'height': 2.0}]})['panels']
+        tops = np.array([c for pn in cp for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])
+        assert 1.85 < tops[:, 2].max() <= 2.0 + 1e-6 and np.abs(tops[:, :2].mean(0)).max() < 0.05, kind
+    kn = objects.expand({'map': ['.'], 'objects': [{'type': 'chess_piece', 'piece': 'knight', 'x': 0.0, 'y': 0.0,
+                                                    'height': 2.0, 'angle': 90}]})['panels']
+    head = np.array([c for pn in kn for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v']) if c[2] > 1.2])
+    assert head[:, 1].max() > -head[:, 1].min() + 0.1, 'the knight looks the way it faces'
     stand = objects.expand({'map': ['.'], 'objects': [{'type': 'market_stand', 'x': 0.0, 'y': 0.0}]})
     zs = np.concatenate([[pn['o'] + a * pn['u'] + b * pn['v'] for a in (0, 1) for b in (0, 1)] for pn in stand['panels']])[:, 2]
     assert zs.max() > 1.3 and any(sp['type'].startswith('goods_') for sp in stand['sprites']), 'goods under an awning'

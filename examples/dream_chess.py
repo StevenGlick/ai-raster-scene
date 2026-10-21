@@ -1,7 +1,7 @@
 """The chequered plain: a dream of a chess game nobody finished, on marble floating in the sky.
 
-Shows the dream things from scripts/dream.py: a marble chess set (`chess_pawn` to `chess_king`,
-tinted dark for the other side) standing giant on a plain of `checker_marble` that mirrors them;
+Shows the dream things from scripts/dream.py: a chess set standing giant on a plain of `checker_marble`
+that mirrors them - `chess_piece` objects, turned in 3D in polished white and black marble;
 a `clock` in `sky_objects`, melting; a `melting_clock` slumped over a plinth and an `hourglass`
 on another; `stone_arch`es and a `stair_float` hanging in the air at `z`; a lone door at the top
 of a stair that climbs out of the floor; a square hole in the plain with the sky showing through
@@ -31,7 +31,6 @@ for x, y, h in ((18, 26, '2'), (22, 29, '2')):        # two plinths
     g.put(x, y, 'P')
     heights[y][x] = h
 
-DARK = [0.24, 0.22, 0.28]
 white = [('chess_king', 20.5, 17.5), ('chess_queen', 23.0, 18.2), ('chess_knight', 17.8, 21.0),
          ('chess_bishop', 25.6, 21.5), ('chess_rook', 13.6, 18.8), ('chess_pawn', 21.2, 21.8),
          ('chess_pawn', 15.6, 23.6), ('chess_pawn', 26.8, 17.0)]
@@ -65,12 +64,13 @@ s = scene(
     lights=[{'type': 'sun', 'azimuth': 140, 'elevation': 30, 'color': [1.0, 0.9, 0.86], 'intensity': 0.55,
              'disc': False}],
     fog={'color': [0.86, 0.76, 0.86], 'density': 0.012, 'sky_mix': 0.0},
-    sprites=[{'x': x, 'y': y, 'type': t, 'scale': 2.0 * {'chess_pawn': 0.9, 'chess_rook': 1.1, 'chess_bishop': 1.3,
-                                                         'chess_knight': 1.2, 'chess_queen': 1.45,
-                                                         'chess_king': 1.55}[t]} for t, x, y in white] +
-            [{'x': x, 'y': y, 'type': t, 'tint': DARK, 'flip': True,
-              'scale': 2.0 * {'chess_pawn': 0.9, 'chess_rook': 1.1, 'chess_bishop': 1.3, 'chess_knight': 1.2,
-                              'chess_queen': 1.45, 'chess_king': 1.55}[t]} for t, x, y in black] + [
+    # each side faces the other; the knights turned a little, so their heads show from the cameras
+    objects=[{'type': 'chess_piece', 'piece': t[6:], 'side': side, 'x': x, 'y': y,
+              'angle': (90 if side == 'white' else 270) + (35 if t == 'chess_knight' else 0),
+              'height': 2.0 * {'chess_pawn': 0.9, 'chess_rook': 1.1, 'chess_bishop': 1.3, 'chess_knight': 1.2,
+                               'chess_queen': 1.45, 'chess_king': 1.55}[t], 'seed': k}
+             for side, pieces in (('white', white), ('black', black)) for k, (t, x, y) in enumerate(pieces)],
+    sprites=[
         {'x': 30.5, 'y': 14.5, 'type': 'door_frame', 'z': 1.8},       # on the landing (a block this tall is not stood on by itself)
         {'x': 18.5, 'y': 27.03, 'type': 'melting_clock', 'z': 0.17},   # just off the plinth's face, fold on its edge
         {'x': 22.5, 'y': 29.5, 'type': 'hourglass'},

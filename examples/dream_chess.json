@@ -202,139 +202,159 @@
   "density": 0.012,
   "sky_mix": 0.0
  },
- "sprites": [
+ "objects": [
   {
+   "type": "chess_piece",
+   "piece": "king",
+   "side": "white",
    "x": 20.5,
    "y": 17.5,
-   "type": "chess_king",
-   "scale": 3.1
+   "angle": 90,
+   "height": 3.1,
+   "seed": 0
   },
   {
+   "type": "chess_piece",
+   "piece": "queen",
+   "side": "white",
    "x": 23.0,
    "y": 18.2,
-   "type": "chess_queen",
-   "scale": 2.9
+   "angle": 90,
+   "height": 2.9,
+   "seed": 1
   },
   {
+   "type": "chess_piece",
+   "piece": "knight",
+   "side": "white",
    "x": 17.8,
    "y": 21.0,
-   "type": "chess_knight",
-   "scale": 2.4
+   "angle": 125,
+   "height": 2.4,
+   "seed": 2
   },
   {
+   "type": "chess_piece",
+   "piece": "bishop",
+   "side": "white",
    "x": 25.6,
    "y": 21.5,
-   "type": "chess_bishop",
-   "scale": 2.6
+   "angle": 90,
+   "height": 2.6,
+   "seed": 3
   },
   {
+   "type": "chess_piece",
+   "piece": "rook",
+   "side": "white",
    "x": 13.6,
    "y": 18.8,
-   "type": "chess_rook",
-   "scale": 2.2
+   "angle": 90,
+   "height": 2.2,
+   "seed": 4
   },
   {
+   "type": "chess_piece",
+   "piece": "pawn",
+   "side": "white",
    "x": 21.2,
    "y": 21.8,
-   "type": "chess_pawn",
-   "scale": 1.8
+   "angle": 90,
+   "height": 1.8,
+   "seed": 5
   },
   {
+   "type": "chess_piece",
+   "piece": "pawn",
+   "side": "white",
    "x": 15.6,
    "y": 23.6,
-   "type": "chess_pawn",
-   "scale": 1.8
+   "angle": 90,
+   "height": 1.8,
+   "seed": 6
   },
   {
+   "type": "chess_piece",
+   "piece": "pawn",
+   "side": "white",
    "x": 26.8,
    "y": 17.0,
-   "type": "chess_pawn",
-   "scale": 1.8
+   "angle": 90,
+   "height": 1.8,
+   "seed": 7
   },
   {
+   "type": "chess_piece",
+   "piece": "king",
+   "side": "black",
    "x": 29.0,
    "y": 31.4,
-   "type": "chess_king",
-   "tint": [
-    0.24,
-    0.22,
-    0.28
-   ],
-   "flip": true,
-   "scale": 3.1
+   "angle": 270,
+   "height": 3.1,
+   "seed": 0
   },
   {
+   "type": "chess_piece",
+   "piece": "rook",
+   "side": "black",
    "x": 29.8,
    "y": 27.6,
-   "type": "chess_rook",
-   "tint": [
-    0.24,
-    0.22,
-    0.28
-   ],
-   "flip": true,
-   "scale": 2.2
+   "angle": 270,
+   "height": 2.2,
+   "seed": 1
   },
   {
+   "type": "chess_piece",
+   "piece": "knight",
+   "side": "black",
    "x": 23.4,
    "y": 25.0,
-   "type": "chess_knight",
-   "tint": [
-    0.24,
-    0.22,
-    0.28
-   ],
-   "flip": true,
-   "scale": 2.4
+   "angle": 305,
+   "height": 2.4,
+   "seed": 2
   },
   {
+   "type": "chess_piece",
+   "piece": "bishop",
+   "side": "black",
    "x": 15.8,
    "y": 29.4,
-   "type": "chess_bishop",
-   "tint": [
-    0.24,
-    0.22,
-    0.28
-   ],
-   "flip": true,
-   "scale": 2.6
+   "angle": 270,
+   "height": 2.6,
+   "seed": 3
   },
   {
+   "type": "chess_piece",
+   "piece": "pawn",
+   "side": "black",
    "x": 20.0,
    "y": 31.4,
-   "type": "chess_pawn",
-   "tint": [
-    0.24,
-    0.22,
-    0.28
-   ],
-   "flip": true,
-   "scale": 1.8
+   "angle": 270,
+   "height": 1.8,
+   "seed": 4
   },
   {
+   "type": "chess_piece",
+   "piece": "pawn",
+   "side": "black",
    "x": 27.6,
    "y": 23.4,
-   "type": "chess_pawn",
-   "tint": [
-    0.24,
-    0.22,
-    0.28
-   ],
-   "flip": true,
-   "scale": 1.8
+   "angle": 270,
+   "height": 1.8,
+   "seed": 5
   },
   {
+   "type": "chess_piece",
+   "piece": "queen",
+   "side": "black",
    "x": 12.6,
    "y": 26.2,
-   "type": "chess_queen",
-   "tint": [
-    0.24,
-    0.22,
-    0.28
-   ],
-   "flip": true,
-   "scale": 2.9
-  },
+   "angle": 270,
+   "height": 2.9,
+   "seed": 6
+  }
+ ],
+ "sprites": [
   {
    "x": 30.5,
    "y": 14.5,

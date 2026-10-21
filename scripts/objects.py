@@ -36,7 +36,7 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'rock', 'length', 'height', 'depth', 'pieces', 'trim', 'size', 'seed', 'plants', 'back', 'lining',
                   'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
                   'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset',
-                  'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots'}
+                  'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side'}
 
 
 # ------------------------------------------------------------------ parts
@@ -1704,6 +1704,156 @@ def ore_cart(pl):
     return [p for p in parts if p]
 
 
+# ------------------------------------------------------------------ chess pieces
+
+def _polished(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
+    """Polished stone - a chess piece's marble: smooth, lit by the way each texel faces (with `tilt`, the
+    faces of a turned piece shade round it smoothly), a sheen where it faces the light, and veins
+    wandering through it."""
+    key = np.asarray(rk['key'], np.float32)
+    key /= np.linalg.norm(key)
+    at = np.nonzero(alpha.reshape(-1))[0]
+    ys, xs = at // w, at % w
+    P = o + ((xs + 0.5) / w)[:, None] * u + ((ys + 0.5) / h)[:, None] * v
+    nrm = np.cross(u, v)
+    N = np.repeat((nrm / np.linalg.norm(nrm)).astype(np.float32)[None, :], len(at), 0)
+    if tilt is not None:
+        N += tilt.reshape(-1)[at][:, None] * (u / np.linalg.norm(u)).astype(np.float32)[None, :]
+    N /= np.linalg.norm(N, axis=1, keepdims=True)
+    lit = np.clip(N @ key, 0, 1)
+    sheen = np.clip((lit - 0.8) / 0.2, 0, 1) ** 2
+    wander = noise3(P, 0.5, seed + 1) * 0.6
+    vein = np.abs(noise3(P + wander[:, None], rk['vein'], seed) - 0.5)
+    val = rk['shade'][0] + rk['shade'][1] * lit + 0.3 * sheen + tone - 0.1 * (vein < 0.05)
+    mat = (vein < 0.02).astype(int)
+    bay = BAYER4[ys % 4, xs % 4]
+    rgb = np.zeros((h * w, 3), np.float32)
+    for m, rp in enumerate(rk['ramps']):
+        sel = mat == m
+        idx = np.clip(np.round(val[sel] * (len(rp) - 1) + (bay[sel] - 0.5) * 0.3), 0, len(rp) - 1).astype(int)
+        rgb[at[sel]] = np.asarray(rp, np.float32)[idx]
+    rgba = np.concatenate([rgb.reshape(h, w, 3), alpha.reshape(h, w, 1).astype(np.float32)], -1)
+    return rgba, np.zeros((h, w), np.float32)
+
+
+CHESS = {
+    'white': dict(paint=_polished, ramps=[ramp('#e6ded2', dark=0.46, light=1.12, warm=0.06),
+                                          ramp('#9a92a0', dark=0.5, light=1.2)],
+                  key=(-0.4, 0.45, 0.8), shade=(0.4, 0.5), vein=0.9),
+    'black': dict(paint=_polished, ramps=[ramp('#3a3442', dark=0.5, light=1.9, cool=0.2),
+                                          ramp('#7a6a8a', dark=0.5, light=1.5)],
+                  key=(-0.4, 0.45, 0.8), shade=(0.3, 0.6), vein=0.9),
+}
+_BASE = [(0.26, 0.0), (0.26, 0.05), (0.225, 0.07), (0.225, 0.1), (0.17, 0.13)]
+# each piece's profile, turned: (radius, height) as shares of its height, foot to head
+CHESS_PROFILES = {
+    'pawn': _BASE + [(0.1, 0.22), (0.075, 0.47), (0.15, 0.51), (0.15, 0.535), (0.07, 0.56), (0.12, 0.6),
+                     (0.155, 0.65), (0.17, 0.71), (0.162, 0.77), (0.14, 0.83), (0.1, 0.89), (0.05, 0.93), (0.0, 0.95)],
+    'rook': _BASE + [(0.13, 0.25), (0.12, 0.62), (0.17, 0.69), (0.19, 0.73), (0.19, 0.9)],
+    'bishop': _BASE + [(0.09, 0.3), (0.07, 0.5), (0.14, 0.54), (0.14, 0.565), (0.06, 0.59), (0.1, 0.63),
+                       (0.135, 0.71), (0.12, 0.8), (0.08, 0.87), (0.035, 0.91), (0.05, 0.94), (0.045, 0.97), (0.0, 1.0)],
+    'queen': _BASE + [(0.1, 0.3), (0.075, 0.6), (0.15, 0.645), (0.15, 0.67), (0.08, 0.695), (0.1, 0.75),
+                      (0.165, 0.84), (0.165, 0.855)],
+    'king': _BASE + [(0.1, 0.3), (0.08, 0.58), (0.16, 0.63), (0.16, 0.655), (0.09, 0.68), (0.11, 0.74),
+                     (0.155, 0.82), (0.155, 0.84), (0.07, 0.86)],
+    'knight': _BASE + [(0.15, 0.2), (0.14, 0.42)],
+}
+# the knight's head, side on, facing +x: (forward, height) as shares of its height
+KNIGHT_HEAD = [(-0.13, 0.4), (-0.16, 0.6), (-0.12, 0.78), (-0.05, 0.9), (-0.01, 1.0), (0.03, 0.93), (0.1, 0.88),
+               (0.19, 0.75), (0.24, 0.66), (0.21, 0.6), (0.1, 0.62), (0.04, 0.56), (0.11, 0.4)]
+
+
+def _lathe(mat, seed, prof, H, n=16, phase=0.0):
+    """A turned piece: every pair of points in its profile a frustum of n faces, smoothly shaded round."""
+    parts = []
+    smooth = -math.tan(math.pi / n)                                   # a convex `flute`: round, not faceted
+    for k, ((r0, z0), (r1, z1)) in enumerate(zip(prof, prof[1:])):
+        parts += _prism_faces(mat, seed, n, max(r0 * H, 1e-3 * H), max(r1 * H, 1e-3 * H), z0 * H, z1 * H, phase,
+                              flute=smooth, block=True)
+    r, z = prof[-1]
+    if r > 0:                                                         # a flat head
+        parts.append(_disc(mat, seed + 1, n, r * H, z * H, phase))
+    return parts
+
+
+def _slab(mat, seed, x0, x1, y0, y1, z0, z1):
+    """A small block of the piece's stone, its five faces that show."""
+    faces = (((x1, y1, z1), (x1, y0, z1), (x1, y1, z0)), ((x0, y0, z1), (x0, y1, z1), (x0, y0, z0)),
+             ((x0, y1, z1), (x1, y1, z1), (x0, y1, z0)), ((x1, y0, z1), (x0, y0, z1), (x1, y0, z0)),
+             ((x1, y0, z1), (x1, y1, z1), (x0, y0, z1)))
+    return [_rock(mat, seed + k, *c) for k, c in enumerate(faces)]
+
+
+def chess_piece(pl):
+    """A chess piece in 3D, turned in polished marble - `piece` a `pawn`, `rook`, `bishop`, `knight`,
+    `queen` or `king`, `side` `white` or `black`, `height` tall (default 1): a stepped foot, a stem, a
+    collar; the pawn's ball, the rook's battlements, the bishop's mitre, the queen's coronet of points,
+    the king's crown and cross; the knight's head carved side on and cut thick, facing the way it faces.
+    Smoothly shaded round, a sheen where it faces the light, veins in the stone."""
+    kind = pl.get('piece', 'pawn')
+    mat = dict(CHESS[pl.get('side', 'white')])
+    mat['key'] = _turned(mat['key'], pl)
+    seed = int(pl.get('seed', 1))
+    H = float(pl.get('height', 1.0))
+    parts = _lathe(mat, seed, CHESS_PROFILES[kind], H)
+    if kind == 'rook':                                                # battlements round its head
+        for k in range(5):
+            a0, a1 = 2 * math.pi * k / 5, 2 * math.pi * (k + 0.55) / 5
+            for a in np.linspace(a0, a1, 3)[:-1]:
+                b = a + (a1 - a0) / 2
+                p0, p1 = np.array([math.cos(a), math.sin(a)]), np.array([math.cos(b), math.sin(b)])
+                o0, o1, i0, i1 = p0 * 0.19 * H, p1 * 0.19 * H, p0 * 0.11 * H, p1 * 0.11 * H
+                zt, zb = H, 0.9 * H
+                parts += [_rock(mat, seed + 3, (*o0, zt), (*o1, zt), (*o0, zb)), _rock(mat, seed + 4, (*i1, zt), (*i0, zt), (*i1, zb)),
+                          _rock(mat, seed + 5, (*i0, zt), (*i1, zt), (*o0, zt))]
+            for a in (a0, a1):                                        # the merlon's ends
+                p = np.array([math.cos(a), math.sin(a)])
+                parts.append(_rock(mat, seed + 6, (*(p * 0.11 * H), H), (*(p * 0.19 * H), H), (*(p * 0.11 * H), 0.9 * H)))
+    elif kind in ('queen', 'king'):                                   # a coronet of points round its head
+        r, z0 = CHESS_PROFILES[kind][-1 if kind == 'queen' else -2]
+        pts = 9 if kind == 'queen' else 6
+        for k in range(pts):
+            a, da = 2 * math.pi * k / pts, math.pi / pts
+            A = np.array([r * math.cos(a - da) * H, r * math.sin(a - da) * H, z0 * H])
+            B = np.array([r * math.cos(a + da) * H, r * math.sin(a + da) * H, z0 * H])
+            C = np.array([(r + 0.015) * math.cos(a) * H, (r + 0.015) * math.sin(a) * H, (z0 + 0.075) * H])
+            parts.append(_rock_tri(mat, seed + 7, A, B, C, np.array([math.cos(a), math.sin(a), 0.2])))
+        if kind == 'queen':                                           # her ball
+            parts += _lathe(mat, seed + 8, [(0.0, 0.87), (0.05, 0.9), (0.055, 0.94), (0.0, 0.98)], H, n=10)
+        else:                                                         # his cross
+            w, t = 0.02 * H, 0.025 * H
+            parts += _slab(mat, seed + 9, -t, t, -w, w, 0.86 * H, H)
+            parts += _slab(mat, seed + 10, -t, t, -0.065 * H, 0.065 * H, 0.92 * H, 0.955 * H)
+    elif kind == 'knight':                                            # the head, cut thick from a slab
+        t = 0.085 * H
+        pts = [(x * H, z * H) for x, z in KNIGHT_HEAD]
+        x0, x1 = min(p[0] for p in pts), max(p[0] for p in pts)
+        z0, z1 = min(p[1] for p in pts), max(p[1] for p in pts)
+
+        def mask(w, h, flip=False):
+            poly = [((x - x0) / (x1 - x0) * w, (z1 - z) / (z1 - z0) * h) for x, z in pts]
+            if flip:
+                poly = [(w - px, py) for px, py in poly]
+            return _grown(_poly(w, h, poly))
+        parts.append(_rock(mat, seed + 11, (x0, t, z1), (x1, t, z1), (x0, t, z0), alpha=mask))     # read from +y
+        parts.append(_rock(mat, seed + 12, (x1, -t, z1), (x0, -t, z1), (x1, -t, z0),                 # and from -y
+                           alpha=lambda w, h: mask(w, h, True)))
+        cx, cz = sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)
+        for k, (p, q) in enumerate(zip(pts, pts[1:] + pts[:1])):     # its edges, round the outline
+            out = np.array([(p[0] + q[0]) / 2 - cx, 0.0, (p[1] + q[1]) / 2 - cz])
+            A, B = np.array([p[0], -t, p[1]]), np.array([q[0], -t, q[1]])
+            nrm = np.cross(B - A, np.array([0.0, 2 * t, 0.0]))
+            if nrm @ out < 0:
+                A, B = B, A
+            parts.append(_rock(mat, seed + 13 + k, A, B, A + np.array([0.0, 2 * t, 0.0])))
+        for side_ in (-1, 1):                                         # its eyes, a nick in each cheek
+            parts.append(_rock(dict(mat, shade=(0.05, 0.1)), seed + 40, (0.085 * H, side_ * (t + 0.002), 0.79 * H),
+                               (0.115 * H, side_ * (t + 0.002), 0.79 * H), (0.085 * H, side_ * (t + 0.002), 0.765 * H)))
+    parts = [p for p in parts if p]
+    parts.append(shadow(0.0, 0.0, 0.7 * H, 0.45))
+    return parts
+
+
 # ------------------------------------------------------------------ crystals
 
 CRYSTAL_HUES = {'cyan': '#5adcf2', 'violet': '#a47af6', 'rose': '#f27cba', 'green': '#62eaa4', 'amber': '#f2b24e',
@@ -1809,4 +1959,4 @@ def crystal_cluster(pl):
 OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder, 'column': column,
            'beam': beam, 'crystal_cluster': crystal_cluster, 'trough': trough, 'shed_roof': shed_roof,
            'gable_roof': gable_roof, 'market_stand': market_stand, 'saloon_bar': saloon_bar, 'rails': rails,
-           'ore_cart': ore_cart, 'keel': keel}
+           'ore_cart': ore_cart, 'keel': keel, 'chess_piece': chess_piece}
