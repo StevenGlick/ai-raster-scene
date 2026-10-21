@@ -22,7 +22,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
 | Textures | 188 | 188 | 0 | 0 | 0 |
-| Props | 294 | 294 | 0 | 0 | 0 |
+| Props | 297 | 297 | 0 | 0 | 0 |
 | Characters | 29 | 29 | 0 | 0 | 0 |
 | Decals | 26 | 26 | 0 | 0 | 0 |
 | Skies | 13 | 13 | 0 | 0 | 0 |
@@ -32,7 +32,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Objects | 10 | 10 | 0 | 0 | 0 |
+| Objects | 11 | 11 | 0 | 0 | 0 |
 | Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 60 | 60 | 0 | 0 | 0 |
-| **all** | **764** | **764** | **0** | **0** | **0** |
+| **all** | **768** | **768** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -57,7 +57,7 @@ From going through the catalog. One scene at a time, each done properly; no rush
 - [x] **neon_bar** - the reef tank in the back wall done like the aquarium at a small scale: open water behind, a little live rock, perhaps one small boulder at the back. Keep the density; adding too much would throw off the balance. Done: the tank's back wall painted as open water (dimmed to the bar's mood), a low reef `rock_wall` along its foot and one small boulder; the `reef_rock`s and corals kept in front, near the glass.
 - [x] **red_canyon** - the canyon walls themselves updated (the fallen rock along their foot is done). Done: every face of the canyon lined with a tall `rock_wall` of a new `canyon` rock - beds of red and pale stone by height, desert varnish streaking down - rising 6-7.4 over the old walls (cut down to 5.2 as cores), so the cliffs jut and step and the rim is ragged against the sky.
 - [x] **ghost_town** - the buildings that have no depth fixed, drawn with the layered facade technique of the city; the horse trough in 3D; shot 2: the empty space under the frame in front of the building filled - planks overhead for shade, or a deck; shot 4: the mountain walls updated, as for the canyon. Done: every western building now has its body behind the false front - a gabled roof of boards running back from the street on walls up from the block - and its porch a roof of boards sloping down from the front to the fascia, so it shows from the street over the posts and gives shade (the walk's ceiling lowered to 1.15 so it does); troughs of boards with water in them (`trough`, new); the mesas lined with `canyon` rock in 3D, a ragged skyline of cliffs in beds.
-- [ ] **village_green** - the market cart rebuilt in 3D, as the noodle stand was; the houses need roofs with depth (they read as if roofless); the buildings drawn with the layered facade technique.
+- [x] **village_green** - the market cart rebuilt in 3D, as the noodle stand was; the houses need roofs with depth (they read as if roofless); the buildings drawn with the layered facade technique. Done: every house's roof built in 3D by the facade code - behind a gable end a gabled roof running back from the street, its slopes on the gable's edges; over an eaves house a roof along the street, its eaves out over the front, a brick chimney through some ridges - thatch (`_thatch`) or clay tiles (`_tiles`), on plastered walls of the house's colour up from the block, behind every facade layer; the market stall a `market_stand` object (a trestle table with a striped skirt under a striped awning, `goods_*` heaped on it).
 - [x] **cathedral_ruin** - the pillars modelled in 3D (octagonal) instead of billboards, and moved inward to where they would carry the roof. Done: two arcades of octagonal piers of `ashlar` (dressed stone in drums, plinths and capitals) 3.2 in from each wall between the windows, carrying timber wall plates (`beam`) under the roof; the pier under the fallen roof broken off ragged, its plate down on the floor; the pews between the arcades, behind the cameras.
 - [x] **ancient_ruins** - the pillars remodelled in 3D, as for the cathedral; perhaps the fallen statue's head in 3D too (not a priority). A scene to give more love. Done: the peristyle and the sacred way's columns are fluted Doric columns of `marble` in 3D (`flutes`, `doric`), laid in drums, architraves and cornices (`beam`) across the runs that stand, the rest snapped off (`broken`) or fallen; the `ruined_columns` prefab in 3D; `fill` so the backlit columns are not black; a new shot, `ruins_columns`. The statue's head is still a billboard.
 - [x] **bayou** - the trees redone with the jungle's layered fringe, its layers spread further apart, so the trees look properly 3D. Done: the swamp fringe in four layers (a new middle stand; no more moss curtains hanging in the air on their own bough, which read as signboards over the trees) spread three cells out from the wall along a natural, wandering line (`wander`, new) - the heron's shot now looks into a misty forest of trunks at every depth, and the canopy behind the shack is whole.
@@ -321,7 +321,7 @@ New scenes:
 | `bamboo` | good |  | tropical_beach | A node in each third of every pole, so they stagger from pole to pole instead of lining up across them. |
 | `thatch` | good |  | tropical_beach | Each row stands out over the one under it and shades its top, so the rows read. |
 
-## Props (294)
+## Props (297)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -361,7 +361,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `chains` | good | 0.6 tall, no shadow | castle_keep |  |
 | `ladder` | good | 1 tall, no shadow | capsule_hotel, drowned_library, red_canyon, sewer_tunnels |  |
 | `pipe_valve` | good | 0.32 tall, no shadow | bunker_lab, clockwork_city, sewer_tunnels |  |
-| `sack` | good | 0.42 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, neon_street, rain_alley, rainy_street, sewer_tunnels, woodland_night |  |
+| `sack` | good | 0.42 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, neon_street, rain_alley, rainy_street, sewer_tunnels, village_green, woodland_night |  |
 | `bucket` | good | 0.32 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, neon_street, rain_alley, rainy_street, sewer_tunnels |  |
 
 ### Light and fire
@@ -456,7 +456,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `hay_bale` | good | 0.5 tall | autumn_lane | Drawn with the toolkit in village.py: a square bale packed with stalks, two bands of twine, loose ends bristling. |
 | `well` | good | 1.7 tall | village_green | Drawn with the toolkit in village.py: a round wall of fieldstones with a coping, oak posts under a little shingled roof, a windlass, a rope and a bucket. |
 | `cart` | good | 0.75 tall | ghost_town, village_green | Drawn with the toolkit in village.py: a hand cart: a plank bed with stakes on a big spoked wheel, its shafts down, loaded with sacks. |
-| `market_stall` | good | 1.9 tall | village_green | Drawn with the toolkit in village.py: a red and white striped awning with a scalloped valance over a trestle of apples, cabbages and bread, crates beneath. |
+| `market_stall` | good | 1.9 tall | - | Drawn with the toolkit in village.py: a red and white striped awning with a scalloped valance over a trestle of apples, cabbages and bread, crates beneath. |
 | `inn_sign` | good | 0.75 tall | village_green | Drawn with the toolkit in village.py: an iron bracket and scroll with a red board hanging from it, a gilt border and crown; stand it out from a front as a card. |
 | `armor` | good | 0.66 tall | castle_keep, haunted_house |  |
 
@@ -683,6 +683,9 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
 | `swamp_card_4` | good | 4.6 tall | bayou | The back: a dense stand of tall bald cypresses hung with moss, their crowns high enough to hide the wall's top. |
+| `goods_apples` | good | 0.22 tall | village_green | Drawn with the toolkit in village.py: a heap of red apples on a shallow tray, for a stall's table (the `market_stand` heaps them). |
+| `goods_cabbages` | good | 0.22 tall | village_green | Cabbages heaped on a tray, as the apples. |
+| `goods_loaves` | good | 0.22 tall | village_green | Loaves heaped on a tray, as the apples. |
 
 ## Characters (29)
 
@@ -871,7 +874,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
-## Objects (10)
+## Objects (11)
 
 Things too big for a billboard, built in 3D out of flat panels (`scripts/objects.py`).
 
@@ -892,6 +895,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `trough` | good | ghost_town | A horse trough of weathered boards (`_wood` with `boards`: a seam between each, each its own tone), a rim, still water a hand below it, a soft shadow. Replaces the `water_trough` billboard in the ghost town. |
 | `shed_roof` | good | - | A roof of boards sloping down to its front edge, the boards running down the slope. The western facade builds one over every porch (ghost_town), sloping from the front down to the fascia so it shows from the street. |
 | `gable_roof` | good | - | A gabled roof of boards with gable ends of upright boards, `walls` under it (`inset` back from its front). The western facade builds one behind every false front (ghost_town): the building's body, low enough for the front to hide. |
+| `market_stand` | good | village_green | The market stall in 3D, as the noodle stand: a trestle table of weathered boards with a striped skirt (the awning's valance, in step), four poles, a striped awning sloping down to the front with a scalloped valance round it; `goods_*` heaped on the table, crates and a sack by it, as billboards. Replaces the `market_stall` billboard in the village. |
 
 ## Held items (8)
 
@@ -1112,6 +1116,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, the village's roofs.** The user's eleventh: the village's houses read as roofless and flat, the market cart a billboard. The timber style now has a `body` (2.8): the facade code builds each house's roof as a `gable_roof` - behind a gable end, running back from the street with its slopes on the gable card's edges (the card stays the front); over an eaves house, along the street with its eaves 0.15 out over the front (its slope card is gone) and a chimney where the card had one - on plastered walls (`plaster`, the house's colour, `buildings.house_color`) up from the block, inset behind every facade layer (`inset` takes four sides now). New roof covers `thatch` and `tile` (painters `_thatch`, `_tiles`; `ROOFS`, with brick for chimneys), `overhang` per eaves and ends. `market_stand`: a trestle table of boards with a striped skirt (the valance's stripes), an awning on four poles, goods heaped on it (`goods_apples`, `goods_cabbages`, `goods_loaves`, new in village.py) - the keeper kept out in front, where the approved shot had him; behind the table the bubble lost him. `_timber` is never wet (its wet line was measured from the roof's eaves).
 - **2026-10-21, the frontier town.** The user's tenth: depth for the ghost town's buildings, its trough in 3D, the porch frame filled, the mountain walls redone. Three timber objects: `trough`, `shed_roof` and `gable_roof` (with `walls` and `inset`), all of boards - `_wood` gains `boards`: a seam between each and each its own tone, the seams lining up across panels. The facade code builds objects now (World.panels, drawn with the scene's): a western porch's roof (a ceiling at the fascia's height is hidden behind the fascia from the street, so the porch read as a bare frame; a roof sloping down to it shows), and behind each false front its building, a gabled roof low enough for the front to hide from the street (`body`, 5 cells back). The body's walls stand behind every facade layer - first built on the facade's own plane, they covered the windows. Mesas: R lined with `canyon` rock walls, the old walls cut to 5.
 - **2026-10-21, the jungle's edge.** The user's ninth: the jungle temple's tree line natural and polygonal, not the grid's. Its fringe now `wander`s, 1.4 deep, round the clearing and down the path under the canopy; and the canopy walls within two cells of open ground are all at its lowest height, because their steps (2.5 to 4 in 0.3s) showed between the trees as clipped hedges from the pyramid top. The temple shot is all but unchanged.
 - **2026-10-21, the bayou's trees.** The user's eighth: the swamp's layers spread further apart. A fringe can now `wander`: each layer one line the same distance out from the forest all along (marching squares on the distance from it, sampled four to a cell), round at the corners, wandering in and out on smooth noise, cut into straight cards (`_chords`: never under 0.6, so a sharp bend makes no sliver - a slice of forest seen face on reads as a tower) that carry the picture on from one to the next and fade out seen almost edge on (`edge_fade`, new). Layers stop at other walls; all but the back one keep 0.75 clear of them, so the shack has trees behind it and none squeezed beside it, and pieces broken where a layer grazes a corner are joined (no slit of sky). The swamp set in four layers, its back stand denser and taller so the wall's flat top never shows, and without the floating moss.

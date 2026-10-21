@@ -1,10 +1,12 @@
 """Village green: a cobbled street of timber-framed houses opening onto a green with a well.
 
 Shows the `timber` facade style - limewashed and ochre plaster between dark oak timbers, leaded
-casements, plank doors, and over the street a gable end or a roof of thatch or tiles, some with a
-chimney - and the village props: a market stall at the top of the street, the inn's sign standing
-out over it as a card, a hand cart, the well on the green; and the same street by night through
-shot overrides, its windows and the inn's lanterns lit.
+casements, plank doors, and every house's roof built in 3D: a gabled roof running back behind a
+gable end, or a roof of thatch or tiles along the street, some with a chimney, on plastered walls
+up from the block - and the village props: a market stand at the top of the street (a 3D object:
+a trestle table of boards under a striped awning, apples, cabbages and loaves heaped on it), the
+inn's sign standing out over the street as a card, a hand cart, the well on the green; and the same
+street by night through shot overrides, its windows and the inn's lanterns lit.
 Run:  python village_green.py  -> writes village_green.json next to this file.
 """
 import os
@@ -28,8 +30,7 @@ def village_green():
     g.rect(7, 5, 26, 17, 'g')                      # the grass
     g.rect(14, 17, 19, 18, 'c')                    # where the street meets the green
     sprites = [
-        # a market stall on the street and its keeper
-        {'x': 15.5, 'y': 33.6, 'type': 'market_stall'},
+        # the market stand's keeper, out in front of it calling his wares
         {'id': 'keeper', 'x': 16.5, 'y': 34.5, 'type': 'shopkeeper', 'facing': 45},
         {'x': 14.5, 'y': 34.6, 'type': 'crate'}, {'x': 14.6, 'y': 32.2, 'type': 'barrel'},
         # the inn on the east side: its sign out over the street, barrels and lanterns by the door
@@ -67,6 +68,7 @@ def village_green():
         fog={'color': [0.72, 0.74, 0.8], 'density': 0.009},
         lights=[SUN],
         sprites=sprites,
+        objects=[{'type': 'market_stand', 'x': 15.5, 'y': 33.6, 'angle': 44}],     # facing up the street
         scatter=[{'of': 'grass_tuft', 'on': 'g', 'density': 0.12, 'sizes': {'tiny': 3, 'small': 1}, 'seed': 2}],
         camera={'x': 17.0, 'y': 44.5, 'angle': 270, 'fov': 68, 'height': 0.5},
         shots=[

@@ -79,7 +79,7 @@ FACADE_STYLES = {
         'doors': ['#3a2a1c', '#4a3424', '#2a3a2a', '#5a2a1a', '#2a2e3a'],
         'bay': (1.0, 1.3), 'shops': 0.3, 'courses': False, 'plaster': True, 'timber': True,
         'timber_colors': ['#2a1e16', '#33261c', '#3e3026', '#4e4236', '#5c544a'],
-        'roofs': ['thatch', 'thatch', 'tile'], 'gables': 0.5,
+        'roofs': ['thatch', 'thatch', 'tile'], 'gables': 0.5, 'body': 2.8,
     },
     'western': {
         'description': 'a frontier main street: clapboard in faded paint, peeling to grey wood, false fronts standing '
@@ -698,6 +698,14 @@ def _plank_door(rgba, box, dc):
     cy = (y0 + y1) // 2
     rgba[cy:cy + 4, x1 - 7:x1 - 4, :3] = iron                        # the ring
     rgba[cy + 1:cy + 3, x1 - 6:x1 - 5, :3] = dc * 0.8
+
+
+def house_color(style, look):
+    """A village house's own colour, as its walls and gable are painted, as #rrggbb."""
+    S = FACADE_STYLES[pick_style(style, look)]
+    r = np.random.default_rng(int(look) % (2 ** 32))
+    c = np.clip(_rgb(S['colors'][r.integers(len(S['colors']))]) * float(r.uniform(0.88, 1.12)), 0, 1)
+    return '#' + ''.join(f'{int(round(v * 255)):02x}' for v in c)
 
 
 def roof_of(style, look, w):

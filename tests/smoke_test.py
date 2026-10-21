@@ -940,23 +940,26 @@ def check_glass_facades():
     assert any(buildings.layer_image(sp['type'])[1].max() > 0.5 for sp in walls), 'neon signs glow'
     assert buildings.layer_image(blades[0]['type'])[1].max() > 0.5
 
-    # 8. a village: every timber house wears a roof standing on its wall - a gable end in the wall's
-    # own plane, a slope of thatch or tiles set back behind the eave - and the other styles none
+    # 8. a village: every timber house has its roof built in 3D on plastered walls up from the block -
+    # behind a gable end (its card in the wall's plane, on the wall) a roof running back from the street,
+    # over an eaves house a roof along it with its eaves out over the front - nothing over the ground
+    # floor's front; the other styles none
     village = dict(street, legend=dict(street['legend'], B={'wall': 'plaster', 'h': 1, 'facade': {
         'style': 'timber', 'widths': [2, 3], 'storeys': [1, 2], 'seed': 4}}))
-    sprites = R.World(village).fringe_sprites
-    walls = [sp for sp in sprites if '"layer":"wall"' in sp['type']]
-    roofs = [sp for sp in sprites if '"layer":"roof"' in sp['type']]
+    w = R.World(village)
+    walls = [sp for sp in w.fringe_sprites if '"layer":"wall"' in sp['type']]
+    cards = [sp for sp in w.fringe_sprites if '"layer":"roof"' in sp['type']]
+    roofs = [ob for ob in w._facade_objects if ob['type'] == 'gable_roof']
     assert len(roofs) == len(walls) >= 6, 'a roof on every house'
-    kinds = set()
-    for wall_, roof_ in zip(walls, roofs):
-        p = json.loads(roof_['type'][7:])
-        kinds.add(p['kind'])
-        assert roof_['z'] == wall_['scale'] and roof_['length'] > wall_['length'], 'it stands on the wall, overhanging'
-        assert (roof_['y'] > wall_['y']) == (p['kind'] == 'gable'), 'a gable in the front, a slope set back'
-        img = buildings.layer_image(roof_['type'])[0]
-        assert img.shape[0] == round(roof_['scale'] * 64) and img[..., 3].mean() > 0.3
-    assert kinds == {'gable', 'eaves'}, kinds
+    assert len(cards) == sum(ob['angle'] == 90 for ob in roofs) and 0 < len(cards) < len(roofs), \
+        'a gable end keeps its card, an eaves roof is all 3D'
+    for card in cards:
+        assert json.loads(card['type'][7:])['kind'] == 'gable' and card['y'] > walls[0]['y'], 'the gable on the wall'
+        assert buildings.layer_image(card['type'])[0][..., 3].mean() > 0.3
+    corners = np.concatenate([[pn['o'] + a * pn['u'] + b * pn['v'] for a in (0, 1) for b in (0, 1)] for pn in w.panels])
+    low = corners[corners[:, 2] < 0.99]
+    assert not ((low[:, 1] > 3.0 + 1e-6) & (low[:, 1] < 4.0)).any(), "nothing over the ground floor's front"
+    assert (corners[:, 1] > 4.05).any(), 'the eaves out over the street'
     assert not any('"layer":"roof"' in sp['type'] for sp in R.World(street).fringe_sprites)
 
     # 9. a frontier street: a false front in the wall's plane on every building, signs that do not
@@ -1337,7 +1340,8 @@ def check_objects():
     day, night = lift(0.6), lift(0.15)
     assert day > 0.02 and night < day * 0.5, f'fill follows the ambient: {day:.3f} by day, {night:.3f} by night'
     # 9. timber: a trough closed round its sides with water a hand below the rim; a shed roof sloping
-    # down to its front edge; a gabled roof's ridge over its middle, and walls under it when asked
+    # down to its front edge; a gabled roof's ridge over its middle, and walls under it when asked; a
+    # roof of thatch or tiles, a chimney through the ridge; a market stand under its awning
     def built(**pl):
         return [np.array([pn['o'] + a * pn['u'] + b * pn['v'] for a in (0, 1) for b in (0, 1)])
                 for pn in objects.expand({'map': ['.'], 'objects': [dict({'x': 0.0, 'y': 0.0}, **pl)]})['panels']]
@@ -1353,6 +1357,15 @@ def check_objects():
     top = gable[np.argmax(gable[:, 2])]
     assert abs(gable[:, 2].max() - 2.0) < 1e-6 and abs(top[1]) < 1e-6 and abs(gable[:, 2].min()) < 0.02, \
         'the ridge over its middle, the walls down to the ground'
+    for cover in ('thatch', 'tile'):
+        pns = objects.expand({'map': ['.'], 'objects': [{'type': 'gable_roof', 'x': 0.0, 'y': 0.0, 'cover': cover,
+                                                         'chimney': 0.5, 'plaster': '#d8c8a8'}]})['panels']
+        assert pns[0]['rgba'][..., :3].std() > 0.03, f'{cover} has its texture'
+        tall = np.concatenate([[pn['o'] + a * pn['u'] + b * pn['v'] for a in (0, 1) for b in (0, 1)] for pn in pns])
+        assert tall[:, 2].max() > 0.8 + 0.3, 'a chimney stands over the ridge'
+    stand = objects.expand({'map': ['.'], 'objects': [{'type': 'market_stand', 'x': 0.0, 'y': 0.0}]})
+    zs = np.concatenate([[pn['o'] + a * pn['u'] + b * pn['v'] for a in (0, 1) for b in (0, 1)] for pn in stand['panels']])[:, 2]
+    assert zs.max() > 1.3 and any(sp['type'].startswith('goods_') for sp in stand['sprites']), 'goods under an awning'
     print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights, '
           f'rock, linings, columns fluted and Doric, fill, timber, crystals bend the light)')
 

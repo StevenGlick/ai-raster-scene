@@ -35,7 +35,8 @@ TEXELS = 64                 # texels per world unit, as on the walls
 PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 'title', 'notes',
                   'rock', 'length', 'height', 'depth', 'pieces', 'trim', 'size', 'seed', 'plants', 'back', 'lining',
                   'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
-                  'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset'}
+                  'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset',
+                  'cover', 'chimney', 'plaster'}
 
 
 # ------------------------------------------------------------------ parts
@@ -1289,7 +1290,7 @@ def _timber(pl, grain, width):
     board every `width`."""
     mat = _material(dict(pl, material=pl.get('material', 'wood')))
     if mat.get('paint') is _wood:
-        mat = dict(mat, grain=grain, boards=width, wet=-1.0)
+        mat = dict(mat, grain=grain, boards=width, wet=-1e9)       # never wet: it may stand anywhere
     return mat
 
 
@@ -1340,25 +1341,187 @@ def shed_roof(pl):
 
 
 def gable_roof(pl):
-    """A gabled roof of boards: the ridge `length` long the way it faces, `width` across, the eaves at
-    the placement's `z` and the ridge `rise` above them, overhanging the walls by `overhang`; its
-    gable ends closed with upright boards, and under it `walls` that tall (0 for none) - the body of a
-    building on a lower block, or a shed on the ground - standing `inset` back from its front end."""
-    roof = _timber(pl, (0.025, 0.4, 0.4), 0.14)
-    ends = _timber(pl, (0.025, 0.025, 0.4), 0.16)
+    """A gabled roof: the ridge `length` long the way it faces, `width` across, the eaves at the
+    placement's `z` and the ridge `rise` above them; `cover` is `boards` (the default), `thatch` or
+    `tile`. It overhangs by `overhang` - a number, or [at the eaves, at the ends]; its gable ends are
+    closed with upright boards, and under it stand `walls` that tall (0 for none) - the body of a
+    building on a lower block, or a shed on the ground - set `inset` in from the roof's ends and
+    eaves: a number (from the front end only) or [front, back, left, right]. `chimney` stands one on
+    the ridge, that far along it from the back (0..1); `plaster` (a colour) makes the walls and gable
+    ends plaster of that colour instead of boards."""
+    cover = pl.get('cover', 'boards')
+    roof = (_timber(pl, (0.025, 0.4, 0.4), 0.14) if cover == 'boards'
+            else dict(ROOFS[cover], key=_turned(ROOFS[cover]['key'], pl)))
+    ends = (_timber(pl, (0.025, 0.025, 0.4), 0.16) if not pl.get('plaster')
+            else dict(PLASTER, ramps=[ramp(pl['plaster'], dark=0.4, light=1.3)], key=_turned(PLASTER['key'], pl)))
     seed = int(pl.get('seed', 1))
     L, W, r = float(pl.get('length', 3.0)) / 2, float(pl.get('width', 2.0)) / 2, float(pl.get('rise', 0.8))
-    o = float(pl.get('overhang', 0.12))
+    o = pl.get('overhang', 0.12)
+    o, oe = (float(o), float(o)) if isinstance(o, (int, float)) else (float(o[0]), float(o[1]))
     drop = o * r / W                                                  # the eaves come down past the walls
-    parts = [_rock(roof, seed, (-L - o, 0.0, r), (L + o, 0.0, r), (-L - o, W + o, -drop)),
-             _rock(roof, seed + 1, (L + o, 0.0, r), (-L - o, 0.0, r), (L + o, -W - o, -drop))]
+    parts = [_rock(roof, seed, (-L - oe, 0.0, r), (L + oe, 0.0, r), (-L - oe, W + o, -drop)),
+             _rock(roof, seed + 1, (L + oe, 0.0, r), (-L - oe, 0.0, r), (L + oe, -W - o, -drop))]
     for k, x in enumerate((L, -L)):
         parts.append(_rock_tri(ends, seed + 2 + k, (x, -W, 0.0), (x, W, 0.0), (x, 0.0, r), (x, 0.0, 0.0)))
-    h, f = float(pl.get('walls', 0.0)), L - float(pl.get('inset', 0.0))
+    h, ins = float(pl.get('walls', 0.0)), pl.get('inset', 0.0)
+    ins = (float(ins), 0.0, 0.0, 0.0) if isinstance(ins, (int, float)) else tuple(float(v) for v in ins)
+    f, b, lf, rt = L - ins[0], -L + ins[1], -W + ins[2], W - ins[3]
     if h > 0:                                                         # the walls under it, read from outside
-        for k, c in enumerate((((f, W, 0.0), (f, -W, 0.0), (f, W, -h)), ((-L, -W, 0.0), (-L, W, 0.0), (-L, -W, -h)),
-                               ((-L, W, 0.0), (f, W, 0.0), (-L, W, -h)), ((f, -W, 0.0), (-L, -W, 0.0), (f, -W, -h)))):
+        for k, c in enumerate((((f, rt, 0.0), (f, lf, 0.0), (f, rt, -h)), ((b, lf, 0.0), (b, rt, 0.0), (b, lf, -h)),
+                               ((b, rt, 0.0), (f, rt, 0.0), (b, rt, -h)), ((f, lf, 0.0), (b, lf, 0.0), (f, lf, -h)))):
             parts.append(_rock(ends, seed + 4 + k, *c))
+    if pl.get('chimney') is not None:                                 # a chimney of brick through the ridge
+        x = -L + 2 * L * float(pl['chimney'])
+        c0, c1, ztop = 0.13, 0.13, r + 0.36
+        brick = ROOFS['chimney']
+        for k, c in enumerate((((x + c0, c1, ztop), (x + c0, -c1, ztop), (x + c0, c1, r * 0.4)),
+                               ((x - c0, -c1, ztop), (x - c0, c1, ztop), (x - c0, -c1, r * 0.4)),
+                               ((x - c0, c1, ztop), (x + c0, c1, ztop), (x - c0, c1, r * 0.4)),
+                               ((x + c0, -c1, ztop), (x - c0, -c1, ztop), (x + c0, -c1, r * 0.4)))):
+            parts.append(_rock(dict(brick, key=_turned(brick['key'], pl)), seed + 9 + k, *c))
+        parts += box((x - c0 - 0.025, -c1 - 0.025, ztop), (x + c0 + 0.025, c1 + 0.025, ztop + 0.05),
+                     {f_: _solid_cached(_texels(2 * c0 + 0.05), 4, '#4e3a32') for f_ in ('front', 'back', 'right', 'left')}
+                     | {'top': _solid_cached(_texels(2 * c0 + 0.05), _texels(2 * c1 + 0.05), '#3a2a24')})
+    return [p for p in parts if p]
+
+
+def _thatch(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
+    """Thatch on a roof's slope (a panel whose v runs down the slope): reed ends in streaks of gold and
+    weathered brown running down it, laid in courses, each course's foot a dark line of shadow,
+    greyer and greener toward the ridge."""
+    key = np.asarray(rk['key'], np.float32)
+    key /= np.linalg.norm(key)
+    at = np.nonzero(alpha.reshape(-1))[0]
+    ys, xs = at // w, at % w
+    nrm = np.cross(u, v)
+    lit = float(np.clip((nrm / np.linalg.norm(nrm)) @ key, 0, 1))
+    a = (xs + 0.5) / w * np.linalg.norm(u)                            # along the ridge, units
+    d = (ys + 0.5) / h * np.linalg.norm(v)                            # down the slope from the ridge
+    P = np.stack([a / 0.05, d / 0.3, np.zeros_like(a)], 1)
+    streak = noise3(P, 1.0, seed) * 0.6 + noise3(P * 2.1, 1.0, seed + 1) * 0.4
+    course = d / 0.22 + 0.25 * noise3(np.stack([a / 0.6, d, np.zeros_like(a)], 1), 1.0, seed + 2)
+    foot = (course - np.floor(course)) > 0.88                        # the shadow under each course
+    val = rk['shade'][0] + rk['shade'][1] * lit + tone + 0.5 * (streak - 0.5) - 0.1 * foot - 0.12 * d / (d.max() + 1e-6)
+    patch_ = noise3(np.stack([a, d, np.zeros_like(a)], 1), 0.25, seed + 3)
+    mat = ((patch_ > 0.86) | (d < 0.05 + 0.05 * noise3(np.stack([a / 0.3, d, d], 1), 1.0, seed + 4))).astype(int)
+    bay = BAYER4[ys % 4, xs % 4]
+    rgb = np.zeros((h * w, 3), np.float32)
+    for m, rp in enumerate(rk['ramps']):
+        sel = mat == m
+        idx = np.clip(np.round(val[sel] * (len(rp) - 1) + (bay[sel] - 0.5) * 0.35), 0, len(rp) - 1).astype(int)
+        rgb[at[sel]] = np.asarray(rp, np.float32)[idx]
+    rgba = np.concatenate([rgb.reshape(h, w, 3), alpha.reshape(h, w, 1).astype(np.float32)], -1)
+    return rgba, np.zeros((h, w), np.float32)
+
+
+def _tiles(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
+    """Clay tiles on a roof's slope (a panel whose v runs down it): in courses, each tile its own
+    shade of terracotta, the joints staggered course to course, each course's foot overlapping the
+    next in a line of shadow, lichen on a few. Also bricks for a chimney, when `bricks`."""
+    key = np.asarray(rk['key'], np.float32)
+    key /= np.linalg.norm(key)
+    at = np.nonzero(alpha.reshape(-1))[0]
+    ys, xs = at // w, at % w
+    nrm = np.cross(u, v)
+    lit = float(np.clip((nrm / np.linalg.norm(nrm)) @ key, 0, 1))
+    a = (xs + 0.5) / w * np.linalg.norm(u)
+    d = (ys + 0.5) / h * np.linalg.norm(v)
+    ch, cw = rk['course']
+    row = np.floor(d / ch).astype(np.int64)
+    col = np.floor(a / cw + 0.5 * (row % 2)).astype(np.int64)
+    fd, fa = d / ch - row, a / cw + 0.5 * (row % 2) - col
+    seam = (fd > 1 - 1.5 / (TEXELS * ch)) | (fa < 1.0 / (TEXELS * cw))
+    val = (rk['shade'][0] + rk['shade'][1] * lit + tone + (table(5, row * 7919 + col * 31 + seed) - 0.5) * 0.18
+           + 0.08 * (0.5 - fd) - 0.28 * seam)
+    mat = ((table(4, row * 104729 + col * 13 + seed) < rk.get('lichen', 0.0)) & (fd > 0.3)).astype(int)
+    bay = BAYER4[ys % 4, xs % 4]
+    rgb = np.zeros((h * w, 3), np.float32)
+    for m, rp in enumerate(rk['ramps']):
+        sel = mat == m
+        idx = np.clip(np.round(val[sel] * (len(rp) - 1) + (bay[sel] - 0.5) * 0.35), 0, len(rp) - 1).astype(int)
+        rgb[at[sel]] = np.asarray(rp, np.float32)[idx]
+    rgba = np.concatenate([rgb.reshape(h, w, 3), alpha.reshape(h, w, 1).astype(np.float32)], -1)
+    return rgba, np.zeros((h, w), np.float32)
+
+
+def _plaster(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
+    """Limewash or ochre plaster on a wall, lit like rock: mottled a little, darker toward its foot."""
+    key = np.asarray(rk['key'], np.float32)
+    key /= np.linalg.norm(key)
+    at = np.nonzero(alpha.reshape(-1))[0]
+    ys, xs = at // w, at % w
+    P = o + ((xs + 0.5) / w)[:, None] * u + ((ys + 0.5) / h)[:, None] * v
+    nrm = np.cross(u, v)
+    lit = float(np.clip((nrm / np.linalg.norm(nrm)) @ key, 0, 1))
+    val = (rk['shade'][0] + rk['shade'][1] * lit + tone + 0.16 * (noise3(P, 0.35, seed) - 0.5)
+           + 0.08 * (noise3(P, 0.08, seed + 1) - 0.5) - 0.06 * ((ys + 0.5) / h))
+    rp = np.asarray(rk['ramps'][0], np.float32)
+    idx = np.clip(np.round(val * (len(rp) - 1) + (BAYER4[ys % 4, xs % 4] - 0.5) * 0.35), 0, len(rp) - 1).astype(int)
+    rgb = np.zeros((h * w, 3), np.float32)
+    rgb[at] = rp[idx]
+    rgba = np.concatenate([rgb.reshape(h, w, 3), alpha.reshape(h, w, 1).astype(np.float32)], -1)
+    return rgba, np.zeros((h, w), np.float32)
+
+
+PLASTER = dict(paint=_plaster, key=(-0.4, 0.45, 0.8), shade=(0.4, 0.5))
+
+# Roof covers, painted by _thatch and _tiles and lit like rock; `chimney` is brick in courses.
+ROOFS = {
+    'thatch': dict(paint=_thatch, ramps=[ramp('#a88a52', dark=0.38, light=1.4, warm=0.1), ramp('#7e7a5a', dark=0.4, light=1.3)],
+                   key=(-0.4, 0.45, 0.8), shade=(0.36, 0.5)),
+    'tile': dict(paint=_tiles, ramps=[ramp('#9a5038', dark=0.36, light=1.35, warm=0.08), ramp('#8a8a5a', dark=0.4, light=1.3)],
+                 key=(-0.4, 0.45, 0.8), shade=(0.36, 0.5), course=(0.1, 0.13), lichen=0.06),
+    'chimney': dict(paint=_tiles, ramps=[ramp('#8a4a36', dark=0.36, light=1.3)], key=(-0.4, 0.45, 0.8),
+                    shade=(0.38, 0.5), course=(0.06, 0.12)),
+}
+
+
+def market_stand(pl):
+    """A market stand: a trestle table of boards, 1.5 long, a striped skirt hanging from its front,
+    under a striped awning on four poles that slopes down to the front, a scalloped valance round it;
+    goods heaped on the table - apples, cabbages, loaves - and crates by it, as billboards. Faces +x:
+    the customers stand there."""
+    seed = int(pl.get('seed', 1))
+    wood = _timber(pl, (0.025, 0.4, 0.025), 0.12)                    # boards along the table
+    post = _timber(pl, (0.025, 0.025, 0.4), 0.5)
+    d0, d1, half, top = -0.28, 0.24, 0.75, 0.42                      # the table: back, front, half length
+    parts = [_rock(wood, seed, (d1, -half, top), (d1, half, top), (d0, -half, top)),           # its top
+             _rock(wood, seed + 1, (d1, half, top), (d1, -half, top), (d1, half, top - 0.05)),   # its edge
+             _rock(wood, seed + 2, (d0, -half, top), (d0, half, top), (d0, -half, top - 0.05))]
+    for y in (-half + 0.12, half - 0.12):                           # trestles: a pair of legs at each end
+        for x in (d0 + 0.05, d1 - 0.05):
+            parts += [p for p in (_rock(post, seed + 5, (x + 0.02, y + 0.02, top - 0.05), (x + 0.02, y - 0.02, top - 0.05),
+                                        (x + 0.02, y + 0.02, 0.0)),
+                                  _rock(post, seed + 6, (x - 0.02, y - 0.02, top - 0.05), (x - 0.02, y + 0.02, top - 0.05),
+                                        (x - 0.02, y - 0.02, 0.0)),
+                                  _rock(post, seed + 7, (x - 0.02, y + 0.02, top - 0.05), (x + 0.02, y + 0.02, top - 0.05),
+                                        (x - 0.02, y + 0.02, 0.0)),
+                                  _rock(post, seed + 8, (x + 0.02, y - 0.02, top - 0.05), (x - 0.02, y - 0.02, top - 0.05),
+                                        (x + 0.02, y - 0.02, 0.0)))]
+    xf, xb, zf, zb = 0.52, -0.46, 1.22, 1.46                          # the awning's front and back edges
+    for x, z in ((xf - 0.04, zf + (zb - zf) * 0.04 / (xf - xb)), (xb + 0.04, zb - (zb - zf) * 0.04 / (xf - xb))):
+        for y in (-half - 0.04, half + 0.04):                         # the poles
+            parts += box((x - 0.022, y - 0.022, 0.0), (x + 0.022, y + 0.022, z),
+                         {f: _solid_cached(3, _texels(z), '#4a3828') for f in ('front', 'back', 'right', 'left')})
+    aw, stripe, vh = half + 0.12, 7, 0.12
+    T = _texels
+    parts.append(quad(_awning(T(2 * aw), T(math.hypot(xf - xb, zb - zf)), stripe),
+                      (xf, -aw, zf), (xf, aw, zf), (xb, -aw, zb), back=0.85))
+    val = _valance(T(2 * aw), T(vh), stripe)
+    parts.append(quad((val[0][:, ::-1], val[1][:, ::-1]), (xf, aw, zf), (xf, -aw, zf), (xf, aw, zf - vh), back=0.85))
+    for y, sgn in ((aw, 1), (-aw, -1)):                              # its sides, along the slope
+        tl, tr = ((xb, y, zb), (xf, y, zf)) if sgn > 0 else ((xf, y, zf), (xb, y, zb))
+        parts.append(quad(_valance(T(math.hypot(xf - xb, zb - zf)), T(vh), stripe), tl, tr,
+                          (tl[0], tl[1], tl[2] - vh), back=0.85))
+    skirt = _valance(T(2 * half), T(top - 0.12), stripe)             # its skirt, in step with the awning
+    parts.append(quad((skirt[0][:, ::-1], skirt[1][:, ::-1]), (d1 + 0.01, half, top - 0.04),
+                      (d1 + 0.01, -half, top - 0.04), (d1 + 0.01, half, 0.08), back=0.8))
+    ct = top + 0.005                                                  # the goods on the table
+    for y, kind in ((-0.48, 'apples'), (0.0, 'cabbages'), (0.48, 'loaves')):
+        parts.append(sprite(f'goods_{kind}', 0.04, y, ct))
+    parts += [sprite('crate', d1 + 0.12, -0.42, 0.0, scale=0.3), sprite('crate', d1 + 0.1, 0.36, 0.0, scale=0.28),
+              sprite('sack', d0 - 0.12, 0.62, 0.0, scale=0.3)]
+    parts.append(shadow(0.0, 0.0, 1.8, 0.5))
     return [p for p in parts if p]
 
 
@@ -1466,4 +1629,4 @@ def crystal_cluster(pl):
 
 OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder, 'column': column,
            'beam': beam, 'crystal_cluster': crystal_cluster, 'trough': trough, 'shed_roof': shed_roof,
-           'gable_roof': gable_roof}
+           'gable_roof': gable_roof, 'market_stand': market_stand}

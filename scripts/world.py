@@ -539,16 +539,21 @@ class World:
                 # slope of thatch or tiles set back behind the eave, so the wall's top hides its foot;
                 # each overhangs the ends a little and stands a hair off its neighbour so they never fight
                 roof = buildings.roof_of(spec['style'], look, s1 - s0)
+                body = float(buildings.FACADE_STYLES[buildings.pick_style(spec['style'], look)].get('body', 0))
                 if roof:
                     kind, cover, rh, chim = roof
                     over = 0.0 if kind == 'front' else 0.1
                     off = depth + 0.05 if kind in ('gable', 'front') else depth - min(0.4, depth * 0.45)
-                    out.append(self._card(d, line, s0 - over, s1 + over, off + 0.03 * (i % 2),
-                                          type=buildings.layer_name('roof', style=spec['style'], look=look, kind=kind,
-                                                                    cover=cover, chimney=chim,
-                                                                    w=round(s1 - s0 + 2 * over, 3), h=rh,
-                                                                    **({'name': params['name']} if 'name' in params else {})),
-                                          scale=rh, z=float(storeys), flip=d in 'ne'))
+                    if not (body and kind == 'eaves'):             # (a body's eaves slope is built in 3D)
+                        out.append(self._card(d, line, s0 - over, s1 + over, off + 0.03 * (i % 2),
+                                              type=buildings.layer_name('roof', style=spec['style'], look=look, kind=kind,
+                                                                        cover=cover, chimney=chim,
+                                                                        w=round(s1 - s0 + 2 * over, 3), h=rh,
+                                                                        **({'name': params['name']} if 'name' in params else {})),
+                                              scale=rh, z=float(storeys), flip=d in 'ne'))
+                    if body and kind in ('gable', 'eaves'):
+                        self._facade_objects.append(self._village_roof(spec, d, line, a, s0, s1, depth, storeys,
+                                                                       kind, cover, rh, chim, look, body))
                 # a style with blade signs hangs one or two out over the street, square to the front
                 look_style = buildings.FACADE_STYLES[buildings.pick_style(spec['style'], look)]
                 if look_style.get('blades') and storeys >= 3:
@@ -607,6 +612,32 @@ class World:
                             'angle': 90.0 if d in 'ns' else 0.0, 'planes': 1, 'length': depth,
                             'scale': float(abs(h0 - h1)), 'z': float(min(h0, h1)), 'shadow': False})
         return out
+
+    def _village_roof(self, spec, d, line, a, s0, s1, depth, storeys, kind, cover, rh, chim, look, body):
+        """A village house's roof in 3D, with the house's body under it: behind a gable end (its card
+        stays the front) a gabled roof running back `body` from the block, its slopes on the card's
+        edges; over an eaves house a roof along the street, its front eaves over the facade's wall. The
+        walls stand up from the block behind all the facade's layers, plastered the house's colour."""
+        o = 1 if d in 'se' else -1
+        block = float(self.height[(line, a)] if d in 'ns' else self.height[(a, line)])
+        face = line + (1 if o > 0 else 0)                  # the block's face; the street line is `depth` out
+        along = (s0 + s1) / 2
+        pl = {'type': 'gable_roof', 'z': float(storeys), 'cover': cover, 'walls': max(0.0, storeys - block),
+              'plaster': buildings.house_color(spec['style'], look), 'seed': look % 991}
+        if kind == 'gable':                                # the ridge runs back from the street
+            front = depth + 0.03                           # just behind the gable's card
+            mid = face + o * (front - body) / 2
+            pl.update(angle={'s': 90, 'n': 270, 'e': 0, 'w': 180}[d], length=front + body, width=s1 - s0 + 0.2,
+                      rise=rh, overhang=[0.0, 0.0], inset=[front, 0.0, 0.1, 0.1])
+        else:                                              # the ridge along the street
+            mid = face + o * (depth - body / 2)
+            pl.update(angle={'s': 0, 'n': 180, 'e': 270, 'w': 90}[d], length=s1 - s0, width=body,
+                      rise=round(body / 2 * (0.8 if cover == 'thatch' else 0.62), 3), overhang=[0.15, 0.0],
+                      inset=[0.0, 0.0, 0.0, depth])
+            if chim:
+                pl['chimney'] = round(float(np.random.default_rng([look % (2 ** 31), 47]).uniform(0.15, 0.85)), 3)
+        pl['x'], pl['y'] = (along, mid) if d in 'ns' else (mid, along)
+        return pl
 
     def _open_cells(self, chars=None):
         """Open (non-wall) cells, optionally restricted to a set of legend characters."""

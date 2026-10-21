@@ -288,6 +288,25 @@ def spr_market_stall():
     return _prop(cv, [OAK, CANVAS_RED, CANVAS_WHITE, APPLE, CABBAGE, BREAD], relief=1.0, cavity=0.4, shadow=0.45)
 
 
+def _goods(kind, seed):
+    """A heap of goods on a shallow tray, for a stall's table: `apples`, `cabbages` or `loaves`."""
+    rng = np.random.default_rng(seed)
+    w, h = 40, 18
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(1, h - 4, w - 2, 4, z=0.2, top=0.8, bevel=0.8, mat=0)                  # the tray
+    n, r = {'apples': (22, 2.3), 'cabbages': (6, 3.8), 'loaves': (6, 3.0)}[kind]
+    for _ in range(n):
+        x = rng.uniform(4, w - 4)
+        y = h - 5 - (6 - abs(x - w / 2) / (w / 2) * 6) * rng.uniform(0.3, 1.0)    # heaped in the middle
+        mat = {'apples': 1, 'cabbages': 2, 'loaves': 3}[kind]
+        if kind == 'loaves':
+            cv.ellipse(x, y, 4.6, 2.4, z=1.2 + rng.random(), dome=1.0, angle=rng.uniform(-15, 15), mat=mat)
+        else:
+            cv.ellipse(x, y, r, r * 0.92, z=1.2 + rng.random(), dome=1.1, rough=0.15 if kind == 'cabbages' else 0.0,
+                       rng=rng, mat=mat)
+    return _prop(cv, [OAK, APPLE, CABBAGE, BREAD], relief=1.0, cavity=0.4, shadow=0.45)
+
+
 def spr_inn_sign():
     """An inn's sign: an iron bracket with a scroll under it, standing out from the wall at the
     left, and hanging from it on two rings a board painted deep red with a gilt border and a
@@ -315,7 +334,10 @@ def spr_inn_sign():
 
 SPRITES = {'scarecrow': spr_scarecrow, 'pumpkin': spr_pumpkin, 'jack_o_lantern': spr_jack_o_lantern,
            'hay_bale': spr_hay_bale, 'crow': spr_crow, 'well': spr_well, 'cart': spr_cart,
-           'market_stall': spr_market_stall, 'inn_sign': spr_inn_sign}
+           'market_stall': spr_market_stall, 'inn_sign': spr_inn_sign,
+           **{f'goods_{k}': (lambda k=k, s=s: _goods(k, s)) for k, s in (('apples', 161), ('cabbages', 162),
+                                                                       ('loaves', 163))}}
 SPRITE_HEIGHT = {'scarecrow': 1.9, 'pumpkin': 0.32, 'jack_o_lantern': 0.34, 'hay_bale': 0.5, 'crow': 0.2,
-                 'well': 1.7, 'cart': 0.75, 'market_stall': 1.9, 'inn_sign': 0.75}
+                 'well': 1.7, 'cart': 0.75, 'market_stall': 1.9, 'inn_sign': 0.75,
+                 'goods_apples': 0.22, 'goods_cabbages': 0.22, 'goods_loaves': 0.22}
 PROP_DEFAULTS = {'jack_o_lantern': {'aura': {'color': [1.0, 0.62, 0.22], 'strength': 0.55, 'radius': 0.3}}}

@@ -113,11 +113,6 @@
  ],
  "sprites": [
   {
-   "x": 15.5,
-   "y": 33.6,
-   "type": "market_stall"
-  },
-  {
    "id": "keeper",
    "x": 16.5,
    "y": 34.5,
@@ -253,6 +248,14 @@
    "y": 14.0,
    "type": "cart",
    "flip": true
+  }
+ ],
+ "objects": [
+  {
+   "type": "market_stand",
+   "x": 15.5,
+   "y": 33.6,
+   "angle": 44
   }
  ],
  "scatter": [
