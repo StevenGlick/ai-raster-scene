@@ -32,7 +32,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Objects | 14 | 14 | 0 | 0 | 0 |
+| Objects | 15 | 15 | 0 | 0 | 0 |
 | Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 63 | 63 | 0 | 0 | 0 |
-| **all** | **793** | **793** | **0** | **0** | **0** |
+| **all** | **794** | **794** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -451,7 +451,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
-| `column` | good | 1 tall | sky_islands | Redrawn: a fluted Doric column with capital and plinth. |
+| `column` | good | 1 tall | - | Redrawn: a fluted Doric column with capital and plinth. |
 | `fountain` | good | 0.9 tall | - | Redrawn with the toolkit in basics.py: a moulded basin with water in it, a fluted pedestal and bowl, water spilling in arcs. |
 | `gravestone` | good | 0.6 tall | chapel_graveyard, haunted_house |  |
 | `stone_cap` | good | 0.44 tall | misty_moor | Drawn with the toolkit in basics.py: a slanted, chipped crown of stone with lichen, to set on a one-cell block so a standing stone has a weathered top. |
@@ -503,7 +503,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `salt_clods` | good | 0.08 tall | salt_flat | Drawn in saltflat.py: a few lumps of salt left lying, of different sizes. |
 | `waterfall` | good | 6 tall, no shadow | sky_islands | Drawn in skyisles.py: a sheet of falling water, white at its lip, breaking into mist toward its foot; a card. |
 | `island_roots` | good | 2 tall, no shadow | sky_islands | Drawn in skyisles.py: roots and vines dangling under an island's edge; a card. |
-| `island_keel` | good | 6 tall, no shadow | sky_islands | Drawn in skyisles.py: the rock under a floating island tapering to a ragged point, banded, roots trailing; a billboard. |
+| `island_keel` | good | 6 tall, no shadow | - | Drawn in skyisles.py: the rock under a floating island tapering to a ragged point, banded, roots trailing; a billboard. |
 | `rope_rail` | good | 0.42 tall, no shadow | sky_islands | Drawn in skyisles.py: a bridge's railing: a post at every unit and two sagging ropes; a card. |
 | `glow_monstera` | good | 0.75 tall, glows | glow_jungle | Drawn in glowjungle.py: the monstera at night, every leaf traced in cyan light. |
 | `glow_fern` | good | 0.42 tall, glows | crystal_cave, glow_jungle | Drawn in glowjungle.py: the fern at night, its fronds edged in light. |
@@ -903,7 +903,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
-## Objects (14)
+## Objects (15)
 
 Things too big for a billboard, built in 3D out of flat panels (`scripts/objects.py`).
 
@@ -913,8 +913,8 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `noodle_stand` | good | neon_street | Counter, awning, valance, noren and sign as panels; bowls, pot, tray, lanterns and stools as billboards, with its own lamp and lantern lights. |
 | `rock_wall` | good | aquarium, crystal_cave, ghost_town, gold_mine, neon_bar, red_canyon | Laid out as the user drew it: overlapping pieces along a wall's foot, each in plan a rounded mass of a few broad faces jutting from the wall (the user's sharper zigzag read as spikes; a few spikes and notches are left), each its own height, a trim of faces along its top cut by one long smooth wavy edge, a flat top (inset a texel, so it never shows past the faces), plants on the rim. Kinds `stone`, `reef`, `sandstone`, `snow`, `cave`, `lumen` (glowing moss); `lining` lines every wall face of some map cells. The faces cut from one solid block of stone. Seen from above its tops are flat with the trim standing round them, as Build's were. |
 | `boulder` | good | aquarium, autumn_lane, coast_lighthouse, crystal_cave, misty_moor, neon_bar, red_canyon, winter_woods, woodland_night | A low-poly mass, every face a triangle: an irregular foot, a belly, drawn-in shoulders, a peak off its centre; closed from every side. Plants on top by count. |
-| `column` | good | ancient_ruins, cathedral_ruin, gold_mine, temple_inside, tropical_beach | A column or a post: a prism of `sides` faces (an octagon by default), tapering if `top` is under 1, a plinth (`base`) and a capital if asked; stone cut from the solid rock as rock is, or `wood` - weathered timber, the grain running up it, dark and grown over below `wet` where it stands in water. Built for the pier's piles first; the cathedral's piers are `ashlar` (dressed stone in drums) with plinths and capitals, one `broken` off ragged. The ruins' columns are Greek: `flutes` (20 faces, each hollowed, so it takes the light on one side and shadow on the other) and `doric` (an echinus widening under a square abacus), in `marble` laid in drums; `fill` lifts a backlit column's dark side. |
-| `beam` | good | ancient_ruins, cathedral_ruin, gold_mine, temple_inside | A squared timber or stone lintel lying level, `length` along the way it faces, its underside at the placement's `z`; timber's grain runs along it. Wall plates on the cathedral's piers, and one fallen on the floor; the architraves and cornices over the ruins' columns. |
+| `column` | good | ancient_ruins, cathedral_ruin, gold_mine, sky_islands, temple_inside, tropical_beach | A column or a post: a prism of `sides` faces (an octagon by default), tapering if `top` is under 1, a plinth (`base`) and a capital if asked; stone cut from the solid rock as rock is, or `wood` - weathered timber, the grain running up it, dark and grown over below `wet` where it stands in water. Built for the pier's piles first; the cathedral's piers are `ashlar` (dressed stone in drums) with plinths and capitals, one `broken` off ragged. The ruins' columns are Greek: `flutes` (20 faces, each hollowed, so it takes the light on one side and shadow on the other) and `doric` (an echinus widening under a square abacus), in `marble` laid in drums; `fill` lifts a backlit column's dark side. |
+| `beam` | good | ancient_ruins, cathedral_ruin, gold_mine, sky_islands, temple_inside | A squared timber or stone lintel lying level, `length` along the way it faces, its underside at the placement's `z`; timber's grain runs along it. Wall plates on the cathedral's piers, and one fallen on the floor; the architraves and cornices over the ruins' columns. |
 | `crystal_cluster` | good | crystal_cave | The user's idea: crystals whose facets refract. Hexagonal prisms with pointed tips from a bed of rock, every facet a panel with its own clarity (clear across the middle, milky toward the base, bright edges) and its own bend: drawn with the glass, each facet shows the frame drawn so far shifted by one offset from the way it is turned (Renderer._bend), so it shows one coherent piece of what is behind, the colours parting a little at the edges. Strongest with glowing things behind. |
 
 ### Not yet sorted
@@ -928,6 +928,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `saloon_bar` | good | saloon | A saloon's counter in 3D, 0.38 tall: raised mahogany panels between pilasters, a polished top overhanging the drinkers' side, the bartender's shelves behind, a brass foot rail on brackets, bottles on it. |
 | `rails` | good | gold_mine | A narrow track: two iron rails on wooden sleepers every 0.22, their tops worn bright. |
 | `ore_cart` | good | gold_mine | A riveted iron tub gone to rust (`_iron_side`: rivets along its lip and foot, rust running down) on a low frame and four small wheels set to the rails, ore heaped in it. |
+| `keel` | good | sky_islands | The rock under a floating island in 3D: an irregular ring at the foot of the cliff drawing in by uneven steps - each corner its own reach - to a point off its centre, crags hanging from its flanks; `island` rock (grey and brown in beds) painted at half a wall's texels, lit from above so its underside is in shade. Replaces the `island_keel` billboards. |
 
 ## Held items (8)
 
@@ -1086,7 +1087,7 @@ The environments, judged on their gallery images and shots.
 | `doomed` | good | 4 | doomed_pit, doomed_overview, doomed_fight, doomed_window | The slime pit: a walkway zigzagging over glowing sludge, green banded walls, barrels, zombified soldiers; the HUD with a pistol; the pit from above; a shotgun going off and a fireball coming in; the window onto the rock. |
 | `vector_world` | good | 5 | vector_sunset, vector_racers, vector_beacon, vector_core, vector_runner | A city of light on the grid: towers ruled in neon, racers trailing light down the avenue under a striped sun, a black core over a plaza of light beams, a beacon's flare, a runner in a suit of light. |
 | `salt_flat` | good | 5 | salt_sunset, salt_door, salt_noon, salt_night, salt_whale | A salt flat after rain mirroring the sky: a girl with a candle at sunset, a door standing alone, raked mounds at noon, the stars doubled, a whale over the mirror. |
-| `sky_islands` | good | 5 | isles_temple, isles_bridge, isles_above, isles_golden, isles_falls | Meadows adrift over a sea of cloud: a temple island with a waterfall, keels of rock, a plank bridge to an islet of trees, golden hour. |
+| `sky_islands` | good | 5 | isles_temple, isles_bridge, isles_above, isles_golden, isles_falls | Meadows adrift over a sea of cloud: a temple island with a waterfall, keels of rock in 3D, a ruined ring of Doric columns in marble, a plank bridge to an islet of trees, golden hour. Ringing the islands' cliffs with `rock_wall`s was tried and dropped: they turned the floating meadows into a rocky fortress. |
 | `glow_jungle` | good | 4 | glow_pool, glow_head, glow_flowers, glow_path | A clearing at night where every plant glows: a pool of glowing plankton, a stone head lit green, a heliconia burning pink, a path into the jungle. |
 | `aurora_palace` | good | 4 | aurora_lake, aurora_gate, aurora_throne, aurora_shore | A palace of ice on a frozen lake under the aurora: the lake doubling it, the gate, the throne in a hall of frost, the shore. |
 | `clockwork_city` | good | 4 | clock_plaza, clock_orrery, clock_gears, clock_tower | A plaza of brass and brick at sundown: the orrery (wireframes) before the clock tower, gears in the walls, pipes and steam. |
@@ -1156,6 +1157,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, the sky islands.** The fantasy refresh, first: the islands' keels in 3D (`keel`, new: rings of triangles drawing in to a point, crags hanging off them; a new `island` rock kind, and any rock kind can be painted coarser with `density`), and the temple's ring of billboard columns a ruined tholos of fluted Doric `marble` columns with an entablature over the pairs that stand. Tried and dropped: a ring of `rock_wall`s round every island - from the meadows it walled the view in, and the islands lost their look of floating meadows.
 - **2026-10-21, inside the temple.** The third new scene: inside the jungle pyramid. A small kit, temple.py: a `golden_idol` and `treasure`; the pillars and altar are `column`s and a `beam` of stone. One roof cell left open, a sun at 72 degrees through a thick fog with strong shafts, makes the column of light; at first the sun came from the wrong side of the hole and missed the altar (azimuth 100 lit the floor behind it), and the room was too murky to read.
 - **2026-10-21, the gold mine.** The second new scene: a frontier gold mine. A kit, mine.py: `mine_rock` (and with a seam of quartz, and with gold in it, glinting), a pick and shovel, a dynamite crate, an ore heap; objects `rails` and `ore_cart`; the timber sets are `column`s and `beam`s of wood. Lessons: a vein drawn on every tile repeats as a graphic zigzag - it is a gentle wave that joins tile to tile now, on a few cells only; and a wall taller than the ceiling is drawn its full height, over the ceiling (the stope showed its seam twice and no roof), so the mine's inner rock is exactly the roof's height and the hill outside is cells of its own, with a rock wall lifted over the portal. scene_format's `ceiling_height` row said walls should be 'at least' that tall: now 'exactly'.
 - **2026-10-21, the saloon.** The first of the user's new scenes: inside the frontier town's saloon. A new kit, saloon.py: wainscot and flocked paper, the back bar's bottles and mirror, open-paned windows, a pressed-tin ceiling, a piano, a card table, a bentwood chair, a spittoon, a wanted poster; and a `saloon_bar` object in 3D. First drawn 14 by 10 cells it was a hall forty metres long - a unit is nearly three metres - so it is 8 by 6 under a 1.6 ceiling; the windows looked dark until the store across the street went (its shaded front was all they showed); the noon shot looks across the beams toward them.

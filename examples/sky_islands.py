@@ -6,8 +6,10 @@ trees, rocks float loose in the air and gulls wheel between them.
 Shows the sky-island kit (scripts/skyisles.py): `meadow` tops and `island_rock` sides with a deep
 `cliff` (how far each island's rock drops into the void below it), a raised island (a block of rock
 with a meadow `top`), a bridge of `planks` with a thin `cliff` and `rope_rail` cards along it, the
-`waterfall` hung off an edge with `z` at minus its height, `island_roots` under the edges; the
-`column`s and `statue` of the ruins, trees, `floating_rock`s and `seagull`s.
+`waterfall` hung off an edge with `z` at minus its height, `island_roots` under the edges; under
+every island its rock in 3D (`keel` objects, hung at the foot of each `cliff`); the temple a ring of
+fluted Doric columns of `marble` in 3D, some fallen, an entablature (`beam`s) over the runs that stand,
+round a `statue`; trees, `floating_rock`s and `seagull`s.
 Run:  python sky_islands.py  -> writes sky_islands.json
 """
 import math
@@ -43,21 +45,31 @@ legend = {
     '=': {'floor': 'planks', 'side': 'planks', 'cliff': 0.12},
 }
 
-sprites = []
-for k in range(8):                                    # the temple: a ring of columns round a statue
-    a = math.radians(k * 45 + 22.5)
-    sprites.append({'x': 30.5 + 2.6 * math.cos(a), 'y': 22.5 + 2.6 * math.sin(a), 'type': 'column', 'z': 1.4,
-                    'scale': 1.6})
+sprites, objects = [], []
+STANDING = (True, True, True, True, True, False, True, False)     # the temple's columns, some fallen
+ring = [(30.5 + 2.6 * math.cos(math.radians(k * 45 + 22.5)), 22.5 + 2.6 * math.sin(math.radians(k * 45 + 22.5)))
+        for k in range(8)]
+for k, ((x, y), up) in enumerate(zip(ring, STANDING)):          # the temple: a ring of columns round a statue
+    objects.append({'type': 'column', 'x': x, 'y': y, 'z': 1.4, 'material': 'marble', 'flutes': 16, 'top': 0.8,
+                    'radius': 0.17, 'height': 1.6 if up else 0.7 + 0.3 * k % 2, 'doric': up, 'capital': 0.2,
+                    'broken': 0 if up else 0.2, 'seed': 60 + k})
+    (x1, y1), up1 = ring[(k + 1) % 8], STANDING[(k + 1) % 8]
+    if up and up1:                                    # the entablature over the pairs that stand
+        mx, my, a = (x + x1) / 2, (y + y1) / 2, math.degrees(math.atan2(y1 - y, x1 - x))
+        for z, w, d in ((3.0, 0.32, 0.2), (3.2, 0.42, 0.08)):
+            objects.append({'type': 'beam', 'x': mx, 'y': my, 'z': z, 'angle': a, 'length': math.hypot(x1 - x, y1 - y) + 0.3,
+                            'width': w, 'depth': d, 'material': 'marble', 'seed': 70 + k})
 sprites.append({'id': 'statue', 'x': 30.5, 'y': 22.5, 'type': 'statue', 'z': 1.4, 'scale': 1.4})
 # the waterfall pours off the temple island's south edge, from its lip down past the rock
 sprites.append({'id': 'falls', 'x': 30.5, 'y': 29.04, 'type': 'waterfall', 'angle': 0, 'length': 1.1,
                 'z': -10.6, 'scale': 12.0})
+# under every island its rock in 3D, from the foot of its cliff to a ragged point
+for k, (cx, cy, r, cliff) in enumerate(((30.5, 48.5, 7.5, 2.6), (30.5, 22.5, 6.2, 3.0), (13.5, 48.5, 3.6, 2.0),
+                                        (48.5, 30.5, 3.0, 2.0), (10.5, 12.5, 4.5, 2.4), (52.5, 8.5, 5.5, 2.4),
+                                        (46.5, 54.5, 2.6, 2.4))):
+    objects.append({'type': 'keel', 'x': cx, 'y': cy, 'z': -cliff + 0.02, 'size': 2 * r + 0.6, 'depth': 1.5 * r,
+                    'roots': False, 'seed': 80 + k})
 # roots trailing from the undersides
-# under every island its keel of rock, tapering to a point (a billboard: solid from every side)
-for cx, cy, r, cliff in ((30.5, 48.5, 7.5, 2.6), (30.5, 22.5, 6.2, 3.0), (13.5, 48.5, 3.6, 2.0), (48.5, 30.5, 3.0, 2.0),
-                         (10.5, 12.5, 4.5, 2.4), (52.5, 8.5, 5.5, 2.4), (46.5, 54.5, 2.6, 2.4)):
-    sprites.append({'x': cx, 'y': cy, 'type': 'island_keel', 'scale': 1.6 * r, 'z': -cliff - 1.6 * r + 0.3,
-                    'flip': cx > 30})
 for (cx, cy, r, zb) in ((30.5, 22.5, 6.2, -3.0), (30.5, 48.5, 7.5, -2.6), (13.5, 48.5, 3.6, -2.0)):
     for k in range(10):
         a = math.radians(k * 36 + 10)
@@ -90,6 +102,7 @@ s = scene(
     lights=[SUN],
     fog={'color': [0.74, 0.82, 0.92], 'density': 0.012},
     sprites=sprites,
+    objects=objects,
     camera={'x': 30.6, 'y': 45.0, 'look_at': [30.5, 24.0, 2.0], 'fov': 70},
     shots=[
         {'x': 30.9, 'y': 43.4, 'height': 0.62, 'look_at': [30.5, 24.0, 0.2], 'fov': 72,

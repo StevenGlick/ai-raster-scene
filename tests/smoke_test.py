@@ -1363,6 +1363,13 @@ def check_objects():
         assert pns[0]['rgba'][..., :3].std() > 0.03, f'{cover} has its texture'
         tall = np.concatenate([[pn['o'] + a * pn['u'] + b * pn['v'] for a in (0, 1) for b in (0, 1)] for pn in pns])
         assert tall[:, 2].max() > 0.8 + 0.3, 'a chimney stands over the ridge'
+    # 10. a keel hangs from its z to a point `depth` below, no wider than its `size` (its faces are
+    # triangles: the three corners of each panel that are on it)
+    kl = objects.expand({'map': ['.'], 'objects': [{'type': 'keel', 'x': 0.0, 'y': 0.0, 'size': 4.0, 'depth': 3.0,
+                                                    'seed': 2}]})['panels']
+    pts = np.array([c for pn in kl for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])
+    assert pts[:, 2].max() <= 1e-6 and abs(pts[:, 2].min() + 3.0) < 0.05, 'from its z down to its point'
+    assert np.hypot(pts[:, 0], pts[:, 1]).max() <= 2.0 * 1.07, 'no wider than its size'
     stand = objects.expand({'map': ['.'], 'objects': [{'type': 'market_stand', 'x': 0.0, 'y': 0.0}]})
     zs = np.concatenate([[pn['o'] + a * pn['u'] + b * pn['v'] for a in (0, 1) for b in (0, 1)] for pn in stand['panels']])[:, 2]
     assert zs.max() > 1.3 and any(sp['type'].startswith('goods_') for sp in stand['sprites']), 'goods under an awning'

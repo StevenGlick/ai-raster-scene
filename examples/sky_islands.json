@@ -151,62 +151,6 @@
  },
  "sprites": [
   {
-   "x": 32.902086784529345,
-   "y": 23.494976924149235,
-   "type": "column",
-   "z": 1.4,
-   "scale": 1.6
-  },
-  {
-   "x": 31.494976924149235,
-   "y": 24.902086784529345,
-   "type": "column",
-   "z": 1.4,
-   "scale": 1.6
-  },
-  {
-   "x": 29.505023075850765,
-   "y": 24.902086784529345,
-   "type": "column",
-   "z": 1.4,
-   "scale": 1.6
-  },
-  {
-   "x": 28.097913215470655,
-   "y": 23.494976924149235,
-   "type": "column",
-   "z": 1.4,
-   "scale": 1.6
-  },
-  {
-   "x": 28.097913215470655,
-   "y": 21.505023075850765,
-   "type": "column",
-   "z": 1.4,
-   "scale": 1.6
-  },
-  {
-   "x": 29.50502307585077,
-   "y": 20.097913215470655,
-   "type": "column",
-   "z": 1.4,
-   "scale": 1.6
-  },
-  {
-   "x": 31.494976924149235,
-   "y": 20.097913215470655,
-   "type": "column",
-   "z": 1.4,
-   "scale": 1.6
-  },
-  {
-   "x": 32.902086784529345,
-   "y": 21.50502307585077,
-   "type": "column",
-   "z": 1.4,
-   "scale": 1.6
-  },
-  {
    "id": "statue",
    "x": 30.5,
    "y": 22.5,
@@ -223,62 +167,6 @@
    "length": 1.1,
    "z": -10.6,
    "scale": 12.0
-  },
-  {
-   "x": 30.5,
-   "y": 48.5,
-   "type": "island_keel",
-   "scale": 12.0,
-   "z": -14.299999999999999,
-   "flip": true
-  },
-  {
-   "x": 30.5,
-   "y": 22.5,
-   "type": "island_keel",
-   "scale": 9.920000000000002,
-   "z": -12.620000000000001,
-   "flip": true
-  },
-  {
-   "x": 13.5,
-   "y": 48.5,
-   "type": "island_keel",
-   "scale": 5.760000000000001,
-   "z": -7.460000000000001,
-   "flip": false
-  },
-  {
-   "x": 48.5,
-   "y": 30.5,
-   "type": "island_keel",
-   "scale": 4.800000000000001,
-   "z": -6.500000000000001,
-   "flip": true
-  },
-  {
-   "x": 10.5,
-   "y": 12.5,
-   "type": "island_keel",
-   "scale": 7.2,
-   "z": -9.299999999999999,
-   "flip": false
-  },
-  {
-   "x": 52.5,
-   "y": 8.5,
-   "type": "island_keel",
-   "scale": 8.8,
-   "z": -10.9,
-   "flip": true
-  },
-  {
-   "x": 46.5,
-   "y": 54.5,
-   "type": "island_keel",
-   "scale": 4.16,
-   "z": -6.260000000000001,
-   "flip": true
   },
   {
    "x": 36.31036574277203,
@@ -690,6 +578,294 @@
    "y": 41.6,
    "type": "explorer",
    "facing": 270
+  }
+ ],
+ "objects": [
+  {
+   "type": "column",
+   "x": 32.902086784529345,
+   "y": 23.494976924149235,
+   "z": 1.4,
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "radius": 0.17,
+   "height": 1.6,
+   "doric": true,
+   "capital": 0.2,
+   "broken": 0,
+   "seed": 60
+  },
+  {
+   "type": "beam",
+   "x": 32.19853185433929,
+   "y": 24.19853185433929,
+   "z": 3.0,
+   "angle": 135.0,
+   "length": 2.2899538482984645,
+   "width": 0.32,
+   "depth": 0.2,
+   "material": "marble",
+   "seed": 70
+  },
+  {
+   "type": "beam",
+   "x": 32.19853185433929,
+   "y": 24.19853185433929,
+   "z": 3.2,
+   "angle": 135.0,
+   "length": 2.2899538482984645,
+   "width": 0.42,
+   "depth": 0.08,
+   "material": "marble",
+   "seed": 70
+  },
+  {
+   "type": "column",
+   "x": 31.494976924149235,
+   "y": 24.902086784529345,
+   "z": 1.4,
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "radius": 0.17,
+   "height": 1.6,
+   "doric": true,
+   "capital": 0.2,
+   "broken": 0,
+   "seed": 61
+  },
+  {
+   "type": "beam",
+   "x": 30.5,
+   "y": 24.902086784529345,
+   "z": 3.0,
+   "angle": 180.0,
+   "length": 2.2899538482984694,
+   "width": 0.32,
+   "depth": 0.2,
+   "material": "marble",
+   "seed": 71
+  },
+  {
+   "type": "beam",
+   "x": 30.5,
+   "y": 24.902086784529345,
+   "z": 3.2,
+   "angle": 180.0,
+   "length": 2.2899538482984694,
+   "width": 0.42,
+   "depth": 0.08,
+   "material": "marble",
+   "seed": 71
+  },
+  {
+   "type": "column",
+   "x": 29.505023075850765,
+   "y": 24.902086784529345,
+   "z": 1.4,
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "radius": 0.17,
+   "height": 1.6,
+   "doric": true,
+   "capital": 0.2,
+   "broken": 0,
+   "seed": 62
+  },
+  {
+   "type": "beam",
+   "x": 28.80146814566071,
+   "y": 24.19853185433929,
+   "z": 3.0,
+   "angle": -135.0,
+   "length": 2.2899538482984645,
+   "width": 0.32,
+   "depth": 0.2,
+   "material": "marble",
+   "seed": 72
+  },
+  {
+   "type": "beam",
+   "x": 28.80146814566071,
+   "y": 24.19853185433929,
+   "z": 3.2,
+   "angle": -135.0,
+   "length": 2.2899538482984645,
+   "width": 0.42,
+   "depth": 0.08,
+   "material": "marble",
+   "seed": 72
+  },
+  {
+   "type": "column",
+   "x": 28.097913215470655,
+   "y": 23.494976924149235,
+   "z": 1.4,
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "radius": 0.17,
+   "height": 1.6,
+   "doric": true,
+   "capital": 0.2,
+   "broken": 0,
+   "seed": 63
+  },
+  {
+   "type": "beam",
+   "x": 28.097913215470655,
+   "y": 22.5,
+   "z": 3.0,
+   "angle": -90.0,
+   "length": 2.2899538482984694,
+   "width": 0.32,
+   "depth": 0.2,
+   "material": "marble",
+   "seed": 73
+  },
+  {
+   "type": "beam",
+   "x": 28.097913215470655,
+   "y": 22.5,
+   "z": 3.2,
+   "angle": -90.0,
+   "length": 2.2899538482984694,
+   "width": 0.42,
+   "depth": 0.08,
+   "material": "marble",
+   "seed": 73
+  },
+  {
+   "type": "column",
+   "x": 28.097913215470655,
+   "y": 21.505023075850765,
+   "z": 1.4,
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "radius": 0.17,
+   "height": 1.6,
+   "doric": true,
+   "capital": 0.2,
+   "broken": 0,
+   "seed": 64
+  },
+  {
+   "type": "column",
+   "x": 29.50502307585077,
+   "y": 20.097913215470655,
+   "z": 1.4,
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "radius": 0.17,
+   "height": 2.2,
+   "doric": false,
+   "capital": 0.2,
+   "broken": 0.2,
+   "seed": 65
+  },
+  {
+   "type": "column",
+   "x": 31.494976924149235,
+   "y": 20.097913215470655,
+   "z": 1.4,
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "radius": 0.17,
+   "height": 1.6,
+   "doric": true,
+   "capital": 0.2,
+   "broken": 0,
+   "seed": 66
+  },
+  {
+   "type": "column",
+   "x": 32.902086784529345,
+   "y": 21.50502307585077,
+   "z": 1.4,
+   "material": "marble",
+   "flutes": 16,
+   "top": 0.8,
+   "radius": 0.17,
+   "height": 0.8,
+   "doric": false,
+   "capital": 0.2,
+   "broken": 0.2,
+   "seed": 67
+  },
+  {
+   "type": "keel",
+   "x": 30.5,
+   "y": 48.5,
+   "z": -2.58,
+   "size": 15.6,
+   "depth": 11.25,
+   "roots": false,
+   "seed": 80
+  },
+  {
+   "type": "keel",
+   "x": 30.5,
+   "y": 22.5,
+   "z": -2.98,
+   "size": 13.0,
+   "depth": 9.3,
+   "roots": false,
+   "seed": 81
+  },
+  {
+   "type": "keel",
+   "x": 13.5,
+   "y": 48.5,
+   "z": -1.98,
+   "size": 7.8,
+   "depth": 5.4,
+   "roots": false,
+   "seed": 82
+  },
+  {
+   "type": "keel",
+   "x": 48.5,
+   "y": 30.5,
+   "z": -1.98,
+   "size": 6.6,
+   "depth": 4.5,
+   "roots": false,
+   "seed": 83
+  },
+  {
+   "type": "keel",
+   "x": 10.5,
+   "y": 12.5,
+   "z": -2.38,
+   "size": 9.6,
+   "depth": 6.75,
+   "roots": false,
+   "seed": 84
+  },
+  {
+   "type": "keel",
+   "x": 52.5,
+   "y": 8.5,
+   "z": -2.38,
+   "size": 11.6,
+   "depth": 8.25,
+   "roots": false,
+   "seed": 85
+  },
+  {
+   "type": "keel",
+   "x": 46.5,
+   "y": 54.5,
+   "z": -2.38,
+   "size": 5.8,
+   "depth": 3.9000000000000004,
+   "roots": false,
+   "seed": 86
   }
  ],
  "shots": [

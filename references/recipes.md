@@ -107,7 +107,7 @@ Fill the map with void and draw islands on it under the `dream` sky. They float 
 
 ### Sky islands
 
-A map of `void` with islands drawn on it (`"floor": "meadow", "side": "island_rock"` and a `cliff` of 2-3); hang an `island_keel` under each (`scale` about 1.6 x its radius, `z` = -(cliff + scale)) so it floats as a mountain, `island_roots` cards round the edges, a `waterfall` card off an edge (from a stream of `shallows` on top) with `z` at minus its `scale`. Raise one island on a block of `island_rock` with a `meadow` `top`; join two with a bridge of `planks` cells with `cliff` 0.12 and `rope_rail` cards along both sides. A `day` or `golden` sky, a light haze, `floating_rock`s, `seagull`s, trees, a ring of `column`s for a temple. See `examples/sky_islands.py`.
+A map of `void` with islands drawn on it (`"floor": "meadow", "side": "island_rock"` and a `cliff` of 2-3); hang a `keel` object under each (`size` the island's width plus a little, `depth` about 1.5 x its radius, `z` = -cliff) so it floats as a mountain of faceted rock (the `island_keel` prop is a billboard of one, for far islands), `island_roots` cards round the edges, a `waterfall` card off an edge (from a stream of `shallows` on top) with `z` at minus its `scale`. Raise one island on a block of `island_rock` with a `meadow` `top`; join two with a bridge of `planks` cells with `cliff` 0.12 and `rope_rail` cards along both sides. A `day` or `golden` sky, a light haze, `floating_rock`s, `seagull`s, trees, a ring of `column` objects of `marble` (`flutes`, `doric`) with `beam`s across the pairs that stand for a temple - lift them with `z` onto a raised island. See `examples/sky_islands.py`.
 
 ### A mirror salt flat
 

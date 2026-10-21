@@ -36,7 +36,7 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'rock', 'length', 'height', 'depth', 'pieces', 'trim', 'size', 'seed', 'plants', 'back', 'lining',
                   'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
                   'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset',
-                  'cover', 'chimney', 'plaster', 'gauge', 'ore'}
+                  'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots'}
 
 
 # ------------------------------------------------------------------ parts
@@ -788,6 +788,11 @@ ROCKS = {
                           ramp('#8c9a68', dark=0.38, light=1.3)],
                    mass=(2.4, 2.4, 1.4), chip=(0.3, 0.3, 0.2), key=(-0.4, 0.45, 0.8), shade=(0.46, 0.5),
                    crust=0.8, weed=0.74, up=0.6, pores=0.0, courses=0.5, cracks=0.1, plants=[('dry_tuft', 0.14, 0.22)]),
+    'island': dict(ramps=[ramp(['#4a4450', '#605862', '#786e70', '#908480', '#a89c94', '#c2b6aa']),
+                          ramp('#6a5a48', dark=0.4, light=1.3), ramp('#4e6a3a', dark=0.4, light=1.3)],
+                   mass=(2.6, 2.6, 1.2), chip=(0.5, 0.5, 0.3), key=(-0.3, 0.35, 0.88), shade=(0.36, 0.6),
+                   crust=0.82, weed=0.8, up=0.7, pores=0.0, strata=(0.9, 0.18), density=0.5,
+                   plants=[('grass_tuft', 0.16, 0.26), ('fern', 0.2, 0.3)]),
     'ashlar': dict(ramps=[ramp('#aaa189', dark=0.32, light=1.4), ramp('#8f8c6e', dark=0.35, light=1.3),
                           ramp('#56683a', dark=0.35, light=1.35)],
                    mass=(2.0, 2.0, 1.2), chip=(0.3, 0.3, 0.2), key=(-0.4, 0.45, 0.8), shade=(0.36, 0.56),
@@ -953,7 +958,8 @@ def _rock(rk, seed, tl, tr, bl, alpha=None, rim=None, tone=0.0, tilt=None):
     and how far below its top edge each texel is, for a texture w x h. None if nothing is solid."""
     tl, tr, bl = (np.asarray(p, float) for p in (tl, tr, bl))
     u, v = tr - tl, bl - tl
-    w, h = _texels(np.linalg.norm(u)), _texels(np.linalg.norm(v))
+    dens = rk.get('density', 1.0)                                    # texels per unit, as a share of a wall's
+    w, h = _texels(np.linalg.norm(u) * dens), _texels(np.linalg.norm(v) * dens)
     a = np.ones((h, w), bool) if alpha is None else alpha(w, h)
     if not a.any():
         return None
@@ -1117,6 +1123,62 @@ def boulder(pl):
         a, r = rng.uniform(0, 2 * np.pi), (0.15 + 0.35 * k / n) * R
         parts.append(sprite(name, peak[0] + r * np.cos(a), peak[1] + r * np.sin(a), H * (0.95 - 0.5 * r / R),
                             scale=rng.uniform(lo, hi), shadow=False, flip=bool(rng.random() < 0.5)))
+    return parts
+
+
+def keel(pl):
+    """The rock under a floating island, hanging from it: an irregular ring `size` across at its top
+    (set the placement's `z` at the foot of the island's `cliff`), drawing in by uneven steps - each
+    corner jutting or drawn in on its own - to a ragged point `depth` below (default 0.8 of its size),
+    off its centre, with two or three crags hanging from its flanks; every face a triangle of rock, lit
+    from above, so its underside is in its own shade. `rock` defaults to `island` (grey and brown in
+    beds); `roots` (default true) trails roots from its top."""
+    rk = _rock_kind(dict(pl, rock=pl.get('rock', 'island')))
+    seed = int(pl.get('seed', 1))
+    rng = np.random.default_rng(seed)
+    R = float(pl.get('size', 4.0)) / 2
+    D = float(pl.get('depth', R * 1.6))
+    tip = rng.uniform(-0.2, 0.2, 2) * R
+
+    def cone(c, r0, z0, depth, n, steps, k0):
+        """A hanging cone of rock from a ring of radius r0 round c at z0, by `steps` (share of r0, share
+        of depth down, how far it leans to the tip), to a point."""
+        ang = (np.arange(n) + rng.uniform(-0.3, 0.3, n)) * 2 * np.pi / n
+        rings = []
+        for k, (share, down, lean) in enumerate(steps):
+            r = r0 * share * (rng.uniform(0.8, 1.06, n) if k else rng.uniform(0.97, 1.0, n))
+            z = z0 - depth * (down + (rng.uniform(-0.04, 0.04, n) if k else np.zeros(n)))
+            rings.append(np.stack([c[0] + r * np.cos(ang) + tip[0] * lean, c[1] + r * np.sin(ang) + tip[1] * lean, z], 1))
+        point = np.array([c[0] + tip[0], c[1] + tip[1], z0 - depth])
+        out = []
+        for k, (hi, lo) in enumerate(zip(rings, rings[1:])):
+            mid = np.array([c[0] + tip[0] * 0.5, c[1] + tip[1] * 0.5, (lo[:, 2].mean() + hi[:, 2].mean()) / 2])
+            for i in range(n):
+                j = (i + 1) % n
+                A, B, C, E = hi[i], hi[j], lo[j], lo[i]
+                tris = ((A, B, C), (A, C, E)) if rng.random() < 0.5 else ((A, B, E), (B, C, E))
+                out += [_rock_tri(rk, seed + k0 + k, *t, (A + B + C + E) / 4 - mid) for t in tris]
+        for i in range(n):
+            A, B = rings[-1][i], rings[-1][(i + 1) % n]
+            out.append(_rock_tri(rk, seed + k0 + 9, A, B, point,
+                                 (A + B + point) / 3 - np.array([c[0] + tip[0], c[1] + tip[1], z0 - depth * 0.8])))
+        return out, rings
+
+    parts, rings = cone((0.0, 0.0), R, 0.0, D, int(rng.integers(10, 14)),
+                        ((1.0, 0.0, 0.0), (0.9, 0.14, 0.1), (0.76, 0.3, 0.28), (0.58, 0.48, 0.5),
+                         (0.4, 0.66, 0.7), (0.22, 0.84, 0.88)), 0)
+    for s_ in range(int(rng.integers(2, 4))):                         # crags hanging from its flanks
+        ring = rings[int(rng.integers(1, 4))]
+        p = ring[int(rng.integers(len(ring)))] * np.array([0.82, 0.82, 1.0])
+        more, _ = cone(p[:2], R * rng.uniform(0.16, 0.26), p[2], D * rng.uniform(0.3, 0.5), 6,
+                       ((1.0, 0.0, 0.0), (0.7, 0.4, 0.2)), 20 + s_)
+        parts += more
+    parts = [q for q in parts if q]
+    if pl.get('roots', True):                                         # roots trailing from its top
+        for i in range(0, len(rings[1]), 2):
+            x, y, z = rings[1][i]
+            parts.append(sprite('island_roots', x * 0.95, y * 0.95, z - D * 0.15, scale=R * rng.uniform(0.35, 0.5),
+                                shadow=False, flip=bool(rng.random() < 0.5)))
     return parts
 
 
@@ -1747,4 +1809,4 @@ def crystal_cluster(pl):
 OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder, 'column': column,
            'beam': beam, 'crystal_cluster': crystal_cluster, 'trough': trough, 'shed_roof': shed_roof,
            'gable_roof': gable_roof, 'market_stand': market_stand, 'saloon_bar': saloon_bar, 'rails': rails,
-           'ore_cart': ore_cart}
+           'ore_cart': ore_cart, 'keel': keel}
