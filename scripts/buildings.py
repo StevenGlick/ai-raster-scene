@@ -90,7 +90,7 @@ FACADE_STYLES = {
         'frames': ['#e2dac6', '#3e3226', '#5a2a22', '#2e3a2e'],
         'doors': ['#4a3424', '#5a2a1a', '#3a3a2e', '#6a4a30'],
         'bay': (1.0, 1.4), 'shops': 0.5, 'courses': False, 'clapboard': True, 'western': True,
-        'fronts': ['flat', 'flat', 'stepped', 'curved', 'pediment'], 'porch': 1.0,
+        'fronts': ['flat', 'flat', 'stepped', 'curved', 'pediment'], 'porch': 1.0, 'body': 5.0,
     },
 }
 

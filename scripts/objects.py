@@ -35,7 +35,7 @@ TEXELS = 64                 # texels per world unit, as on the walls
 PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 'title', 'notes',
                   'rock', 'length', 'height', 'depth', 'pieces', 'trim', 'size', 'seed', 'plants', 'back', 'lining',
                   'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
-                  'sink', 'broken', 'width', 'flutes', 'doric', 'fill'}
+                  'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset'}
 
 
 # ------------------------------------------------------------------ parts
@@ -905,7 +905,8 @@ def _wood(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
     """The texture of a panel of timber, as _stone is of rock: grain running up it in long streaks
     with a few dark checks along it, cut from one solid block so the grain carries round a corner, lit
     by the way the face faces; below `wet` it is dark and grown over, with a ragged line where the
-    water reaches."""
+    water reaches. With `boards` (a width) it is laid in boards along the grain, a dark seam between
+    each and each its own tone, the seams lining up from one panel to the next."""
     key = np.asarray(rk['key'], np.float32)
     key /= np.linalg.norm(key)
     at = np.nonzero(alpha.reshape(-1))[0]
@@ -917,6 +918,12 @@ def _wood(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
     grain = noise3(G, 1.0, seed) * 0.65 + noise3(G * 2.3, 1.0, seed + 1) * 0.35
     check = (np.abs(noise3(G * np.array([0.6, 0.6, 0.25]), 1.0, seed + 2) - 0.5) < 0.035)   # splits along it
     val = rk['shade'][0] + rk['shade'][1] * lit + tone + 0.34 * (grain - 0.5) - 0.22 * check
+    if rk.get('boards'):                                             # across the boards: the finest grain
+        span = np.abs(u) + np.abs(v)                                 # of the ways the panel runs
+        ax = min((i for i in range(3) if span[i] > 0.05 * span.max()), key=lambda i: rk['grain'][i])
+        c = P[:, ax] / rk['boards']
+        k = np.floor(c).astype(np.int64)
+        val = val + (table(5, k * 7919 + 11) - 0.5) * 0.14 - 0.26 * ((c - k) < 1.2 / (TEXELS * rk['boards']))
     wet = P[:, 2] < rk['wet'] + 0.03 * (noise3(P, 0.08, seed + 3) - 0.5)
     mat = wet.astype(int)
     bay = BAYER4[ys % 4, xs % 4]
@@ -1275,6 +1282,86 @@ def beam(pl):
     return [p for p in parts if p]
 
 
+# ------------------------------------------------------------------ timber work: troughs and roofs
+
+def _timber(pl, grain, width):
+    """Timber in boards (or the placement's `material`, wood by default): the grain along `grain`, a
+    board every `width`."""
+    mat = _material(dict(pl, material=pl.get('material', 'wood')))
+    if mat.get('paint') is _wood:
+        mat = dict(mat, grain=grain, boards=width, wet=-1.0)
+    return mat
+
+
+def _still_water(w, h, seed):
+    """Still water seen from above, w x h texels: near black-green, the sky's sheen lying on it in
+    soft streaks."""
+    ys, xs = np.mgrid[0:h, 0:w]
+    pts = np.stack([xs.ravel() / TEXELS, ys.ravel() / TEXELS * 3.0, np.zeros(w * h)], 1)
+    val = (0.25 + 0.5 * noise3(pts, 0.6, seed)).reshape(h, w)
+    rp = np.asarray(ramp('#2a4642', dark=0.45, light=1.7, warm=0.0), np.float32)
+    idx = np.clip(np.round(val * (len(rp) - 1) + (BAYER4[ys % 4, xs % 4] - 0.5) * 0.4), 0, len(rp) - 1).astype(int)
+    return np.concatenate([rp[idx], np.ones((h, w, 1), np.float32)], -1), np.zeros((h, w), np.float32)
+
+
+def trough(pl):
+    """A horse trough: an open box of weathered boards on the ground, `length` long the way it faces,
+    `width` across and `height` tall, still water in it a hand below the rim."""
+    mat = _timber(pl, (0.4, 0.4, 0.025), 0.15)
+    seed = int(pl.get('seed', 1))
+    L, w, H = float(pl.get('length', 1.6)) / 2, float(pl.get('width', 0.5)) / 2, float(pl.get('height', 0.45))
+    rim = 0.05
+    x0, x1, y0, y1 = -L, L, -w, w
+    sides = (((x1, y1, H), (x1, y0, H), (x1, y1, 0.0)), ((x0, y0, H), (x0, y1, H), (x0, y0, 0.0)),
+             ((x0, y1, H), (x1, y1, H), (x0, y1, 0.0)), ((x1, y0, H), (x0, y0, H), (x1, y0, 0.0)))
+    parts = [_rock(mat, seed + k, *c) for k, c in enumerate(sides)]      # inside, their backs
+    for k, (a0, a1, b0, b1) in enumerate(((x1 - rim, x1, y0, y1), (x0, x0 + rim, y0, y1),
+                                          (x0, x1, y1 - rim, y1), (x0, x1, y0, y0 + rim))):
+        parts.append(_rock(mat, seed + 10 + k, (a1, b0, H), (a1, b1, H), (a0, b0, H)))     # the rim
+    z = H - 0.1
+    parts.append(quad(_still_water(_texels(2 * (w - rim)), _texels(2 * (L - rim)), seed),
+                      (x1 - rim, y0 + rim, z), (x1 - rim, y1 - rim, z), (x0 + rim, y0 + rim, z)))
+    parts.append(shadow(0.0, 0.0, 2 * L + 0.4, 0.45))
+    return [p for p in parts if p]
+
+
+def shed_roof(pl):
+    """A shed roof of boards - over a porch or a boardwalk, a lean-to, an awning: `length` along it,
+    reaching `depth` out the way it faces, its front edge at the placement's `z` and its back edge
+    `rise` higher, so it slopes down to the front; the boards run down the slope."""
+    mat = _timber(pl, (0.4, 0.025, 0.4), 0.14)
+    seed = int(pl.get('seed', 1))
+    L, D, r = float(pl.get('length', 2.0)) / 2, float(pl.get('depth', 1.0)) / 2, float(pl.get('rise', 0.3))
+    t = 0.04                                                          # as thick as a board
+    parts = [_rock(mat, seed, (D, -L, t), (D, L, t), (-D, -L, r + t)),                   # the top
+             _rock(mat, seed + 1, (D, L, 0.0), (D, -L, 0.0), (-D, L, r), tone=-0.06),  # the underside
+             _rock(mat, seed + 2, (D, L, t), (D, -L, t), (D, L, 0.0))]                  # its front edge
+    return [p for p in parts if p]
+
+
+def gable_roof(pl):
+    """A gabled roof of boards: the ridge `length` long the way it faces, `width` across, the eaves at
+    the placement's `z` and the ridge `rise` above them, overhanging the walls by `overhang`; its
+    gable ends closed with upright boards, and under it `walls` that tall (0 for none) - the body of a
+    building on a lower block, or a shed on the ground - standing `inset` back from its front end."""
+    roof = _timber(pl, (0.025, 0.4, 0.4), 0.14)
+    ends = _timber(pl, (0.025, 0.025, 0.4), 0.16)
+    seed = int(pl.get('seed', 1))
+    L, W, r = float(pl.get('length', 3.0)) / 2, float(pl.get('width', 2.0)) / 2, float(pl.get('rise', 0.8))
+    o = float(pl.get('overhang', 0.12))
+    drop = o * r / W                                                  # the eaves come down past the walls
+    parts = [_rock(roof, seed, (-L - o, 0.0, r), (L + o, 0.0, r), (-L - o, W + o, -drop)),
+             _rock(roof, seed + 1, (L + o, 0.0, r), (-L - o, 0.0, r), (L + o, -W - o, -drop))]
+    for k, x in enumerate((L, -L)):
+        parts.append(_rock_tri(ends, seed + 2 + k, (x, -W, 0.0), (x, W, 0.0), (x, 0.0, r), (x, 0.0, 0.0)))
+    h, f = float(pl.get('walls', 0.0)), L - float(pl.get('inset', 0.0))
+    if h > 0:                                                         # the walls under it, read from outside
+        for k, c in enumerate((((f, W, 0.0), (f, -W, 0.0), (f, W, -h)), ((-L, -W, 0.0), (-L, W, 0.0), (-L, -W, -h)),
+                               ((-L, W, 0.0), (f, W, 0.0), (-L, W, -h)), ((f, -W, 0.0), (-L, -W, 0.0), (f, -W, -h)))):
+            parts.append(_rock(ends, seed + 4 + k, *c))
+    return [p for p in parts if p]
+
+
 # ------------------------------------------------------------------ crystals
 
 CRYSTAL_HUES = {'cyan': '#5adcf2', 'violet': '#a47af6', 'rose': '#f27cba', 'green': '#62eaa4', 'amber': '#f2b24e',
@@ -1378,4 +1465,5 @@ def crystal_cluster(pl):
 
 
 OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder, 'column': column,
-           'beam': beam, 'crystal_cluster': crystal_cluster}
+           'beam': beam, 'crystal_cluster': crystal_cluster, 'trough': trough, 'shed_roof': shed_roof,
+           'gable_roof': gable_roof}

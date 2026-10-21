@@ -173,8 +173,11 @@ class World:
         self.solid_h = np.where(self.see, 0.0, self.height).astype(np.float32)
 
         self.floor_decals, self.ceil_decals, self.wall_decals = [], [], {}
+        self._facade_objects = []           # things the facades build in 3D (a porch's roof), as objects
         self.fringe_sprites = self._fringe(scene)
         self.fringe_sprites += self._facade(scene)
+        self.panels = (prefabs.objects.expand({'map': ['.'], 'objects': self._facade_objects})['panels']
+                       if self._facade_objects else [])
         grime = self._expand_scatter(scene)
         # contact shadows go first, so puddles, stains and the author's own decals sit on top
         self._load_decals(scene, self._contact_shadows(scene) + list(scene.get('decals', [])) + grime)
@@ -561,13 +564,35 @@ class World:
                                     'angle': 90.0 if d in 'ns' else 0.0, 'planes': 1, 'length': out_len,
                                     'scale': tall, 'z': z, 'shadow': False, 'flip': d in 'nw'})
                 # a western building's covered boardwalk: posts and fascia out at the edge of the walk,
-                # as tall as the scene's ceiling, which roofs the walk's cells
+                # as tall as the scene's ceiling, which roofs the walk's cells - and over it a roof of
+                # boards sloping down from the front to the fascia (under the windows of a second
+                # storey), so it shows from the street
                 walk = float(spec.get('porch', look_style.get('porch', 0)))
                 if walk > 0:
                     out.append(self._card(d, line, s0 + 0.01, s1 - 0.01, depth + walk - 0.05,
                                           type=buildings.layer_name('porch', style=spec['style'], look=look,
                                                                     w=round(s1 - s0 - 0.02, 3), h=round(self.ceil_h, 3)),
                                           scale=self.ceil_h, flip=d in 'ne'))
+                    mid = line + (1 if o > 0 else 0) + o * (depth + (walk - 0.05) / 2)
+                    self._facade_objects.append({
+                        'type': 'shed_roof', 'x': (s0 + s1) / 2 if d in 'ns' else mid, 'y': mid if d in 'ns' else (s0 + s1) / 2,
+                        'z': self.ceil_h, 'angle': {'s': 90, 'n': 270, 'e': 0, 'w': 180}[d], 'length': s1 - s0 + 0.02,
+                        'depth': walk - 0.05, 'rise': 0.35 if storeys < 2 else 0.25, 'seed': look % 1000})
+                # behind a false front, the building itself: a gabled roof running back `body` from the face
+                # of the block, its front end just behind the false front and low enough for it to hide,
+                # on walls up from the block's top that stand behind all the facade's layers
+                if roof and roof[0] == 'front':
+                    back = float(spec.get('body', look_style.get('body', 0)))
+                    if back > 0:
+                        block = float(self.height[(line, a)] if d in 'ns' else self.height[(a, line)])
+                        front = depth - 0.27                # its slopes overhang 0.12: 0.15 behind the facade
+                        mid = line + (1 if o > 0 else 0) + o * (front - back) / 2
+                        self._facade_objects.append({
+                            'type': 'gable_roof', 'x': (s0 + s1) / 2 if d in 'ns' else mid,
+                            'y': mid if d in 'ns' else (s0 + s1) / 2, 'z': float(storeys),
+                            'angle': {'s': 90, 'n': 270, 'e': 0, 'w': 180}[d], 'length': front + back,
+                            'width': s1 - s0 - 0.04, 'rise': round(min((s1 - s0) * 0.28, roof[2] - 0.08), 3),
+                            'walls': max(0.0, storeys - block), 'inset': front, 'seed': look % 997})
             # a taller building shows its side wall above a lower neighbour
             for i in range(len(spans) - 1):
                 h0, h1 = heights[i], heights[i + 1]

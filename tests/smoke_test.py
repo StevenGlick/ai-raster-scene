@@ -974,8 +974,17 @@ def check_glass_facades():
         assert json.loads(front['type'][7:])['kind'] == 'front' and front['z'] == wall_['scale']
         assert abs(front['length'] - wall_['length']) < 1e-6, 'a false front is flush with the building'
         assert porch['y'] > wall_['y'] + 0.8 and abs(porch['scale'] - 1.3) < 1e-6, 'the porch at the walk edge'
+    # and built in 3D: a roof over each porch, sitting on its fascia; behind each false front the
+    # building's own roof - nothing in front of the facade's plane below the porch's ceiling
+    street_y, porch_y = walls[0]['y'], porches[0]['y']
+    roofs = [np.array([pn['o'] + a * pn['u'] + b * pn['v'] for a in (0, 1) for b in (0, 1)])
+             for pn in R.World(town).panels]
+    over = [c for c in roofs if c[:, 1].min() >= street_y - 1e-6]
+    body = [c for c in roofs if c[:, 1].max() <= street_y - 0.1]
+    assert over and body and len(over) + len(body) == len(roofs), 'a roof over the porch, the body behind the front'
+    assert all(c[:, 2].min() >= 1.3 - 1e-6 and c[:, 1].max() <= porch_y + 0.05 for c in over), 'the porch roof on the fascia'
     print('ok glass pass (tint, blur), facades (buildings, layers, corners, side walls, reveals, neon, timber roofs, '
-          'western fronts)')
+          'western fronts, porch roofs, bodies)')
 
 
 def check_light_and_lens():
@@ -1327,8 +1336,25 @@ def check_objects():
         return float((b - a)[there].mean())
     day, night = lift(0.6), lift(0.15)
     assert day > 0.02 and night < day * 0.5, f'fill follows the ambient: {day:.3f} by day, {night:.3f} by night'
+    # 9. timber: a trough closed round its sides with water a hand below the rim; a shed roof sloping
+    # down to its front edge; a gabled roof's ridge over its middle, and walls under it when asked
+    def built(**pl):
+        return [np.array([pn['o'] + a * pn['u'] + b * pn['v'] for a in (0, 1) for b in (0, 1)])
+                for pn in objects.expand({'map': ['.'], 'objects': [dict({'x': 0.0, 'y': 0.0}, **pl)]})['panels']]
+    tr = objects.expand({'map': ['.'], 'objects': [{'type': 'trough', 'x': 0.0, 'y': 0.0}]})['panels']
+    sides = [pn for pn in tr if abs(pn['v'][2]) > 0.3]
+    assert len(sides) == 4 and np.abs(sum(np.cross(pn['u'], pn['v']) for pn in sides)).max() < 1e-6, 'a closed box'
+    assert any(np.ptp([pn['o'][2], (pn['o'] + pn['u'])[2], (pn['o'] + pn['v'])[2]]) < 1e-9
+               and abs(pn['o'][2] - 0.35) < 1e-6 for pn in tr), 'water a hand below the rim'
+    shed = np.concatenate(built(type='shed_roof', z=1.0, angle=0, depth=1.0, rise=0.3))
+    assert shed[shed[:, 0] > 0.49][:, 2].max() <= 1.04 + 1e-6 and shed[shed[:, 0] < -0.49][:, 2].min() >= 1.3 - 1e-6, \
+        'a shed roof slopes down to its front'
+    gable = np.concatenate(built(type='gable_roof', z=1.2, width=2.0, rise=0.8, walls=1.2))
+    top = gable[np.argmax(gable[:, 2])]
+    assert abs(gable[:, 2].max() - 2.0) < 1e-6 and abs(top[1]) < 1e-6 and abs(gable[:, 2].min()) < 0.02, \
+        'the ridge over its middle, the walls down to the ground'
     print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights, '
-          f'rock, linings, columns fluted and Doric, fill, crystals bend the light)')
+          f'rock, linings, columns fluted and Doric, fill, timber, crystals bend the light)')
 
 
 def check_docs():

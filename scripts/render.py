@@ -1284,7 +1284,7 @@ class Renderer:
             elif ty > 0.05:
                 placed.append((ty, tx, sp))
         H, W = depth.shape
-        for pn in self.s.get('panels', []):            # the flat parts of objects (scripts/objects.py)
+        for pn in self.s.get('panels', []) + self.w.panels:   # the flat parts of objects (objects.py)
             lift = self.w.base_z(float(pn['at'][0]), float(pn['at'][1])) if 'at' in pn else 0.0
             if lift:                                   # an object stands on the floor under it
                 pn = dict(pn, o=pn['o'] + np.array([0.0, 0.0, lift]))

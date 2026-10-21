@@ -32,7 +32,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Objects | 7 | 7 | 0 | 0 | 0 |
+| Objects | 10 | 10 | 0 | 0 | 0 |
 | Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 60 | 60 | 0 | 0 | 0 |
-| **all** | **761** | **761** | **0** | **0** | **0** |
+| **all** | **764** | **764** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -56,7 +56,7 @@ From going through the catalog. One scene at a time, each done properly; no rush
 - [x] **tropical_beach** - posts under the pier; the tree line given layers if it has none. Done: wooden piles (`column` objects of `wood`) down both edges of the pier, taller at its end; the jungle given a `jungle` fringe.
 - [x] **neon_bar** - the reef tank in the back wall done like the aquarium at a small scale: open water behind, a little live rock, perhaps one small boulder at the back. Keep the density; adding too much would throw off the balance. Done: the tank's back wall painted as open water (dimmed to the bar's mood), a low reef `rock_wall` along its foot and one small boulder; the `reef_rock`s and corals kept in front, near the glass.
 - [x] **red_canyon** - the canyon walls themselves updated (the fallen rock along their foot is done). Done: every face of the canyon lined with a tall `rock_wall` of a new `canyon` rock - beds of red and pale stone by height, desert varnish streaking down - rising 6-7.4 over the old walls (cut down to 5.2 as cores), so the cliffs jut and step and the rim is ragged against the sky.
-- [ ] **ghost_town** - the buildings that have no depth fixed, drawn with the layered facade technique of the city; the horse trough in 3D; shot 2: the empty space under the frame in front of the building filled - planks overhead for shade, or a deck; shot 4: the mountain walls updated, as for the canyon.
+- [x] **ghost_town** - the buildings that have no depth fixed, drawn with the layered facade technique of the city; the horse trough in 3D; shot 2: the empty space under the frame in front of the building filled - planks overhead for shade, or a deck; shot 4: the mountain walls updated, as for the canyon. Done: every western building now has its body behind the false front - a gabled roof of boards running back from the street on walls up from the block - and its porch a roof of boards sloping down from the front to the fascia, so it shows from the street over the posts and gives shade (the walk's ceiling lowered to 1.15 so it does); troughs of boards with water in them (`trough`, new); the mesas lined with `canyon` rock in 3D, a ragged skyline of cliffs in beds.
 - [ ] **village_green** - the market cart rebuilt in 3D, as the noodle stand was; the houses need roofs with depth (they read as if roofless); the buildings drawn with the layered facade technique.
 - [x] **cathedral_ruin** - the pillars modelled in 3D (octagonal) instead of billboards, and moved inward to where they would carry the roof. Done: two arcades of octagonal piers of `ashlar` (dressed stone in drums, plinths and capitals) 3.2 in from each wall between the windows, carrying timber wall plates (`beam`) under the roof; the pier under the fallen roof broken off ragged, its plate down on the floor; the pews between the arcades, behind the cameras.
 - [x] **ancient_ruins** - the pillars remodelled in 3D, as for the cathedral; perhaps the fallen statue's head in 3D too (not a priority). A scene to give more love. Done: the peristyle and the sacred way's columns are fluted Doric columns of `marble` in 3D (`flutes`, `doric`), laid in drums, architraves and cornices (`beam`) across the runs that stand, the rest snapped off (`broken`) or fallen; the `ruined_columns` prefab in 3D; `fill` so the backlit columns are not black; a new shot, `ruins_columns`. The statue's head is still a billboard.
@@ -597,7 +597,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `cow_skull` | good | 0.2 tall | ghost_town, red_canyon | Drawn with the toolkit in desert.py: a bleached longhorn skull: dark sockets and nose, horns curving out and up. |
 | `clay_pot` | good | 0.34 tall | red_canyon | Drawn with the toolkit in desert.py: a round white pot painted in black bands and a zigzag, turned on a lathe. |
 | `windpump` | good | 4.2 tall | ghost_town | Drawn with the toolkit in desert.py: a lattice tower of four splayed legs, cross-braced, a wheel of galvanised blades with its tail vane. |
-| `water_trough` | good | 0.4 tall | ghost_town | Drawn with the toolkit in desert.py: grey boards on short legs, water near the brim. |
+| `water_trough` | good | 0.4 tall | - | Drawn with the toolkit in desert.py: grey boards on short legs, water near the brim. |
 | `wagon_wheel` | good | 0.55 tall | ghost_town | Drawn with the toolkit in desert.py: an iron-shod rim, twelve spokes, a heavy hub. |
 | `cypress` | good | 4 tall | ancient_ruins |  |
 | `saguaro` | good | 3.2 tall | ghost_town, red_canyon | Drawn with the toolkit in desert.py: a ribbed column with two arms bending up, spines along the ribs, white blossoms on the crown. |
@@ -871,7 +871,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
-## Objects (7)
+## Objects (10)
 
 Things too big for a billboard, built in 3D out of flat panels (`scripts/objects.py`).
 
@@ -879,11 +879,19 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 |---|---|---|---|
 | `car` | good | rain_alley | A saloon from panels, laid out as the user drew it: the overall box with the car's outline on its sides, hood and trunk lid across it at the belt (body 60%, glass 40%), the roof, glass windows with seats, dashboard and steering wheel inside, four wheels set in under the body in dark wells, a floor pan and a soft shadow; `paint`, `lights`. Proportions and handles tuned with the user. |
 | `noodle_stand` | good | neon_street | Counter, awning, valance, noren and sign as panels; bowls, pot, tray, lanterns and stools as billboards, with its own lamp and lantern lights. |
-| `rock_wall` | good | aquarium, crystal_cave, neon_bar, red_canyon | Laid out as the user drew it: overlapping pieces along a wall's foot, each in plan a rounded mass of a few broad faces jutting from the wall (the user's sharper zigzag read as spikes; a few spikes and notches are left), each its own height, a trim of faces along its top cut by one long smooth wavy edge, a flat top (inset a texel, so it never shows past the faces), plants on the rim. Kinds `stone`, `reef`, `sandstone`, `snow`, `cave`, `lumen` (glowing moss); `lining` lines every wall face of some map cells. The faces cut from one solid block of stone. Seen from above its tops are flat with the trim standing round them, as Build's were. |
+| `rock_wall` | good | aquarium, crystal_cave, ghost_town, neon_bar, red_canyon | Laid out as the user drew it: overlapping pieces along a wall's foot, each in plan a rounded mass of a few broad faces jutting from the wall (the user's sharper zigzag read as spikes; a few spikes and notches are left), each its own height, a trim of faces along its top cut by one long smooth wavy edge, a flat top (inset a texel, so it never shows past the faces), plants on the rim. Kinds `stone`, `reef`, `sandstone`, `snow`, `cave`, `lumen` (glowing moss); `lining` lines every wall face of some map cells. The faces cut from one solid block of stone. Seen from above its tops are flat with the trim standing round them, as Build's were. |
 | `boulder` | good | aquarium, autumn_lane, coast_lighthouse, crystal_cave, misty_moor, neon_bar, red_canyon, winter_woods, woodland_night | A low-poly mass, every face a triangle: an irregular foot, a belly, drawn-in shoulders, a peak off its centre; closed from every side. Plants on top by count. |
 | `column` | good | ancient_ruins, cathedral_ruin, tropical_beach | A column or a post: a prism of `sides` faces (an octagon by default), tapering if `top` is under 1, a plinth (`base`) and a capital if asked; stone cut from the solid rock as rock is, or `wood` - weathered timber, the grain running up it, dark and grown over below `wet` where it stands in water. Built for the pier's piles first; the cathedral's piers are `ashlar` (dressed stone in drums) with plinths and capitals, one `broken` off ragged. The ruins' columns are Greek: `flutes` (20 faces, each hollowed, so it takes the light on one side and shadow on the other) and `doric` (an echinus widening under a square abacus), in `marble` laid in drums; `fill` lifts a backlit column's dark side. |
 | `beam` | good | ancient_ruins, cathedral_ruin | A squared timber or stone lintel lying level, `length` along the way it faces, its underside at the placement's `z`; timber's grain runs along it. Wall plates on the cathedral's piers, and one fallen on the floor; the architraves and cornices over the ruins' columns. |
 | `crystal_cluster` | good | crystal_cave | The user's idea: crystals whose facets refract. Hexagonal prisms with pointed tips from a bed of rock, every facet a panel with its own clarity (clear across the middle, milky toward the base, bright edges) and its own bend: drawn with the glass, each facet shows the frame drawn so far shifted by one offset from the way it is turned (Renderer._bend), so it shows one coherent piece of what is behind, the colours parting a little at the edges. Strongest with glowing things behind. |
+
+### Not yet sorted
+
+| object | status | used in | notes |
+|---|---|---|---|
+| `trough` | good | ghost_town | A horse trough of weathered boards (`_wood` with `boards`: a seam between each, each its own tone), a rim, still water a hand below it, a soft shadow. Replaces the `water_trough` billboard in the ghost town. |
+| `shed_roof` | good | - | A roof of boards sloping down to its front edge, the boards running down the slope. The western facade builds one over every porch (ghost_town), sloping from the front down to the fascia so it shows from the street. |
+| `gable_roof` | good | - | A gabled roof of boards with gable ends of upright boards, `walls` under it (`inset` back from its front). The western facade builds one behind every false front (ghost_town): the building's body, low enough for the front to hide. |
 
 ## Held items (8)
 
@@ -1104,6 +1112,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, the frontier town.** The user's tenth: depth for the ghost town's buildings, its trough in 3D, the porch frame filled, the mountain walls redone. Three timber objects: `trough`, `shed_roof` and `gable_roof` (with `walls` and `inset`), all of boards - `_wood` gains `boards`: a seam between each and each its own tone, the seams lining up across panels. The facade code builds objects now (World.panels, drawn with the scene's): a western porch's roof (a ceiling at the fascia's height is hidden behind the fascia from the street, so the porch read as a bare frame; a roof sloping down to it shows), and behind each false front its building, a gabled roof low enough for the front to hide from the street (`body`, 5 cells back). The body's walls stand behind every facade layer - first built on the facade's own plane, they covered the windows. Mesas: R lined with `canyon` rock walls, the old walls cut to 5.
 - **2026-10-21, the jungle's edge.** The user's ninth: the jungle temple's tree line natural and polygonal, not the grid's. Its fringe now `wander`s, 1.4 deep, round the clearing and down the path under the canopy; and the canopy walls within two cells of open ground are all at its lowest height, because their steps (2.5 to 4 in 0.3s) showed between the trees as clipped hedges from the pyramid top. The temple shot is all but unchanged.
 - **2026-10-21, the bayou's trees.** The user's eighth: the swamp's layers spread further apart. A fringe can now `wander`: each layer one line the same distance out from the forest all along (marching squares on the distance from it, sampled four to a cell), round at the corners, wandering in and out on smooth noise, cut into straight cards (`_chords`: never under 0.6, so a sharp bend makes no sliver - a slice of forest seen face on reads as a tower) that carry the picture on from one to the next and fade out seen almost edge on (`edge_fade`, new). Layers stop at other walls; all but the back one keep 0.75 clear of them, so the shack has trees behind it and none squeezed beside it, and pieces broken where a layer grazes a corner are joined (no slit of sky). The swamp set in four layers, its back stand denser and taller so the wall's flat top never shows, and without the floating moss.
 - **2026-10-21, the temple's columns.** The user's seventh: the ancient ruins' columns in 3D. `column` gains `flutes` (every face hollowed: its normal bends across it, `tilt` in _stone, so it takes the light on one side and shadow on the other) and `"doric": true` (an echinus - frustums can now widen upward - under a square abacus); a `marble` stone in drums. The peristyle's painted see-through colonnade walls became columns on the stylobate with architraves and cornices (`beam`) over every run of three that still stand; the sacred way's and the fallen groups' columns too (prefabs can now carry `objects`). Backlit by the low sun the columns went black, so objects take `fill`: light from the sky and the ground on the faces the sun misses, a multiple of the scene's ambient, so it dims at night. A fluted column is one stone round: every face cut from the same block, so a drum is one tone and its patina runs on round it (cut a face at a time, the patches stopped at the faces' edges and read as holes); marble seldom cracks. New shot `ruins_columns`, the fallen group in the sun from the west - turned by `angle` and `pitch` and stood where no scatter is, because a shot keeps scatter off its camera and its sight lines and a new one reshuffled the poppies out of `ruins_head`. The statue's head is still a billboard.

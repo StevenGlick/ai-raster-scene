@@ -4,10 +4,12 @@ back for a drink.
 Shows the `western` facade style - clapboard false fronts in faded paint with their painted signs
 (saloon, bank, general store...), sash windows in plain casings, the saloon's batwing doors - and
 how to roof a boardwalk: the walk is a step of `planks` with a `ceil`, at a low `ceiling_height`,
-and the facade stands the posts and fascia of the porch along its outer edge. The ends of each
-block are plain walls, so the fronts only face the street. Desert at the end of the street, a
-windpump, red-rock mesas; the cowboy, tumbleweeds, a water trough; and at dusk the saloon lit,
-lanterns on the porches and a ghost in the street.
+and the facade stands the posts and fascia of the porch along its outer edge, a roof of boards
+sloping down to it from the front; behind each false front the building's own gabled roof, so
+the street has depth. The ends of each block are plain walls, so the fronts only face the street.
+Desert at the end of the street, a windpump, red-rock mesas built in 3D (canyon rock lining the
+mesa walls); the cowboy, tumbleweeds, troughs of boards with water in them (`trough` objects); and
+at dusk the saloon lit, lanterns on the porches and a ghost in the street.
 Run:  python ghost_town.py  -> writes ghost_town.json next to this file.
 """
 import os
@@ -34,20 +36,24 @@ def ghost_town():
         # the street at noon: the cowboy, tumbleweeds, a trough, barrels and crates on the walk
         {'id': 'cowboy', 'x': 22.9, 'y': 63.0, 'type': 'cowboy', 'facing': 90},
         {'x': 21.2, 'y': 67.6, 'type': 'tumbleweed'}, {'x': 24.4, 'y': 52.2, 'type': 'tumbleweed', 'scale': 0.36},
-        {'x': 20.6, 'y': 63.0, 'type': 'water_trough', 'angle': 90},
         {'x': 19.5, 'y': 65.5, 'type': 'barrel'}, {'x': 19.6, 'y': 66.2, 'type': 'crate'},
         {'x': 26.5, 'y': 46.6, 'type': 'barrel'}, {'x': 26.5, 'y': 47.3, 'type': 'barrel', 'flip': True},
         {'x': 19.6, 'y': 42.0, 'type': 'wagon_wheel'}, {'x': 26.4, 'y': 61.0, 'type': 'crate'},
         {'x': 24.8, 'y': 41.0, 'type': 'cart', 'flip': True},
         {'x': 22.0, 'y': 49.0, 'type': 'cow_skull'},
         # the end of the street: the windpump, saguaros, the open desert
-        {'x': 17.0, 'y': 24.0, 'type': 'windpump'}, {'x': 18.4, 'y': 25.2, 'type': 'water_trough'},
+        {'x': 17.0, 'y': 24.0, 'type': 'windpump'},
         {'x': 30.0, 'y': 22.0, 'type': 'saguaro'}, {'x': 34.5, 'y': 27.5, 'type': 'saguaro', 'scale': 2.4},
         {'x': 10.0, 'y': 18.0, 'type': 'saguaro', 'scale': 3.6, 'flip': True}, {'x': 27.5, 'y': 30.0, 'type': 'prickly_pear'},
         {'x': 13.5, 'y': 28.5, 'type': 'prickly_pear', 'flip': True}, {'x': 38.0, 'y': 14.0, 'type': 'saguaro'},
         {'x': 6.0, 'y': 30.0, 'type': 'saguaro', 'scale': 2.8},
     ]
     sprites.append({'id': 'barkeep', 'x': 20.3, 'y': 38.4, 'type': 'shopkeeper', 'facing': 0})
+    objects = [{'type': 'trough', 'x': 20.6, 'y': 63.0, 'angle': 90, 'seed': 2},      # troughs of boards, water in them
+               {'type': 'trough', 'x': 18.4, 'y': 25.4, 'seed': 5},
+               # the mesas' cliffs in 3D, in beds of red and pale stone, over the old walls cut down
+               {'type': 'rock_wall', 'x': 0, 'y': 0, 'lining': 'R', 'rock': 'canyon', 'depth': 1.0,
+                'height': [5.2, 6.0], 'trim': 0.05, 'pieces': [3.0, 6.0], 'seed': 4}]      # broad: mesas, far off
     dusk = [{'id': 'ghost', 'x': 22.6, 'y': 56.0, 'type': 'ghost', 'facing': 90}]
     lanterns = [(19.55, y) for y in (40.0, 49.5, 59.0)] + [(26.45, y) for y in (44.5, 54.0, 64.0)]
     dusk += [{'x': x, 'y': y, 'type': 'lantern', 'z': 0.95} for x, y in lanterns]
@@ -62,16 +68,17 @@ def ghost_town():
             'b': {'wall': 'planks', 'h': 0.15, 'top': 'planks', 'ceil': 'planks'},
             'd': {'floor': 'desert_wash'},
             'D': {'floor': 'desert_wash'},
-            'R': {'wall': ['sandstone', 'sandstone', 'sandstone_pale', 'sandstone', 'sandstone'], 'h': 6.0,
+            'R': {'wall': ['sandstone', 'sandstone', 'sandstone_pale', 'sandstone', 'sandstone'], 'h': 5.0,
                   'top': 'desert_wash'},
         },
         title='Ghost town - a frontier main street',
         sky='day',
-        ceiling_height=1.3,
+        ceiling_height=1.15,
         ambient=[0.42, 0.38, 0.34],
         fog={'color': [0.86, 0.76, 0.62], 'density': 0.008},
         lights=[NOON],
         sprites=sprites,
+        objects=objects,
         scatter=[{'of': 'desert', 'on': 'D', 'density': 0.2, 'sizes': {'tiny': 4, 'small': 2}, 'seed': 9}],
         camera={'x': 22.9, 'y': 70.0, 'angle': 270, 'fov': 64, 'height': 0.5},
         shots=[
