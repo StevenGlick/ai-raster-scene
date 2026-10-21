@@ -1381,6 +1381,19 @@ def check_objects():
     starboard = lambda pns: sum(1 for pn in pns if pn['o'][1] > 0.3)                      # noqa: E731
     port = lambda pns: sum(1 for pn in pns if pn['o'][1] < -0.3)                          # noqa: E731
     assert starboard(stove) < starboard(whole) and port(stove) == port(whole), 'stove in on its starboard side'
+    # 15. a standing stone stands on end, its broad faces along x; one that casts throws the sun's shadow
+    # behind it (the sun in the east: to the west), but never on itself
+    st = objects.expand({'map': ['.'], 'objects': [{'type': 'standing_stone', 'x': 0.0, 'y': 0.0, 'height': 2.0,
+                                                    'size': 1.0}]})['panels']
+    pts = np.array([c for pn in st for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])
+    assert 1.8 < pts[:, 2].max() <= 2.0 + 1e-6 and np.ptp(pts[:, 1]) > 1.6 * np.ptp(pts[:, 0]), 'a slab, on end'
+
+    def zlit(casts):
+        sc = {'map': ['.' * 12] * 12, 'legend': {'.': {'floor': 'grass'}},
+              'objects': [{'type': 'standing_stone', 'x': 6.0, 'y': 6.0, 'height': 2.0, 'casts': casts}]}
+        return R.build_sun(R.World(sc), {'type': 'sun', 'azimuth': 0, 'elevation': 30})['zlit']
+    on, off = zlit(True), zlit(False)
+    assert on[24, 18] > 0.5 and off[24, 18] < 0 and on[24, 24] < 0, 'a shadow behind it, none on it'
     # 14. a lighthouse and a stone lantern: lit, they give a light; put out, none
     for kind in ('lighthouse', 'stone_lantern'):
         on = objects.expand({'map': ['.'], 'objects': [{'type': kind, 'x': 0.0, 'y': 0.0}]})
@@ -1408,7 +1421,7 @@ def check_objects():
     zs = np.concatenate([[pn['o'] + a * pn['u'] + b * pn['v'] for a in (0, 1) for b in (0, 1)] for pn in stand['panels']])[:, 2]
     assert zs.max() > 1.3 and any(sp['type'].startswith('goods_') for sp in stand['sprites']), 'goods under an awning'
     print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights, '
-          f'rock, linings, columns fluted and Doric, fill, timber, crystals bend the light)')
+          f'rock, linings, columns fluted and Doric, fill, timber, standing stones cast, crystals bend the light)')
 
 
 def check_docs():

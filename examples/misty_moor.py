@@ -1,7 +1,9 @@
 """Misty moor: a stone circle at dawn, mist lying in the hollows, the low sun cutting through.
 
 Shows volumetric fog (a ground layer that thins with height and drifts in banks), shafts of
-sunlight between the stones (weathered `menhir` blocks of different heights from a `heights` layer), long dawn shadows, and a character seen from behind (`facing`).
+sunlight between the stones (`standing_stone` objects in 3D - rough slabs of different heights, leaning a
+little, their tops sloping, broad faces turned into the circle; the altar a slab lying), long dawn
+shadows, and a character seen from behind (`facing`).
 Mossy `boulder`s lie out on the moor and in the grass at the foot of every shot.
 Run:  python misty_moor.py  -> writes misty_moor.json
 """
@@ -20,24 +22,23 @@ for k in range(11):                                   # a ring of standing stone
 g.put(cx, cy, 'A')                                    # ...round a low altar stone
 for (x, y) in ((8, 30), (33, 31), (36, 9), (6, 8)):
     g.put(x, y, 'S')                                  # a few strays out on the moor
-heights = [list('.' * 44) for _ in range(44)]
-heights[cy][cx] = '2'                                 # the altar, low (0.5)
-caps = []
+stones = []
 for k, (x, y) in enumerate([(x, y) for y in range(44) for x in range(44) if g.get(x, y) == 'S']):
-    d = '6789'[(k * 7 + x) % 4]
-    heights[y][x] = d                                 # each stone its own height, 1.5 to 2.25,
-    caps.append({'x': x + 0.5, 'y': y + 0.5, 'type': 'stone_cap', 'z': int(d) * 0.25 - 0.03,   # with a weathered top
-                 'flip': k % 2 == 1, 'shadow': False})
+    ring = math.hypot(x - cx, y - cy) < 8             # broad faces turned into the circle; the strays any way
+    face = math.degrees(math.atan2(cy - y, cx - x)) if ring else 37.0 * k
+    stones.append({'type': 'standing_stone', 'x': x + 0.5, 'y': y + 0.5, 'angle': round(face, 1),
+                   'height': int('6789'[(k * 7 + x) % 4]) * 0.25,     # each stone its own height, 1.5 to 2.25
+                   'size': 0.95 + 0.1 * (k % 3), 'seed': 80 + k, 'plants': 2, 'casts': True})
+stones.append({'type': 'standing_stone', 'x': cx + 0.5, 'y': cy + 0.5, 'angle': 15, 'height': 0.45, 'size': 1.7,
+               'depth': 0.9, 'seed': 99, 'casts': True})   # the altar, a slab lying
 
 s = scene(
     g,
     title='Misty moor - the stone circle at dawn',
-    heights=[''.join(r) for r in heights],
-    height_unit=0.25,
     legend={
         ',': {'floor': 'grass'},
-        'S': {'wall': ['menhir', 'menhir_top'], 'top': 'menhir_top'},
-        'A': {'wall': 'menhir', 'top': 'moss_stone'},
+        'S': {'floor': 'grass'},                      # where the stones stand (objects, below)
+        'A': {'floor': 'grass'},
     },
     sky='dusk',
     skyline={'type': 'hills', 'height': 0.8},
@@ -46,11 +47,11 @@ s = scene(
              'disc_size': 3.2}],
     fog={'color': [0.58, 0.55, 0.62], 'density': 0.01, 'ground': 0.4, 'height': 0.3, 'noise': 0.6, 'scale': 3.0,
          'shafts': 0.8},
-    sprites=caps + [
+    sprites=[
         {'id': 'wanderer', 'x': 22.3, 'y': 27.0, 'type': 'knight', 'facing': 280},
         {'x': 12.0, 'y': 25.0, 'type': 'dead_tree', 'scale': 2.4}, {'x': 31.0, 'y': 24.0, 'type': 'dead_tree', 'flip': True},
     ],
-    objects=[{'type': 'boulder', 'x': x, 'y': y, 'angle': a, 'size': s_, 'height': h_, 'seed': 60 + k, 'plants': n}
+    objects=stones + [{'type': 'boulder', 'x': x, 'y': y, 'angle': a, 'size': s_, 'height': h_, 'seed': 60 + k, 'plants': n}
              for k, (x, y, a, s_, h_, n) in enumerate((
                  (20.5, 28.0, 20, 0.9, 0.5, 2), (23.5, 27.7, 200, 0.7, 0.38, 1),      # before the first shot
                  (23.0, 18.6, 120, 0.65, 0.36, 1),                                  # before the second, in the ring

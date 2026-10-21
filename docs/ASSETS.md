@@ -32,7 +32,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Objects | 20 | 20 | 0 | 0 | 0 |
+| Objects | 21 | 21 | 0 | 0 | 0 |
 | Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 67 | 66 | 0 | 0 | 1 |
-| **all** | **806** | **805** | **0** | **0** | **1** |
+| **all** | **807** | **806** | **0** | **0** | **1** |
 <!-- /summary -->
 
 ## Pass plan
@@ -84,9 +84,9 @@ New scenes:
 | `stone_dark` | good |  | cathedral_ruin, garden_encounter, gui_menus, gui_themes, gui_trade, haunted_house, hospital_garden, library_medium, mansion_library, post_presets, rainy_street |  |
 | `stone_pale` | good |  | cathedral_ruin, chapel_graveyard, dream_world, garden_encounter, gui_menus, hospital_garden, post_presets |  |
 | `castle` | good |  | castle_keep | Mortar grid is very regular; chip a few corners. |
-| `moss_stone` | good |  | autumn_lane, coast_lighthouse, misty_moor |  |
-| `menhir` | good |  | misty_moor | Drawn with the toolkit in basics.py: one weathered stone face - broad swells, rain runnels, long cracks, lichen rosettes - moss at its foot. |
-| `menhir_top` | good |  | misty_moor | Drawn with the toolkit in basics.py: the upper courses of a standing stone: greyer, more lichen, no moss. |
+| `moss_stone` | good |  | autumn_lane, coast_lighthouse |  |
+| `menhir` | good |  | - | Drawn with the toolkit in basics.py: one weathered stone face - broad swells, rain runnels, long cracks, lichen rosettes - moss at its foot. |
+| `menhir_top` | good |  | - | Drawn with the toolkit in basics.py: the upper courses of a standing stone: greyer, more lichen, no moss. |
 | `slime_brick` | good |  | sewer_tunnels |  |
 | `plaster` | good |  | rainy_street, village_green | Redrawn with the toolkit in basics.py: smooth render mottled where patched, a hairline crack, faint streaks; no band, so it stacks storey on storey. |
 | `plaster_white` | good |  | autumn_garden, garden_encounter, gui_menus, hospital_garden, post_presets | Redrawn with the toolkit in basics.py: the same render in white. |
@@ -456,7 +456,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `column` | good | 1 tall | - | Redrawn: a fluted Doric column with capital and plinth. |
 | `fountain` | good | 0.9 tall | palm_house | Redrawn with the toolkit in basics.py: a moulded basin with water in it, a fluted pedestal and bowl, water spilling in arcs. |
 | `gravestone` | good | 0.6 tall | chapel_graveyard, haunted_house |  |
-| `stone_cap` | good | 0.44 tall | misty_moor | Drawn with the toolkit in basics.py: a slanted, chipped crown of stone with lichen, to set on a one-cell block so a standing stone has a weathered top. |
+| `stone_cap` | good | 0.44 tall | - | Drawn with the toolkit in basics.py: a slanted, chipped crown of stone with lichen, to set on a one-cell block so a standing stone has a weathered top. |
 | `grave_cross` | good | 0.55 tall | chapel_graveyard, haunted_house |  |
 | `signpost` | good | 1.3 tall | coast_lighthouse |  |
 | `statue` | good | 1.5 tall | garden_encounter, gui_menus, hospital_garden, mansion_library, post_presets, sky_islands | Redrawn with the toolkit in basics.py: a draped woman in weathered marble raising a wreath, folds catching the light, on a moulded plinth with lichen. |
@@ -906,7 +906,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
-## Objects (20)
+## Objects (21)
 
 Things too big for a billboard, built in 3D out of flat panels (`scripts/objects.py`).
 
@@ -937,6 +937,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `longship` | good | fjord | A longship: the `ship_hull`'s planked hull, stem and stern posts curling up and over, a six-sided mast, a yard and a square sail in red and cream stripes (bellied lighter in the middle; `"sail": false` furls it), round shields at the gunwale down both sides. |
 | `lighthouse` | good | coast_lighthouse | A round tower of whitewashed masonry tapering up, smoothly shaded (`lime_white`, `_painted`), a red band (`lime_red`), a gallery on corbels with an iron rail of posts, a lantern room of ten glass panes (the `glass` cover's painter, translucent) with the lamp lit in it (an `orb` and a light), a domed iron cap with a ball. |
 | `stone_lantern` | good | autumn_garden | A garden's stone lantern: a hexagonal foot, a round shaft (smooth), a platform, a firebox of four posts with a flame showing between them and a little light, a wide six-sided roof, a finial. |
+| `standing_stone` | good | misty_moor | A standing stone: a rough slab of `menhir` rock set on end (`size`, `depth`, `height`), its broad faces nearly flat, swelling and drawing in as it rises, leaning a few degrees, its top sloping down from one shoulder with the corners knocked off; low and wide, an altar slab. |
 
 ## Held items (8)
 
@@ -1101,7 +1102,7 @@ The environments, judged on their gallery images and shots.
 | `clockwork_city` | good | 4 | clock_plaza, clock_orrery, clock_gears, clock_tower | A plaza of brass and brick at sundown: the orrery (wireframes) before the clock tower, gears in the walls, pipes and steam. |
 | `village_green` | good | 4 | village_market, village_stall, village_well, village_night | A cobbled street of timber-framed houses to a green: a market stall and its keeper, the inn sign, a cart, the well; the inn lit after closing. |
 | `ghost_town` | good | 4 | western_noon, western_saloon, western_ghost, western_windpump | A frontier main street: a cowboy at high noon, the saloon and its barkeep, sundown with lanterns and a ghost, a windpump in the desert. |
-| `misty_moor` | good | 3 | moor_dawn, moor_circle | Stones of varied heights with weathered menhir faces and slanted, chipped stone_cap tops in dawn mist. |
+| `misty_moor` | good | 3 | moor_dawn, moor_circle | A stone circle in 3D (`standing_stone`s, leaning, their tops sloping, an altar slab) throwing long shadows and shafts of sun through the dawn mist. |
 | `winter_lake` | good | 5 | winter_night, winter_day, winter_cabin | Ice redrawn (fractures, depth) and snow redrawn (drifts); the snowy spruce and snow-capped boulders. The cabin wears a roof under snow in 3D with wood smoke from its chimney (it was a flat-topped box), the shore boulders are 3D, and a fifth shot shows the cabin close by day. |
 | `winter_woods` | good | 4 | winter_lane, winter_deer, winter_lantern, winter_stream | A snowbound wood: the lane, a deer on a frozen stream in falling snow, a child by a lantern-lit footbridge, trees mirrored in the ice. |
 | `chapel_graveyard` | good | 4 | chapel_yard, chapel_nave | The yard is a little sparse. Roofed in 3D now: a steep `slate` roof down the nave, its gable over the door in pale stone (`ends`: `ashlar`). |
@@ -1169,6 +1170,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, the misty moor.** Its stones in 3D: `standing_stone` (new object) - rough slabs of `menhir` rock (new kind), leaning a little, their tops sloping down from one shoulder, broad faces turned into the circle; the altar a slab lying. Objects can now cast the sun's shadow (`"casts": true`, off by default): the grid-block stones had thrown the long dawn shadows and the shafts in the mist, and without that the fog went flat white.
 - **2026-10-21, the sunken temple.** A new scene from pieces already made: the ruins' fluted marble columns and architraves set on the sea floor in the kelp forest's water, coral on the stones, a manta ray, the diver at the marble head. (A 3D moon-base dome of glass was tried just before and dropped: it was no better than the drawn domes.)
 - **2026-10-21, the aurora palace.** The last of the fantasy scenes: `crystal_cluster`s of `ice` on beds of snow rock flank the gate, the throne and the lake's shore - every facet bending the aurora, and their pale light making the ice walls and the throne glow where they were dark blocks; doubled in the polished ice.
 - **2026-10-21, the autumn garden.** A new scene: a Japanese garden in autumn - a gate of `lime_red` columns and beams with a `lacquer_black` top beam (new paint), `stone_lantern`s (new object: foot, shaft, platform, a firebox lit between four posts, a six-sided roof, a finial), a tea house under `slate`, a pond with a plank bridge and red rails, boulders, maples. First drawn, the camera stood in the gate and the garden read empty: the gate moved up the path to frame the view whole, maples came in close round the pond (one moved out of the second shot's line), and the dusk shot moved onto the path, where the lanterns line the way.

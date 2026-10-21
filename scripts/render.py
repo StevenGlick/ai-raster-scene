@@ -124,6 +124,35 @@ SUN_DEFAULTS = {
 }
 
 
+def _occluders(world, res):
+    """What objects that cast the sun's shadow (`"casts": true`) stand in its way: over each ground
+    sample (res per unit) the height of the highest of their panels there, and which object that is
+    (-1 for none) - so an object never shadows itself, only the ground and everything else. None if
+    no object casts."""
+    pns = [p for p in list(world.scene.get('panels') or []) + list(world.panels) if p.get('casts')]
+    if not pns:
+        return None
+    H, W = world.mh * res, world.mw * res
+    occ = np.zeros((H, W), np.float32)
+    oid = np.full((H, W), -1, np.int32)
+    ids = {}
+    for pn in pns:
+        k = ids.setdefault(tuple(np.round(np.asarray(pn['at'], float), 4)), len(ids))
+        a = np.asarray(pn['rgba'])[..., 3] > 0.5
+        h, w = a.shape
+        o, u, v = (np.asarray(pn[q], float) for q in ('o', 'u', 'v'))
+        ns = max(2, int(math.ceil(np.linalg.norm(u[:2]) * res * 2)) + 1)    # finer than the samples, so
+        nt = max(2, int(math.ceil(np.linalg.norm(v[:2]) * res * 2)) + 1)    # none it covers is missed
+        S, T = np.meshgrid((np.arange(ns) + 0.5) / ns, (np.arange(nt) + 0.5) / nt)
+        keep = a[np.minimum((T * h).astype(int), h - 1), np.minimum((S * w).astype(int), w - 1)]
+        P = o + S[keep][:, None] * u + T[keep][:, None] * v
+        ix, iy = np.floor(P[:, 0] * res).astype(int), np.floor(P[:, 1] * res).astype(int)
+        ok = (ix >= 0) & (iy >= 0) & (ix < W) & (iy < H)
+        np.maximum.at(occ, (iy[ok], ix[ok]), P[ok, 2].astype(np.float32))
+        oid[iy[ok], ix[ok]] = k
+    return occ, oid
+
+
 def build_sun(world, L, res=4):
     """A directional light (sun or moon) and its shadows.
 
@@ -137,6 +166,9 @@ def build_sun(world, L, res=4):
     open side of a porch - so a second map holds the highest height that can still see it: the
     ray toward the light must be below the ceiling where it leaves the last roofed cell. A
     sunbeam therefore comes in low through a window and lands on the floor across the room.
+
+    Objects that cast (`"casts": true`) stand in the same march at a finer grain, by the highest of
+    their panels over each sample, so a standing stone throws its own shape of shadow.
     """
     kind = L.get('type')
     colour, inten, disc_c, disc_r, glow = SUN_DEFAULTS[kind]
@@ -147,7 +179,8 @@ def build_sun(world, L, res=4):
     sy, sx = np.mgrid[0:H, 0:W]
     px, py = (sx + 0.5) / res, (sy + 0.5) / res
     zlit = np.full((H, W), -1.0, np.float32)
-    maxh = float(world.solid_h.max())
+    occ = _occluders(world, res) if L.get('shadows', True) else None
+    maxh = max(float(world.solid_h.max()), float(occ[0].max()) if occ is not None else 0.0)
     if L.get('shadows', True) and maxh > 0:
         own_x, own_y = np.floor(px).astype(int), np.floor(py).astype(int)
         reach = min(maxh / tan_el, float(world.mw + world.mh))
@@ -157,6 +190,13 @@ def build_sun(world, L, res=4):
             inb = (qx >= 0) & (qy >= 0) & (qx < world.mw) & (qy < world.mh)
             hb = np.where(inb, world.solid_h[np.clip(qy, 0, world.mh - 1), np.clip(qx, 0, world.mw - 1)], 0)
             cand = np.where((qx == own_x) & (qy == own_y), -1.0, hb - t * tan_el)
+            if occ is not None:                       # and the objects that cast, but never on themselves
+                fx = np.floor((px + ux * t) * res).astype(int)
+                fy = np.floor((py + uy * t) * res).astype(int)
+                fin = (fx >= 0) & (fy >= 0) & (fx < W) & (fy < H)
+                fx, fy = np.clip(fx, 0, W - 1), np.clip(fy, 0, H - 1)
+                ho = np.where(fin & (occ[1][fy, fx] != occ[1]), occ[0][fy, fx], 0.0)
+                cand = np.maximum(cand, np.where(ho > 0, ho - t * tan_el, -1.0))
             np.maximum(zlit, cand, out=zlit)
     roof = (world.ceil_tid >= 0) & ~world.glazed      # a glazed roof lets the light through
     zroof = np.full((H, W), np.inf, np.float32)

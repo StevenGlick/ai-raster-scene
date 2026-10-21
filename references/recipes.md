@@ -13,7 +13,7 @@ Fill the grid with `forest_deep` wall cells (trunks receding into the dark) abou
 
 ### Standing stones
 
-Build them as wall cells of `["menhir", "menhir_top"]` at different heights (a `heights` layer), each with a `stone_cap` sprite on top so the circle's outline is not a row of boxes. See `examples/misty_moor.py`.
+`standing_stone` objects, 1.5 to 2.25 tall, a little different in size and each its own `seed`, set round a ring with their broad faces turned into it (`angle` toward the centre) and an altar in the middle (`height` 0.45, `size` 1.7, `depth` 0.9: a slab lying); strays out on the moor turned any way. Give them `"casts": true` so a low sun throws their long shadows across the grass and through a ground fog, the gaps between them shafts of light. (Wall cells of `["menhir", "menhir_top"]` at different heights, each with a `stone_cap` sprite on top, make a blockier circle that needs no objects.) See `examples/misty_moor.py`.
 
 ### Jungle, ruins and beaches
 

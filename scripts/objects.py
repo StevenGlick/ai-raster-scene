@@ -37,7 +37,7 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
                   'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset',
                   'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel', 'ends', 'sail',
-                  'band', 'lit'}
+                  'band', 'lit', 'casts'}
 
 
 # ------------------------------------------------------------------ parts
@@ -110,6 +110,8 @@ def expand(scene):
                 pn.update(o=tl, u=tr - tl, v=bl - tl, rgba=part['tex'][0], em=part['tex'][1], at=(X, Y, Z))
                 if pl.get('fill'):
                     pn['fill'] = float(pl['fill'])
+                if pl.get('casts'):
+                    pn['casts'] = True
                 if 'refract' in pn:
                     pn['refract'] = float(pn['refract']) * k
                 out['panels'].append(pn)
@@ -809,6 +811,11 @@ ROCKS = {
                   mass=(0.8, 0.8, 0.6), chip=(0.18, 0.18, 0.15), key=(-0.3, 0.35, 0.88), shade=(0.2, 0.6),
                   crust=0.66, weed=0.58, up=0.5, pores=0.35, glow={2: 0.75},
                   plants=[('glow_fern', 0.3, 0.46), ('glowshroom', 0.14, 0.22), ('glow_bromeliad', 0.2, 0.3)]),
+    'menhir': dict(ramps=[ramp('#8a8a84', dark=0.32, light=1.3), ramp('#b8b48a', dark=0.45, light=1.12),
+                          ramp('#4e6a34', dark=0.35, light=1.25)],
+                   mass=(1.4, 1.4, 1.0), chip=(0.2, 0.2, 0.18), key=(-0.4, 0.45, 0.8), shade=(0.3, 0.62),
+                   crust=0.62, weed=0.55, up=0.5, pores=0.0, cracks=0.25, varnish=0.06,
+                   plants=[('grass_tuft', 0.18, 0.28), ('fern', 0.2, 0.3)]),
 }
 ROCK_FOOT = 0.02            # rock runs this far below the ground, so no seam shows at its foot
 
@@ -1180,6 +1187,57 @@ def keel(pl):
             x, y, z = rings[1][i]
             parts.append(sprite('island_roots', x * 0.95, y * 0.95, z - D * 0.15, scale=R * rng.uniform(0.35, 0.5),
                                 shadow=False, flip=bool(rng.random() < 0.5)))
+    return parts
+
+
+def standing_stone(pl):
+    """A standing stone: a rough slab of rock set on end, `size` across (default 1.0), `depth` through
+    (default 0.45 of its size) and `height` tall (default 2.0) - an irregular outline at its foot, its
+    broad faces nearly flat, swelling a little and drawing in by uneven steps as it rises, leaning a
+    few degrees, to a weathered top that slopes down from one shoulder with the corners knocked off.
+    Every face a triangle of rock (`rock`, default `menhir`: grey, lichened, moss where it faces up).
+    Its broad faces look along x: turn them with `angle` (into a circle, say). Low and wide it is a slab
+    lying, its top near flat - an altar stone. `plants` sets tufts round its foot."""
+    rk = _rock_kind(dict(pl, rock=pl.get('rock', 'menhir')))
+    seed = int(pl.get('seed', 1))
+    rng = np.random.default_rng(seed)
+    W = float(pl.get('size', 1.0))
+    T = float(pl.get('depth', W * 0.45))
+    H = float(pl.get('height', 2.0))
+    N = int(rng.integers(8, 11))
+    ang = (np.arange(N) + rng.uniform(-0.25, 0.25, N)) * 2 * np.pi / N
+    c, sn = np.cos(ang), np.sin(ang)
+    foot = np.stack([T / 2 * np.sign(c) * np.abs(c) ** 0.6,                     # squarer than an ellipse,
+                     W / 2 * np.sign(sn) * np.abs(sn) ** 0.6], 1) * rng.uniform(0.9, 1.0, N)[:, None]   # so its faces are broad
+    lean = rng.uniform(-0.05, 0.05, 2) * np.array([1.0, 0.6])
+    t = (foot[:, 1] / (W / 2) + 1) / 2                                         # 0..1 across its width
+    t = 1 - t if rng.random() < 0.5 else t
+    slope = 0.2 * min(1.0, H / W)                                              # how far its top falls across it
+    levels = [(np.full(N, -ROCK_FOOT), np.ones(N)),                                                    # its foot
+              (H * (0.4 + rng.uniform(-0.04, 0.04, N)), rng.uniform(1.0, 1.07, N)),                       # its belly
+              (H * (0.9 - 1.3 * slope + slope * t + rng.uniform(-0.03, 0.03, N)), rng.uniform(0.8, 0.9, N)),  # shoulders
+              (np.minimum(H * (1 - slope + slope * t + rng.uniform(-0.015, 0.015, N)), H), rng.uniform(0.5, 0.62, N))]
+    rings = [np.stack([foot[:, 0] * k + lean[0] * z, foot[:, 1] * k + lean[1] * z, z], 1) for z, k in levels]
+    parts = []
+    for k, (lo, hi) in enumerate(zip(rings, rings[1:])):
+        for i in range(N):
+            j = (i + 1) % N
+            A, B, C, D = lo[i], lo[j], hi[j], hi[i]
+            m = (A + B + C + D) / 4
+            out = m - np.array([lean[0] * m[2], lean[1] * m[2], m[2]]) + np.array([0.0, 0.0, 0.15 * (k == 2)])
+            tris = ((A, B, C), (A, C, D)) if rng.random() < 0.5 else ((A, B, D), (B, C, D))
+            parts += [_rock_tri(rk, seed, *q, out) for q in tris]
+    crown = rings[-1]
+    top = np.array([crown[:, 0].mean(), crown[:, 1].mean(), crown[:, 2].mean() + 0.02 * H])
+    for i in range(N):                                                          # and its top
+        parts.append(_rock_tri(rk, seed, crown[i], crown[(i + 1) % N], top, np.array([0.0, 0.0, 1.0])))
+    parts = [p for p in parts if p]
+    parts.append(shadow(0.0, 0.0, 1.3 * W, 0.5))
+    n = int(pl.get('plants', 0)) if rk['plants'] else 0
+    for k in range(n):                                                          # tufts round its foot
+        name, lo, hi = rk['plants'][rng.integers(len(rk['plants']))]
+        x, y = foot[int(rng.integers(N))] * rng.uniform(1.04, 1.16)
+        parts.append(sprite(name, x, y, 0.0, scale=rng.uniform(lo, hi), shadow=False, flip=bool(rng.random() < 0.5)))
     return parts
 
 
@@ -2329,4 +2387,5 @@ OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'bo
            'beam': beam, 'crystal_cluster': crystal_cluster, 'trough': trough, 'shed_roof': shed_roof,
            'gable_roof': gable_roof, 'market_stand': market_stand, 'saloon_bar': saloon_bar, 'rails': rails,
            'ore_cart': ore_cart, 'keel': keel, 'chess_piece': chess_piece, 'ship_hull': ship_hull,
-           'longship': longship, 'lighthouse': lighthouse, 'stone_lantern': stone_lantern}
+           'longship': longship, 'lighthouse': lighthouse, 'stone_lantern': stone_lantern,
+           'standing_stone': standing_stone}
