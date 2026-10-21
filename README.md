@@ -73,7 +73,7 @@ Sixty example scenes in [`examples/`](examples/), every one a single JSON file y
 
 - **[Cities](#cities)** - [streets in the rain](#city-streets) · [the neon city](#the-neon-city) · [a night market](#the-night-market) · [a bar](#the-bar) · [the rooftops](#the-rooftops) · [a capsule hotel](#the-capsule-hotel) · [a village](#the-village) · [a frontier town](#the-frontier-town) · [a clockwork city](#the-clockwork-city)
 - **[Woods and weather](#woods-and-weather)** - [the woods at night](#the-woods-at-night) · [autumn](#autumn) · [the autumn garden](#the-autumn-garden) · [winter](#winter) · [fog and light](#fog-and-light) · [the palm house](#the-palm-house) · [the bayou](#the-bayou)
-- **[Jungle, desert and coast](#jungle-desert-and-coast)** - [jungle, ruins and the beach](#jungle-ruins-and-the-beach) · [the glowing jungle](#the-glowing-jungle) · [the desert](#the-desert) · [the salt flat](#the-salt-flat) · [the fjord](#the-fjord) · [the lighthouse](#the-lighthouse)
+- **[Jungle, desert and coast](#jungle-desert-and-coast)** - [jungle, ruins and the beach](#jungle-ruins-and-the-beach) · [the glowing jungle](#the-glowing-jungle) · [the desert](#the-desert) · [the salt flat](#the-salt-flat) · [the fjord](#the-fjord) · [the basalt coast](#the-basalt-coast) · [the lighthouse](#the-lighthouse)
 - **[Underground and undersea](#underground-and-undersea)** - [the crystal cave](#the-crystal-cave) · [under the sea](#under-the-sea) · [the sunken temple](#the-sunken-temple) · [the aquarium](#the-aquarium)
 - **[Haunts and old stones](#haunts-and-old-stones)** - [the haunted house](#the-haunted-house) · [the castle and the chapel](#the-castle-and-the-chapel) · [encounters](#encounters)
 - **[Space and other worlds](#space-and-other-worlds)** - [stations and ships](#stations-and-ships) · [the Moon](#the-moon) · [Vector World](#vector-world) · [Doomed](#doomed)
@@ -318,6 +318,16 @@ A longship drawn up on the shingle at the head of a fjord, its striped sail set 
 | | |
 |---|---|
 | ![Dusk: the fire on the shingle lighting the longship's shields, the cliffs black against a pink sky](docs/gallery/fjord_dusk.png) | ![From the water: the longship's bow and sail, the longhouse under thatch, all mirrored in the fjord](docs/gallery/fjord_water.png) |
+
+### The basalt coast
+
+A causeway of basalt at sunset: hundreds of hexagonal columns packed tight, stepping down from the foot of a cliff into the sea, organ pipes of them up the cliff behind, the low sun throwing the shadow of each across the next - and someone standing out on the last of them.
+
+![The causeway at sunset: hexagonal columns stepping down to a sea reflecting the pink sky](docs/gallery/causeway_sunset.png)
+
+| | |
+|---|---|
+| ![From the water's edge: the causeway rising to a cliff of basalt organ pipes](docs/gallery/causeway_organ.png) | ![Looking down on the hexagons, the sea between them, a figure on the last](docs/gallery/causeway_hexagons.png) |
 
 ### The lighthouse
 

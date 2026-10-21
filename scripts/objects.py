@@ -816,6 +816,11 @@ ROCKS = {
                    mass=(1.4, 1.4, 1.0), chip=(0.2, 0.2, 0.18), key=(-0.4, 0.45, 0.8), shade=(0.3, 0.62),
                    crust=0.62, weed=0.55, up=0.5, pores=0.0, cracks=0.25, varnish=0.06,
                    plants=[('grass_tuft', 0.18, 0.28), ('fern', 0.2, 0.3)]),
+    'basalt': dict(ramps=[ramp('#4a4644', dark=0.32, light=1.6), ramp('#5e544a', dark=0.35, light=1.4),
+                          ramp('#7a7464', dark=0.4, light=1.3)],
+                   mass=(2.0, 2.0, 2.0), chip=(0.12, 0.12, 0.1), key=(-0.4, 0.45, 0.8), shade=(0.3, 0.6),
+                   crust=0.7, weed=0.2, up=0.7, pores=0.0, cracks=0.2, courses=0.42, staggered=True,
+                   plants=[('grass_tuft', 0.14, 0.22)]),
 }
 ROCK_FOOT = 0.02            # rock runs this far below the ground, so no seam shows at its foot
 
@@ -883,7 +888,7 @@ def _stone(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
         mat[bed < pale] = 1
         val = val + 0.07 * np.cos(2 * np.pi * (P[:, 2] / (period * 0.31) + wob))   # thinner bands of tone
     if rk.get('courses'):                                           # dressed stone in courses: a joint between
-        k = P[:, 2] / rk['courses']                                 # each, every course its own shade
+        k = P[:, 2] / rk['courses'] + rk.get('course_phase', 0.0)  # each, every course its own shade
         course = np.floor(k).astype(np.int64)
         joint = (k - course < 0.035) | (k - course > 0.985)
         val = val + (table(5, course * 7919 + seed) - 0.5) * 0.1 - 0.16 * joint
@@ -1396,6 +1401,8 @@ def column(pl):
     (the echinus) under a square slab (the abacus)."""
     mat = _material(pl)
     seed = int(pl.get('seed', 1))
+    if mat.get('staggered'):                                           # its joints at heights of its own
+        mat = dict(mat, course_phase=(seed * 0.618034) % 1.0)
     flutes = int(pl.get('flutes', 0))
     n = flutes or int(pl.get('sides', 8))
     hollow = 1.4 if flutes else 0.0
