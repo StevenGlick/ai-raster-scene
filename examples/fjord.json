@@ -1,0 +1,438 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "CCCCCCCCCCCwwwwwwwwwwwwCCCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwCCCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwCCCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwCCCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwCCCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwCCCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwCCCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwCCCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwCCCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwCCCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwCCCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwCCCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwCCCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwCCCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwCCCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwwwCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwwwCCCCCCCCC",
+  "CCCCCCCCCCCwwwwwwwwwwwwwwCCCCCCCCC",
+  "CCCCCCCCCwwwwwwwwwwwwwwwwCCCCCCCCC",
+  "CCCCCCCCCwwwwwwwwwwwwwwwwCCCCCCCCC",
+  "CCCCCCCCCwwwwwwwwwwwwwwwwCCCCCCCCC",
+  "CCCCCCCCCwwwwwwwwwwwwwwwwCCCCCCCCC",
+  "CCCCCCCCCwwwwwwwwwwwwwwwwCCCCCCCCC",
+  "CCCCCCCCCwwwwwwwwwwwwwwwwCCCCCCCCC",
+  "CCCCCCCCCwwwwwwwwwwwwwwwwCCCCCCCCC",
+  "CCCCCCCCggggggggggggggggggCCCCCCCC",
+  "CCCCCCCCggggggggggggggggggCCCCCCCC",
+  "CCCCCCCCggggggggggggggggggCCCCCCCC",
+  "CCCCCCCCggggggggggggggggggCCCCCCCC",
+  "CCCCmmmmmmmmmmmmmmmmmmmmmmmmmmCCCC",
+  "CCCCmmmmmmmmmmmmmmmmmmmmmmmmmmCCCC",
+  "CCCCmmmmmmmmmmmmmmmmmmmmmmmmmmCCCC",
+  "CCCCmmmmmmmmmmmmmmmmmmmmmmmmmmCCCC",
+  "CCCCmmLLLLLLLLmmmmmmmmmmmmmmmmCCCC",
+  "CCCCmmLLLLLLLLmmmmmmmmmmmmmmmmCCCC",
+  "CCCCmmLLLLLLLLmmmmmmmmmmmmmmmmCCCC",
+  "CCCCmmLLLDDLLLmmmmmmmmmmmmmmmmCCCC",
+  "CCCCmmmmmmmmmmmmmmmmmmmmmmmmmmCCCC",
+  "CCCCmmmmmmmmmmmmmmmmmmmmmmmmmmCCCC",
+  "CCCCmmmmmmmmmmmmmmmmmmmmmmmmmmCCCC",
+  "CCCCmmmmmmmmmmmmmmmmmmmmmmmmmmCCCC",
+  "CCCCmmmmmmmmmmmmmmmmmmmmmmmmmmCCCC",
+  "CCCCmmmmmmmmmmmmmmmmmmmmmmmmmmCCCC",
+  "CCCCmmmmmmmmmmmmmmmmmmmmmmmmmmCCCC"
+ ],
+ "legend": {
+  "C": {
+   "wall": "rock",
+   "h": 4.4,
+   "top": "grass"
+  },
+  "w": {
+   "floor": "deep_water",
+   "drop": 0.2,
+   "reflect": 0.55
+  },
+  "g": {
+   "floor": "gravel"
+  },
+  "m": {
+   "floor": "grass"
+  },
+  "L": {
+   "wall": "logs",
+   "h": 1.3,
+   "top": "logs"
+  },
+  "D": {
+   "wall": [
+    "door_wood",
+    "logs"
+   ],
+   "h": 1.3,
+   "top": "logs"
+  }
+ },
+ "camera": {
+  "x": 11.6,
+  "y": 32.4,
+  "look_at": [
+   17.0,
+   19.0,
+   1.6
+  ],
+  "fov": 70
+ },
+ "title": "Fjord - a longship on the shingle",
+ "sky": "day",
+ "skyline": {
+  "type": "mountains",
+  "color": [
+   0.62,
+   0.66,
+   0.74
+  ],
+  "height": 1.4
+ },
+ "ambient": [
+  0.36,
+  0.38,
+  0.44
+ ],
+ "fog": {
+  "color": [
+   0.7,
+   0.76,
+   0.84
+  ],
+  "density": 0.014,
+  "sky_mix": 0.3
+ },
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 285,
+   "elevation": 16,
+   "color": [
+    1.0,
+    0.92,
+    0.78
+   ],
+   "intensity": 1.0
+  }
+ ],
+ "sprites": [
+  {
+   "x": 13.2,
+   "y": 27.4,
+   "type": "campfire"
+  },
+  {
+   "x": 18.6,
+   "y": 27.0,
+   "type": "barrel"
+  },
+  {
+   "x": 19.2,
+   "y": 27.5,
+   "type": "barrel",
+   "flip": true
+  },
+  {
+   "x": 14.6,
+   "y": 25.6,
+   "type": "chest"
+  },
+  {
+   "x": 11.8,
+   "y": 28.2,
+   "type": "log"
+  },
+  {
+   "id": "seafarer",
+   "x": 15.8,
+   "y": 26.3,
+   "type": "pirate",
+   "facing": 290
+  },
+  {
+   "x": 20.5,
+   "y": 30.5,
+   "type": "farmer",
+   "facing": 250
+  },
+  {
+   "x": 7.6,
+   "y": 37.05,
+   "type": "round_shield",
+   "z": 0.55,
+   "angle": 0
+  },
+  {
+   "x": 11.6,
+   "y": 37.05,
+   "type": "round_shield",
+   "z": 0.55,
+   "angle": 0,
+   "flip": true
+  },
+  {
+   "x": 10.0,
+   "y": 35.0,
+   "type": "steam",
+   "z": 2.9,
+   "scale": 1.6,
+   "opacity": 0.8,
+   "tint": [
+    0.55,
+    0.55,
+    0.6
+   ]
+  },
+  {
+   "x": 16.0,
+   "y": 34.0,
+   "type": "goat"
+  },
+  {
+   "x": 17.4,
+   "y": 35.6,
+   "type": "goat",
+   "flip": true
+  },
+  {
+   "x": 5.0,
+   "y": 30.4,
+   "type": "pine",
+   "scale": 3.0
+  },
+  {
+   "x": 27.6,
+   "y": 31.0,
+   "type": "pine",
+   "scale": 3.4
+  },
+  {
+   "x": 26.0,
+   "y": 38.0,
+   "type": "birch"
+  },
+  {
+   "x": 4.8,
+   "y": 40.0,
+   "type": "pine"
+  },
+  {
+   "x": 15.0,
+   "y": 16.0,
+   "type": "seagull",
+   "z": 2.6
+  },
+  {
+   "x": 18.0,
+   "y": 20.0,
+   "type": "seagull",
+   "z": 3.2,
+   "flip": true
+  }
+ ],
+ "objects": [
+  {
+   "type": "rock_wall",
+   "x": 0,
+   "y": 0,
+   "lining": "C",
+   "rock": "stone",
+   "depth": 1.2,
+   "height": [
+    4.6,
+    7.6
+   ],
+   "trim": 0.14,
+   "pieces": [
+    1.6,
+    3.4
+   ],
+   "seed": 3
+  },
+  {
+   "type": "longship",
+   "x": 16.6,
+   "y": 25.0,
+   "angle": 272,
+   "length": 7.0,
+   "heel": 5,
+   "seed": 2
+  },
+  {
+   "type": "longship",
+   "x": 19.0,
+   "y": 12.0,
+   "z": -0.32,
+   "angle": 250,
+   "length": 6.4,
+   "sail": false,
+   "seed": 6
+  },
+  {
+   "type": "gable_roof",
+   "x": 10.0,
+   "y": 35.0,
+   "z": 1.3,
+   "angle": 0,
+   "length": 8.0,
+   "width": 4.0,
+   "rise": 1.7,
+   "cover": "thatch",
+   "overhang": [
+    0.35,
+    0.3
+   ],
+   "seed": 4
+  }
+ ],
+ "scatter": [
+  {
+   "of": [
+    "rocks",
+    "rocks",
+    "grass_tuft"
+   ],
+   "on": "g",
+   "density": 0.12,
+   "sizes": [
+    "tiny",
+    "small"
+   ],
+   "seed": 5
+  },
+  {
+   "of": [
+    "grass_tuft",
+    "grass_tuft",
+    "flowers",
+    "rocks"
+   ],
+   "on": "m",
+   "density": 0.1,
+   "sizes": [
+    "tiny",
+    "small"
+   ],
+   "seed": 6
+  }
+ ],
+ "shots": [
+  {
+   "x": 11.6,
+   "y": 32.4,
+   "look_at": [
+    17.0,
+    19.0,
+    1.6
+   ],
+   "fov": 70,
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "The head of the fjord",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 9.6,
+   "y": 27.6,
+   "look_at": [
+    17.0,
+    25.0,
+    1.4
+   ],
+   "fov": 66,
+   "extra_sprites": [],
+   "overrides": {
+    "sky": "sunset",
+    "ambient": [
+     0.24,
+     0.2,
+     0.26
+    ],
+    "lights": [
+     {
+      "type": "sun",
+      "azimuth": 285,
+      "elevation": 4,
+      "color": [
+       1.0,
+       0.6,
+       0.4
+      ],
+      "intensity": 0.6
+     },
+     {
+      "x": 13.2,
+      "y": 27.4,
+      "z": 0.5,
+      "radius": 4.5,
+      "color": [
+       1.0,
+       0.6,
+       0.3
+      ],
+      "intensity": 1.4
+     },
+     {
+      "x": 9.5,
+      "y": 37.4,
+      "z": 0.7,
+      "radius": 3.0,
+      "color": [
+       1.0,
+       0.6,
+       0.3
+      ],
+      "intensity": 1.0
+     }
+    ],
+    "fog": {
+     "color": [
+      0.42,
+      0.3,
+      0.36
+     ],
+     "density": 0.016,
+     "glow": 0.8
+    }
+   },
+   "post": [
+    {
+     "fx": "bloom",
+     "threshold": 0.6,
+     "strength": 0.5,
+     "radius": 5
+    }
+   ]
+  },
+  {
+   "x": 17.0,
+   "y": 17.0,
+   "look_at": [
+    12.0,
+    30.0,
+    1.2
+   ],
+   "fov": 68
+  }
+ ],
+ "contact_shadows": 0.5,
+ "supersample": 2
+}

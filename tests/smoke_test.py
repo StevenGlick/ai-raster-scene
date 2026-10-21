@@ -1381,6 +1381,13 @@ def check_objects():
     starboard = lambda pns: sum(1 for pn in pns if pn['o'][1] > 0.3)                      # noqa: E731
     port = lambda pns: sum(1 for pn in pns if pn['o'][1] < -0.3)                          # noqa: E731
     assert starboard(stove) < starboard(whole) and port(stove) == port(whole), 'stove in on its starboard side'
+    # 13. a longship: its sail set or furled, its shields along both sides
+    ship = objects.expand({'map': ['.'], 'objects': [{'type': 'longship', 'x': 0.0, 'y': 0.0, 'length': 7.0}]})
+    furled = objects.expand({'map': ['.'], 'objects': [{'type': 'longship', 'x': 0.0, 'y': 0.0, 'length': 7.0,
+                                                        'sail': False}]})
+    assert len(ship['panels']) == len(furled['panels']) + 2, 'the sail, read from both sides'
+    shields = [sp for sp in ship['sprites'] if sp['type'] == 'round_shield']
+    assert shields and sum(sp['y'] > 0 for sp in shields) == sum(sp['y'] < 0 for sp in shields), 'shields both sides'
     # 11. a chess piece is turned round its axis, no taller than asked (a pawn's ball stops a little short);
     # a knight's head looks the way it faces
     for kind in ('pawn', 'rook', 'bishop', 'queen', 'king'):

@@ -36,7 +36,7 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'rock', 'length', 'height', 'depth', 'pieces', 'trim', 'size', 'seed', 'plants', 'back', 'lining',
                   'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
                   'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset',
-                  'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel', 'ends'}
+                  'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel', 'ends', 'sail'}
 
 
 # ------------------------------------------------------------------ parts
@@ -1820,6 +1820,100 @@ def ship_hull(pl):
     return parts
 
 
+def _moved(parts, dx=0.0, dy=0.0, dz=0.0):
+    """Parts built about the origin, moved: panels by their corners, sprites, lights and shadows by
+    their places."""
+    out = []
+    for p in parts:
+        p = dict(p)
+        if p['part'] == 'panel':
+            for k in ('tl', 'tr', 'bl'):
+                x, y, z = p[k]
+                p[k] = (x + dx, y + dy, z + dz)
+        else:
+            p['dx'], p['dy'] = p['dx'] + dx, p['dy'] + dy
+            if 'z' in p:
+                p['z'] = p['z'] + dz
+        out.append(p)
+    return out
+
+
+SAIL_RED = ramp('#a8382c', dark=0.38, light=1.3)
+SAIL_CREAM = ramp('#d8ccae', dark=0.45, light=1.12)
+
+
+@functools.lru_cache(maxsize=None)
+def _sail(w, h, stripe):
+    """A square sail of wool in broad red and cream stripes, bellied a little - its middle lighter."""
+    cv = Canvas(w, h, wrap=False)
+    for k, x in enumerate(range(0, w, stripe)):
+        cv.box(x, 0, min(stripe, w - x), h, z=0.5, top=0.7, bevel=1.0, mat=k % 2)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    cv.tone += (0.12 * np.exp(-(((xx - w / 2) / (w * 0.45)) ** 2 + ((yy - h * 0.45) / (h * 0.5)) ** 2))).astype(np.float32)
+    rgba, em = _finish(cv, [SAIL_RED, SAIL_CREAM], relief=0.5)
+    rgba = rgba.copy()
+    rgba[0:2, :, :3] *= 0.6                                          # the head lashed to the yard
+    return rgba, em
+
+
+def longship(pl):
+    """A longship: a long open hull of overlapping boards, its stem and stern curling up high, a mast
+    amidships with a yard across it and a square sail in red and cream stripes (`"sail": false` furls
+    it), round shields along both sides at the gunwale; `length` long the way it faces (default 7),
+    `heel` lists it as for a hull, drawn up on a beach."""
+    L = float(pl.get('length', 7.0))
+    B, D = L * 0.2, L * 0.13
+    hull = dict(pl, length=L, width=B, depth=D, broken=0)
+    parts = ship_hull(hull)
+    heel = math.radians(float(pl.get('heel', 0.0)))
+    ch, sh = math.cos(heel), math.sin(heel)
+
+    def tilt(x, y, z):                                                # heeled as the hull is
+        return (x, y * ch - z * sh, y * sh + z * ch)
+    seed = int(pl.get('seed', 1))
+    wood = _timber(dict(pl, material='wood'), (0.025, 0.025, 0.4), 0.5)
+    for end, sgn in ((L / 2, 1), (-L / 2, -1)):                       # stem and stern posts, curling up and over
+        pts = [(end - sgn * 0.12, 0.0, D * 1.0), (end + sgn * 0.05, 0.0, D * 1.35), (end + sgn * 0.12, 0.0, D * 1.7),
+               (end + sgn * 0.08, 0.0, D * 2.05), (end - sgn * 0.08, 0.0, D * 2.25), (end - sgn * 0.22, 0.0, D * 2.15)]
+        for k, (p, q) in enumerate(zip(pts, pts[1:])):
+            a, b = np.array(tilt(*p)), np.array(tilt(*q))
+            for w_ in (-0.04, 0.04):
+                off = np.array(tilt(0.0, w_, 0.0))
+                parts.append(_rock_tri(wood, seed + 90 + k, a + off, b + off, b - off, off))
+                parts.append(_rock_tri(wood, seed + 90 + k, a + off, b - off, a - off, off))
+    H = L * 0.62                                                     # the mast, the yard, the sail
+    mast = column({'material': 'wood', 'sides': 6, 'radius': L * 0.012, 'top': 0.8, 'height': H, 'sink': 0.0,
+                   'seed': seed + 100, 'angle': pl.get('angle', 0.0)})
+    parts += _moved(mast, *tilt(-L * 0.02, 0.0, D * 0.2))
+    yz, yl = D * 0.2 + H * 0.88, B * 2.4
+    if pl.get('sail', True):
+        top, foot = yz, yz - H * 0.62
+        a, b = tilt(-L * 0.02 + 0.05, -yl / 2, top), tilt(-L * 0.02 + 0.05, yl / 2, top)
+        c = tilt(-L * 0.02 + 0.05, -yl / 2, foot)
+        tex = _sail(_texels(yl), _texels(top - foot), max(6, _texels(yl) // 7))
+        parts.append(quad(tex, a, b, c, back=0.75))
+        parts.append(quad((tex[0][:, ::-1], tex[1][:, ::-1]), b, a, tilt(-L * 0.02 + 0.05, yl / 2, foot), back=0.75))
+    yard = beam({'material': 'wood', 'length': yl + 0.2, 'width': 0.06, 'depth': 0.06, 'seed': seed + 101})
+    for p in yard:                                                    # turned across the ship
+        q = dict(p)
+        for k in ('tl', 'tr', 'bl'):
+            x, y, z = p[k]
+            q[k] = tilt(-L * 0.02 - y, x, z + yz)
+        parts.append(q)
+    n = int(L * 1.6)
+    for side in (1, -1):                                              # shields along the gunwale, each side
+        for k in range(n):
+            t = 0.22 + 0.56 * (k + 0.5) / n
+            x = (t - 0.5) * L
+            w = B / 2 * (0.8 + 0.2 * math.sin(math.pi / 2 * t / 0.42) if t <= 0.42
+                         else max(0.0, math.cos(math.pi / 2 * (t - 0.42) / 0.58)) ** 0.75)
+            gz = D * (1 + 0.16 * (2 * t - 1) ** 2)
+            sx, sy, sz = tilt(x, side * (w + 0.03), gz - 0.12)
+            parts.append(sprite('round_shield', sx, sy, sz, planes=1, angle=float(pl.get('angle', 0.0)),
+                                length=0.32, scale=0.32, shadow=False, flip=bool(k % 2)))
+    return parts
+
+
 # ------------------------------------------------------------------ chess pieces
 
 def _polished(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
@@ -2075,4 +2169,5 @@ def crystal_cluster(pl):
 OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder, 'column': column,
            'beam': beam, 'crystal_cluster': crystal_cluster, 'trough': trough, 'shed_roof': shed_roof,
            'gable_roof': gable_roof, 'market_stand': market_stand, 'saloon_bar': saloon_bar, 'rails': rails,
-           'ore_cart': ore_cart, 'keel': keel, 'chess_piece': chess_piece, 'ship_hull': ship_hull}
+           'ore_cart': ore_cart, 'keel': keel, 'chess_piece': chess_piece, 'ship_hull': ship_hull,
+           'longship': longship}
