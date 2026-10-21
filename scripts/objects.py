@@ -35,7 +35,7 @@ TEXELS = 64                 # texels per world unit, as on the walls
 PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 'title', 'notes',
                   'rock', 'length', 'height', 'depth', 'pieces', 'trim', 'size', 'seed', 'plants', 'back', 'lining',
                   'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
-                  'sink'}
+                  'sink', 'broken', 'width'}
 
 
 # ------------------------------------------------------------------ parts
@@ -781,6 +781,11 @@ ROCKS = {
                           ramp('#6a6a3a', dark=0.35, light=1.3)],
                    mass=(1.4, 1.4, 0.3), chip=(0.45, 0.45, 0.09), key=(-0.22, 0.26, 0.94), shade=(0.46, 0.52),
                    crust=0.9, weed=0.85, pores=0.0, strata=(1.4, 0.4), varnish=0.16, plants=[('dry_tuft', 0.14, 0.22)]),
+    'ashlar': dict(ramps=[ramp('#aaa189', dark=0.32, light=1.4), ramp('#8f8c6e', dark=0.35, light=1.3),
+                          ramp('#56683a', dark=0.35, light=1.35)],
+                   mass=(2.0, 2.0, 1.2), chip=(0.3, 0.3, 0.2), key=(-0.4, 0.45, 0.8), shade=(0.36, 0.56),
+                   crust=0.74, weed=0.66, up=0.5, pores=0.0, courses=0.42,
+                   plants=[('fern', 0.22, 0.34), ('grass_tuft', 0.16, 0.26)]),
     'snow': dict(ramps=[ramp('#686c76', dark=0.3, light=1.45, cool=0.16), ramp('#7c7a6c', dark=0.35, light=1.3), SNOW],
                  mass=(0.9, 0.9, 0.7), chip=(0.24, 0.24, 0.2), key=(-0.4, 0.45, 0.8), shade=(0.3, 0.62),
                  crust=0.7, weed=0.3, up=0.42, pores=0.0, plants=[]),
@@ -855,6 +860,12 @@ def _stone(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0):
         bed = (P[:, 2] / period + wob) % 1.0
         mat[bed < pale] = 1
         val = val + 0.07 * np.cos(2 * np.pi * (P[:, 2] / (period * 0.31) + wob))   # thinner bands of tone
+    if rk.get('courses'):                                           # dressed stone in courses: a joint between
+        k = P[:, 2] / rk['courses']                                 # each, every course its own shade
+        course = np.floor(k).astype(np.int64)
+        joint = (k - course < 0.035) | (k - course > 0.985)
+        val = val + (table(5, course * 7919 + seed) - 0.5) * 0.1 - 0.16 * joint
+        crack = crack | joint
     if rk.get('varnish'):                                           # desert varnish: dark streaks run down the face
         streak = noise3(P / np.array([0.1, 0.1, 2.2], np.float32), 1.0, seed + 8)
         val = val - rk['varnish'] * np.clip((streak - 0.52) / 0.25, 0, 1) * np.clip(P[:, 2] / 2.5, 0, 1)
@@ -1139,12 +1150,46 @@ def _disc(mat, seed, n, r, z, phase, below=False):
     return _rock(mat, seed, (x1, y0, z), (x1, y1, z), (x0, y0, z), alpha=shape)
 
 
+def _broken_top(mat, seed, n, r0, r1, z0, H, phase, depth):
+    """The sides of an n-sided shaft (radius r0 at z0 to r1 at H) broken off ragged: each corner stops
+    at its own height, up to `depth` below H, every face cut slanting between its two corners, and the
+    break itself a fan of rough triangles in to a point a little below the top."""
+    rng = np.random.default_rng(seed + 400)
+    tops = H - rng.uniform(0, depth, n)
+    rad = lambda z: r0 + (r1 - r0) * (z - z0) / max(H - z0, 1e-6)     # noqa: E731
+    ring = [np.array([rad(t) * math.cos(phase + 2 * math.pi * k / n), rad(t) * math.sin(phase + 2 * math.pi * k / n), t])
+            for k, t in enumerate(tops)]
+    parts = []
+    for k in range(n):
+        A, B = ring[k], ring[(k + 1) % n]
+        a0 = np.array([A[0] * r0 / rad(A[2]), A[1] * r0 / rad(A[2]), z0])
+        b0 = np.array([B[0] * r0 / rad(B[2]), B[1] * r0 / rad(B[2]), z0])
+        if np.cross(b0 - a0, np.array([0.0, 0.0, -1.0])) @ (a0 + b0) < 0:   # read from outside
+            A, B, a0, b0 = B, A, b0, a0
+        hi = max(A[2], B[2])
+        tl, tr = np.array([A[0], A[1], hi]), np.array([B[0], B[1], hi])
+
+        def shape(w, h, ha=A[2], hb=B[2], hi=hi):
+            zt = hi - (np.arange(h)[:, None] + 0.5) / h * (hi - z0)    # each row's height
+            s_ = (np.arange(w)[None, :] + 0.5) / w
+            return zt <= ha + (hb - ha) * s_ + 0.5 * (hi - z0) / h
+        p = _rock(mat, seed + k, tl, tr, a0, alpha=shape)
+        if p:
+            parts.append(p)
+    peak = np.array([0.0, 0.0, float(tops.mean()) - 0.04])
+    for k in range(n):
+        A, B = ring[k], ring[(k + 1) % n]
+        parts.append(_rock_tri(mat, seed + 450 + k, A, B, peak, (A + B) / 2 * np.array([1, 1, 0]) + np.array([0, 0, 1.5])))
+    return parts
+
+
 def column(pl):
     """A column or a post: a prism of `sides` faces (8 by default) `height` tall and `radius` across its
     corners at the foot, narrowing to `top` times that at its head; `material` a kind of rock (cut from
-    the solid stone, as rock is) or `wood` (the grain running up it, wet and dark at the foot where it
-    stands in water). `base` and `capital` (heights) add a wider block under it and over it, `sink`
-    sets its foot that far into the ground, and `seed` varies its stone or grain."""
+    the solid stone, as rock is), `ashlar` (pale dressed stone laid in drums) or `wood` (the grain
+    running up it, wet and dark at the foot where it stands in water). `base` and `capital` (heights)
+    add a wider block under it and over it, `broken` (a depth) breaks it off ragged instead of a head,
+    `sink` sets its foot that far into the ground, and `seed` varies its stone or grain."""
     mat = _material(pl)
     seed = int(pl.get('seed', 1))
     n = int(pl.get('sides', 8))
@@ -1158,6 +1203,9 @@ def column(pl):
     if hb:                                                             # a plinth under it
         parts += _prism_faces(mat, seed + 50, n, r * 1.3, r * 1.3, z0, hb, phase, tone=0.03)
         parts.append(_disc(mat, seed + 60, n, r * 1.3, hb, phase))
+    if pl.get('broken'):                                               # broken off: no head
+        return [p for p in parts + _broken_top(mat, seed, n, r, top, max(z0, hb - 0.01) if hb else z0, H, phase,
+                                                float(pl['broken'])) if p]
     parts += _prism_faces(mat, seed, n, r, top, max(z0, hb - 0.01) if hb else z0, H - hc, phase)
     if hc:                                                             # a capital over it
         parts += _prism_faces(mat, seed + 70, n, top * 1.35, top * 1.35, H - hc, H, phase, tone=0.03)
@@ -1165,6 +1213,24 @@ def column(pl):
         parts.append(_disc(mat, seed + 90, n, top * 1.35, H, phase))
     else:
         parts.append(_disc(mat, seed + 90, n, top, H, phase))
+    return [p for p in parts if p]
+
+
+def beam(pl):
+    """A beam: a squared timber (or a stone lintel) lying level, `length` long along the way it faces,
+    `width` across and `depth` deep, its underside at the placement's `z` - a wall plate along a row of
+    pillars, a lintel, a rail. `material` as for a column; timber's grain runs along it."""
+    mat = _material(pl)
+    if 'grain' in mat:
+        g = mat['grain']
+        mat = dict(mat, grain=(g[2], g[0], g[1]))                       # along the beam, not up it
+    seed = int(pl.get('seed', 1))
+    L, w, d = float(pl.get('length', 2.0)) / 2, float(pl.get('width', 0.2)) / 2, float(pl.get('depth', 0.2))
+    x0, x1, y0, y1, z0, z1 = -L, L, -w, w, 0.0, d
+    faces = {'front': ((x1, y1, z1), (x1, y0, z1), (x1, y1, z0)), 'back': ((x0, y0, z1), (x0, y1, z1), (x0, y0, z0)),
+             'right': ((x0, y1, z1), (x1, y1, z1), (x0, y1, z0)), 'left': ((x1, y0, z1), (x0, y0, z1), (x1, y0, z0)),
+             'top': ((x1, y0, z1), (x1, y1, z1), (x0, y0, z1)), 'bottom': ((x1, y1, z0), (x1, y0, z0), (x0, y1, z0))}
+    parts = [_rock(mat, seed + k, *c) for k, c in enumerate(faces.values())]
     return [p for p in parts if p]
 
 
@@ -1271,4 +1337,4 @@ def crystal_cluster(pl):
 
 
 OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder, 'column': column,
-           'crystal_cluster': crystal_cluster}
+           'beam': beam, 'crystal_cluster': crystal_cluster}

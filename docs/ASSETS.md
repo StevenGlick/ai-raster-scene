@@ -32,7 +32,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Objects | 6 | 6 | 0 | 0 | 0 |
+| Objects | 7 | 7 | 0 | 0 | 0 |
 | Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 60 | 60 | 0 | 0 | 0 |
-| **all** | **759** | **759** | **0** | **0** | **0** |
+| **all** | **760** | **760** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -58,7 +58,7 @@ From going through the catalog. One scene at a time, each done properly; no rush
 - [x] **red_canyon** - the canyon walls themselves updated (the fallen rock along their foot is done). Done: every face of the canyon lined with a tall `rock_wall` of a new `canyon` rock - beds of red and pale stone by height, desert varnish streaking down - rising 6-7.4 over the old walls (cut down to 5.2 as cores), so the cliffs jut and step and the rim is ragged against the sky.
 - [ ] **ghost_town** - the buildings that have no depth fixed, drawn with the layered facade technique of the city; the horse trough in 3D; shot 2: the empty space under the frame in front of the building filled - planks overhead for shade, or a deck; shot 4: the mountain walls updated, as for the canyon.
 - [ ] **village_green** - the market cart rebuilt in 3D, as the noodle stand was; the houses need roofs with depth (they read as if roofless); the buildings drawn with the layered facade technique.
-- [ ] **cathedral_ruin** - the pillars modelled in 3D (octagonal) instead of billboards, and moved inward to where they would carry the roof.
+- [x] **cathedral_ruin** - the pillars modelled in 3D (octagonal) instead of billboards, and moved inward to where they would carry the roof. Done: two arcades of octagonal piers of `ashlar` (dressed stone in drums, plinths and capitals) 3.2 in from each wall between the windows, carrying timber wall plates (`beam`) under the roof; the pier under the fallen roof broken off ragged, its plate down on the floor; the pews between the arcades, behind the cameras.
 - [ ] **ancient_ruins** - the pillars remodelled in 3D, as for the cathedral; perhaps the fallen statue's head in 3D too (not a priority). A scene to give more love.
 - [ ] **bayou** - the trees redone with the jungle's layered fringe, its layers spread further apart, so the trees look properly 3D.
 - [ ] **jungle_temple** - the tree line broken up as the aquarium's rock wall was: a natural, polygonal edge instead of the hard grid angles. A scene to give more love.
@@ -437,7 +437,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
-| `column` | good | 1 tall | ancient_ruins, cathedral_ruin, sky_islands | Redrawn: a fluted Doric column with capital and plinth. |
+| `column` | good | 1 tall | ancient_ruins, sky_islands | Redrawn: a fluted Doric column with capital and plinth. |
 | `fountain` | good | 0.9 tall | - | Redrawn with the toolkit in basics.py: a moulded basin with water in it, a fluted pedestal and bowl, water spilling in arcs. |
 | `gravestone` | good | 0.6 tall | chapel_graveyard, haunted_house |  |
 | `stone_cap` | good | 0.44 tall | misty_moor | Drawn with the toolkit in basics.py: a slanted, chipped crown of stone with lichen, to set on a one-cell block so a standing stone has a weathered top. |
@@ -590,7 +590,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
-| `broken_column` | good | 1 tall | ancient_ruins, cathedral_ruin |  |
+| `broken_column` | good | 1 tall | ancient_ruins |  |
 | `column_drum` | good | 0.42 tall | ancient_ruins, cathedral_ruin | Flutes now run back along the drum, so it reads as a column; the end face is lit and stands proud of the body on a shadowed rim, scalloped by the flutes, a worn ring and the dowel hole. |
 | `marble_head` | good | 1.1 tall | ancient_ruins |  |
 | `amphora` | good | 0.36 tall | ancient_ruins |  |
@@ -865,7 +865,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
-## Objects (6)
+## Objects (7)
 
 Things too big for a billboard, built in 3D out of flat panels (`scripts/objects.py`).
 
@@ -875,7 +875,8 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `noodle_stand` | good | neon_street | Counter, awning, valance, noren and sign as panels; bowls, pot, tray, lanterns and stools as billboards, with its own lamp and lantern lights. |
 | `rock_wall` | good | aquarium, crystal_cave, neon_bar, red_canyon | Laid out as the user drew it: overlapping pieces along a wall's foot, each in plan a rounded mass of a few broad faces jutting from the wall (the user's sharper zigzag read as spikes; a few spikes and notches are left), each its own height, a trim of faces along its top cut by one long smooth wavy edge, a flat top (inset a texel, so it never shows past the faces), plants on the rim. Kinds `stone`, `reef`, `sandstone`, `snow`, `cave`, `lumen` (glowing moss); `lining` lines every wall face of some map cells. The faces cut from one solid block of stone. Seen from above its tops are flat with the trim standing round them, as Build's were. |
 | `boulder` | good | aquarium, autumn_lane, coast_lighthouse, crystal_cave, misty_moor, neon_bar, red_canyon, winter_woods, woodland_night | A low-poly mass, every face a triangle: an irregular foot, a belly, drawn-in shoulders, a peak off its centre; closed from every side. Plants on top by count. |
-| `column` | good | tropical_beach | A column or a post: a prism of `sides` faces (an octagon by default), tapering if `top` is under 1, a plinth (`base`) and a capital if asked; stone cut from the solid rock as rock is, or `wood` - weathered timber, the grain running up it, dark and grown over below `wet` where it stands in water. Built for the pier's piles first; the cathedral's and the ruins' pillars are next on the user's list (flutes and broken tops still to come). |
+| `column` | good | cathedral_ruin, tropical_beach | A column or a post: a prism of `sides` faces (an octagon by default), tapering if `top` is under 1, a plinth (`base`) and a capital if asked; stone cut from the solid rock as rock is, or `wood` - weathered timber, the grain running up it, dark and grown over below `wet` where it stands in water. Built for the pier's piles first; the cathedral's piers are `ashlar` (dressed stone in drums) with plinths and capitals, one `broken` off ragged. Flutes for the ruins' Doric columns still to come. |
+| `beam` | good | cathedral_ruin | A squared timber or stone lintel lying level, `length` along the way it faces, its underside at the placement's `z`; timber's grain runs along it. Wall plates on the cathedral's piers, and one fallen on the floor. |
 | `crystal_cluster` | good | crystal_cave | The user's idea: crystals whose facets refract. Hexagonal prisms with pointed tips from a bed of rock, every facet a panel with its own clarity (clear across the middle, milky toward the base, bright edges) and its own bend: drawn with the glass, each facet shows the frame drawn so far shifted by one offset from the way it is turned (Renderer._bend), so it shows one coherent piece of what is behind, the colours parting a little at the edges. Strongest with glowing things behind. |
 
 ## Held items (8)
@@ -1097,6 +1098,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, the cathedral's arcades.** The user's sixth: the nave on two rows of octagonal stone piers moved in from the walls to carry the roof - `column` objects in a new `ashlar` stone (pale, laid in courses, `courses`, so a column reads as drums), with plinths and capitals - carrying timber wall plates, a new `beam` object; the pier where the roof fell in broken off (`broken`: each corner stops at its own height, the break a fan of rough triangles) and a length of its plate down on the floor. Shot 2's camera moved into the aisle and the pews behind the cameras, so the arcades and the light read.
 - **2026-10-21, the canyon's cliffs.** The user's fifth: the red canyon's walls built in 3D - every face lined with a tall `rock_wall` of a new `canyon` rock kind (its stone in beds by height, `strata`, with dark `varnish` streaks running down), over the old banded walls cut down to cores - so the cliffs jut, step and catch the light by facet, and the rim is ragged. The slot canyon is unchanged.
 - **2026-10-21, the bar's reef tank.** The user's fourth: the neon bar's tank done as the aquarium is, small - open water behind (`deep_water` and `open_water` at 0.62 brightness, so it does not outshine the bar), low live rock along the back (`rock_wall` with `lining`) and one small boulder, the reef rocks and corals kept in front for the density the user likes.
 - **2026-10-21, the beach.** The user's third: the pier on wooden piles, down both edges and taller at its end - a new `column` object (any number of sides, taper, plinth and capital, stone or `wood`), built with the cathedral's and the ruins' pillars in mind - and the jungle behind the beach given the `jungle` fringe, so the tree line has depth.

@@ -1258,6 +1258,14 @@ def check_objects():
     solid = side['rgba'][..., 3] > 0.5
     foot, mid = lum[-4:][solid[-4:]].mean(), lum[len(lum) // 2:len(lum) // 2 + 4][solid[len(lum) // 2:len(lum) // 2 + 4]].mean()
     assert foot < mid - 0.03, f'wet and dark where it stands in water: {foot:.2f} vs {mid:.2f}'
+    bm = objects.expand({'map': ['.'], 'objects': [{'type': 'beam', 'x': 0.0, 'y': 0.0, 'z': 2.0, 'angle': 30,
+                                                    'length': 3.0, 'material': 'wood'}]})['panels']
+    corners = np.array([pn['o'] + a * pn['u'] + b * pn['v'] for pn in bm for a in (0, 1) for b in (0, 1)])
+    assert len(bm) == 6 and np.abs(sum(np.cross(pn['u'], pn['v']) for pn in bm)).max() < 1e-6, 'a beam is a closed box'
+    assert abs(corners[:, 2].min() - 2.0) < 1e-6 and np.ptp(corners[:, :2], axis=0).max() > 2.5, 'lying level, at its z'
+    stump = objects.expand({'map': ['.'], 'objects': [{'type': 'column', 'x': 0.0, 'y': 0.0, 'height': 1.5,
+                                                       'broken': 0.5, 'material': 'ashlar', 'seed': 3}]})['panels']
+    assert max(float(np.max([pn['o'][2], (pn['o'] + pn['u'])[2]])) for pn in stump) <= 1.5 + 1e-6, 'broken below its height'
     print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights, '
           f'rock, linings, columns, crystals bend the light)')
 

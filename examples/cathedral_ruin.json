@@ -168,8 +168,8 @@
  },
  "sprites": [
   {
-   "x": 9.2,
-   "y": 21.5,
+   "x": 11.3,
+   "y": 24.0,
    "type": "pew",
    "scale": 0.42,
    "stretch": 2.0,
@@ -180,8 +180,8 @@
    ]
   },
   {
-   "x": 16.4,
-   "y": 21.5,
+   "x": 14.7,
+   "y": 24.0,
    "type": "pew",
    "scale": 0.42,
    "stretch": 2.0,
@@ -192,8 +192,8 @@
    ]
   },
   {
-   "x": 9.2,
-   "y": 23.5,
+   "x": 11.3,
+   "y": 26.0,
    "type": "pew",
    "scale": 0.42,
    "stretch": 2.0,
@@ -204,8 +204,8 @@
    ]
   },
   {
-   "x": 16.4,
-   "y": 23.5,
+   "x": 14.7,
+   "y": 26.0,
    "type": "pew",
    "scale": 0.42,
    "stretch": 2.0,
@@ -216,8 +216,8 @@
    ]
   },
   {
-   "x": 9.2,
-   "y": 25.5,
+   "x": 11.3,
+   "y": 28.0,
    "type": "pew",
    "scale": 0.42,
    "stretch": 2.0,
@@ -228,32 +228,8 @@
    ]
   },
   {
-   "x": 16.4,
-   "y": 25.5,
-   "type": "pew",
-   "scale": 0.42,
-   "stretch": 2.0,
-   "tint": [
-    0.8,
-    0.75,
-    0.7
-   ]
-  },
-  {
-   "x": 9.2,
-   "y": 27.5,
-   "type": "pew",
-   "scale": 0.42,
-   "stretch": 2.0,
-   "tint": [
-    0.8,
-    0.75,
-    0.7
-   ]
-  },
-  {
-   "x": 16.4,
-   "y": 27.5,
+   "x": 14.7,
+   "y": 28.0,
    "type": "pew",
    "scale": 0.42,
    "stretch": 2.0,
@@ -265,8 +241,8 @@
   },
   {
    "id": "pilgrim",
-   "x": 10.4,
-   "y": 16.2,
+   "x": 11.3,
+   "y": 16.6,
    "type": "spiritualist",
    "facing": 270
   },
@@ -281,34 +257,17 @@
    "type": "candles"
   },
   {
-   "x": 8.0,
-   "y": 12.0,
-   "type": "column",
-   "scale": 3.2
-  },
-  {
-   "x": 17.8,
-   "y": 12.0,
-   "type": "column",
-   "scale": 3.2
-  },
-  {
-   "x": 8.0,
-   "y": 20.0,
-   "type": "column",
-   "scale": 3.2
-  },
-  {
-   "x": 17.8,
-   "y": 20.0,
-   "type": "column",
-   "scale": 3.2
-  },
-  {
-   "x": 16.0,
-   "y": 8.0,
+   "x": 16.2,
+   "y": 8.5,
    "type": "ivy_hang",
-   "z": 2.6
+   "z": 2.9
+  },
+  {
+   "x": 9.8,
+   "y": 23.5,
+   "type": "ivy_hang",
+   "z": 2.9,
+   "flip": true
   },
   {
    "x": 15.0,
@@ -404,16 +363,10 @@
    "type": "column_drum"
   },
   {
-   "x": 16.3,
-   "y": 15.2,
+   "x": 15.4,
+   "y": 14.8,
    "type": "column_drum",
    "flip": true
-  },
-  {
-   "x": 15.6,
-   "y": 17.6,
-   "type": "broken_column",
-   "scale": 1.1
   },
   {
    "x": 13.6,
@@ -426,6 +379,231 @@
    "y": 17.8,
    "type": "rubble",
    "scale": 0.4
+  }
+ ],
+ "objects": [
+  {
+   "type": "column",
+   "x": 9.8,
+   "y": 7.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 3.7,
+   "base": 0.32,
+   "capital": 0.28,
+   "seed": 0
+  },
+  {
+   "type": "column",
+   "x": 9.8,
+   "y": 10.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 3.7,
+   "base": 0.32,
+   "capital": 0.28,
+   "seed": 1
+  },
+  {
+   "type": "column",
+   "x": 9.8,
+   "y": 13.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 3.7,
+   "base": 0.32,
+   "capital": 0.28,
+   "seed": 2
+  },
+  {
+   "type": "column",
+   "x": 9.8,
+   "y": 16.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 3.7,
+   "base": 0.32,
+   "capital": 0.28,
+   "seed": 3
+  },
+  {
+   "type": "column",
+   "x": 9.8,
+   "y": 19.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 3.7,
+   "base": 0.32,
+   "capital": 0.28,
+   "seed": 4
+  },
+  {
+   "type": "column",
+   "x": 9.8,
+   "y": 22.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 3.7,
+   "base": 0.32,
+   "capital": 0.28,
+   "seed": 5
+  },
+  {
+   "type": "column",
+   "x": 9.8,
+   "y": 25.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 3.7,
+   "base": 0.32,
+   "capital": 0.28,
+   "seed": 6
+  },
+  {
+   "type": "column",
+   "x": 9.8,
+   "y": 28.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 3.7,
+   "base": 0.32,
+   "capital": 0.28,
+   "seed": 7
+  },
+  {
+   "type": "column",
+   "x": 16.2,
+   "y": 7.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 3.7,
+   "base": 0.32,
+   "capital": 0.28,
+   "seed": 10
+  },
+  {
+   "type": "column",
+   "x": 16.2,
+   "y": 10.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 3.7,
+   "base": 0.32,
+   "capital": 0.28,
+   "seed": 11
+  },
+  {
+   "type": "column",
+   "x": 16.2,
+   "y": 13.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 3.7,
+   "base": 0.32,
+   "capital": 0.28,
+   "seed": 12
+  },
+  {
+   "type": "column",
+   "x": 16.2,
+   "y": 19.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 3.7,
+   "base": 0.32,
+   "capital": 0.28,
+   "seed": 14
+  },
+  {
+   "type": "column",
+   "x": 16.2,
+   "y": 22.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 3.7,
+   "base": 0.32,
+   "capital": 0.28,
+   "seed": 15
+  },
+  {
+   "type": "column",
+   "x": 16.2,
+   "y": 25.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 3.7,
+   "base": 0.32,
+   "capital": 0.28,
+   "seed": 16
+  },
+  {
+   "type": "column",
+   "x": 16.2,
+   "y": 28.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 3.7,
+   "base": 0.32,
+   "capital": 0.28,
+   "seed": 17
+  },
+  {
+   "type": "column",
+   "x": 16.2,
+   "y": 16.0,
+   "material": "ashlar",
+   "radius": 0.26,
+   "height": 1.5,
+   "base": 0.32,
+   "broken": 0.5,
+   "seed": 77
+  },
+  {
+   "type": "beam",
+   "x": 9.8,
+   "y": 17.5,
+   "z": 3.7,
+   "angle": 90,
+   "length": 22.0,
+   "width": 0.3,
+   "depth": 0.3,
+   "material": "wood",
+   "seed": 0
+  },
+  {
+   "type": "beam",
+   "x": 16.2,
+   "y": 10.0,
+   "z": 3.7,
+   "angle": 90,
+   "length": 7.0,
+   "width": 0.3,
+   "depth": 0.3,
+   "material": "wood",
+   "seed": 1
+  },
+  {
+   "type": "beam",
+   "x": 16.2,
+   "y": 23.55,
+   "z": 3.7,
+   "angle": 90,
+   "length": 9.899999999999999,
+   "width": 0.3,
+   "depth": 0.3,
+   "material": "wood",
+   "seed": 2
+  },
+  {
+   "type": "beam",
+   "x": 15.0,
+   "y": 16.6,
+   "angle": 62,
+   "length": 3.4,
+   "width": 0.3,
+   "depth": 0.3,
+   "material": "wood",
+   "seed": 9
   }
  ],
  "scatter": [
@@ -469,8 +647,8 @@
    ]
   },
   {
-   "x": 11.2,
-   "y": 24.0,
+   "x": 13.0,
+   "y": 22.4,
    "look_at": [
     17.0,
     9.0,
