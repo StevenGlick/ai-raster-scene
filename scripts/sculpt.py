@@ -147,20 +147,30 @@ def screen_point(sx, sy, depth, fov=70.0, screen=SCREEN):
 
 # ------------------------------------------------------------------ the model
 
+def _smin(a, b, k):
+    """A smooth union of two distances, melting over a width k."""
+    h = np.clip(0.5 + 0.5 * (a - b) / k, 0, 1)
+    return a * (1 - h) + b * h - k * h * (1 - h)
+
+
 class Model:
     """Parts, each with a material; the parts of one blend group melt together (`group(name, k)`, k the
-    width of the blend in metres), and groups union with a hard edge."""
+    width of the blend in metres), and groups union with a hard edge - or melt into another group as a
+    whole (`into`), so fingers can stay apart from each other and still grow out of the hand."""
 
     def __init__(self):
         self.parts = []
         self.blend = {}
+        self.into = {}
 
     def add(self, fn, *args, mat=0, group=None, **kw):
         self.parts.append((fn, args, kw, mat, group))
         return self
 
-    def group(self, name, k):
+    def group(self, name, k, into=None, k_into=0.0):
         self.blend[name] = k
+        if into is not None:
+            self.into[name] = (into, k_into)
 
     def field(self, p):
         """Distance to the model and the material of the nearest part, for points p (N, 3)."""
@@ -174,14 +184,13 @@ class Model:
             key = g if g is not None else ('part', i)
             if key in groups:
                 k = self.blend.get(g, 0.0)
-                prev = groups[key]
-                if k > 0:                                        # a smooth union: they melt together
-                    h = np.clip(0.5 + 0.5 * (d - prev) / k, 0, 1)
-                    groups[key] = d * (1 - h) + prev * h - k * h * (1 - h)
-                else:
-                    groups[key] = np.minimum(prev, d)
+                groups[key] = _smin(d, groups[key], k) if k > 0 else np.minimum(groups[key], d)
             else:
                 groups[key] = d
+        for g, (parent, k) in self.into.items():          # whole groups melting into another
+            if g in groups and parent in groups:
+                d = groups.pop(g)
+                groups[parent] = _smin(d, groups[parent], k) if k > 0 else np.minimum(groups[parent], d)
         return np.min(np.stack(list(groups.values())), axis=0), best_m
 
 
