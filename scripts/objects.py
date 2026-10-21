@@ -36,7 +36,8 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'rock', 'length', 'height', 'depth', 'pieces', 'trim', 'size', 'seed', 'plants', 'back', 'lining',
                   'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
                   'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset',
-                  'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel', 'ends', 'sail'}
+                  'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel', 'ends', 'sail',
+                  'band', 'lit'}
 
 
 # ------------------------------------------------------------------ parts
@@ -1228,6 +1229,10 @@ IRONS = {
                        key=(-0.4, 0.45, 0.8), shade=(0.42, 0.5)),
     'iron_green': dict(ramps=[ramp('#3a5a48', dark=0.4, light=1.5), ramp('#7a4a32', dark=0.4, light=1.3)],
                        key=(-0.4, 0.45, 0.8), shade=(0.38, 0.55)),
+    'lime_white': dict(ramps=[ramp('#e6e2d6', dark=0.42, light=1.1), ramp('#a8a08a', dark=0.4, light=1.2)],
+                       key=(-0.4, 0.45, 0.8), shade=(0.4, 0.52), rust=0.8),
+    'lime_red': dict(ramps=[ramp('#a8382c', dark=0.38, light=1.3), ramp('#8a6a5a', dark=0.4, light=1.2)],
+                     key=(-0.4, 0.45, 0.8), shade=(0.38, 0.55), rust=0.84),
 }
 
 
@@ -1977,6 +1982,61 @@ def longship(pl):
     return parts
 
 
+def lighthouse(pl):
+    """A lighthouse: a round tower of whitewashed masonry `height` tall (default 8) and `radius` at its foot
+    (default 0.9), tapering to 0.7 of that, a red `band` round it (`false` for none) - smoothly shaded round
+    - a gallery round its head with an iron rail, a lantern room of glass with the lamp in it (`lit`, by
+    default true: it glows and lights the night round it) and a domed iron cap with a ball on top."""
+    seed = int(pl.get('seed', 1))
+    H, R = float(pl.get('height', 8.0)), float(pl.get('radius', 0.9))
+    white = _material(dict(pl, material='lime_white'))
+    red = _material(dict(pl, material='lime_red'))
+    iron = _material(dict(pl, material='iron_green'))
+    n = 18
+    smooth = -math.tan(math.pi / n)
+    rad = lambda z: R * (1 - 0.3 * z / H)                             # noqa: E731
+    cuts = [0.0, H * 0.58, H * 0.7, H] if pl.get('band', True) else [0.0, H]
+    parts = []
+    for k, (z0, z1) in enumerate(zip(cuts, cuts[1:])):                 # the tower, white and a red band
+        mat = red if (len(cuts) > 2 and k == 1) else white
+        parts += _prism_faces(mat, seed + k, n, rad(z0), rad(z1), z0 - (0.02 if k == 0 else 0.0), z1, 0.0,
+                              flute=smooth, block=True)
+    rg = rad(H) + 0.28                                                 # the gallery: a deck on corbels, a rail
+    parts += _prism_faces(white, seed + 10, n, rad(H) - 0.02, rg, H - 0.24, H, 0.0, flute=smooth, block=True)
+    parts.append(_disc(iron, seed + 11, n, rg, H, 0.0))
+    parts += _prism_faces(iron, seed + 12, n, rg - 0.01, rg - 0.01, H + 0.26, H + 0.32, 0.0, block=True)
+    for k in range(n):                                                 # the rail's posts
+        a = 2 * math.pi * k / n
+        x, y = (rg - 0.02) * math.cos(a), (rg - 0.02) * math.sin(a)
+        parts += box((x - 0.015, y - 0.015, H), (x + 0.015, y + 0.015, H + 0.3),
+                     {f: _solid_cached(2, 18, '#2e4236') for f in ('front', 'back', 'right', 'left')})
+    rl, zl, hl = rad(H) * 0.72, H, 1.0                                 # the lantern room
+    glass = dict(ROOFS['glass'], bars=(rl * 2 * math.sin(math.pi / 10) / 2, 0.34), opacity=0.12)
+    for k in range(10):
+        a0, a1 = 2 * math.pi * k / 10, 2 * math.pi * (k + 1) / 10
+        A = np.array([rl * math.cos(a0), rl * math.sin(a0), zl + hl])
+        B = np.array([rl * math.cos(a1), rl * math.sin(a1), zl + hl])
+        if np.cross(B - A, np.array([0.0, 0.0, -1.0])) @ (A + B) < 0:
+            A, B = B, A
+        p = _rock(glass, seed + 20 + k, A, B, A - np.array([0.0, 0.0, hl]))
+        if p:
+            p['translucent'] = True
+            parts.append(p)
+    parts += _prism_faces(iron, seed + 30, 10, rl, rl * 1.05, zl + hl, zl + hl + 0.08, 0.0, block=True)
+    dome = [(1.05, 0.0), (0.98, 0.18), (0.78, 0.4), (0.45, 0.58), (0.14, 0.66), (0.0, 0.68)]
+    for k, ((r0, z0), (r1, z1)) in enumerate(zip(dome, dome[1:])):     # the dome, and the ball on it
+        parts += _prism_faces(iron, seed + 40 + k, 12, max(rl * r0, 1e-3), max(rl * r1, 1e-3), zl + hl + 0.08 + z0 * rl,
+                              zl + hl + 0.08 + z1 * rl, 0.0, flute=-math.tan(math.pi / 12), block=True)
+    zb = zl + hl + 0.08 + 0.68 * rl
+    parts += _prism_faces(iron, seed + 50, 8, 0.06, 0.06, zb, zb + 0.12, 0.0, block=True)
+    parts.append(_disc(iron, seed + 51, 8, 0.06, zb + 0.12, 0.0))
+    if pl.get('lit', True):                                            # the lamp in the lantern room
+        parts.append(sprite('orb', 0.0, 0.0, zl + 0.05, scale=hl * 0.9, shadow=False))
+        parts.append(light(0.0, 0.0, zl + 0.5, 9.0, (1.0, 0.86, 0.6), 1.6))
+    parts.append(shadow(0.0, 0.0, 2.6 * R, 0.5))
+    return [p for p in parts if p]
+
+
 # ------------------------------------------------------------------ chess pieces
 
 def _polished(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
@@ -2233,4 +2293,4 @@ OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'bo
            'beam': beam, 'crystal_cluster': crystal_cluster, 'trough': trough, 'shed_roof': shed_roof,
            'gable_roof': gable_roof, 'market_stand': market_stand, 'saloon_bar': saloon_bar, 'rails': rails,
            'ore_cart': ore_cart, 'keel': keel, 'chess_piece': chess_piece, 'ship_hull': ship_hull,
-           'longship': longship}
+           'longship': longship, 'lighthouse': lighthouse}

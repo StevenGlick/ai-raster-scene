@@ -14,8 +14,8 @@
   "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
   "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
   "~~~~~~~~~~~~~ssssssssss~~~~~~~~~~~~~",
-  "~~~~~~~~~~~~~ssssLLssss~~~~~~~~~~~~~",
-  "~~~~~~~~~~~~~ssssLLssss~JJJ~~~~~~~~~",
+  "~~~~~~~~~~~~~ssssssssss~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~ssssssssss~JJJ~~~~~~~~~",
   "~~~~~~~~~~~~~sskkkkkkss~JJJ~~~~~~~~~",
   "~~~~~~~~~~~~~sskkkkkkss~JJJ~~~~~~~~~",
   "~~~~~~~~~~~~~ssssssssss~JJJ~~~~~~~~~",
@@ -63,21 +63,6 @@
   "W": {
    "wall": "logs",
    "h": 2.2,
-   "top": "shingle"
-  },
-  "L": {
-   "wall": [
-    "stone_pale",
-    "stone_pale",
-    "stone_pale",
-    "stone_pale",
-    "stone_pale",
-    "stone_pale",
-    "stone_pale",
-    "window_lit",
-    "shingle"
-   ],
-   "h": 9,
    "top": "shingle"
   }
  },
@@ -456,7 +441,7 @@
    "x": 17.5,
    "y": 27.5,
    "angle": 270,
-   "pitch": 0.1,
+   "pitch": 0.24,
    "fov": 70,
    "overlays": [
     {
@@ -464,6 +449,15 @@
      "text": "The light still turns",
      "at": "top",
      "box": true
+    }
+   ],
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
     }
    ]
   },
@@ -515,6 +509,15 @@
  ],
  "supersample": 2,
  "objects": [
+  {
+   "type": "lighthouse",
+   "x": 18.0,
+   "y": 10.0,
+   "height": 8.0,
+   "radius": 0.95,
+   "seed": 3,
+   "_note": "the lighthouse: whitewashed, a red band, the lamp lit"
+  },
   {
    "type": "boulder",
    "x": 15.8,

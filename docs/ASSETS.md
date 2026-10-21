@@ -32,7 +32,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Objects | 18 | 18 | 0 | 0 | 0 |
+| Objects | 19 | 19 | 0 | 0 | 0 |
 | Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 65 | 65 | 0 | 0 | 0 |
-| **all** | **802** | **802** | **0** | **0** | **0** |
+| **all** | **803** | **803** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -82,7 +82,7 @@ New scenes:
 | `brick_yellow` | good |  | - |  |
 | `stone` | good |  | claude_study, garden_encounter, gui_menus, hospital_garden, post_presets | Even block sizes; a few varied heights would help on long walls. |
 | `stone_dark` | good |  | cathedral_ruin, garden_encounter, gui_menus, gui_themes, gui_trade, haunted_house, hospital_garden, library_medium, mansion_library, post_presets, rainy_street |  |
-| `stone_pale` | good |  | cathedral_ruin, chapel_graveyard, coast_lighthouse, dream_world, garden_encounter, gui_menus, hospital_garden, post_presets |  |
+| `stone_pale` | good |  | cathedral_ruin, chapel_graveyard, dream_world, garden_encounter, gui_menus, hospital_garden, post_presets |  |
 | `castle` | good |  | castle_keep | Mortar grid is very regular; chip a few corners. |
 | `moss_stone` | good |  | autumn_lane, coast_lighthouse, misty_moor |  |
 | `menhir` | good |  | misty_moor | Drawn with the toolkit in basics.py: one weathered stone face - broad swells, rain runnels, long cracks, lichen rosettes - moss at its foot. |
@@ -249,7 +249,7 @@ New scenes:
 
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
-| `window_lit` | good | glows | coast_lighthouse, garden_encounter, gui_menus, haunted_house, hospital_garden, neon_rooftop, post_presets, rainy_street | Simple; a silhouette in one pane now and then would add life. |
+| `window_lit` | good | glows | garden_encounter, gui_menus, haunted_house, hospital_garden, neon_rooftop, post_presets, rainy_street | Simple; a silhouette in one pane now and then would add life. |
 | `window_dark` | good |  | garden_encounter, gui_menus, gui_themes, gui_trade, haunted_house, hospital_garden, library_medium, mansion_library, neon_rooftop, post_presets, rainy_street |  |
 | `window_lit_plaster` | good | glows | bayou, garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, winter_lake |  |
 | `window_dark_plaster` | good |  | garden_encounter, ghost_corridor, gui_hud, gui_menus, hospital_corridor, hospital_garden, post_presets, rainy_street |  |
@@ -583,7 +583,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `door_frame` | good | 1.1 tall | dream_chess, dream_world, hall_of_doors, salt_flat |  |
 | `floating_rock` | good | 1.6 tall, no shadow | dream_world, sky_islands |  |
 | `koi` | good | 0.35 tall, no shadow | dream_chess, dream_world, drowned_library, hall_of_doors |  |
-| `orb` | good | 0.2 tall, glows, aura, no shadow | dream_world |  |
+| `orb` | good | 0.2 tall, glows, aura, no shadow | coast_lighthouse, dream_world |  |
 | `pocket_watch` | good | 0.8 tall, no shadow | dream_world |  |
 | `sky_whale` | good | 2 tall, glows, no shadow | dream_world, drowned_library, salt_flat |  |
 
@@ -906,7 +906,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
-## Objects (18)
+## Objects (19)
 
 Things too big for a billboard, built in 3D out of flat panels (`scripts/objects.py`).
 
@@ -935,6 +935,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `chess_piece` | good | dream_chess, dream_world | A chess piece in 3D, turned (`_lathe`: each pair of profile points a frustum of 16 faces, smoothly shaded round with a convex `tilt`) in polished marble (`_polished`: lit by the way each texel faces, a sheen toward the light, veins), white or black; the rook's battlements, the queen's coronet and ball, the king's crown and cross; the knight's head carved side on from a slab, its eyes nicked in. Replaces the billboards in dream_chess. |
 | `ship_hull` | good | kelp_forest | A wooden ship's hull in 3D, open: a square stern, the sides curving out from the keel and in to a pointed bow whose stem sweeps up, the gunwale rising toward both ends; planked along its length (`_timber` boards), ribs inside; `heel` lists it, `broken` staves in its starboard side. The kelp forest's wreck. |
 | `longship` | good | fjord | A longship: the `ship_hull`'s planked hull, stem and stern posts curling up and over, a six-sided mast, a yard and a square sail in red and cream stripes (bellied lighter in the middle; `"sail": false` furls it), round shields at the gunwale down both sides. |
+| `lighthouse` | good | coast_lighthouse | A round tower of whitewashed masonry tapering up, smoothly shaded (`lime_white`, `_painted`), a red band (`lime_red`), a gallery on corbels with an iron rail of posts, a lantern room of ten glass panes (the `glass` cover's painter, translucent) with the lamp lit in it (an `orb` and a light), a domed iron cap with a ball. |
 
 ## Held items (8)
 
@@ -1082,7 +1083,7 @@ The environments, judged on their gallery images and shots.
 | `bayou` | good | 4 | bayou_dusk, bayou_night, bayou_gator, bayou_heron | A shack on an island in black water between mossy cypresses: sundown, fireflies at night, an alligator, a heron in mist. |
 | `kelp_forest` | good | 4 | sea_kelp, sea_diver, sea_shoal, sea_night | A kelp forest in teal water: a wreck with its mast, a diver with bubbles rising, a shoal; a night dive by flashlight with jellyfish. The wreck is a `ship_hull` in 3D now, listing toward the cameras with its side stove in and the ribs showing, and the rock outcrops are `boulder`s of live `reef` rock. |
 | `aquarium` | good | 8 | aquarium_hall, aquarium_manta, aquarium_tunnel, aquarium_jellies, aquarium_reef, aquarium_moon, aquarium_diver, aquarium_rockwork | A dark hall before the great window (whale shark, manta, a diver cleaning the glass, silhouettes, the floor mirroring it); the manta from below; the tunnel; sea nettles against blue; the reef tank; inside the ocean tank by a boulder. The big tanks' backs are rockwork against open water. |
-| `coast_lighthouse` | good | 4 | coast_tower, coast_jetty | The shore rocks are the redrawn boulders now, not grey lumps; sand and water redrawn too. |
+| `coast_lighthouse` | good | 4 | coast_tower, coast_jetty | The shore rocks are the redrawn boulders now, not grey lumps; sand and water redrawn too. The lighthouse itself is 3D now (a `lighthouse` object), its lamp lit at dusk. |
 | `rainy_street` | good | 4 | street_rain, street_lightning |  |
 | `rain_alley` | good | 5 | alley_street, alley_rain, alley_glass, alley_storm, alley_cars |  |
 | `neon_street` | good | 5 | neon_street, neon_stall, neon_signs, neon_runner, neon_counter | The neon facade style in the rain: signs, blade signs, lantern wires, a hologram koi, a noodle stall, vending machines, steam, the runner; bloom on the neon. |
@@ -1165,6 +1166,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, the lighthouse.** The coast's lighthouse was a square tower of wall cells nine high. It is a `lighthouse` object now (new): a round whitewashed tower tapering up, a red band, a gallery with its rail, a lantern room of glass with the lamp lit in it, a domed cap; painted masonry `lime_white` and `lime_red`. The tower shot tilts up a little (`pitch` 0.24) to take in the lantern, with a bloom on the lights.
 - **2026-10-21, the palm house.** A new scene: a Victorian glasshouse. Its roof is a `gable_roof` with the new `glass` cover and `glass` ends - painted as panes between white glazing bars with each texel's own opacity and drawn as glass (`translucent`), so the sky shows through, and no cell is roofed, so the sun comes in; painted cast iron for columns and beams (`iron_white`, `iron_green`; `_painted`); a new kit, glasshouse.py, with the `glasshouse` wall and `encaustic` tiles. Palms scaled to 4-5 so their crowns fill the glass. The shot from the garden was dropped: walls of open panes read as a cage from outside.
 - **2026-10-21, the fjord.** A new scene, the north: a `longship` object (new - the hull with its stem and stern curling up, a mast, a yard and a striped square sail, round shields along both sides), `round_shield` (new, norse.py), cliffs lined with tall ragged `stone` rock walls, a longhouse under a thatch `gable_roof`. First drawn, the cliffs' trim was low and they read as castle walls (`trim` 0.14 now, for a ragged rim), the dusk shot looked at nothing and the third sat inside the ship - now dusk is the fire lighting the shields and the third looks back from the water. Pines on the cliff tops were tried and dropped: the rock walls stand taller than the cells they line, so they hid them.
 - **2026-10-21, the woods' edges.** The woodland, the autumn lane and the winter woods take the jungle's natural edge: their fringes `wander` (0.3, 1.2 deep), so the forest's flat wall faces stop showing between the layers at its corners - most in the winter woods, where the lane's straight green walls are now trees. The other shots change little.
