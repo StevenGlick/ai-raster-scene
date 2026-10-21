@@ -57,6 +57,10 @@ Stand the camera on a tall block (a block `h` 5 with `height` 5.5-6, roof props 
 
 Keep a room small - a unit is nearly three metres, so a bar is about 6 by 5 cells under a `ceiling_height` of 1.3. `bar_shelves` on the wall behind the bar, a `bar_counter` card along it (0.35 tall: a bartender shows from the chest up), `bar_stool`s, `bottles` on top, `arcade_cabinet`s down one wall with a coloured light at each, `booth`s with a character just behind the table (it reads as seated), a `jukebox`, `neon_cocktail`/`neon_fish` on the walls, `obsidian` underfoot to mirror it all, and a thick glowing fog (density 0.06, `glow` 1.2) for the smoke. A reef tank in the back wall as in the aquarium. See `examples/neon_bar.py`.
 
+### A saloon
+
+The same scale: a saloon is about 8 by 6 cells under a `ceiling_height` of 1.6. Walls of `["saloon_wainscot", "saloon_paper"]`, the back bar `["saloon_backbar", "saloon_backbar_top"]` along one wall with a `saloon_bar` object in front of it (a 3D counter 0.38 tall with a brass foot rail: a bartender shows from the chest up), front windows of `["saloon_window", "saloon_paper"]` and a doorway onto a bright street with nothing across it, so they glow; a `tin_ceiling`, `wood_floor`. `card_table`s with `saloon_chair`s round them and a character standing just behind (it reads as seated), a `piano` as a card against a wall, `spittoon`s along the rail, a `chandelier` and `sconce`s with warm lights, `wanted_poster` decals, a `cow_skull` on a wall. A sun low in the windows' direction (elevation 20-25) with a dusty fog (density about 0.025, `shafts` 3) lays the beams. Put the day's people in the shots' `extra_sprites`, so the room at night is empty but for a ghost at the piano. See `examples/saloon.py`.
+
 ### A capsule hotel
 
 A corridor one cell wide under a `ceiling_height` of 1, its walls `capsules` and `capsules_lit` alternated cell by cell (two rows of berths to a unit), cool strip lights every few cells, a white floor with `reflect`, a `vending_machine` at the end and someone padding down it. See `examples/capsule_hotel.py`.

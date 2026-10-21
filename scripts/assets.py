@@ -264,6 +264,7 @@ KITS = (
     'glowjungle',  # the jungle at night, lit from inside, and the `glow_jungle` fringe
     'icepalace',   # a palace of ice - and the aurora, which make_sky draws with icepalace.draw_aurora
     'clockwork',   # the clockwork city: brass, copper pipes, clock faces, great gears
+    'saloon',      # a frontier saloon inside: wallpaper and wainscot, the back bar, a piano, a card table
 )
 FRINGES = {}
 for _name in KITS:

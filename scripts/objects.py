@@ -1525,6 +1525,57 @@ def market_stand(pl):
     return [p for p in parts if p]
 
 
+MAHOGANY = ramp('#5a2e1e', dark=0.3, light=1.5)
+BAR_BRASS = ramp('#c8a048', dark=0.35, light=1.6, warm=0.1)
+
+
+@functools.lru_cache(maxsize=None)
+def _bar_front(w, h):
+    """A saloon bar's front: raised panels of dark mahogany between pilasters, a moulding along the
+    top and a dark kick rail at the foot."""
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.3, top=1.0, bevel=0, mat=0, tone=-0.08)
+    step = 30
+    for x in range(0, w, step):
+        cv.box(x, 2, 4, h - 6, z=0.9, top=1.0, bevel=0.6, mat=0, tone=0.05)          # a pilaster
+        cv.box(x + 7, 6, step - 10, h - 14, z=0.7, top=0.8, bevel=1.8, mat=0)         # a raised panel
+    cv.box(0, 0, w, 3, z=1.0, top=1.0, bevel=0.5, mat=0, tone=0.1)                    # the moulding
+    cv.box(0, h - 4, w, 4, z=0.8, top=1.0, bevel=0.4, mat=0, tone=-0.2)               # the kick rail
+    return _finish(cv, [MAHOGANY], relief=0.9)
+
+
+def saloon_bar(pl):
+    """A saloon's bar: a counter of dark mahogany `length` long (default 3) across the way it faces,
+    0.38 tall - raised panels between pilasters on its front, a polished top overhanging the drinkers'
+    side, the bartender's shelves behind - with a brass foot rail on brackets along its foot and
+    bottles standing on it. Faces +x: the drinkers stand there."""
+    T = _texels
+    half = float(pl.get('length', 3.0)) / 2
+    d0, d1, top = -0.15, 0.15, 0.38
+    parts = box((d0, -half, 0.0), (d1, half, top),
+                {'front': _bar_front(T(2 * half), T(top)), 'back': _counter_back(T(2 * half), T(top)),
+                 'right': _bar_front(T(d1 - d0), T(top)), 'left': _bar_front(T(d1 - d0), T(top))})
+    slab = (d0 - 0.02, -half - 0.03, top), (d1 + 0.05, half + 0.03, top + 0.025)
+    gloss = _solid_cached(T(2 * half + 0.06), T(slab[1][0] - slab[0][0]), '#7a3a22')
+    edge = _solid_cached(T(2 * half + 0.06), 2, '#4a2416')
+    side = _solid_cached(T(slab[1][0] - slab[0][0]), 2, '#4a2416')
+    parts += box(*slab, {'top': gloss, 'front': edge, 'back': edge, 'right': side, 'left': side, 'bottom': edge})
+    rail = _solid_cached(T(2 * half), 3, '#c8a048')
+    end = _solid_cached(3, 3, '#c8a048')
+    parts += box((d1 + 0.06, -half + 0.02, 0.05), (d1 + 0.09, half - 0.02, 0.08),        # the foot rail
+                 {'front': rail, 'back': rail, 'top': rail, 'bottom': rail, 'right': end, 'left': end})
+    k = max(2, int(round(2 * half / 0.6)))
+    for i in range(k + 1):                                            # its brackets
+        y = -half + 0.05 + (2 * half - 0.1) * i / k
+        parts += box((d1, y - 0.01, 0.06), (d1 + 0.07, y + 0.01, 0.075),
+                     {f: _solid_cached(4, 2, '#a8803a') for f in ('top', 'right', 'left')})
+    ct = top + 0.026
+    for i, y in enumerate(np.linspace(-half + 0.3, half - 0.3, max(2, int(half)))):
+        parts.append(sprite('bottles', d0 + 0.07, float(y), ct, scale=0.1, flip=bool(i % 2)))
+    parts.append(shadow(0.0, 0.0, 2 * half + 0.4, 0.4))
+    return [p for p in parts if p]
+
+
 # ------------------------------------------------------------------ crystals
 
 CRYSTAL_HUES = {'cyan': '#5adcf2', 'violet': '#a47af6', 'rose': '#f27cba', 'green': '#62eaa4', 'amber': '#f2b24e',
@@ -1629,4 +1680,4 @@ def crystal_cluster(pl):
 
 OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder, 'column': column,
            'beam': beam, 'crystal_cluster': crystal_cluster, 'trough': trough, 'shed_roof': shed_roof,
-           'gable_roof': gable_roof, 'market_stand': market_stand}
+           'gable_roof': gable_roof, 'market_stand': market_stand, 'saloon_bar': saloon_bar}

@@ -161,6 +161,14 @@ The `western` style raises a frontier main street: clapboard false fronts with t
 | ![High noon: a cowboy alone in the dust of a frontier main street](docs/gallery/western_noon.png) | ![The saloon: the barkeep in the lamp-lit doorway](docs/gallery/western_saloon.png) |
 | ![The same street at sundown, lanterns lit, a ghost in the dust](docs/gallery/western_ghost.png) | ![A windpump against the sunset where the street runs out](docs/gallery/western_windpump.png) |
 
+Inside the saloon: flocked wallpaper over dark panels, the back bar's bottles round a tall mirror, a mahogany bar in 3D with its brass rail, card tables, an upright piano - and the noon sun slanting through the front windows into the dust.
+
+| | |
+|---|---|
+| ![High noon in the saloon: the sun through the front windows into dusty air, the bar and its mirror](docs/gallery/saloon_noon.png) | ![A gambler over the cards: "Read em and weep, friend."](docs/gallery/saloon_cards.png) |
+
+![After midnight the piano plays itself: a ghost at the keys by candlelight](docs/gallery/saloon_piano.png)
+
 ### The clockwork city
 
 A plaza of brass and brick at sundown in a brown smog: a clock tower with a great clock and a brass spire, gears the height of houses turning in the walls, copper pipes venting steam, gaslamps, an automaton on its rounds, and in the middle an orrery - brass rings turning round a golden sun, its planets riding them, drawn as wireframes.
@@ -494,7 +502,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Volumetric fog**: mist that lies low and drifts in banks, halos round every lamp, and beams of sun or moonlight through windows, doorways, standing stones and trees; sunlight finds its way into roofed rooms through their doorways, windows and skylights
 - **Reflections**: water, ice, wet streets and puddles mirror the lamps, windows and figures beyond them
 - **The 90s look**: 320x200 framebuffer, Bayer-dithered 256-colour palette, chunky nearest-neighbour upscale, optional scanlines and 2x supersampling
-- **Sprites**: 297 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 29-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
+- **Sprites**: 301 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 29-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
 - **Planar sprites**: a plant can stand as fixed planes in the world instead of a billboard - a cross of two, or a star of three that cuts the ground round it into sixths - so it has body as the camera moves; the low plants do by default, and a prefab can mix billboards and planes (a billboard palm trunk under a star of fronds)
 - **Layered forest edges**: give the walls of a jungle or a wood a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth; with `wander` the layers follow a natural, rounded line instead of the grid's square corners
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
@@ -505,7 +513,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Procedural scatter**: declare debris by set, density and size class and the loader expands it into hundreds of placed props, clumped by a noise field so it drifts and leaves bare patches instead of spreading evenly - and never piles up on a camera or in front of a speaker
 - **One grime dial**: raises surface variation, debris density and wall/floor wear together
 - **Surface variation**: a world-space noise field breaks up texture tiling on walls, floors and ceilings - anchored to the world, so it stays put as the camera moves instead of crawling like film grain, and scaled per material so plaster stays subtle while cobble and rust vary hard
-- **Decals**: 26 stamps (puddles, stains, splatter, vines, moss, cracks, scorch, leaks, cobwebs, glowing runes, surf foam, shells, starfish, lily pads, landing-pad markings, hazard stripes, contact shadows) blended into any floor, wall or ceiling, so surfaces get dirty without new textures
+- **Decals**: 27 stamps (puddles, stains, splatter, vines, moss, cracks, scorch, leaks, cobwebs, glowing runes, surf foam, shells, starfish, lily pads, landing-pad markings, hazard stripes, wanted posters, contact shadows) blended into any floor, wall or ceiling, so surfaces get dirty without new textures
 - **Sunken floors**: water cells sit below their banks, with the submerged edge shaded and sprites floating on the surface
 - **Translucency**: opacity, additive blending, soft auras and wobbling tails for ghosts, spirits and magic; translucent sprites render after opaque ones without writing depth
 - **GUI toolkit** in a hand-drawn pixel font: speech bubbles anchored over characters, dialog panels with portraits, choice menus with pointers and costs, title cards, objective panels, pickup toasts, interaction prompts, health bars, ammo counters, hotbars, inventories, crosshair, compass and a Doom-style automap traced from the level; a 1993 shooter's stone status bar with a face that bloodies as health falls; six themes (classic, parchment, terminal, blood, steel, doomed)
@@ -515,7 +523,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Post-processing**: colour grading, bloom (from the whole frame, or only from what gives off light - neon, windows, flames, fireflies, a held lantern, the sun - so it can glow hard), depth of field that focuses on the shot's subject and leaves its colours alone, streaks (the twinkle of a star filter on the brightest lights, or the long blue lines of an anamorphic lens), a lens flare from a sun in the frame, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
 - **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
 - **Pixel art drawn in code**: the jungle, ruins and beach are built from shapes - leaves, stones, planks, blades of grass, carved glyphs - stamped into a height field, lit from one direction, and snapped onto hue-shifted colour ramps with dark edges on their shadow sides (`scripts/pixelart.py`), so they read as pixel art rather than noise. The held items go a step further: each is a small 3D model - capsules for finger bones, cylinders and boxes for a revolver - posed in a hand, rendered from the player's eye and painted onto the same ramps with an outline (`scripts/sculpt.py`), so the perspective is right: the barrel runs away into the view and you see the back of your own hand
-- **No assets to download**: all 188 textures, 297 props, 29 characters, 26 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
+- **No assets to download**: all 194 textures, 301 props, 29 characters, 27 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
 
 ![Character cast](docs/gallery/cast.png)
 
