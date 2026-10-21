@@ -266,6 +266,7 @@ KITS = (
     'clockwork',   # the clockwork city: brass, copper pipes, clock faces, great gears
     'saloon',      # a frontier saloon inside: wallpaper and wainscot, the back bar, a piano, a card table
     'mine',        # a gold mine: rock with veins of quartz and gold, a pick and shovel, dynamite, ore
+    'temple',      # inside the jungle temple: a golden idol, treasure
 )
 FRINGES = {}
 for _name in KITS:

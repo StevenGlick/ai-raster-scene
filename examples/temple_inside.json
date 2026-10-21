@@ -1,0 +1,439 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "XXXXXXXXXXXXX",
+  "XXXXXXXXXXXXX",
+  "XXXXXRRRXXXXX",
+  "XXX.......XXX",
+  "XXX...O...XXX",
+  "XXX.......XXX",
+  "XXX.......XXX",
+  "XXXwwwwwwwXXX",
+  "XXXwwwwwwwXXX",
+  "XXXXXGpGXXXXX",
+  "XXXXXXpXXXXXX",
+  "XXXXXGpGXXXXX",
+  "XXXXXXpXXXXXX",
+  "XXXXXGpGXXXXX",
+  "XXXXXXpXXXXXX",
+  "XXXXXGpGXXXXX",
+  "XXXXXXpXXXXXX",
+  "XXXXXGpGXXXXX",
+  "XXXXXXpXXXXXX",
+  "XXXXXGpGXXXXX",
+  "XXXLjjjjjLXXX",
+  "XXXLjjjjjLXXX",
+  "XXXLjjjjjLXXX"
+ ],
+ "legend": {
+  "X": {
+   "wall": "temple_stone",
+   "h": 1.4
+  },
+  "G": {
+   "wall": "glyphs",
+   "h": 1.4
+  },
+  "R": {
+   "wall": "temple_roots",
+   "h": 1.4
+  },
+  "L": {
+   "wall": "jungle_leaves",
+   "h": 2.6
+  },
+  ".": {
+   "floor": "ruin_paving",
+   "ceil": "temple_stone"
+  },
+  "O": {
+   "floor": "ruin_paving"
+  },
+  "w": {
+   "floor": {
+    "base": "water",
+    "tint": [
+     0.5,
+     0.6,
+     0.5
+    ]
+   },
+   "drop": 0.05,
+   "reflect": 0.6,
+   "ceil": "temple_stone"
+  },
+  "p": {
+   "floor": "ruin_paving",
+   "ceil": "temple_stone"
+  },
+  "j": {
+   "floor": "jungle_floor"
+  }
+ },
+ "camera": {
+  "x": 6.5,
+  "y": 14.6,
+  "angle": 270,
+  "fov": 60
+ },
+ "title": "Inside the temple - the idol in its shaft of sun",
+ "sky": "day",
+ "ceiling_height": 1.4,
+ "ambient": [
+  0.13,
+  0.13,
+  0.1
+ ],
+ "fog": {
+  "color": [
+   0.26,
+   0.25,
+   0.18
+  ],
+  "density": 0.06,
+  "glow": 0.6,
+  "shafts": 4.5
+ },
+ "lights": [
+  {
+   "x": 4.0,
+   "y": 8.6,
+   "z": 0.5,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.58,
+    0.26
+   ],
+   "intensity": 1.6
+  },
+  {
+   "x": 9.0,
+   "y": 8.6,
+   "z": 0.5,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.58,
+    0.26
+   ],
+   "intensity": 1.6
+  },
+  {
+   "x": 6.5,
+   "y": 4.6,
+   "z": 0.75,
+   "radius": 1.4,
+   "color": [
+    1.0,
+    0.8,
+    0.4
+   ],
+   "intensity": 0.9
+  },
+  {
+   "x": 6.5,
+   "y": 12.5,
+   "z": 0.9,
+   "radius": 2.4,
+   "color": [
+    1.0,
+    0.58,
+    0.26
+   ],
+   "intensity": 0.7
+  },
+  {
+   "type": "sun",
+   "azimuth": 270,
+   "elevation": 72,
+   "color": [
+    1.0,
+    0.95,
+    0.78
+   ],
+   "intensity": 2.2,
+   "disc": false
+  }
+ ],
+ "sprites": [
+  {
+   "id": "idol",
+   "x": 6.5,
+   "y": 4.6,
+   "z": 0.36,
+   "type": "golden_idol"
+  },
+  {
+   "x": 6.0,
+   "y": 5.15,
+   "type": "treasure"
+  },
+  {
+   "x": 7.1,
+   "y": 4.2,
+   "type": "treasure",
+   "flip": true
+  },
+  {
+   "x": 5.3,
+   "y": 3.4,
+   "type": "stela",
+   "scale": 1.0
+  },
+  {
+   "x": 7.7,
+   "y": 3.4,
+   "type": "stela",
+   "flip": true,
+   "scale": 1.0
+  },
+  {
+   "x": 6.15,
+   "y": 4.1,
+   "type": "liana",
+   "scale": 1.2
+  },
+  {
+   "x": 6.95,
+   "y": 4.05,
+   "type": "liana",
+   "scale": 1.05,
+   "flip": true
+  },
+  {
+   "x": 3.6,
+   "y": 3.5,
+   "type": "fern"
+  },
+  {
+   "x": 9.3,
+   "y": 3.6,
+   "type": "fern",
+   "flip": true
+  },
+  {
+   "x": 4.0,
+   "y": 8.6,
+   "type": "brazier"
+  },
+  {
+   "x": 9.0,
+   "y": 8.6,
+   "type": "brazier"
+  },
+  {
+   "x": 3.5,
+   "y": 6.0,
+   "type": "bones"
+  },
+  {
+   "x": 9.4,
+   "y": 5.2,
+   "type": "clay_pot"
+  },
+  {
+   "x": 6.3,
+   "y": 15.0,
+   "type": "bones",
+   "flip": true
+  },
+  {
+   "x": 6.7,
+   "y": 17.5,
+   "type": "clay_pot"
+  },
+  {
+   "id": "explorer",
+   "x": 6.5,
+   "y": 11.2,
+   "type": "explorer",
+   "facing": 270
+  }
+ ],
+ "decals": [
+  {
+   "tex": "cobweb",
+   "surface": "wall",
+   "cell": [
+    2,
+    4
+   ],
+   "face": "east",
+   "u": 0.5,
+   "z": 1.1,
+   "size": 0.6
+  },
+  {
+   "tex": "cobweb",
+   "surface": "wall",
+   "cell": [
+    10,
+    6
+   ],
+   "face": "west",
+   "u": 0.5,
+   "z": 1.1,
+   "size": 0.6
+  },
+  {
+   "tex": "cobweb",
+   "surface": "wall",
+   "cell": [
+    5,
+    13
+   ],
+   "face": "east",
+   "u": 0.5,
+   "z": 1.1,
+   "size": 0.6
+  },
+  {
+   "tex": "moss_patch",
+   "surface": "floor",
+   "x": 4.0,
+   "y": 3.6,
+   "size": 1.2
+  },
+  {
+   "tex": "moss_patch",
+   "surface": "floor",
+   "x": 8.8,
+   "y": 3.8,
+   "size": 1.2
+  }
+ ],
+ "objects": [
+  {
+   "type": "column",
+   "x": 4.4,
+   "y": 4.4,
+   "material": "stone",
+   "sides": 4,
+   "radius": 0.24,
+   "height": 1.4,
+   "base": 0.12,
+   "capital": 0.14,
+   "sink": 0.0,
+   "seed": 0
+  },
+  {
+   "type": "column",
+   "x": 8.6,
+   "y": 4.4,
+   "material": "stone",
+   "sides": 4,
+   "radius": 0.24,
+   "height": 1.4,
+   "base": 0.12,
+   "capital": 0.14,
+   "sink": 0.0,
+   "seed": 1
+  },
+  {
+   "type": "column",
+   "x": 4.4,
+   "y": 6.6,
+   "material": "stone",
+   "sides": 4,
+   "radius": 0.24,
+   "height": 1.4,
+   "base": 0.12,
+   "capital": 0.14,
+   "sink": 0.0,
+   "seed": 2
+  },
+  {
+   "type": "column",
+   "x": 8.6,
+   "y": 6.6,
+   "material": "stone",
+   "sides": 4,
+   "radius": 0.24,
+   "height": 1.4,
+   "base": 0.12,
+   "capital": 0.14,
+   "sink": 0.0,
+   "seed": 3
+  },
+  {
+   "type": "beam",
+   "x": 6.5,
+   "y": 4.6,
+   "z": 0.0,
+   "angle": 0,
+   "length": 1.0,
+   "width": 0.66,
+   "depth": 0.36,
+   "material": "stone",
+   "seed": 9
+  }
+ ],
+ "shots": [
+  {
+   "x": 6.5,
+   "y": 14.6,
+   "angle": 270,
+   "fov": 60,
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Into the temple",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 6.5,
+   "y": 8.7,
+   "look_at": [
+    6.5,
+    4.6,
+    0.55
+   ],
+   "fov": 66,
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "The idol of the jaguar",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 6.9,
+   "y": 6.6,
+   "look_at": [
+    6.6,
+    4.6,
+    0.5
+   ],
+   "fov": 56,
+   "extra_sprites": [
+    {
+     "id": "reacher",
+     "x": 7.4,
+     "y": 4.75,
+     "type": "explorer",
+     "facing": 180
+    }
+   ],
+   "overlays": [
+    {
+     "type": "bubble",
+     "anchor": "reacher",
+     "name": "The Explorer",
+     "text": "Steady... nobody breathe."
+    }
+   ]
+  }
+ ],
+ "contact_shadows": 0.5,
+ "supersample": 2
+}
