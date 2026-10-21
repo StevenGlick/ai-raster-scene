@@ -1245,8 +1245,21 @@ def check_objects():
     changed = np.abs(bent - straight).max(-1) > 0.02
     assert where.sum() > 500 and not (changed & ~where).any(), 'only the crystal changes'
     assert changed[where].mean() > 0.2, f'its facets bend the view: {changed[where].mean():.2f} of it'
+    # 7. a column: closed round its sides, narrower at its head when tapered, its wood dark where it
+    # stands in water
+    col = objects.expand({'map': ['.'], 'objects': [{'type': 'column', 'x': 0.0, 'y': 0.0, 'radius': 0.2, 'top': 0.7,
+                                                     'material': 'wood', 'sink': 0.1}]})['panels']
+    area = sum(np.cross(pn['u'], pn['v']) for pn in col)
+    assert abs(area[0]) < 1e-6 and abs(area[1]) < 1e-6, 'a column is closed round its sides'
+    cap = [pn for pn in col if abs(pn['u'][2]) < 1e-9 and abs(pn['v'][2]) < 1e-9]
+    assert len(cap) == 1 and abs(np.linalg.norm(cap[0]['u']) - 2 * 0.2 * 0.7) < 0.02, 'tapered to its head'
+    side = next(pn for pn in col if abs(pn['v'][2]) > 0.5)
+    lum = side['rgba'][..., :3].mean(-1)
+    solid = side['rgba'][..., 3] > 0.5
+    foot, mid = lum[-4:][solid[-4:]].mean(), lum[len(lum) // 2:len(lum) // 2 + 4][solid[len(lum) // 2:len(lum) // 2 + 4]].mean()
+    assert foot < mid - 0.03, f'wet and dark where it stands in water: {foot:.2f} vs {mid:.2f}'
     print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights, '
-          f'rock, linings, crystals bend the light)')
+          f'rock, linings, columns, crystals bend the light)')
 
 
 def check_docs():

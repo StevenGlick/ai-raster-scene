@@ -73,7 +73,8 @@
   "F": {
    "wall": "jungle_leaves",
    "h": 2.8,
-   "top": "canopy_top"
+   "top": "canopy_top",
+   "fringe": "jungle"
   },
   "R": {
    "wall": {
@@ -932,6 +933,168 @@
    "x": 34.4,
    "y": 10.2,
    "seed": 2
+  }
+ ],
+ "objects": [
+  {
+   "type": "column",
+   "x": 4.15,
+   "y": 21.95,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.62,
+   "sink": 0.06,
+   "seed": 0
+  },
+  {
+   "type": "column",
+   "x": 4.15,
+   "y": 24.05,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.62,
+   "sink": 0.06,
+   "seed": 1
+  },
+  {
+   "type": "column",
+   "x": 5.45,
+   "y": 21.95,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.48,
+   "sink": 0.06,
+   "seed": 10
+  },
+  {
+   "type": "column",
+   "x": 5.45,
+   "y": 24.05,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.48,
+   "sink": 0.06,
+   "seed": 11
+  },
+  {
+   "type": "column",
+   "x": 6.75,
+   "y": 21.95,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.48,
+   "sink": 0.06,
+   "seed": 20
+  },
+  {
+   "type": "column",
+   "x": 6.75,
+   "y": 24.05,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.48,
+   "sink": 0.06,
+   "seed": 21
+  },
+  {
+   "type": "column",
+   "x": 8.05,
+   "y": 21.95,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.48,
+   "sink": 0.06,
+   "seed": 30
+  },
+  {
+   "type": "column",
+   "x": 8.05,
+   "y": 24.05,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.48,
+   "sink": 0.06,
+   "seed": 31
+  },
+  {
+   "type": "column",
+   "x": 9.35,
+   "y": 21.95,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.48,
+   "sink": 0.06,
+   "seed": 40
+  },
+  {
+   "type": "column",
+   "x": 9.35,
+   "y": 24.05,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.48,
+   "sink": 0.06,
+   "seed": 41
+  },
+  {
+   "type": "column",
+   "x": 10.65,
+   "y": 21.95,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.48,
+   "sink": 0.06,
+   "seed": 50
+  },
+  {
+   "type": "column",
+   "x": 10.65,
+   "y": 24.05,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.48,
+   "sink": 0.06,
+   "seed": 51
+  },
+  {
+   "type": "column",
+   "x": 11.95,
+   "y": 21.95,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.48,
+   "sink": 0.06,
+   "seed": 60
+  },
+  {
+   "type": "column",
+   "x": 11.95,
+   "y": 24.05,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.48,
+   "sink": 0.06,
+   "seed": 61
+  },
+  {
+   "type": "column",
+   "x": 13.25,
+   "y": 21.95,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.48,
+   "sink": 0.06,
+   "seed": 70
+  },
+  {
+   "type": "column",
+   "x": 13.25,
+   "y": 24.05,
+   "material": "wood",
+   "radius": 0.055,
+   "height": 0.48,
+   "sink": 0.06,
+   "seed": 71
   }
  ],
  "decals": [

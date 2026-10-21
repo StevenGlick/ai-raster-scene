@@ -3,7 +3,9 @@
 Shows the beach textures and props: sand, wet sand and clear turquoise shallows over deeper
 blue water that mirrors the sky, palms leaning out over the beach, a bamboo hut with thatched
 eaves and torches, a palm grove and a campsite (all prefabs), surf along the waterline, and the
-same beach at noon and after dark, when the surf glows.
+same beach at noon and after dark, when the surf glows. The jungle behind has a `jungle` fringe of
+layered foliage cards, and the pier stands on wooden piles - `column` objects of `wood`, dark and
+grown over where they stand in the water.
 Run:  python tropical_beach.py  -> writes tropical_beach.json
 """
 import math
@@ -52,7 +54,7 @@ legend = {
     's': {'floor': 'shallows'},
     '~': {'floor': 'sea'},
     'J': {'wall': 'boards', 'h': 0.16, 'top': 'boards'},
-    'F': {'wall': 'jungle_leaves', 'h': 2.8, 'top': 'canopy_top'},
+    'F': {'wall': 'jungle_leaves', 'h': 2.8, 'top': 'canopy_top', 'fringe': 'jungle'},
     'R': {'wall': {'base': 'limestone', 'tint': [0.5, 0.47, 0.44]}, 'h': 0.9, 'top': {'base': 'limestone', 'tint': [0.5, 0.47, 0.44]}},
 }
 
@@ -89,6 +91,10 @@ prefabs = [{'type': 'beach_hut', 'x': 31.5, 'y': 14.5, 'angle': 180},
            {'type': 'tiki_torches', 'x': 22.6, 'y': 23.0},
            {'type': 'palm_grove', 'x': 35.5, 'y': 21.5, 'seed': 4},
            {'type': 'palm_3d', 'x': 34.4, 'y': 10.2, 'seed': 2}]
+end = shore(22) + 1                                   # the pier's piles, down both sides, taller at its end
+piles = [{'type': 'column', 'x': round(4.15 + 1.3 * i, 2), 'y': y, 'material': 'wood', 'radius': 0.055,
+          'height': 0.62 if i == 0 else 0.48, 'sink': 0.06, 'seed': 10 * i + k}
+         for i in range(int((end - 4.3) / 1.3) + 1) for k, y in enumerate((21.95, 24.05))]
 decals = [{'tex': 'starfish', 'surface': 'floor', 'x': 20.3, 'y': 31.7, 'size': 0.45},
           {'tex': 'shells', 'surface': 'floor', 'x': 21.4, 'y': 28.2, 'size': 0.5},
           {'tex': 'seaweed', 'surface': 'floor', 'x': shore(36) + 0.8, 'y': 36.2, 'size': 0.9},
@@ -108,6 +114,7 @@ s = scene(
     fog={'color': [0.78, 0.52, 0.5], 'density': 0.003},
     sprites=sprites,
     prefabs=prefabs,
+    objects=piles,
     decals=decals,
     scatter=[{'of': 'beach', 'on': ',', 'density': 0.05, 'sizes': ['tiny', 'small'], 'seed': 2},
              {'of': ['dry_tuft', 'dry_tuft', 'fern'], 'on': ',', 'density': 0.07, 'clump': 2.0,

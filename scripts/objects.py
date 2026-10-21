@@ -34,7 +34,8 @@ from pixelart import BAYER4, Canvas, cells3, noise3, ramp, rgb, table
 TEXELS = 64                 # texels per world unit, as on the walls
 PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 'title', 'notes',
                   'rock', 'length', 'height', 'depth', 'pieces', 'trim', 'size', 'seed', 'plants', 'back', 'lining',
-                  'count', 'spread', 'color', 'refract', 'glow', 'base'}
+                  'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
+                  'sink'}
 
 
 # ------------------------------------------------------------------ parts
@@ -860,6 +861,42 @@ def _stone(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0):
     return rgba, em.reshape(h, w)
 
 
+# Timber, for posts and piles: weathered wood grey-brown, the grain running up it, and where it
+# stands in water (below `wet`) dark and grown green. Painted by _wood, lit like rock.
+WOODS = {
+    'wood': dict(ramps=[ramp('#8f7a62', dark=0.4, light=1.45, warm=0.08), ramp('#46523c', dark=0.4, light=1.35)],
+                 key=(-0.4, 0.45, 0.8), shade=(0.38, 0.52), grain=(0.025, 0.025, 0.4), wet=0.1),
+}
+
+
+def _wood(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0):
+    """The texture of a panel of timber, as _stone is of rock: grain running up it in long streaks
+    with a few dark checks along it, cut from one solid block so the grain carries round a corner, lit
+    by the way the face faces; below `wet` it is dark and grown over, with a ragged line where the
+    water reaches."""
+    key = np.asarray(rk['key'], np.float32)
+    key /= np.linalg.norm(key)
+    at = np.nonzero(alpha.reshape(-1))[0]
+    ys, xs = at // w, at % w
+    P = o + ((xs + 0.5) / w)[:, None] * u + ((ys + 0.5) / h)[:, None] * v
+    nrm = np.cross(u, v)
+    lit = float(np.clip((nrm / np.linalg.norm(nrm)) @ key, 0, 1))
+    G = P / np.asarray(rk['grain'], np.float32)                      # long along the grain, fine across it
+    grain = noise3(G, 1.0, seed) * 0.65 + noise3(G * 2.3, 1.0, seed + 1) * 0.35
+    check = (np.abs(noise3(G * np.array([0.6, 0.6, 0.25]), 1.0, seed + 2) - 0.5) < 0.035)   # splits along it
+    val = rk['shade'][0] + rk['shade'][1] * lit + tone + 0.34 * (grain - 0.5) - 0.22 * check
+    wet = P[:, 2] < rk['wet'] + 0.03 * (noise3(P, 0.08, seed + 3) - 0.5)
+    mat = wet.astype(int)
+    bay = BAYER4[ys % 4, xs % 4]
+    rgb = np.zeros((h * w, 3), np.float32)
+    for m, rp in enumerate(rk['ramps']):
+        sel = mat == m
+        idx = np.clip(np.round(val[sel] * (len(rp) - 1) + (bay[sel] - 0.5) * 0.35), 0, len(rp) - 1).astype(int)
+        rgb[at[sel]] = np.asarray(rp, np.float32)[idx]
+    rgba = np.concatenate([rgb.reshape(h, w, 3), alpha.reshape(h, w, 1).astype(np.float32)], -1)
+    return rgba, np.zeros((h, w), np.float32)
+
+
 def _grown(m):
     """A mask grown by a texel all round, so panels that meet leave no gap between them."""
     p = np.pad(m, 1)
@@ -880,7 +917,7 @@ def _rock(rk, seed, tl, tr, bl, alpha=None, rim=None, tone=0.0):
     a = np.ones((h, w), bool) if alpha is None else alpha(w, h)
     if not a.any():
         return None
-    tex = _stone(rk, seed, tl, u, v, w, h, a, None if rim is None else rim(w, h), tone)
+    tex = rk.get('paint', _stone)(rk, seed, tl, u, v, w, h, a, None if rim is None else rim(w, h), tone)
     return quad(tex, tuple(tl), tuple(tr), tuple(bl))
 
 
@@ -1039,6 +1076,85 @@ def boulder(pl):
     return parts
 
 
+# ------------------------------------------------------------------ columns and posts
+
+def _material(pl):
+    """What a column is made of - a kind of rock (`material` names it, cut from solid stone as rock is)
+    or `wood` - with its light turned to the placement, as for rock."""
+    name = pl.get('material', 'stone')
+    if name in WOODS:
+        return dict(WOODS[name], paint=_wood, key=_turned(WOODS[name]['key'], pl))
+    return _rock_kind({'rock': name, 'angle': pl.get('angle', 0.0)})
+
+
+def _ring(n, r, z, phase):
+    return [np.array([r * math.cos(phase + 2 * math.pi * k / n), r * math.sin(phase + 2 * math.pi * k / n), z])
+            for k in range(n)]
+
+
+def _prism_faces(mat, seed, n, r0, r1, z0, z1, phase, tone=0.0):
+    """The sides of an n-sided prism from radius r0 at z0 to r1 at z1 (a frustum when they differ):
+    every face a panel cut to its trapezoid, read from outside."""
+    parts = []
+    bottom, top = _ring(n, r0, z0, phase), _ring(n, r1, z1, phase)
+    cut = (1 - r1 / r0) / 2                                          # how far the top edge is drawn in
+    for k in range(n):
+        B0, B1 = bottom[k], bottom[(k + 1) % n]
+        if np.cross(B1 - B0, np.array([0.0, 0.0, -1.0])) @ (B0 + B1) < 0:   # read from outside
+            B0, B1 = B1, B0
+        rise = (top[k] + top[(k + 1) % n]) / 2 - (B0 + B1) / 2
+
+        def shape(w, h):
+            t = (np.arange(h)[:, None] + 0.5) / h                       # 0 at the top, 1 at the foot
+            s = (np.arange(w)[None, :] + 0.5) / w
+            return (s >= cut * (1 - t) - 0.5 / w) & (s <= 1 - cut * (1 - t) + 0.5 / w)
+        p = _rock(mat, seed + k, B0 + rise, B1 + rise, B0, alpha=shape, tone=tone)
+        if p:
+            parts.append(p)
+    return parts
+
+
+def _disc(mat, seed, n, r, z, phase, below=False):
+    """A flat n-sided cap at height z, read from above (or, with `below`, from below)."""
+    x0, x1, y0, y1 = -r, r, -r, r
+    pts = [(p[1], p[0]) for p in _ring(n, r, z, phase)]
+
+    def shape(w, h):
+        return _poly(w, h, [((y - y0) / (y1 - y0) * w, (x1 - x) / (x1 - x0) * h) for y, x in pts])
+    if below:
+        return _rock(mat, seed, (x1, y1, z), (x1, y0, z), (x0, y1, z), alpha=lambda w, h: shape(w, h)[:, ::-1])
+    return _rock(mat, seed, (x1, y0, z), (x1, y1, z), (x0, y0, z), alpha=shape)
+
+
+def column(pl):
+    """A column or a post: a prism of `sides` faces (8 by default) `height` tall and `radius` across its
+    corners at the foot, narrowing to `top` times that at its head; `material` a kind of rock (cut from
+    the solid stone, as rock is) or `wood` (the grain running up it, wet and dark at the foot where it
+    stands in water). `base` and `capital` (heights) add a wider block under it and over it, `sink`
+    sets its foot that far into the ground, and `seed` varies its stone or grain."""
+    mat = _material(pl)
+    seed = int(pl.get('seed', 1))
+    n = int(pl.get('sides', 8))
+    r = float(pl.get('radius', 0.12))
+    top = r * float(pl.get('top', 1.0))
+    H = float(pl.get('height', 1.0))
+    z0 = -float(pl.get('sink', 0.02))
+    hb, hc = float(pl.get('base', 0.0)), float(pl.get('capital', 0.0))
+    phase = math.pi / n
+    parts = []
+    if hb:                                                             # a plinth under it
+        parts += _prism_faces(mat, seed + 50, n, r * 1.3, r * 1.3, z0, hb, phase, tone=0.03)
+        parts.append(_disc(mat, seed + 60, n, r * 1.3, hb, phase))
+    parts += _prism_faces(mat, seed, n, r, top, max(z0, hb - 0.01) if hb else z0, H - hc, phase)
+    if hc:                                                             # a capital over it
+        parts += _prism_faces(mat, seed + 70, n, top * 1.35, top * 1.35, H - hc, H, phase, tone=0.03)
+        parts.append(_disc(mat, seed + 80, n, top * 1.35, H - hc, phase, below=True))
+        parts.append(_disc(mat, seed + 90, n, top * 1.35, H, phase))
+    else:
+        parts.append(_disc(mat, seed + 90, n, top, H, phase))
+    return [p for p in parts if p]
+
+
 # ------------------------------------------------------------------ crystals
 
 CRYSTAL_HUES = {'cyan': '#5adcf2', 'violet': '#a47af6', 'rose': '#f27cba', 'green': '#62eaa4', 'amber': '#f2b24e',
@@ -1141,5 +1257,5 @@ def crystal_cluster(pl):
     return parts
 
 
-OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder,
+OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder, 'column': column,
            'crystal_cluster': crystal_cluster}

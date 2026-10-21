@@ -32,7 +32,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Objects | 5 | 5 | 0 | 0 | 0 |
+| Objects | 6 | 6 | 0 | 0 | 0 |
 | Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 60 | 60 | 0 | 0 | 0 |
-| **all** | **758** | **758** | **0** | **0** | **0** |
+| **all** | **759** | **759** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -53,7 +53,7 @@ From going through the catalog. One scene at a time, each done properly; no rush
 
 - [x] **coast_lighthouse** - the billboard boulders swapped for 3D ones. Done: the scatter's larger billboard boulders became 3D ones where they lay (a third bigger, as a 3D rock carries less bulk than a billboard of its height), with more at the water's edge, the foot of the cliffs and before every shot; the scatter keeps only small rocks. At dusk they take the scene's light, so the waterline reads darker than the old mossy domes did.
 - [x] **misty_moor** - the billboard boulders swapped for 3D ones, and a boulder or two more in the foreground of the shots. Done: mossy boulders framing each shot and out on the moor, and the scatter's larger ones swapped where they lay.
-- [ ] **tropical_beach** - posts under the pier; the tree line given layers if it has none.
+- [x] **tropical_beach** - posts under the pier; the tree line given layers if it has none. Done: wooden piles (`column` objects of `wood`) down both edges of the pier, taller at its end; the jungle given a `jungle` fringe.
 - [ ] **neon_bar** - the reef tank in the back wall done like the aquarium at a small scale: open water behind, a little live rock, perhaps one small boulder at the back. Keep the density; adding too much would throw off the balance.
 - [ ] **red_canyon** - the canyon walls themselves updated (the fallen rock along their foot is done).
 - [ ] **ghost_town** - the buildings that have no depth fixed, drawn with the layered facade technique of the city; the horse trough in 3D; shot 2: the empty space under the frame in front of the building filled - planks overhead for shade, or a deck; shot 4: the mountain walls updated, as for the canyon.
@@ -653,10 +653,10 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
-| `jungle_card_1` | good | 1.4 tall | jungle_temple | The front of a jungle fringe: bushes alone. |
-| `jungle_card_2` | good | 3.4 tall | jungle_temple | A few trees with bushes in front. |
-| `jungle_card_3` | good | 4 tall | jungle_temple | More trees, tall ones with crowns. |
-| `jungle_card_4` | good | 4.6 tall | jungle_temple | The back: a dense wall of trunks, crowns, palms and bushes. Repeats every 8 units. |
+| `jungle_card_1` | good | 1.4 tall | jungle_temple, tropical_beach | The front of a jungle fringe: bushes alone. |
+| `jungle_card_2` | good | 3.4 tall | jungle_temple, tropical_beach | A few trees with bushes in front. |
+| `jungle_card_3` | good | 4 tall | jungle_temple, tropical_beach | More trees, tall ones with crowns. |
+| `jungle_card_4` | good | 4.6 tall | jungle_temple, tropical_beach | The back: a dense wall of trunks, crowns, palms and bushes. Repeats every 8 units. |
 | `forest_card_1` | good | 1.2 tall | haunted_house, woodland_night | The front of a forest fringe: bushes, ferns and grass. |
 | `forest_card_2` | good | 3 tall | haunted_house, woodland_night | Young spruce and birch with bushes in front. |
 | `forest_card_3` | good | 4 tall | haunted_house, woodland_night | Spruce, oak and birch with gaps between them. |
@@ -824,7 +824,7 @@ The cards a `fringe` wall stands in front of its open faces, back to front.
 
 | set | status | cards | used in | notes |
 |---|---|---|---|---|
-| `jungle` | good | jungle_card_4, jungle_card_3, jungle_card_2, jungle_card_1 | jungle_temple | Four cards: bushes alone at the front, a dense wall of trees, crowns and bushes at the back. |
+| `jungle` | good | jungle_card_4, jungle_card_3, jungle_card_2, jungle_card_1 | jungle_temple, tropical_beach | Four cards: bushes alone at the front, a dense wall of trees, crowns and bushes at the back. |
 | `forest` | good | forest_card_4, forest_card_3, forest_card_2, forest_card_1 | haunted_house, woodland_night | Four cards: bushes, ferns and grass at the front, a dense wall of spruce and oak at the back. Keep the wall behind lower (2-2.6) than the trees. |
 | `forest_autumn` | good | autumn_card_4, autumn_card_3, autumn_card_2, autumn_card_1 | autumn_lane | The forest fringe in October: oak, birch and bush turned, the spruce among them still green. |
 | `forest_snow` | good | winter_card_4, winter_card_3, winter_card_2, winter_card_1 | winter_woods | The forest fringe in winter: snowy spruce, bare oak and birch with snow on their limbs, bushes under snow. |
@@ -865,7 +865,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
-## Objects (5)
+## Objects (6)
 
 Things too big for a billboard, built in 3D out of flat panels (`scripts/objects.py`).
 
@@ -875,6 +875,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `noodle_stand` | good | neon_street | Counter, awning, valance, noren and sign as panels; bowls, pot, tray, lanterns and stools as billboards, with its own lamp and lantern lights. |
 | `rock_wall` | good | aquarium, crystal_cave, red_canyon | Laid out as the user drew it: overlapping pieces along a wall's foot, each in plan a rounded mass of a few broad faces jutting from the wall (the user's sharper zigzag read as spikes; a few spikes and notches are left), each its own height, a trim of faces along its top cut by one long smooth wavy edge, a flat top (inset a texel, so it never shows past the faces), plants on the rim. Kinds `stone`, `reef`, `sandstone`, `snow`, `cave`, `lumen` (glowing moss); `lining` lines every wall face of some map cells. The faces cut from one solid block of stone. Seen from above its tops are flat with the trim standing round them, as Build's were. |
 | `boulder` | good | aquarium, autumn_lane, coast_lighthouse, crystal_cave, misty_moor, red_canyon, winter_woods, woodland_night | A low-poly mass, every face a triangle: an irregular foot, a belly, drawn-in shoulders, a peak off its centre; closed from every side. Plants on top by count. |
+| `column` | good | tropical_beach | A column or a post: a prism of `sides` faces (an octagon by default), tapering if `top` is under 1, a plinth (`base`) and a capital if asked; stone cut from the solid rock as rock is, or `wood` - weathered timber, the grain running up it, dark and grown over below `wet` where it stands in water. Built for the pier's piles first; the cathedral's and the ruins' pillars are next on the user's list (flutes and broken tops still to come). |
 | `crystal_cluster` | good | crystal_cave | The user's idea: crystals whose facets refract. Hexagonal prisms with pointed tips from a bed of rock, every facet a panel with its own clarity (clear across the middle, milky toward the base, bright edges) and its own bend: drawn with the glass, each facet shows the frame drawn so far shifted by one offset from the way it is turned (Renderer._bend), so it shows one coherent piece of what is behind, the colours parting a little at the edges. Strongest with glowing things behind. |
 
 ## Held items (8)
@@ -1096,6 +1097,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, the beach.** The user's third: the pier on wooden piles, down both edges and taller at its end - a new `column` object (any number of sides, taper, plinth and capital, stone or `wood`), built with the cathedral's and the ruins' pillars in mind - and the jungle behind the beach given the `jungle` fringe, so the tree line has depth.
 - **2026-10-21, boulders on the moor and the coast.** The first two of the user's list: 3D boulders in place of billboards on the misty moor (framing the wanderer in the first shot) and round the lighthouse. Fixed on the way: the light painted on rock turned with each object, so a boulder placed facing north was dark on the side the camera saw; it is now a direction in the world, the same for every rock in a scene (objects at angle 90, most of the aquarium, render exactly as before).
 - **2026-10-21, rock elsewhere and crystals.** Rock walls take `lining` (map characters: a rock wall along every straight run of their faces onto open ground) and three more kinds, `snow`, `cave` and `lumen` (glowing moss). The red canyon's walls are lined with fallen sandstone, with sandstone boulders in the wash; the night wood, the autumn lane and the winter woods have 3D boulders (mossy, ferns on top; snow-capped in winter) in place of billboards. Crystals refract, as the user designed it: `crystal_cluster`, each facet its own panel with its own clarity and its own shift of what is behind it (Renderer._bend). The crystal cave rebuilt round them, with the glowing jungle's plants; new shots `crystal_cave`, `crystal_violet`, `crystal_close`.
 - **2026-10-21, rock.** Rock built in 3D out of panels, as the user laid it out: `rock_wall` (overlapping pieces along a wall's foot, each a rounded mass of broad faces in plan, each its own height, a trim of faces along the top cut by one long wavy edge, a flat top, plants on the rim) and `boulder` (a low-poly mass of triangles), in three kinds - `stone`, `reef` and `sandstone`. Every face is cut from one solid block (`pixelart.cells3` and `noise3`): masses, a few fractures, chips and pits sampled at each texel's place in 3D and lit by the way the face faces, so the stone runs on round a corner. The aquarium's big tanks have rockwork along their walls and boulders on the sand, the walls behind painted as `open_water` over `deep_water`; a new shot, `aquarium_rockwork`, from inside the ocean tank.
