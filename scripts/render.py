@@ -1766,6 +1766,8 @@ class Renderer:
         if self.suns:
             sun = self.sun_at(hx, hy, hz, lambda s2: s2['sin'] * max(0.0, n[2])
                               + s2['cos'] * max(0.0, n[0] * s2['ux'] + n[1] * s2['uy']))
+        if pn.get('fill'):                  # light from the sky and the ground on what the sun misses,
+            sun = sun + float(pn['fill']) * float(np.mean(self.ambient))   # as much more as the ambient times this
         rr, cc = np.meshgrid(rows, cols, indexing='ij')
         emm = np.maximum(em[vv, uu], 1.0 if pn.get('fullbright') else 0.0)
         tint = np.array(pn.get('tint', [1, 1, 1]), np.float32)

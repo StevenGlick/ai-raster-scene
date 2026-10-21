@@ -59,7 +59,7 @@ From going through the catalog. One scene at a time, each done properly; no rush
 - [ ] **ghost_town** - the buildings that have no depth fixed, drawn with the layered facade technique of the city; the horse trough in 3D; shot 2: the empty space under the frame in front of the building filled - planks overhead for shade, or a deck; shot 4: the mountain walls updated, as for the canyon.
 - [ ] **village_green** - the market cart rebuilt in 3D, as the noodle stand was; the houses need roofs with depth (they read as if roofless); the buildings drawn with the layered facade technique.
 - [x] **cathedral_ruin** - the pillars modelled in 3D (octagonal) instead of billboards, and moved inward to where they would carry the roof. Done: two arcades of octagonal piers of `ashlar` (dressed stone in drums, plinths and capitals) 3.2 in from each wall between the windows, carrying timber wall plates (`beam`) under the roof; the pier under the fallen roof broken off ragged, its plate down on the floor; the pews between the arcades, behind the cameras.
-- [ ] **ancient_ruins** - the pillars remodelled in 3D, as for the cathedral; perhaps the fallen statue's head in 3D too (not a priority). A scene to give more love.
+- [x] **ancient_ruins** - the pillars remodelled in 3D, as for the cathedral; perhaps the fallen statue's head in 3D too (not a priority). A scene to give more love. Done: the peristyle and the sacred way's columns are fluted Doric columns of `marble` in 3D (`flutes`, `doric`), laid in drums, architraves and cornices (`beam`) across the runs that stand, the rest snapped off (`broken`) or fallen; the `ruined_columns` prefab in 3D; `fill` so the backlit columns are not black; a new shot, `ruins_columns`. The statue's head is still a billboard.
 - [ ] **bayou** - the trees redone with the jungle's layered fringe, its layers spread further apart, so the trees look properly 3D.
 - [ ] **jungle_temple** - the tree line broken up as the aquarium's rock wall was: a natural, polygonal edge instead of the hard grid angles. A scene to give more love.
 
@@ -306,9 +306,9 @@ New scenes:
 | `ruin_paving` | good |  | ancient_ruins, jungle_temple |  |
 | `dry_grass` | good |  | ancient_ruins, autumn_lane | Fewer, larger clumps with more earth between them, so it is not busy at grazing angles. |
 | `desert_wash` | good |  | ghost_town, red_canyon | Drawn with the toolkit in desert.py: pale sand faintly rippled, washed-down pebbles, patches of crazed dried mud. |
-| `colonnade` | good | see-through | ancient_ruins | Flat when seen along its length: use column props for a row you look down. |
-| `colonnade_top` | good | see-through | ancient_ruins |  |
-| `colonnade_broken` | good | see-through | ancient_ruins |  |
+| `colonnade` | good | see-through | - | Flat when seen along its length: use `column` objects for a row you look down (the ruins' peristyle now is). |
+| `colonnade_top` | good | see-through | - |  |
+| `colonnade_broken` | good | see-through | - |  |
 
 ### Beach
 
@@ -437,7 +437,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
-| `column` | good | 1 tall | ancient_ruins, sky_islands | Redrawn: a fluted Doric column with capital and plinth. |
+| `column` | good | 1 tall | sky_islands | Redrawn: a fluted Doric column with capital and plinth. |
 | `fountain` | good | 0.9 tall | - | Redrawn with the toolkit in basics.py: a moulded basin with water in it, a fluted pedestal and bowl, water spilling in arcs. |
 | `gravestone` | good | 0.6 tall | chapel_graveyard, haunted_house |  |
 | `stone_cap` | good | 0.44 tall | misty_moor | Drawn with the toolkit in basics.py: a slanted, chipped crown of stone with lichen, to set on a one-cell block so a standing stone has a weathered top. |
@@ -590,7 +590,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
-| `broken_column` | good | 1 tall | ancient_ruins |  |
+| `broken_column` | good | 1 tall | - |  |
 | `column_drum` | good | 0.42 tall | ancient_ruins, cathedral_ruin | Flutes now run back along the drum, so it reads as a column; the end face is lit and stands proud of the body on a shadowed rim, scalloped by the flutes, a worn ring and the dowel hole. |
 | `marble_head` | good | 1.1 tall | ancient_ruins |  |
 | `amphora` | good | 0.36 tall | ancient_ruins |  |
@@ -857,7 +857,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `jungle_clump` | good | 6 sprites | jungle_temple |  |
 | `jungle_bush` | good | 3 sprites | - | Planes and billboards mixed in one plant. |
 | `fern_bed` | good | 6 sprites | jungle_temple |  |
-| `ruined_columns` | good | 8 sprites | ancient_ruins |  |
+| `ruined_columns` | good | 6 sprites, 2 objects | ancient_ruins |  |
 | `altar_fire` | good | 1 sprites, 1 lights, a map | - | Brings its own block of map. |
 | `beach_hut` | good | 2 sprites, 2 lights, a map | tropical_beach | A patch of map with its own legend: walls, door, window, roof, light. |
 | `tiki_torches` | good | 2 sprites, 1 lights | tropical_beach |  |
@@ -875,8 +875,8 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `noodle_stand` | good | neon_street | Counter, awning, valance, noren and sign as panels; bowls, pot, tray, lanterns and stools as billboards, with its own lamp and lantern lights. |
 | `rock_wall` | good | aquarium, crystal_cave, neon_bar, red_canyon | Laid out as the user drew it: overlapping pieces along a wall's foot, each in plan a rounded mass of a few broad faces jutting from the wall (the user's sharper zigzag read as spikes; a few spikes and notches are left), each its own height, a trim of faces along its top cut by one long smooth wavy edge, a flat top (inset a texel, so it never shows past the faces), plants on the rim. Kinds `stone`, `reef`, `sandstone`, `snow`, `cave`, `lumen` (glowing moss); `lining` lines every wall face of some map cells. The faces cut from one solid block of stone. Seen from above its tops are flat with the trim standing round them, as Build's were. |
 | `boulder` | good | aquarium, autumn_lane, coast_lighthouse, crystal_cave, misty_moor, neon_bar, red_canyon, winter_woods, woodland_night | A low-poly mass, every face a triangle: an irregular foot, a belly, drawn-in shoulders, a peak off its centre; closed from every side. Plants on top by count. |
-| `column` | good | cathedral_ruin, tropical_beach | A column or a post: a prism of `sides` faces (an octagon by default), tapering if `top` is under 1, a plinth (`base`) and a capital if asked; stone cut from the solid rock as rock is, or `wood` - weathered timber, the grain running up it, dark and grown over below `wet` where it stands in water. Built for the pier's piles first; the cathedral's piers are `ashlar` (dressed stone in drums) with plinths and capitals, one `broken` off ragged. Flutes for the ruins' Doric columns still to come. |
-| `beam` | good | cathedral_ruin | A squared timber or stone lintel lying level, `length` along the way it faces, its underside at the placement's `z`; timber's grain runs along it. Wall plates on the cathedral's piers, and one fallen on the floor. |
+| `column` | good | ancient_ruins, cathedral_ruin, tropical_beach | A column or a post: a prism of `sides` faces (an octagon by default), tapering if `top` is under 1, a plinth (`base`) and a capital if asked; stone cut from the solid rock as rock is, or `wood` - weathered timber, the grain running up it, dark and grown over below `wet` where it stands in water. Built for the pier's piles first; the cathedral's piers are `ashlar` (dressed stone in drums) with plinths and capitals, one `broken` off ragged. The ruins' columns are Greek: `flutes` (20 faces, each hollowed, so it takes the light on one side and shadow on the other) and `doric` (an echinus widening under a square abacus), in `marble` laid in drums; `fill` lifts a backlit column's dark side. |
+| `beam` | good | ancient_ruins, cathedral_ruin | A squared timber or stone lintel lying level, `length` along the way it faces, its underside at the placement's `z`; timber's grain runs along it. Wall plates on the cathedral's piers, and one fallen on the floor; the architraves and cornices over the ruins' columns. |
 | `crystal_cluster` | good | crystal_cave | The user's idea: crystals whose facets refract. Hexagonal prisms with pointed tips from a bed of rock, every facet a panel with its own clarity (clear across the middle, milky toward the base, bright edges) and its own bend: drawn with the glass, each facet shows the frame drawn so far shifted by one offset from the way it is turned (Renderer._bend), so it shows one coherent piece of what is behind, the colours parting a little at the edges. Strongest with glowing things behind. |
 
 ## Held items (8)
@@ -1091,13 +1091,14 @@ The environments, judged on their gallery images and shots.
 | scene | status | shots | gallery | notes |
 |---|---|---|---|---|
 | `jungle_temple` | good | 4 | jungle_path, jungle_temple, jungle_jaguar, jungle_canopy | The canopy from the pyramid top still shows hedge-like steps up close. |
-| `ancient_ruins` | good | 4 | ruins_way, ruins_head, ruins_night | The cella shot could use shafts of light through the columns. |
+| `ancient_ruins` | good | 5 | ruins_way, ruins_head, ruins_night, ruins_columns | The cella shot could use shafts of light through the columns. Adding a shot moves the scatter (it is kept off cameras and sight lines): place a new one where none lies. |
 | `red_canyon` | good | 4 | canyon_wash, canyon_ruins, canyon_slot, canyon_sunset | A wash between ragged walls of layered sandstone, saguaros, cliff-dwelling ruins, a slot canyon lit by one beam, the wall at sunset. |
 | `tropical_beach` | good | 5 | beach_sunset, beach_pier, beach_day, beach_night, beach_flare | A palm-fringed lagoon at sunset, the pier and the hut, midday, glowing surf at night by a fire; into the sun with a lens flare. |
 
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, the temple's columns.** The user's seventh: the ancient ruins' columns in 3D. `column` gains `flutes` (every face hollowed: its normal bends across it, `tilt` in _stone, so it takes the light on one side and shadow on the other) and `"doric": true` (an echinus - frustums can now widen upward - under a square abacus); a `marble` stone in drums. The peristyle's painted see-through colonnade walls became columns on the stylobate with architraves and cornices (`beam`) over every run of three that still stand; the sacred way's and the fallen groups' columns too (prefabs can now carry `objects`). Backlit by the low sun the columns went black, so objects take `fill`: light from the sky and the ground on the faces the sun misses, a multiple of the scene's ambient, so it dims at night. A fluted column is one stone round: every face cut from the same block, so a drum is one tone and its patina runs on round it (cut a face at a time, the patches stopped at the faces' edges and read as holes); marble seldom cracks. New shot `ruins_columns`, the fallen group in the sun from the west - turned by `angle` and `pitch` and stood where no scatter is, because a shot keeps scatter off its camera and its sight lines and a new one reshuffled the poppies out of `ruins_head`. The statue's head is still a billboard.
 - **2026-10-21, the cathedral's arcades.** The user's sixth: the nave on two rows of octagonal stone piers moved in from the walls to carry the roof - `column` objects in a new `ashlar` stone (pale, laid in courses, `courses`, so a column reads as drums), with plinths and capitals - carrying timber wall plates, a new `beam` object; the pier where the roof fell in broken off (`broken`: each corner stops at its own height, the break a fan of rough triangles) and a length of its plate down on the floor. Shot 2's camera moved into the aisle and the pews behind the cameras, so the arcades and the light read.
 - **2026-10-21, the canyon's cliffs.** The user's fifth: the red canyon's walls built in 3D - every face lined with a tall `rock_wall` of a new `canyon` rock kind (its stone in beds by height, `strata`, with dark `varnish` streaks running down), over the old banded walls cut down to cores - so the cliffs jut, step and catch the light by facet, and the rim is ragged. The slot canyon is unchanged.
 - **2026-10-21, the bar's reef tank.** The user's fourth: the neon bar's tank done as the aquarium is, small - open water behind (`deep_water` and `open_water` at 0.62 brightness, so it does not outshine the bar), low live rock along the back (`rock_wall` with `lining`) and one small boulder, the reef rocks and corals kept in front for the density the user likes.

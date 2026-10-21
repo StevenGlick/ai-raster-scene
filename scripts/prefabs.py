@@ -100,10 +100,14 @@ PREFABS = {
         ],
     },
     'ruined_columns': {
-        'description': 'a standing column and a broken one, fallen drums, rubble and dry grass',
+        'description': 'a standing Doric column and a broken one, fluted marble in 3D, fallen drums, rubble and dry grass',
+        'objects': [
+            {'type': 'column', 'material': 'marble', 'flutes': 20, 'doric': True, 'top': 0.8, 'radius': 0.24,
+             'height': [2.6, 3.0], 'capital': 0.3, 'fill': 1.0},
+            {'type': 'column', 'dx': 1.4, 'dy': 0.2, 'material': 'marble', 'flutes': 20, 'top': 0.8, 'radius': 0.24,
+             'height': [1.4, 2.2], 'broken': [0.2, 0.3], 'fill': 1.0},
+        ],
         'sprites': [
-            {'type': 'column', 'scale': [2.6, 3.0]},
-            {'type': 'broken_column', 'dx': 1.4, 'dy': 0.2, 'scale': [2.6, 3.0], 'flip': 'random'},
             {'type': 'column_drum', 'dx': 0.6, 'dy': 1.2, 'flip': 'random'},
             {'type': 'column_drum', 'dx': -0.9, 'dy': 0.9, 'flip': 'random', 'chance': 0.6},
             {'type': 'rubble', 'dx': 1.0, 'dy': 1.0, 'jitter': 0.2},
@@ -199,7 +203,7 @@ def expand(scene):
     out = dict(scene)
     out['map'] = [list(r) for r in scene['map']]
     out['legend'] = dict(scene.get('legend') or {})
-    for key in ('sprites', 'lights', 'decals', 'scatter'):
+    for key in ('sprites', 'lights', 'decals', 'scatter', 'objects'):
         out[key] = list(scene.get(key) or [])
     state = {'used': set(''.join(scene['map'])) | set(out['legend']), 'next': 0x100}
     for n, pl in enumerate(scene['prefabs']):
@@ -207,6 +211,8 @@ def expand(scene):
     out['map'] = [''.join(r) for r in out['map']]
     out.pop('prefabs')
     out.pop('prefab_defs', None)
+    if not out['objects']:
+        out.pop('objects')
     return objects.expand(out)
 
 
@@ -293,6 +299,19 @@ def _place(out, defs, pl, parent, depth, state, n):
             dcl['x'], dcl['y'] = where(part)
             dcl['size'] = float(part.get('size', 1.0)) * sc
         out['decals'].append(dcl)
+    for part in pf.get('objects', []):                 # things built in 3D (objects.py), turned with it
+        if not keep(part):
+            continue
+        ob = {key: v for key, v in part.items() if key not in ('dx', 'dy', 'jitter', 'chance')}
+        ob['x'], ob['y'] = where(part)
+        ob['angle'] = round((float(_pick(part.get('angle', 0), rng)) + deg) % 360, 2)
+        for key in ('height', 'broken'):
+            if key in part:
+                ob[key] = round(float(_pick(part[key], rng)), 4)
+        ob.setdefault('seed', rng.randrange(1 << 16))
+        if sc != 1.0:
+            ob['scale'] = round(float(part.get('scale', 1.0)) * sc, 4)
+        out['objects'].append(ob)
     for part in pf.get('scatter', []):
         sct = dict(part)
         on = sct.get('on')

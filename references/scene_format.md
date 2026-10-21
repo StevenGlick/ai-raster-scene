@@ -668,11 +668,14 @@ An object is a thing too big to be a billboard - a car, a food stand, rock, crys
 | `refract` | how far a crystal's facets bend the light through them, in units (default 0.16; 0 for plain glass) |
 | `glow` | how much crystals glow (default 0.6) |
 | `base` | a crystal cluster: `false` leaves out its bed of rock. A column: the height of a wider plinth under it |
-| `material` | a column or a beam: a kind of rock (`stone`, `sandstone`, `snow`, `cave`, ... - cut from solid stone as rock is), `ashlar` (pale dressed stone laid in courses - a column in drums) or `wood` (weathered timber, its grain running along it, dark and grown over where it stands in water) |
+| `material` | a column or a beam: a kind of rock (`stone`, `sandstone`, `snow`, `cave`, ... - cut from solid stone as rock is), `ashlar` (pale dressed stone laid in courses - a column in drums), `marble` (cream-white, in drums, a golden patina in patches) or `wood` (weathered timber, its grain running along it, dark and grown over where it stands in water) |
 | `sides` | a column's faces (default 8, an octagon) |
 | `radius` | a column's radius at its foot, across the corners (default 0.12) |
 | `top` | a column's radius at its head, as a share of its foot's (default 1: no taper) |
 | `capital` | the height of a wider block on a column's head |
+| `flutes` | a column: that many sides, each hollowed into a flute that takes the light on one side and shadow on the other (20 for a Greek column) |
+| `doric` | a column: `true` for the Doric order - no base, a capital of a cushion (the echinus) under a square slab (the abacus) |
+| `fill` | any object: light from the sky and the ground on the faces the sun misses, as this many times the scene's `ambient` again (`1.0` doubles it there) - for an object backlit by a low sun |
 | `sink` | how far a column's foot goes into the ground or the water (default 0.02) |
 | `broken` | a column: break it off ragged instead of a head - each corner stops up to this far below `height` and the break is rough |
 | `width` | a beam's width (default 0.2); its `depth` is how deep it is (default 0.2) and `length` how long, along the way it faces |

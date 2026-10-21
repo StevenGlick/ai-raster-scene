@@ -1,9 +1,11 @@
 """Ancient ruins: a Doric temple on a headland above the sea, at golden hour and by moonlight.
 
-Shows the ruin textures and props: a see-through colonnade built as wall stacks (shaft, shaft,
-capital and entablature), columns snapped off and fallen, a collapsing cella, free-standing
-columns along a sacred way and in fallen groups (prefabs), cypresses and olives, the low sun throwing the colonnade's shadow in
-stripes, and shafts of light between the columns.
+Shows the ruin textures and props and columns built in 3D: round the temple a peristyle of fluted
+Doric columns of marble standing on the stylobate (`column` objects with `flutes` and `"doric": true`,
+laid in drums), stone architraves and cornices (`beam`s) still lying across the runs that stand, others
+snapped off (`broken`) or fallen to drums; a collapsing cella; more columns along the sacred way and in
+fallen groups; cypresses and olives; the low sun throwing the colonnade's shadow in stripes, and shafts
+of light between the columns.
 Run:  python ancient_ruins.py  -> writes ancient_ruins.json
 """
 import math
@@ -40,14 +42,14 @@ for y in range(TY0, TY1 + 1):
     for x in range(TX0, TX1 + 1):
         g.put(x, y, 'B')
         heights[y][x] = '3'
+ring = {}                                             # the peristyle: what stands on each cell of the ring
 for y in range(TY0, TY1 + 1):
     for x in range(TX0, TX1 + 1):
         if x in (TX0, TX1) or y in (TY0, TY1):
             r = rnd.random()
             # most columns stand; on the sea side more have fallen
             fallen = 0.32 if x < 26 else 0.12
-            g.put(x, y, 'P' if r > fallen else ('b' if r > fallen * 0.45 else 'B'))
-            heights[y][x] = '.' if g.get(x, y) != 'B' else '3'
+            ring[(x, y)] = 'P' if r > fallen else ('b' if r > fallen * 0.45 else 'B')
 for y in range(TY0 + 2, TY1 - 1):
     for x in range(TX0 + 3, TX1 - 2):
         if x in (TX0 + 3, TX1 - 3) or y in (TY0 + 2, TY1 - 2):
@@ -64,6 +66,41 @@ for x in range(TX1 + 3, W):
 g.put(40, 19, 'A').put(40, 20, 'A')
 heights[19][40] = heights[20][40] = '5'
 
+MARBLE = {'material': 'marble', 'flutes': 20, 'top': 0.8, 'fill': 1.0}       # the sky and the ground light the shadow
+columns = []                                          # the peristyle's columns on the stylobate
+for k, ((x, y), what) in enumerate(sorted(ring.items())):
+    if what == 'P':
+        columns.append(dict(MARBLE, type='column', x=x + 0.5, y=y + 0.5, radius=0.2, height=2.3, doric=True,
+                            capital=0.26, seed=k))
+    elif what == 'b':                                 # snapped off at its own height
+        columns.append(dict(MARBLE, type='column', x=x + 0.5, y=y + 0.5, radius=0.2, height=0.9 + 0.8 * (k * 37 % 10) / 10,
+                            broken=0.22, seed=k))
+
+
+def runs(cells):
+    """Straight runs of three or more standing columns, as (first, last) cells."""
+    out, cur = [], []
+    for c in cells + [None]:
+        if c is not None and ring.get(c) == 'P':
+            cur.append(c)
+        else:
+            if len(cur) >= 3:
+                out.append((cur[0], cur[-1]))
+            cur = []
+    return out
+
+
+for side in ([(x, TY0) for x in range(TX0, TX1 + 1)], [(x, TY1) for x in range(TX0, TX1 + 1)],
+             [(TX0, y) for y in range(TY0, TY1 + 1)], [(TX1, y) for y in range(TY0, TY1 + 1)]):
+    for (x0, y0), (x1, y1) in runs(side):             # the entablature still lying across them
+        along_x = y0 == y1
+        n = (x1 - x0 if along_x else y1 - y0) + 1
+        cx, cy = (x0 + x1) / 2 + 0.5, (y0 + y1) / 2 + 0.5
+        for z, w, d in ((2.3, 0.46, 0.3), (2.6, 0.6, 0.12)):           # architrave, then cornice
+            columns.append({'type': 'beam', 'x': cx, 'y': cy, 'z': z, 'angle': 0 if along_x else 90,
+                            'length': n - 1 + 0.62, 'width': w, 'depth': d, 'material': 'marble', 'fill': 1.0,
+                            'seed': x0 * 7 + y0})
+
 legend = {
     ',': {'floor': 'dry_grass'},
     'p': {'floor': 'ruin_paving'},
@@ -71,8 +108,6 @@ legend = {
     'K': {'wall': {'base': 'limestone', 'tint': [0.82, 0.8, 0.76]}, 'top': 'limestone'},
     'B': {'wall': 'limestone', 'top': 'ruin_paving'},
     'A': {'wall': 'limestone', 'top': 'limestone'},
-    'P': {'wall': ['colonnade', 'colonnade', 'colonnade_top'], 'h': 3.0, 'floor': 'ruin_paving'},
-    'b': {'wall': ['colonnade', 'colonnade_broken'], 'h': 2.0, 'floor': 'ruin_paving'},
     'L': {'wall': 'limestone', 'h': 2.6, 'top': 'limestone'},
     'l': {'wall': 'limestone', 'h': 1.2, 'top': 'limestone'},
 }
@@ -86,8 +121,10 @@ sprites = [
 ]
 for x, broken in ((37.5, False), (43.5, True), (46.5, False)):          # columns along the sacred way
     for y in (18.2, 21.8):
-        sprites.append({'x': x, 'y': y, 'type': 'broken_column' if broken or rnd.random() < 0.3 else 'column',
-                        'scale': 3.0, 'flip': rnd.random() < 0.5})
+        snapped = broken or rnd.random() < 0.3
+        rnd.random()                                  # the flip the billboard took, so later draws stay as they were
+        columns.append(dict(MARBLE, type='column', x=x, y=y, radius=0.27, height=2.3 if snapped else 3.0,
+                            doric=not snapped, capital=0.34, broken=0.26 if snapped else 0, seed=int(x * 10 + y)))
 for x, y in ((24.5, 26.6), (27.0, 27.4), (19.0, 25.5), (31.5, 13.0), (23.0, 12.6), (36.6, 24.8)):
     sprites.append({'x': x, 'y': y, 'type': 'column_drum', 'flip': rnd.random() < 0.5})
 for x, y, sc in ((17.0, 11.0, 4.2), (21.0, 9.5, 3.6), (28.0, 10.0, 4.4), (34.5, 11.5, 3.8), (38.0, 14.5, 4.0),
@@ -110,6 +147,7 @@ s = scene(
              'disc_size': 3.0}],
     fog={'color': [0.66, 0.56, 0.46], 'density': 0.005, 'shafts': 0.9, 'ground': 0.1, 'height': 0.3},
     sprites=sprites,
+    objects=columns,
     scatter=[{'of': 'ruins', 'on': ',', 'density': 0.1, 'sizes': ['tiny', 'small', 'medium'], 'seed': 3},
              {'of': ['dry_tuft', 'dry_tuft', 'poppies', 'rocks'], 'on': ',', 'density': 0.22, 'clump': 1.5,
               'sizes': ['small', 'medium'], 'seed': 9}],
@@ -126,6 +164,9 @@ s = scene(
                         {'x': 40.5, 'y': 19.95, 'z': 1.1, 'radius': 4.5, 'color': [1.0, 0.62, 0.3], 'intensity': 1.4},
                         {'x': 34.6, 'y': 21.4, 'z': 0.9, 'radius': 3.0, 'color': [1.0, 0.62, 0.3], 'intensity': 0.6}],
              'fog': {'color': [0.12, 0.14, 0.2], 'density': 0.01, 'shafts': 1.0, 'glow': 0.6}}},
+        # the fallen group in the sun, from the west; turned by angle and pitch, not look_at, and stood where
+        # no scatter is, so it keeps nothing clear and the other shots' scatter stays as it was
+        {'x': 38.4, 'y': 32.4, 'angle': 315.0, 'pitch': 0.198, 'fov': 60},
     ],
     prefabs=[{'type': 'ruined_columns', 'x': 42.2, 'y': 28.0, 'angle': 20, 'seed': 1},
              {'type': 'ruined_columns', 'x': 26.0, 'y': 31.5, 'angle': 170, 'seed': 2}],

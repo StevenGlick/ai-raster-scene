@@ -1266,8 +1266,44 @@ def check_objects():
     stump = objects.expand({'map': ['.'], 'objects': [{'type': 'column', 'x': 0.0, 'y': 0.0, 'height': 1.5,
                                                        'broken': 0.5, 'material': 'ashlar', 'seed': 3}]})['panels']
     assert max(float(np.max([pn['o'][2], (pn['o'] + pn['u'])[2]])) for pn in stump) <= 1.5 + 1e-6, 'broken below its height'
+    # 8. a Greek column: fluted, so each face takes the light on one edge and shadow on the other; a
+    # Doric capital, its square abacus three times the head's radius; and `fill` lifting only the object,
+    # by as much more as the scene's ambient, so it does not glow at night
+    def greek(**kw):
+        return objects.expand({'map': ['.'], 'objects': [dict({'type': 'column', 'x': 0.0, 'y': 0.0, 'radius': 0.2,
+                                                              'height': 2.0, 'top': 0.8, 'material': 'marble',
+                                                              'seed': 2}, **kw)]})['panels']
+
+    def across(pns):                                   # how the two edges of the shaft's faces differ
+        d = []
+        for pn in pns:
+            if abs(pn['v'][2]) > 1.0:
+                lum, solid = pn['rgba'][..., :3].mean(-1), pn['rgba'][..., 3] > 0.5
+                d.append(abs(lum[:, 0][solid[:, 0]].mean() - lum[:, -1][solid[:, -1]].mean()))
+        return float(np.mean(d))
+    plain, fluted = across(greek(sides=20)), across(greek(flutes=20))
+    assert fluted > plain + 0.03, f'flutes take the light on one edge: {fluted:.3f} vs {plain:.3f}'
+    doric = greek(flutes=20, doric=True, capital=0.26)
+    slab = [pn for pn in doric if abs(np.linalg.norm(pn['u']) - 3 * 0.16) < 0.01 and abs(pn['v'][2]) > 0.05]
+    assert len(slab) == 4, f'a square abacus on a Doric column: {len(slab)} sides'
+
+    def lift(amb):
+        sc = dict(room, ambient=[amb] * 3)
+        pl = {'type': 'column', 'x': 6.0, 'y': 6.5, 'radius': 0.3, 'height': 0.9, 'material': 'marble', 'seed': 4}
+        _, none = frame(sc)
+        _, a = frame(dict(sc, objects=[pl]))
+        _, b = frame(dict(sc, objects=[dict(pl, fill=1.0)]))
+        there = np.abs(a - none).max(-1) > 0.02
+        ys, xs = np.nonzero(there)
+        box = np.zeros_like(there)                     # where it is (a few of its pixels match the wall)
+        box[ys.min():ys.max() + 1, xs.min():xs.max() + 1] = True
+        moved = np.abs(b - a).max(-1) > 0.005
+        assert there.sum() > 200 and not (moved & ~box).any(), 'fill lights only the object'
+        return float((b - a)[there].mean())
+    day, night = lift(0.6), lift(0.15)
+    assert day > 0.02 and night < day * 0.5, f'fill follows the ambient: {day:.3f} by day, {night:.3f} by night'
     print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights, '
-          f'rock, linings, columns, crystals bend the light)')
+          f'rock, linings, columns fluted and Doric, fill, crystals bend the light)')
 
 
 def check_docs():

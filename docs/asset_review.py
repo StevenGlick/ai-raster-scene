@@ -261,7 +261,7 @@ def computed(section, name, use, gallery):
         return [', '.join(assets.FRINGES[name]), used]
     if section == 'Prefabs':
         pf = prefabs.PREFABS[name]
-        bits = [f"{len(pf[k])} {k}" for k in ('sprites', 'lights', 'decals', 'prefabs') if pf.get(k)]
+        bits = [f"{len(pf[k])} {k}" for k in ('sprites', 'objects', 'lights', 'decals', 'prefabs') if pf.get(k)]
         if pf.get('map'):
             bits.append('a map')
         return [', '.join(bits), used]

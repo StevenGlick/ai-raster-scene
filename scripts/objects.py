@@ -35,7 +35,7 @@ TEXELS = 64                 # texels per world unit, as on the walls
 PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 'title', 'notes',
                   'rock', 'length', 'height', 'depth', 'pieces', 'trim', 'size', 'seed', 'plants', 'back', 'lining',
                   'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
-                  'sink', 'broken', 'width'}
+                  'sink', 'broken', 'width', 'flutes', 'doric', 'fill'}
 
 
 # ------------------------------------------------------------------ parts
@@ -106,6 +106,8 @@ def expand(scene):
                 tl, tr, bl = world(part['tl']), world(part['tr']), world(part['bl'])
                 pn = {key: val for key, val in part.items() if key not in ('part', 'tex', 'tl', 'tr', 'bl')}
                 pn.update(o=tl, u=tr - tl, v=bl - tl, rgba=part['tex'][0], em=part['tex'][1], at=(X, Y, Z))
+                if pl.get('fill'):
+                    pn['fill'] = float(pl['fill'])
                 if 'refract' in pn:
                     pn['refract'] = float(pn['refract']) * k
                 out['panels'].append(pn)
@@ -781,6 +783,10 @@ ROCKS = {
                           ramp('#6a6a3a', dark=0.35, light=1.3)],
                    mass=(1.4, 1.4, 0.3), chip=(0.45, 0.45, 0.09), key=(-0.22, 0.26, 0.94), shade=(0.46, 0.52),
                    crust=0.9, weed=0.85, pores=0.0, strata=(1.4, 0.4), varnish=0.16, plants=[('dry_tuft', 0.14, 0.22)]),
+    'marble': dict(ramps=[ramp('#d6ccb6', dark=0.36, light=1.24, warm=0.08), ramp('#d4b688', dark=0.52, light=1.2),
+                          ramp('#8c9a68', dark=0.38, light=1.3)],
+                   mass=(2.4, 2.4, 1.4), chip=(0.3, 0.3, 0.2), key=(-0.4, 0.45, 0.8), shade=(0.46, 0.5),
+                   crust=0.8, weed=0.74, up=0.6, pores=0.0, courses=0.5, cracks=0.1, plants=[('dry_tuft', 0.14, 0.22)]),
     'ashlar': dict(ramps=[ramp('#aaa189', dark=0.32, light=1.4), ramp('#8f8c6e', dark=0.35, light=1.3),
                           ramp('#56683a', dark=0.35, light=1.35)],
                    mass=(2.0, 2.0, 1.2), chip=(0.3, 0.3, 0.2), key=(-0.4, 0.45, 0.8), shade=(0.36, 0.56),
@@ -821,7 +827,7 @@ def _dome(gap, e1, e2, cell, k, amp):
     return (amp * 6 * x * (1 - x) / k)[:, None] * (e2 - e1) / cell
 
 
-def _stone(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0):
+def _stone(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
     """The texture (rgba, emission) of a panel of rock - its corner o, columns along u, rows along v,
     w x h texels, solid where `alpha` - cut from one solid block of the rock `rk` (see _rock_kind; its
     light in the object's frame): masses of stone, each a
@@ -829,7 +835,7 @@ def _stone(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0):
     some pitted; crusts in patches and weed where the stone faces up; all lit in 3D by the rock's
     light, so a face takes it by the way it faces. `rim` (per texel, how many texels below the top
     edge) rounds the stone over toward that edge, so it catches the light there; `tone` lightens or
-    darkens the whole panel."""
+    darkens the whole panel; `tilt` (per texel) bends its normal along u - the hollow of a flute."""
     key = np.asarray(rk['key'], np.float32)
     key /= np.linalg.norm(key)
     at = np.nonzero(alpha.reshape(-1))[0]                           # only the texels that are there
@@ -846,9 +852,11 @@ def _stone(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0):
     N = nrm - grad
     if rim is not None:
         N[:, 2] += 2.0 * (1 - np.clip(rim.reshape(-1)[at] / 6.0, 0, 1)) ** 2
+    if tilt is not None:
+        N += tilt.reshape(-1)[at][:, None] * (u / np.linalg.norm(u)).astype(np.float32)[None, :]
     N /= np.linalg.norm(N, axis=1, keepdims=True)
     lit = np.clip(N @ key, 0, 1)
-    crack = (gap < 0.04) & (table(4, np.minimum(id1, id2) * 31 + np.maximum(id1, id2)) < 0.45)   # not every join
+    crack = (gap < 0.04) & (table(4, np.minimum(id1, id2) * 31 + np.maximum(id1, id2)) < rk.get('cracks', 0.45))
     pits = (f1 < 0.12) & (table(3, cid) < rk['pores'])
     val = rk['shade'][0] + rk['shade'][1] * lit + tone + (table(5, id1) - 0.5) * 0.12 - 0.22 * crack - 0.3 * pits
     val -= 0.2 * (1 - np.clip(P[:, 2] / 0.3, 0, 1)) ** 2            # darker at the foot
@@ -893,7 +901,7 @@ WOODS = {
 }
 
 
-def _wood(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0):
+def _wood(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
     """The texture of a panel of timber, as _stone is of rock: grain running up it in long streaks
     with a few dark checks along it, cut from one solid block so the grain carries round a corner, lit
     by the way the face faces; below `wet` it is dark and grown over, with a ragged line where the
@@ -932,7 +940,7 @@ def _inset(m):
     return ~_grown(~m)
 
 
-def _rock(rk, seed, tl, tr, bl, alpha=None, rim=None, tone=0.0):
+def _rock(rk, seed, tl, tr, bl, alpha=None, rim=None, tone=0.0, tilt=None):
     """A panel of rock, its corners as `quad` takes them; `alpha(w, h)` and `rim(w, h)` give its mask
     and how far below its top edge each texel is, for a texture w x h. None if nothing is solid."""
     tl, tr, bl = (np.asarray(p, float) for p in (tl, tr, bl))
@@ -941,7 +949,11 @@ def _rock(rk, seed, tl, tr, bl, alpha=None, rim=None, tone=0.0):
     a = np.ones((h, w), bool) if alpha is None else alpha(w, h)
     if not a.any():
         return None
-    tex = rk.get('paint', _stone)(rk, seed, tl, u, v, w, h, a, None if rim is None else rim(w, h), tone)
+    paint = rk.get('paint', _stone)
+    if tilt is not None:
+        tex = paint(rk, seed, tl, u, v, w, h, a, None if rim is None else rim(w, h), tone, tilt=tilt(w, h))
+    else:
+        tex = paint(rk, seed, tl, u, v, w, h, a, None if rim is None else rim(w, h), tone)
     return quad(tex, tuple(tl), tuple(tr), tuple(bl))
 
 
@@ -1116,23 +1128,37 @@ def _ring(n, r, z, phase):
             for k in range(n)]
 
 
-def _prism_faces(mat, seed, n, r0, r1, z0, z1, phase, tone=0.0):
-    """The sides of an n-sided prism from radius r0 at z0 to r1 at z1 (a frustum when they differ):
-    every face a panel cut to its trapezoid, read from outside."""
+def _prism_faces(mat, seed, n, r0, r1, z0, z1, phase, tone=0.0, flute=0.0, block=False):
+    """The sides of an n-sided prism from radius r0 at z0 to r1 at z1 (a frustum when they differ, narrowing
+    or widening): every face a panel cut to its trapezoid, read from outside. `flute` hollows each face
+    into a flute - its normal bends across it, so it takes the light on one side and shadow on the other.
+    `block` cuts every face from the same block of stone (one stone round), not each from its own."""
     parts = []
     bottom, top = _ring(n, r0, z0, phase), _ring(n, r1, z1, phase)
-    cut = (1 - r1 / r0) / 2                                          # how far the top edge is drawn in
+    wide = r1 > r0                                                   # the panel is laid on the wider edge
+    cut = (1 - min(r0, r1) / max(r0, r1)) / 2                        # how far the narrower edge is drawn in
     for k in range(n):
         B0, B1 = bottom[k], bottom[(k + 1) % n]
+        T0, T1 = top[k], top[(k + 1) % n]
         if np.cross(B1 - B0, np.array([0.0, 0.0, -1.0])) @ (B0 + B1) < 0:   # read from outside
-            B0, B1 = B1, B0
-        rise = (top[k] + top[(k + 1) % n]) / 2 - (B0 + B1) / 2
+            B0, B1, T0, T1 = B1, B0, T1, T0
+        drop = (B0 + B1) / 2 - (T0 + T1) / 2
+
+        def edges(w, h):
+            """Each texel's place across the panel, and how far in the face's edge is at its height."""
+            t = (np.arange(h)[:, None] + 0.5) / h                       # 0 at the top, 1 at the foot
+            return (np.arange(w)[None, :] + 0.5) / w, cut * (t if wide else 1 - t)
 
         def shape(w, h):
-            t = (np.arange(h)[:, None] + 0.5) / h                       # 0 at the top, 1 at the foot
-            s = (np.arange(w)[None, :] + 0.5) / w
-            return (s >= cut * (1 - t) - 0.5 / w) & (s <= 1 - cut * (1 - t) + 0.5 / w)
-        p = _rock(mat, seed + k, B0 + rise, B1 + rise, B0, alpha=shape, tone=tone)
+            s, c = edges(w, h)
+            return (s >= c - 0.5 / w) & (s <= 1 - c + 0.5 / w)
+
+        def span(w, h):                                              # 0..1 across the face itself
+            s, c = edges(w, h)
+            return np.clip((s - c) / (1 - 2 * c), 0, 1)
+        tilt = (lambda w, h: flute * (1 - 2 * span(w, h))) if flute else None
+        tl, tr = (T0, T1) if wide else (B0 - drop, B1 - drop)
+        p = _rock(mat, seed + (0 if block else k), tl, tr, tl + drop, alpha=shape, tone=tone, tilt=tilt)
         if p:
             parts.append(p)
     return parts
@@ -1150,10 +1176,11 @@ def _disc(mat, seed, n, r, z, phase, below=False):
     return _rock(mat, seed, (x1, y0, z), (x1, y1, z), (x0, y0, z), alpha=shape)
 
 
-def _broken_top(mat, seed, n, r0, r1, z0, H, phase, depth):
+def _broken_top(mat, seed, n, r0, r1, z0, H, phase, depth, flute=0.0, block=False):
     """The sides of an n-sided shaft (radius r0 at z0 to r1 at H) broken off ragged: each corner stops
     at its own height, up to `depth` below H, every face cut slanting between its two corners, and the
-    break itself a fan of rough triangles in to a point a little below the top."""
+    break itself a fan of rough triangles in to a point a little below the top. `flute` and `block` as
+    for _prism_faces."""
     rng = np.random.default_rng(seed + 400)
     tops = H - rng.uniform(0, depth, n)
     rad = lambda z: r0 + (r1 - r0) * (z - z0) / max(H - z0, 1e-6)     # noqa: E731
@@ -1173,7 +1200,8 @@ def _broken_top(mat, seed, n, r0, r1, z0, H, phase, depth):
             zt = hi - (np.arange(h)[:, None] + 0.5) / h * (hi - z0)    # each row's height
             s_ = (np.arange(w)[None, :] + 0.5) / w
             return zt <= ha + (hb - ha) * s_ + 0.5 * (hi - z0) / h
-        p = _rock(mat, seed + k, tl, tr, a0, alpha=shape)
+        tilt = (lambda w, h: flute * (1 - 2 * np.broadcast_to((np.arange(w)[None, :] + 0.5) / w, (h, w)))) if flute else None
+        p = _rock(mat, seed + (0 if block else k), tl, tr, a0, alpha=shape, tilt=tilt)
         if p:
             parts.append(p)
     peak = np.array([0.0, 0.0, float(tops.mean()) - 0.04])
@@ -1189,10 +1217,15 @@ def column(pl):
     the solid stone, as rock is), `ashlar` (pale dressed stone laid in drums) or `wood` (the grain
     running up it, wet and dark at the foot where it stands in water). `base` and `capital` (heights)
     add a wider block under it and over it, `broken` (a depth) breaks it off ragged instead of a head,
-    `sink` sets its foot that far into the ground, and `seed` varies its stone or grain."""
+    `sink` sets its foot that far into the ground, and `seed` varies its stone or grain. `flutes` (a
+    number) makes it that many-sided with every face hollowed into a flute, all cut from one stone round
+    (a drum is one stone), and `"doric": true` gives it the Doric order: no base, a capital of a cushion
+    (the echinus) under a square slab (the abacus)."""
     mat = _material(pl)
     seed = int(pl.get('seed', 1))
-    n = int(pl.get('sides', 8))
+    flutes = int(pl.get('flutes', 0))
+    n = flutes or int(pl.get('sides', 8))
+    hollow = 1.4 if flutes else 0.0
     r = float(pl.get('radius', 0.12))
     top = r * float(pl.get('top', 1.0))
     H = float(pl.get('height', 1.0))
@@ -1205,9 +1238,17 @@ def column(pl):
         parts.append(_disc(mat, seed + 60, n, r * 1.3, hb, phase))
     if pl.get('broken'):                                               # broken off: no head
         return [p for p in parts + _broken_top(mat, seed, n, r, top, max(z0, hb - 0.01) if hb else z0, H, phase,
-                                                float(pl['broken'])) if p]
-    parts += _prism_faces(mat, seed, n, r, top, max(z0, hb - 0.01) if hb else z0, H - hc, phase)
-    if hc:                                                             # a capital over it
+                                                float(pl['broken']), flute=hollow, block=bool(flutes)) if p]
+    parts += _prism_faces(mat, seed, n, r, top, max(z0, hb - 0.01) if hb else z0, H - hc, phase, flute=hollow,
+                          block=bool(flutes))
+    if hc and pl.get('doric'):                                         # a cushion under a square slab
+        za = H - hc * 0.42
+        parts += _prism_faces(mat, seed + 70, 16, top, top * 1.42, H - hc, za, math.pi / 16, tone=0.02, block=True)
+        sq = top * 1.5 * math.sqrt(2)
+        parts += _prism_faces(mat, seed + 75, 4, sq, sq, za, H, math.pi / 4, tone=0.03, block=True)
+        parts.append(_disc(mat, seed + 80, 4, sq, za, math.pi / 4, below=True))
+        parts.append(_disc(mat, seed + 90, 4, sq, H, math.pi / 4))
+    elif hc:                                                           # a capital over it
         parts += _prism_faces(mat, seed + 70, n, top * 1.35, top * 1.35, H - hc, H, phase, tone=0.03)
         parts.append(_disc(mat, seed + 80, n, top * 1.35, H - hc, phase, below=True))
         parts.append(_disc(mat, seed + 90, n, top * 1.35, H, phase))

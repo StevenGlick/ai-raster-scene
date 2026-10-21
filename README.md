@@ -232,6 +232,8 @@ A stepped pyramid swallowed by the rainforest at the end of a path under the can
 | ![Midday on the beach, a crab on the sand, palms and the hut along the shore](docs/gallery/beach_day.png) | ![The lagoon at sunset, a castaway at the water's edge](docs/gallery/beach_sunset.png) |
 | ![The hut and the palms mirrored in the lagoon, from the end of the pier](docs/gallery/beach_pier.png) | ![Glowing surf on the beach at night, a fire on the sand](docs/gallery/beach_night.png) |
 
+![Doric columns in 3D in the low sun: one still standing under its capital by a cypress, others snapped off, fluted marble laid in drums](docs/gallery/ruins_columns.png)
+
 ### The glowing jungle
 
 A clearing in the rainforest at night where everything that grows has light in it - ferns and monsteras traced in cold blue-green, heliconias burning pink, pods glowing on curling stalks, moss aglow on the floor - round a black pool where plankton swirls in streams of light and an old stone head watches from the water's edge.

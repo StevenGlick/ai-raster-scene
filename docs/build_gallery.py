@@ -195,6 +195,7 @@ SHOTS = {
     'ruins_way': ('ancient_ruins', 1),
     'ruins_head': ('ancient_ruins', 3),
     'ruins_night': ('ancient_ruins', 4),
+    'ruins_columns': ('ancient_ruins', 5),
     'beach_sunset': ('tropical_beach', 1),
     'beach_pier': ('tropical_beach', 2),
     'beach_day': ('tropical_beach', 3),
