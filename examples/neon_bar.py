@@ -4,7 +4,9 @@ back wall, a row of arcade cabinets, booths, a jukebox, neon on the walls and sm
 Shows the bar kit (scripts/bar.py) with the aquarium's: `bar_shelves` on the wall behind the bar,
 the bar itself a `bar_counter` card standing along it with `bar_stool`s in front and `bottles`
 on top, `arcade_cabinet`s with a shooter on every screen, `booth`s, a `jukebox`, the `hacker` by the arcade row, `neon_cocktail`
-and `neon_fish` on the walls (additive); and a tank of `reef_rock`, corals and reef fish behind
+and `neon_fish` on the walls (additive); and a reef tank done as the aquarium's are, small: its back
+wall painted as open water (`deep_water` under `open_water`, dimmed for the bar), a low `rock_wall` of
+`reef` rock along its foot and one small `boulder`, `reef_rock`, corals and reef fish in front, behind
 a `glass_pane` whose glass has `fog`, so the haze glows blue inside it. A thick, glowing
 volumetric fog is the smoke: every screen, tube and lamp gets a halo in it.
 Run:  python neon_bar.py  -> writes neon_bar.json
@@ -21,6 +23,7 @@ g.rect(1, 4, 6, 8, 'f')                              # the room
 g.rect(1, 3, 3, 3, 'K')                              # the back bar's shelves
 g.rect(4, 2, 7, 3, 'R')                              # the reef tank, let into the back wall
 g.rect(5, 3, 6, 3, 'A')
+g.rect(5, 2, 6, 2, 'O')                              # its back wall: painted as open water
 
 PINK, CYAN, VIOLET, WARM = [1.0, 0.3, 0.7], [0.3, 0.9, 1.0], [0.65, 0.45, 1.0], [1.0, 0.72, 0.42]
 BLOOM = [{'fx': 'bloom', 'source': 'light', 'strength': 2.0, 'radius': 2.5, 'spread': 0.6}]
@@ -42,8 +45,8 @@ sprites = [
     {'x': 1.05, 'y': 6.0, 'type': 'neon_cocktail', 'z': 0.62},
     {'x': 6.95, 'y': 4.5, 'type': 'neon_fish', 'z': 0.8},
     {'x': 4.6, 'y': 4.2, 'type': 'witch', 'facing': 270, 'tint': [0.5, 0.55, 0.7]},
-    # the tank
-    {'x': 5.4, 'y': 3.3, 'type': 'reef_rock', 'scale': 0.42}, {'x': 6.6, 'y': 3.4, 'type': 'reef_rock', 'scale': 0.38, 'flip': True},
+    # the tank: live rock near the glass, in front of the rockwork along its back
+    {'x': 5.4, 'y': 3.55, 'type': 'reef_rock', 'scale': 0.4}, {'x': 6.6, 'y': 3.6, 'type': 'reef_rock', 'scale': 0.36, 'flip': True},
     {'x': 5.1, 'y': 3.7, 'type': 'sea_fan', 'scale': 0.4}, {'x': 6.8, 'y': 3.75, 'type': 'staghorn_coral', 'scale': 0.24},
     {'x': 6.0, 'y': 3.75, 'type': 'anemone', 'scale': 0.2}, {'x': 5.6, 'y': 3.85, 'type': 'brain_coral', 'scale': 0.13},
     {'x': 6.4, 'y': 3.85, 'type': 'tube_sponge', 'scale': 0.2},
@@ -71,6 +74,7 @@ s = scene(
         '#': {'wall': 'brick_dark', 'h': 1.3},
         'K': {'wall': 'bar_shelves', 'h': 1.3},
         'R': {'wall': 'reef_wall', 'h': 1.3},
+        'O': {'wall': [{'base': 'deep_water', 'brightness': 0.62}, {'base': 'open_water', 'brightness': 0.62}], 'h': 1.3},
         'A': {'floor': 'seabed', 'ceil': {'base': 'water_surface', 'tint': [0.55, 0.72, 0.82]}},
         'f': {'floor': 'obsidian', 'ceil': 'concrete'},
     },
@@ -80,6 +84,10 @@ s = scene(
     fog={'color': [0.05, 0.03, 0.07], 'density': 0.06, 'glow': 1.2},
     lights=lights,
     sprites=sprites,
+    objects=[{'type': 'rock_wall', 'lining': 'O', 'rock': 'reef', 'depth': 0.3, 'height': [0.24, 0.5],
+              'pieces': [0.8, 1.3], 'plants': False, 'seed': 3},                      # live rock along the tank's back
+             {'type': 'boulder', 'x': 6.45, 'y': 3.42, 'angle': 90, 'size': 0.34, 'height': 0.2, 'rock': 'reef',
+              'seed': 5}],
     camera={'x': 6.2, 'y': 8.6, 'look_at': [2.4, 4.3, 0.5], 'fov': 74},
     shots=[
         {'x': 6.2, 'y': 8.6, 'look_at': [2.4, 4.3, 0.5], 'fov': 74, 'post': BLOOM,
