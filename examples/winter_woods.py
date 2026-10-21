@@ -54,7 +54,8 @@ def winter_woods():
     return scene(
         g,
         legend={
-            'F': {'wall': 'forest_deep_snow', 'h': 2.4, 'top': 'snow', 'fringe': 'forest_snow'},
+            'F': {'wall': 'forest_deep_snow', 'h': 2.4, 'top': 'snow',
+                  'fringe': {'set': 'forest_snow', 'depth': 1.2, 'wander': 0.3}},
             ',': {'floor': 'snow'},
             '~': {'floor': 'ice', 'drop': 0.08, 'reflect': 0.3, 'side': 'snow'},
             'B': {'wall': 'planks', 'h': 0.14, 'top': 'planks'},

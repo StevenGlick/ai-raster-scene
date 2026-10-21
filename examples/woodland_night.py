@@ -36,7 +36,7 @@ def woodland():
     return scene(
         g,
         legend={
-            'F': {'wall': 'forest_deep', 'h': 2.4, 'fringe': 'forest'},
+            'F': {'wall': 'forest_deep', 'h': 2.4, 'fringe': {'set': 'forest', 'depth': 1.2, 'wander': 0.3}},
             ',': {'floor': 'pine_needles'},
             'c': {'floor': 'pine_needles'},
             'p': {'floor': 'mud'},

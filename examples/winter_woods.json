@@ -51,7 +51,11 @@
    "wall": "forest_deep_snow",
    "h": 2.4,
    "top": "snow",
-   "fringe": "forest_snow"
+   "fringe": {
+    "set": "forest_snow",
+    "depth": 1.2,
+    "wander": 0.3
+   }
   },
   ",": {
    "floor": "snow"

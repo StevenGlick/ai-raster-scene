@@ -58,7 +58,11 @@
   "F": {
    "wall": "forest_deep_autumn",
    "h": 2.4,
-   "fringe": "forest_autumn"
+   "fringe": {
+    "set": "forest_autumn",
+    "depth": 1.2,
+    "wander": 0.3
+   }
   },
   ",": {
    "floor": "leaves_fallen"

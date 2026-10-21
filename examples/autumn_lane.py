@@ -61,7 +61,7 @@ def autumn_lane():
     return scene(
         g,
         legend={
-            'F': {'wall': 'forest_deep_autumn', 'h': 2.4, 'fringe': 'forest_autumn'},
+            'F': {'wall': 'forest_deep_autumn', 'h': 2.4, 'fringe': {'set': 'forest_autumn', 'depth': 1.2, 'wander': 0.3}},
             ',': {'floor': 'leaves_fallen'},
             'p': {'floor': 'dirt'},
             'h': {'floor': 'dry_grass'},

@@ -42,7 +42,11 @@
   "F": {
    "wall": "forest_deep",
    "h": 2.4,
-   "fringe": "forest"
+   "fringe": {
+    "set": "forest",
+    "depth": 1.2,
+    "wander": 0.3
+   }
   },
   ",": {
    "floor": "pine_needles"
