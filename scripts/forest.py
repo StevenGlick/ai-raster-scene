@@ -59,10 +59,12 @@ def _turn(cv, rng, leaf, mats, weights, cells=4, mix=0.4):
     cv.mat = np.where(leaves, np.asarray(mats)[np.searchsorted(q, zone)], cv.mat).astype(np.int32)
 
 
-def _spruce(snow=False):
-    """The spruce, bare or under snow (see spr_pine and spr_snowy_pine)."""
-    rng = np.random.default_rng(31)
-    srng = np.random.default_rng(37)        # the snow's own stream, so the bare tree never changes
+def _spruce(snow=False, v=0):
+    """The spruce, bare or under snow (see spr_pine and spr_snowy_pine); variant v another spruce - its
+    tiers hung and spread another way, fuller or leaner."""
+    rng = np.random.default_rng(31 + 41 * v)
+    srng = np.random.default_rng(37 + 41 * v)   # the snow's own stream, so the bare tree never changes
+    full = (1.0, 0.88, 0.96, 0.92)[v % 4]      # no wider than the first: its canvas holds that one
     w, h = 72, 168
     cx = w / 2
     cv = Canvas(w, h, wrap=False, ground=-9)
@@ -71,7 +73,7 @@ def _spruce(snow=False):
     for i in reversed(range(n)):            # the lowest tier first: each tier hangs over the one below
         t = i / (n - 1)                     # 0 at the tip, 1 at the lowest tier
         hem = top + 8 + (foot - top - 8) * t ** 0.92 + rng.uniform(-1.5, 1.5)
-        half = (3.5 + 30 * t ** 0.8) * rng.uniform(0.9, 1.08)
+        half = (3.5 + 30 * t ** 0.8) * rng.uniform(0.9, 1.08) * full
         skew = rng.uniform(-0.1, 0.1)       # no two tiers quite alike, nor their two sides
         tall = 9 + 12 * t
         z = 1.0 + 0.6 * (1 - t)
@@ -135,9 +137,11 @@ def spr_snowy_pine():
     return _spruce(snow=True)
 
 
-def _oak(autumn=False):
-    """The oak, green or turned (see spr_tree and spr_tree_autumn)."""
-    rng = np.random.default_rng(23)
+def _oak(autumn=False, v=0):
+    """The oak, green or turned (see spr_tree and spr_tree_autumn); variant v another oak - its crown's
+    lobes set another way."""
+    rng = np.random.default_rng(23 + 41 * v)
+    jig = np.random.default_rng(900 + v).uniform(-5, 5, (8, 2)) if v else np.zeros((8, 2))
     w, h = 136, 128
     cx = w / 2
     cv = Canvas(w, h, wrap=False, ground=-9)
@@ -157,15 +161,17 @@ def _oak(autumn=False):
     for p0, p1, p2, wd in limbs:
         cv.stroke([p0, p1, p2], wd, z=0.6, dome=1.0, taper=(1.0, 0.45), mat=1)
     # the crown in separate lobes, so the outline is lumpy and the limbs show between them
-    for lx, ly, rx, ry, k in ((cx - 40, 58, 26, 19, 11), (cx + 42, 56, 26, 19, 11), (cx - 22, 34, 29, 23, 13),
-                              (cx + 22, 30, 29, 23, 13), (cx, 15, 25, 15, 9), (cx - 3, 52, 28, 18, 10),
-                              (cx + 54, 40, 14, 13, 5), (cx - 55, 44, 13, 12, 5)):
-        _crown(cv, rng, lx, ly, rx, ry, k, size=(7, 11), leaf=4.0, z=1.0)
+    for (lx, ly, rx, ry, k), (jx, jy) in zip(((cx - 40, 58, 26, 19, 11), (cx + 42, 56, 26, 19, 11),
+                                              (cx - 22, 34, 29, 23, 13), (cx + 22, 30, 29, 23, 13), (cx, 15, 25, 15, 9),
+                                              (cx - 3, 52, 28, 18, 10), (cx + 54, 40, 14, 13, 5),
+                                              (cx - 55, 44, 13, 12, 5)), jig):
+        lx = float(np.clip(lx + jx, rx * 0.5 + 2, w - rx * 0.5 - 2))
+        _crown(cv, rng, lx, max(ly + jy, ry * 0.7), rx, ry, k, size=(7, 11), leaf=4.0, z=1.0)
     leaves = (cv.mat == 0) & (cv.id > 0)    # lit from above: the top of the crown bright, its underside dark
     cv.tone += np.where(leaves, 0.1 - 0.24 * np.clip(np.arange(h)[:, None] / 80.0, 0, 1), 0).astype(np.float32)
     if not autumn:
         return _prop(cv, [OAK_LEAF, ramp('#5a4e40', dark=0.25)], relief=1.0, cavity=0.45, shadow=0.55, reach=7)
-    _turn(cv, np.random.default_rng(231), 0, [0, 2, 3], [0.45, 0.35, 0.2], cells=5)
+    _turn(cv, np.random.default_rng(231 + 41 * v), 0, [0, 2, 3], [0.45, 0.35, 0.2], cells=5)
     return _prop(cv, [AUTUMN[0], ramp('#5a4e40', dark=0.25), AUTUMN[1], AUTUMN[2]], relief=1.0, cavity=0.45,
                  shadow=0.55, reach=7)
 
@@ -182,12 +188,15 @@ def spr_tree_autumn():
     return _oak(autumn=True)
 
 
-def _birch(autumn=False):
-    """The birch, green or turned (see spr_birch and spr_birch_autumn)."""
-    rng = np.random.default_rng(37)
+def _birch(autumn=False, v=0):
+    """The birch, green or turned (see spr_birch and spr_birch_autumn); variant v another birch - its
+    second stem leaning the other way or nearer upright, the crown hung another way."""
+    rng = np.random.default_rng(37 + 41 * v)
     w, h = 72, 160
     cv = Canvas(w, h, wrap=False, ground=-9)
-    stems = [([(34, h), (33, h - 60), (36, 34), (34, 12)], 5.0), ([(35, h), (41, h - 50), (48, h - 96), (52, 44)], 3.4)]
+    lean = (1.0, -1.0, 0.55)[v % 3]
+    stems = [([(34, h), (33, h - 60), (36, 34), (34, 12)], 5.0),
+             ([(35, h), (35 + 6 * lean, h - 50), (35 + 13 * lean, h - 96), (35 + 17 * lean, 44)], 3.4)]
     for pts, wd in stems:
         cv.stroke(pts, wd, z=0.4, dome=1.0, taper=(1.15, 0.35), mat=1)
     for pts, wd in stems:                   # the black marks across the white bark
@@ -197,12 +206,13 @@ def _birch(autumn=False):
             half = wd / 2 * (1.15 - 0.8 * t)
             cv.stroke([(x - half * 0.9, y), (x + half * rng.uniform(0.1, 0.8), y + rng.uniform(-0.3, 0.6))],
                       rng.uniform(0.9, 1.6), z=1.25, dome=0.2, mat=2)
-    for x0, y0, x1, y1 in ((34, 70, 18, 52), (34, 58, 50, 40), (35, 44, 22, 26), (48, 92, 60, 74), (36, 30, 46, 16)):
+    for x0, y0, x1, y1 in ((34, 70, 18, 52), (34, 58, 50, 40), (35, 44, 22, 26),
+                           (35 + 13 * lean, 92, 35 + 25 * lean, 74), (36, 30, 46, 16)):
         cv.stroke([(x0, y0), ((x0 + x1) / 2, (y0 + y1) / 2 - 3), (x1, y1)], 1.4, z=0.7, dome=0.6, taper=(1, 0.4), mat=2)
     for _ in range(30):                     # the crown: clumps of small leaves hanging off drooping twigs
         a = rng.uniform(0, 2 * np.pi)
         r = rng.random() ** 0.7
-        x, y = 40 + np.cos(a) * 26 * r, 62 + np.sin(a) * 46 * r
+        x, y = 36 + 4 * lean + np.cos(a) * 26 * r, 62 + np.sin(a) * 46 * r
         up = 0.08 if np.sin(a) < 0 else -0.06
         cv.stroke([(x - 2, y - 7), (x, y), (x + 1, y + 5)], 0.8, z=0.8, dome=0.3, mat=2)
         for _ in range(16):
@@ -212,7 +222,7 @@ def _birch(autumn=False):
                     dome=0.5, rib=0.0, mat=0, tone=up + rng.normal(0, 0.05))
     if not autumn:
         return _prop(cv, [BIRCH_LEAF, BIRCH_BARK, BIRCH_MARK], relief=1.0, cavity=0.35, shadow=0.45)
-    _turn(cv, np.random.default_rng(371), 0, [0, 3], [0.8, 0.2])
+    _turn(cv, np.random.default_rng(371 + 41 * v), 0, [0, 3], [0.8, 0.2])
     return _prop(cv, [BIRCH_GOLD, BIRCH_BARK, BIRCH_MARK, AUTUMN[0]], relief=1.0, cavity=0.35, shadow=0.45)
 
 
@@ -227,19 +237,57 @@ def spr_birch_autumn():
     return _birch(autumn=True)
 
 
-def _bush(autumn=False):
-    """The shrub, green or turned (see spr_bush and spr_bush_autumn)."""
-    rng = np.random.default_rng(13)
+def _bush(autumn=False, v=0):
+    """The shrub, green or turned (see spr_bush and spr_bush_autumn); variant v another shape of it -
+    lower and wider, taller and rounder, lopsided."""
+    rng = np.random.default_rng(13 + 29 * v)
     w, h = 64, 44
     cv = Canvas(w, h, wrap=False, ground=-9)
+    cx, cy, rx, ry, n = ((32, 24, 30, 19, 18), (32, 27, 31, 16, 17), (32, 22, 26, 21, 18), (29, 25, 28, 18, 17))[v % 4]
     for k in range(6):
         a = np.radians(-150 + k * 24)
         cv.stroke([(32, h), (32 + np.cos(a) * 18, h + np.sin(a) * 18)], 1.6, z=0.2, dome=0.6, taper=(1, 0.5), mat=1)
-    _crown(cv, rng, 32, 24, 30, 19, 18, size=(6, 9), leaf=3.6, z=0.8)
+    _crown(cv, rng, cx, cy, rx, ry, n, size=(6, 9), leaf=3.6, z=0.8)
     if not autumn:
         return _prop(cv, [OAK_LEAF, OAK_BARK], relief=1.0, cavity=0.45, shadow=0.5)
-    _turn(cv, np.random.default_rng(131), 0, [0, 2], [0.6, 0.4], cells=3)
+    _turn(cv, np.random.default_rng(131 + 29 * v), 0, [0, 2], [0.6, 0.4], cells=3)
     return _prop(cv, [AUTUMN[2], OAK_BARK, AUTUMN[0]], relief=1.0, cavity=0.45, shadow=0.5)
+
+
+def _mushrooms(v=0):
+    """A cluster of toadstools on the forest floor: domed caps on pale stems, the biggest at the back,
+    the gills in shadow under each cap, white flecks on the red ones; variant v another cluster - more
+    or fewer of them, leaning another way, red or brown."""
+    rng = np.random.default_rng(141 + 19 * v)
+    w, h = 40, 28
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    n = (3, 4, 2, 5)[v % 4]
+    red = v % 4 != 2
+    sizes = [r * rng.uniform(0.85, 1.1) for r in (7.0, 5.0, 4.4, 3.4, 3.0)[:n]]
+    side = 1 if rng.random() < 0.5 else -1
+    xs = [20 + side * d + rng.uniform(-1.2, 1.2) for d in (0, -8.5, 8, -14, 13.5)[:n]]
+    for i, (x, r) in enumerate(zip(xs, sizes)):                        # back (biggest) to front
+        top = h - 1 - r * rng.uniform(1.3, 1.9)
+        lean = rng.uniform(-1.5, 1.5)
+        cv.stroke([(x, h - 1), (x + lean, top + r * 0.3)], max(1.6, r * 0.42), z=0.4 + 0.3 * i, dome=0.7, mat=1,
+                  tone=rng.normal(0, 0.03))
+        cv.ellipse(x + lean, top, r, r * 0.62, z=1.2 + 0.3 * i, dome=1.5, mat=0, tone=rng.normal(0, 0.05))
+        cv.ellipse(x + lean, top + r * 0.42, r * 0.86, r * 0.22, z=0.9 + 0.3 * i, dome=0.3, mat=2)
+        if red:
+            for _ in range(int(r // 1.6)):                             # white flecks on the cap
+                a = rng.uniform(np.pi * 1.1, np.pi * 1.9)
+                d = rng.uniform(0.2, 0.75)
+                cv.ellipse(x + lean + np.cos(a) * r * d, top + np.sin(a) * r * 0.55 * d + 0.5, 0.7, 0.55,
+                           z=1.3 + 0.3 * i + 0.4, dome=0.2, mat=3)
+    caps = [ramp('#a43a2c', dark=0.4, light=1.25), ramp('#8a5634', dark=0.4, light=1.25)]
+    return _prop(cv, [caps[0] if red else caps[1], ramp('#ddd2ba', dark=0.45, light=1.1),
+                      ramp('#9a8a70', dark=0.5, light=1.0), ramp('#f2ece0', dark=0.6, light=1.05)],
+                 relief=1.0, cavity=0.4, shadow=0.45)
+
+
+def spr_mushrooms():
+    """A cluster of toadstools: domed caps on pale stems, gills in shadow, white flecks on the red."""
+    return _mushrooms(0)
 
 
 def spr_bush():
@@ -266,15 +314,19 @@ def _rings(cv, cx, cy, rx, ry, n):
         cv.stroke(list(zip(cx + np.cos(a) * rx * f, cy + np.sin(a) * ry * f)), 0.7, dome=0.25, mode='carve')
 
 
-def _boulder(snow=False):
-    """The boulder, mossy or under snow (see spr_boulder and spr_boulder_snow)."""
-    rng = np.random.default_rng(61)
+def _boulder(snow=False, v=0):
+    """The boulder, mossy or under snow (see spr_boulder and spr_boulder_snow); variant v another
+    boulder - its lesser lobe on the other side, taller, flatter."""
+    rng = np.random.default_rng(61 + 37 * v)
     w, h = 48, 34
     cv = Canvas(w, h, wrap=False, ground=-9)
-    cv.ellipse(25, 25, 22, 16, z=0.0, dome=2.4, rough=0.14, rng=rng, mat=0, power=0.6)
-    cv.ellipse(13, 19, 9, 7.5, z=0.5, dome=1.4, rough=0.2, rng=rng, mat=0, tone=0.04, mode='max')
-    cv.stroke([(29, 9), (27, 17), (30, 27)], 1.3, dome=0.8, mode='carve')
-    cv.stroke([(9, 23), (16, 26)], 1.0, dome=0.5, mode='carve')
+    (bx, by, brx, bry), (lx, ly, lrx, lry) = (((24, 25, 19, 15), (12, 19, 8, 7)), ((24, 25, 19, 14), (35, 18, 8, 7.5)),
+                                              ((24, 23, 17, 17), (13, 27, 8, 6)), ((24, 27, 20, 12), (35, 23, 8.5, 6.5)))[v % 4]
+    cv.ellipse(bx, by, brx, bry, z=0.0, dome=2.4, rough=0.14, rng=rng, mat=0, power=0.6)
+    cv.ellipse(lx, ly, lrx, lry, z=0.5, dome=1.4, rough=0.2, rng=rng, mat=0, tone=0.04, mode='max')
+    t = rng.uniform(-3, 3)
+    cv.stroke([(28 + t, 11 + abs(t)), (26 + t, 18), (29 + t, 27)], 1.3, dome=0.8, mode='carve')
+    cv.stroke([(9, 23), (16, 26)] if v % 2 == 0 else [(32, 24), (39, 27)], 1.0, dome=0.5, mode='carve')
     cv.noise(0.15, cells=8, rng=rng)
     solid = cv.id > 0
     moss = (smooth_noise(w, h, 5, rng, wrap=False) > 0.48) & solid & (np.arange(h)[:, None] < h * 0.48)
@@ -713,8 +765,9 @@ def _forest_card(layer, autumn=False, winter=False):
     """One layer of a forest's edge, 1 (front) to 4 (back): ferns, grass and bushes; then young
     trees behind them; then more and taller trees; then a dense wall of spruce and oak. `autumn`:
     a mixed wood in October - oak, birch and bush turned, the spruce among them still green."""
-    from assets import get_sprite                # assets imports this module, so not at the top
+    from assets import get_sprite, variant_pick  # assets imports this module, so not at the top
     rng = np.random.default_rng((800 if winter else 500 if autumn else 400) + layer)
+    pick = np.random.default_rng((800 if winter else 500 if autumn else 400) + layer + 70)   # which drawing
     height = {1: 1.2, 2: 3.0, 3: 4.0, 4: 4.8}[layer]
     H = int(height * CARD_PX)
     card = np.zeros((H, CARD_W, 4), np.float32)
@@ -739,7 +792,7 @@ def _forest_card(layer, autumn=False, winter=False):
             x = (off + (i + rng.uniform(0.15, 0.85)) * CARD_W / k) % CARD_W
             stamps.append((x, kind, rng.uniform(lo, min(hi, height - 0.15))))
     for x, kind, tl in sorted(stamps, key=lambda s: -s[2]):          # the tallest first, at the back
-        _stamp(card, get_sprite(kind)[0], x, H, tl, flip=bool(rng.random() < 0.5))
+        _stamp(card, get_sprite(variant_pick(kind, pick))[0], x, H, tl, flip=bool(rng.random() < 0.5))
     shade = {1: 1.0, 2: 0.92, 3: 0.82, 4: 0.7}[layer]     # deeper into the wood, deeper in shade
     if winter:
         shade = {1: 1.0, 2: 0.95, 3: 0.88, 4: 0.8}[layer]  # snow keeps the light deeper in
@@ -762,7 +815,13 @@ TEXTURES = {
 }
 # how strongly the world-space surface noise varies each texture (see assets.TEXTURE_NOISE)
 TEXTURE_NOISE = {'forest_deep': 1.6, 'forest_deep_autumn': 1.6, 'forest_deep_snow': 1.4, 'leaves_fallen': 2.2}
-SPRITES = {'pine': spr_pine, 'tree': spr_tree, 'birch': spr_birch, 'bush': spr_bush, 'boulder': spr_boulder,
+# props drawn a few ways, one picked per placement (assets.variant_name): name -> (count, draw(k))
+VARIANTS = {'pine': (4, lambda v: _spruce(v=v)), 'snowy_pine': (4, lambda v: _spruce(snow=True, v=v)),
+            'tree': (3, lambda v: _oak(v=v)), 'tree_autumn': (3, lambda v: _oak(autumn=True, v=v)),
+            'birch': (3, lambda v: _birch(v=v)), 'birch_autumn': (3, lambda v: _birch(autumn=True, v=v)),
+            'mushrooms': (4, _mushrooms), 'bush': (4, lambda v: _bush(v=v)), 'bush_autumn': (4, lambda v: _bush(autumn=True, v=v)),
+            'boulder': (4, lambda v: _boulder(v=v)), 'boulder_snow': (4, lambda v: _boulder(snow=True, v=v))}
+SPRITES = {'mushrooms': spr_mushrooms, 'pine': spr_pine, 'tree': spr_tree, 'birch': spr_birch, 'bush': spr_bush, 'boulder': spr_boulder,
            'stump': spr_stump, 'log': spr_log, 'dead_tree': spr_dead_tree, 'snowy_pine': spr_snowy_pine,
            'boulder_snow': spr_boulder_snow, 'tree_autumn': spr_tree_autumn, 'birch_autumn': spr_birch_autumn,
            'bush_autumn': spr_bush_autumn, 'tree_winter': spr_tree_winter, 'birch_winter': spr_birch_winter,

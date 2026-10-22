@@ -58,6 +58,7 @@ A scene is one JSON file, read as UTF-8. Only `map`, `legend` and `camera` are r
 | `max_distance` | `64` | ray cut-off |
 | `supersample` | `1` | render the 3D pass at Nx and average down. `2` removes most floor/ceiling shimmer; UI stays crisp |
 | `sprite_defs` | `{}` | inline pixel-art sprite definitions (see Pixel-art sprites) |
+| `variants` | `true` | the decoration randomizer: every prop drawn a few ways (see a sprite's `variant`) shows one of them, picked by where it stands. `false` draws each the one way |
 | `overlays` | `[]` | GUI drawn on every shot (see GUI). Shots can add their own |
 | `ui` | classic theme | GUI theme and styling |
 | `post` | `[]` | post-processing effects and presets (see Post-processing). Shots can add their own |
@@ -342,7 +343,8 @@ Add any of the keys below and fog becomes **volumetric**. Each pixel marches thr
 |---|---|
 | `type` | built-in prop, built-in character, a name from `sprite_defs`, or a PNG path (RGBA) |
 | `id` | name for overlays to anchor a speech bubble to, and for a camera's `look_at` |
-| `scale` | world height in units (each built-in has a default; people are ~0.56-0.62) |
+| `scale` | world height in units (each built-in has a default; people are ~0.6-0.66) |
+| `variant` | which drawing of a prop that is drawn a few ways (`rocks`, `grass_tuft`, `dry_tuft`, `fern`, `bush`, `bush_autumn`, `boulder`, `boulder_snow`, `mushrooms`, and the trees `pine`, `snowy_pine`, `tree`, `tree_autumn`, `birch`, `birch_autumn`): `0` is its first drawing. Without it one is picked by where the prop stands - the same every render, but no two alike - wherever it comes from: `sprites`, `scatter`, a prefab or an object |
 | `z` | height off the floor (wall lanterns ~0.8) |
 | `flip` | mirror horizontally |
 | `tint` | RGB multiplier, e.g. `[1.2, 0.8, 0.8]` |

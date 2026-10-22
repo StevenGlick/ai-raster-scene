@@ -1027,17 +1027,6 @@ def spr_candles():
     return _finish(im, em, w, h)
 
 
-def spr_mushrooms():
-    w, h = 20, 14
-    im, d, em, de = _canvas(w, h)
-    S = 4
-    for (x, y, r, cap) in ((5, 9, 4, '#8a3a32'), (12, 7, 5, '#a04a3a'), (16, 11, 3, '#7a3028')):
-        d.rectangle([(x - 1) * S, y * S, (x + 1) * S, 14 * S], fill='#d8cdb4')
-        d.ellipse([(x - r) * S, (y - r) * S, (x + r) * S, (y + r // 2) * S], fill=cap)
-        d.ellipse([(x - r + 1) * S, (y - r + 1) * S, (x - r + 3) * S, (y - r + 3) * S], fill='#e0d0c0')
-    return _finish(im, em, w, h)
-
-
 def spr_signpost():
     w, h = 32, 48
     im, d, em, de = _canvas(w, h)
@@ -1889,7 +1878,7 @@ SPRITES = {
     'lamp_post': spr_lamp_post, 
     'lantern': spr_lantern,
     'candles': spr_candles, 
-    'mushrooms': spr_mushrooms, 'signpost': spr_signpost,
+    'signpost': spr_signpost,
     'campfire': spr_campfire, 'locker': spr_locker, 'console': spr_console, 
     'gravestone': spr_gravestone,
     'sconce': spr_sconce, 'ceiling_lamp': spr_ceiling_lamp, 'chandelier': spr_chandelier,

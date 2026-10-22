@@ -609,6 +609,20 @@ def check_atmosphere():
     wet = R.World(dict(room, wet=0.8))
     assert wet.reflect[6, 4] > 0.25 and wet.reflect[2, 4] == 0.0
 
+    # 6b. the decoration randomizer: a prop drawn a few ways shows one picked by where it stands (the same
+    # each time), `variant` pins one, `"variants": false` turns it off; the drawings differ
+    picks = {assets.variant_name({'type': 'rocks', 'x': i * 1.37, 'y': 2.0}) for i in range(40)}
+    assert len(picks) > 3 and 'rocks' in picks, picks
+    one = {'type': 'rocks', 'x': 3.0, 'y': 4.0}
+    assert assets.variant_name(one) == assets.variant_name(dict(one)), 'the same every time'
+    assert assets.variant_name(dict(one, variant=2)) == 'rocks~2' and assets.variant_name(dict(one, variant=0)) == 'rocks'
+    assert assets.variant_name(one, {'variants': False}) == 'rocks'
+    assert assets.variant_name({'type': 'barrel', 'x': 1.0, 'y': 1.0}) == 'barrel', 'props drawn one way stay'
+    for name, (n, _) in assets.VARIANTS.items():
+        first = assets.get_sprite(name)[0]
+        for k in range(1, n):
+            other = assets.get_sprite(f'{name}~{k}')[0]
+            assert other.shape != first.shape or np.abs(other - first).max() > 0, (name, k)
     # 6. every character has a back the size of its front, and `facing` picks it; the built-ins are drawn
     # in finer pixels - twice their grid across, a little taller - and a scene's own with "hd": true
     for name, d in CHARACTERS.items():

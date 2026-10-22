@@ -182,6 +182,13 @@ def variant_name(sp, scene=None):
     return t if k == 0 else f'{t}~{k}'
 
 
+def variant_pick(name, rng):
+    """One of a prop's drawings at random from `rng` (for the cards a fringe stamps its plants on)."""
+    n = VARIANTS[name][0] if isinstance(name, str) and name in VARIANTS else 1
+    k = int(rng.integers(n))
+    return name if k == 0 else f'{name}~{k}'
+
+
 def sprite_defaults(spec, defs=None):
     """Default placement fields (height, opacity, aura...) for a sprite name. A character drawn in
     finer pixels is that much taller than its `height` (charhd.stretch), each pixel the same size."""

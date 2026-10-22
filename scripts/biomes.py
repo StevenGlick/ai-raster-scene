@@ -785,11 +785,19 @@ def spr_liana():
 
 def spr_fern():
     """A clump of ferns: fronds arching out of a crown at the ground, the old ones lower and darker."""
-    rng = np.random.default_rng(71)
+    return _fern(0)
+
+
+def _fern(v):
+    """The clump of ferns, drawn v ways (variant v: its fronds sprung and drooping another way)."""
+    rng = np.random.default_rng(71 + 23 * v)
     w, h = 72, 40
     cv = Canvas(w, h, wrap=False, ground=-9)
+    spread = (0.0, 6.0, -5.0)[v % 3]
     for k, (ang, L, droop) in enumerate([(-165, 36, 0.75), (-15, 36, 0.75), (-140, 34, 0.6), (-40, 34, 0.6),
                                          (-118, 30, 0.5), (-62, 30, 0.5), (-96, 26, 0.4), (-84, 24, 0.4)]):
+        ang = ang + (spread if ang < -90 else -spread) + (rng.normal(0, 7) if v else 0.0)
+        L = L * (rng.uniform(0.82, 1.05) if v else 1.0)
         pts = _arc((36, 38), ang + rng.normal(0, 4), L, droop, n=12)
         _frond(cv, pts, 4.6, angle=62, mat=0, z=0.3 + 0.15 * k, tone=-0.12 if k < 2 else rng.normal(0.02, 0.03),
                width=1.4, step=2.3, droop=0.5)
@@ -1381,30 +1389,99 @@ def _tuft(seed, ramps, blades=32, w=44, h=30):
 
 def spr_grass_tuft():
     """A tuft of green grass."""
-    return _tuft(81, [ramp('#5a7a34'), ramp('#7a8a3a')])
+    return _grass(0)
+
+
+def _grass(k):
+    """The tuft of green grass, drawn k ways (variant k: its blades sprung another way, more or fewer)."""
+    return _tuft(81 + 17 * k, [ramp('#5a7a34'), ramp('#7a8a3a')], blades=(32, 26, 38, 30)[k % 4])
 
 
 def spr_dry_tuft():
     """A tuft of sunburnt grass: the summer hillside, the ruin, the dune."""
-    return _tuft(83, [GRASS_DRY, ramp('#a8904e')])
+    return _dry(0)
+
+
+def _dry(k):
+    """The sunburnt tuft, drawn k ways."""
+    return _tuft(83 + 17 * k, [GRASS_DRY, ramp('#a8904e')], blades=(32, 24, 36, 28)[k % 4])
+
+
+def _facet_stone(cv, rng, cx, rx, ry, ground, tone=0.0):
+    """One stone, faceted as the 3D boulders are: an irregular outline flat on the ground, its faces flat
+    planes running up to a peak off its centre toward the light, each lit by the way it faces."""
+    n = int(rng.integers(6, 9))
+    a = (np.arange(n) + rng.uniform(-0.3, 0.3, n)) / n * 2 * np.pi
+    r = rng.uniform(0.78, 1.0, n)
+    cy = ground - ry * 0.55
+    px, py = cx + rx * r * np.cos(a), np.minimum(cy + ry * r * np.sin(a), ground)
+    ax, ay = cx - rx * rng.uniform(0.08, 0.32), cy - ry * rng.uniform(0.2, 0.45)
+    H = max(rx, ry) * rng.uniform(0.7, 0.9)
+    ys, xs = cv._grid(px.min() - 1, py.min() - 1, px.max() + 1, py.max() + 1)
+    Y, X = np.meshgrid(ys + 0.5, xs + 0.5, indexing='ij')
+    z = np.full(X.shape, -9.0, np.float32)
+    tone_f = np.zeros(X.shape, np.float32)
+    inside = np.zeros(X.shape, bool)
+    for i in range(n):
+        j = (i + 1) % n
+        x1, y1, x2, y2 = px[i], py[i], px[j], py[j]
+        den = (y1 - y2) * (ax - x2) + (x2 - x1) * (ay - y2)
+        if abs(den) < 1e-6:
+            continue
+        w0 = ((y1 - y2) * (X - x2) + (x2 - x1) * (Y - y2)) / den           # the peak's weight
+        w1 = ((y2 - ay) * (X - x2) + (ax - x2) * (Y - y2)) / den
+        w2 = 1 - w0 - w1
+        m = (w0 >= -1e-4) & (w1 >= -1e-4) & (w2 >= -1e-4) & ~inside
+        z[m] = H * w0[m]
+        tone_f[m] = tone + rng.normal(0, 0.035)
+        inside |= m
+    cv.put(ys, xs, inside, z, mat=0, tone=tone_f)
+    return cv.n
+
+
+def _rocks(k):
+    """A few stones half sunk in the ground, faceted like the 3D boulders - one big, a middling one or
+    two, small ones in front, pebbles at their feet, lichen in patches, a crack across the big one.
+    Variant k: another heap of them, a little another grey or brown."""
+    rng = np.random.default_rng(85 + 31 * k)
+    w, h = 64, 22
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    ground = h - 1.5
+    sizes = [(rng.uniform(10, 13.5), rng.uniform(6.5, 8.5))]
+    sizes += [(rng.uniform(6, 9), rng.uniform(4, 5.5)) for _ in range(int(rng.integers(1, 3)))]
+    sizes += [(rng.uniform(3.5, 5), rng.uniform(2.5, 3.5)) for _ in range(int(rng.integers(1, 3)))]
+    xs = [32 + rng.uniform(-6, 6)]
+    for i, (rx, _) in enumerate(sizes[1:]):
+        side = -1 if i % 2 == 0 else 1
+        xs.append(np.clip(xs[0] + side * (sizes[0][0] * 0.75 + rx * 0.6 + rng.uniform(-3, 4)), rx + 1, w - rx - 1))
+    big = 0
+    for i in sorted(range(len(sizes)), key=lambda i: -sizes[i][1]):      # the big ones behind
+        rx, ry = sizes[i]
+        nid = _facet_stone(cv, rng, xs[i], rx, ry, ground - (0.6 if i else 0.0), tone=rng.normal(0, 0.04))
+        if i == 0:
+            big = nid
+    ys_, xs_ = np.nonzero(cv.id == big)
+    if len(ys_):                                                         # a crack across the big one
+        top, x0 = ys_.min(), xs_[ys_.argmin()]
+        cv.stroke([(x0 + 1, top + 1.5), (x0 + rng.uniform(-2, 3), top + 4), (x0 + rng.uniform(1, 5), top + 7)],
+                  0.9, dome=0.5, mode='carve')
+    lo, hi = min(x - rx for x, (rx, _) in zip(xs, sizes)), max(x + rx for x, (rx, _) in zip(xs, sizes))
+    for _ in range(int(rng.integers(3, 7))):                             # pebbles at their feet
+        x = np.clip(rng.uniform(lo - 3, hi + 3), 2, w - 2)
+        cv.ellipse(x, ground - 0.8, rng.uniform(1.0, 1.9), rng.uniform(0.8, 1.3), z=0.0, dome=0.6, mat=0,
+                   tone=rng.normal(0, 0.06), mode='max')
+    solid = cv.id > 0
+    up = np.zeros_like(solid)
+    up[1:] = solid[1:] & (cv.z[1:] > cv.z[:-1] + 0.15)                    # faces that look up
+    cv.mat[(smooth_noise(w, h, 4, rng, wrap=False) > 0.9) & solid & up] = 1
+    base = ('#706c62', '#78705f', '#686a68', '#7a7164', '#726e68', '#6a6258')[k % 6]
+    return _prop(cv, [ramp(base, dark=0.3, light=1.3), LICHEN], relief=1.5, cavity=0.3, shadow=0.4,
+                 ambient=0.46, diffuse=0.7)
 
 
 def spr_rocks():
-    """A few stones half sunk in the ground: lit tops, shadowed undersides, a crack or two."""
-    rng = np.random.default_rng(85)
-    w, h = 64, 22
-    cv = Canvas(w, h, wrap=False, ground=-9)
-    for x, y, rx, ry in ((14, 15, 11, 7), (34, 14, 13, 8.5), (52, 17, 8, 5), (25, 18, 6, 4)):
-        stone = cv.layer()
-        stone.ellipse(x, y, rx, ry, z=0.0, dome=1.6, rough=0.1, rng=rng, mat=0, tone=rng.normal(0, 0.05), power=0.6)
-        if rx > 10:
-            a = rng.uniform(0, np.pi)
-            stone.stroke([(x - np.cos(a) * rx * 0.5, y - np.sin(a) * ry * 0.4), (x, y), (x + rx * 0.3, y + ry * 0.5)],
-                         1.0, dome=0.5, mode='carve')
-        cv.paste(stone)
-    m = (smooth_noise(w, h, 8, rng, wrap=False) > 0.8) & (cv.id > 0)
-    cv.mat[m] = 1
-    return _prop(cv, [ramp('#666258', dark=0.28, light=1.2), LICHEN], relief=1.2, cavity=0.45, shadow=0.5)
+    """A few stones half sunk in the ground, faceted like the 3D boulders (see _rocks)."""
+    return _rocks(0)
 
 
 # ---------------------------------------------------------------- fringe cards
@@ -1462,8 +1539,9 @@ def _card_trunk(height, width, rng):
 def _jungle_card(layer):
     """One layer of the jungle's edge, 1 (front) to 4 (back): bushes alone, then a few trees with
     bushes in front of them, then more trees, then a dense wall of trees, crowns and bushes."""
-    from assets import get_sprite                # assets imports this module, so not at the top
+    from assets import get_sprite, variant_pick  # assets imports this module, so not at the top
     rng = np.random.default_rng(300 + layer)
+    pick = np.random.default_rng(370 + layer)    # which drawing of a plant drawn a few ways
     height = {1: 1.4, 2: 3.4, 3: 4.0, 4: 4.6}[layer]
     H = int(height * CARD_PX)
     card = np.zeros((H, CARD_W, 4), np.float32)
@@ -1490,7 +1568,7 @@ def _jungle_card(layer):
         kind = st[2]
         return (0 if not isinstance(kind, str) else 1 if kind == 'canopy_crown' else 2, -st[3])
     for x, bottom, kind, tall in sorted(stamps, key=rank):
-        rgba = kind if not isinstance(kind, str) else get_sprite(kind)[0]
+        rgba = kind if not isinstance(kind, str) else get_sprite(variant_pick(kind, pick))[0]
         _stamp(card, rgba, x, bottom, tall, flip=bool(rng.random() < 0.5))
     shade = {1: 1.0, 2: 0.94, 3: 0.84, 4: 0.72}[layer]     # deeper into the forest, deeper in shade
     card[..., :3] *= shade
@@ -1641,6 +1719,8 @@ DEBRIS_SETS = {
     'beach': ['coconuts', 'driftwood', 'rocks', 'rocks', 'crab', 'dry_tuft'],
     'ruins': ['column_drum', 'rubble', 'rocks', 'rocks', 'poppies', 'dry_tuft', 'dry_tuft', 'amphora'],
 }
+# props drawn a few ways, one picked per placement (assets.variant_name): name -> (count, draw(k))
+VARIANTS = {'rocks': (6, _rocks), 'grass_tuft': (4, _grass), 'dry_tuft': (4, _dry), 'fern': (3, _fern)}
 # fringe sets: cards back to front, for a wall's `fringe`
 FRINGES = {'jungle': ['jungle_card_4', 'jungle_card_3', 'jungle_card_2', 'jungle_card_1']}
 DECALS = {
