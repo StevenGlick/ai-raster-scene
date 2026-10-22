@@ -278,15 +278,17 @@ def build_map(out, example):
     render.draw_map(world, sc, cams, out)
 
 
-def build_cast(out, zoom=6, slot=112, top=20, bg=(28, 26, 34)):
-    """The built-in characters side by side at 6x, in the order the docs list them."""
+def build_cast(out, zoom=3, slot=112, top=20, bg=(28, 26, 34)):
+    """The built-in characters side by side at 3x (each drawn in finer pixels - charhd), standing on one
+    line, in the order the docs list them."""
     names = list(CHARACTERS)
-    sheet = Image.new('RGB', (slot * len(names), 32 * zoom + 2 * top), bg)
-    for i, n in enumerate(names):
-        rgba, _ = assets.get_sprite(n)
+    sprites = [assets.get_sprite(n)[0] for n in names]
+    tall = max(rgba.shape[0] for rgba in sprites) * zoom
+    sheet = Image.new('RGB', (slot * len(names), tall + 2 * top), bg)
+    for i, rgba in enumerate(sprites):
         im = Image.fromarray((rgba.clip(0, 1) * 255).astype('uint8'), 'RGBA')
         im = im.resize((im.width * zoom, im.height * zoom), Image.NEAREST)
-        sheet.paste(im, (i * slot + (slot - im.width) // 2, top + 32 * zoom - im.height), im)
+        sheet.paste(im, (i * slot + (slot - im.width) // 2, top + tall - im.height), im)
     render.save_png(sheet, out)
 
 

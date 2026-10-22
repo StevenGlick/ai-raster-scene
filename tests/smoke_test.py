@@ -609,7 +609,16 @@ def check_atmosphere():
     wet = R.World(dict(room, wet=0.8))
     assert wet.reflect[6, 4] > 0.25 and wet.reflect[2, 4] == 0.0
 
-    # 6. every character has a back the size of its front, and `facing` picks it
+    # 6. every character has a back the size of its front, and `facing` picks it; the built-ins are drawn
+    # in finer pixels - twice their grid across, a little taller - and a scene's own with "hd": true
+    for name, d in CHARACTERS.items():
+        rows = len(d['pixels'])
+        h, w = assets.get_sprite(name)[0].shape[:2]
+        assert w == 2 * len(d['pixels'][0]) * (2 if d.get('mirror') else 1) and h > 2 * rows, name
+        assert abs(assets.sprite_defaults(name)['scale'] - d['height'] * h / (2 * rows)) < 1e-9, name
+    own = dict(CHARACTERS['explorer'], hd=True)
+    assert assets.get_sprite('mine', {'mine': own})[0].shape == assets.get_sprite('explorer')[0].shape
+    assert assets.get_sprite('mine', {'mine': dict(own, hd=False)})[0].shape[0] == len(own['pixels'])
     for name, d in CHARACTERS.items():
         front, _ = assets.get_sprite(name)
         back, _ = assets.get_sprite(name, view='back')

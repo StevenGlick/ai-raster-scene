@@ -4,10 +4,13 @@ Each entry is a sprite definition:
   pixels   list of equal-length strings, one char per pixel ('.' or ' ' = transparent)
   palette  char -> '#rrggbb' or '#rrggbbaa' (alpha for translucent pixels)
   emissive optional string of palette chars that glow regardless of lighting (eyes, flames)
-  height   default world height in map units (eye height is 0.5, so a person is ~0.58)
+  height   world height of the grid in map units (eye height is 0.5, so a person is ~0.58); the
+           built-ins are drawn in finer pixels (charhd.py) - twice the resolution and about a tenth
+           taller than this, each pixel the size it was
   defaults optional sprite fields applied when this sprite is placed (opacity, blend, aura...)
 
-The same format can be written inline in a scene under "sprite_defs" to invent new characters.
+The same format can be written inline in a scene under "sprite_defs" to invent new characters
+("hd": true draws one as the built-ins are drawn).
 """
 
 CHARACTERS = {

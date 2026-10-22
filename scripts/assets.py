@@ -10,10 +10,12 @@ The drawing is done elsewhere: the original library in classic.py and each world
 (see KITS below), with the helpers in texlib.py and pixelart.py; the skies in skies.py.
 """
 import importlib
+import zlib
 
 import numpy as np
 from PIL import Image, ImageDraw
 
+import charhd
 # re-exported: render.py and world.py use some of these as assets.T, assets.fbm
 from texlib import T, _rng, col, fbm, grain, shade, vnoise  # noqa: F401
 
@@ -24,6 +26,9 @@ SPRITE_HEIGHT = {}
 PROP_DEFAULTS = {}
 NO_CONTACT_SHADOW = set()
 DEBRIS_SETS = {}
+# Props drawn a few ways - the decoration randomizer: name -> (count, draw) where draw(k) gives
+# variant k as SPRITES[name]() gives the prop (k = 0 is that one). See variant_name.
+VARIANTS = {}
 DECALS = {}
 TEXTURE_NOISE = {}
 TEXTURE_REFLECT = {}
@@ -149,14 +154,46 @@ def sprite_from_pixels(defn):
     return rgba, em
 
 
-def sprite_defaults(spec, defs=None):
-    """Default placement fields (height, opacity, aura...) for a sprite name."""
+def _hd(spec, defs):
+    """The text-grid character to draw in finer pixels (charhd), if `spec` is one: a built-in
+    character, or a scene's own with `"hd": true`."""
     from characters import CHARACTERS
+    if not isinstance(spec, str):
+        return None
+    if spec in (defs or {}):
+        return defs[spec] if defs[spec].get('hd') else None
+    return CHARACTERS.get(spec)
+
+
+def variant_name(sp, scene=None):
+    """The drawing a placed prop uses - the decoration randomizer. A prop with VARIANTS (rocks, tufts,
+    ferns, bushes, boulders...) is drawn one of a few ways, picked by where it stands: the same every
+    render, but no two of a scatter alike. `"variant": k` on the placement pins one (0 is the prop as it
+    always was); `"variants": false` on the scene turns the randomizer off. Returns `name` or `name~k`."""
+    t = sp.get('type')
+    if not isinstance(t, str) or t not in VARIANTS or scene is not None and (
+            scene.get('variants') is False or t in scene.get('sprite_defs', {})):
+        return t
+    n = VARIANTS[t][0]
+    if 'variant' in sp:
+        k = int(sp['variant']) % n
+    else:
+        k = zlib.crc32(f"{t}:{float(sp['x']):.3f}:{float(sp['y']):.3f}".encode()) % n
+    return t if k == 0 else f'{t}~{k}'
+
+
+def sprite_defaults(spec, defs=None):
+    """Default placement fields (height, opacity, aura...) for a sprite name. A character drawn in
+    finer pixels is that much taller than its `height` (charhd.stretch), each pixel the same size."""
+    from characters import CHARACTERS
+    if isinstance(spec, str) and '~' in spec and spec.split('~')[0] in VARIANTS:
+        spec = spec.split('~')[0]                 # a variant takes its prop's defaults
     d = (defs or {}).get(spec) or CHARACTERS.get(spec) if isinstance(spec, str) else None
     out = {}
     if d:
         if 'height' in d:
-            out['scale'] = d['height']
+            hd = _hd(spec, defs)
+            out['scale'] = d['height'] * (charhd.stretch(hd) if hd else 1.0)
         out.update(d.get('defaults', {}))
     elif isinstance(spec, str) and spec in SPRITE_HEIGHT:
         out['scale'] = SPRITE_HEIGHT[spec]
@@ -177,12 +214,13 @@ def get_sprite(spec, defs=None, view='front'):
         if d and d.get('back'):
             key = 'back:' + (json_key(d) if spec in defs else spec)
             if key not in _scache:
-                _scache[key] = sprite_from_pixels(dict(d, pixels=d['back']))
+                _scache[key] = (charhd.sprite(d, back=True) if _hd(spec, defs)
+                                else sprite_from_pixels(dict(d, pixels=d['back'])))
             return _scache[key]
     if spec in defs:
         key = 'def:' + json_key(defs[spec])
         if key not in _scache:
-            _scache[key] = sprite_from_pixels(defs[spec])
+            _scache[key] = charhd.sprite(defs[spec]) if defs[spec].get('hd') else sprite_from_pixels(defs[spec])
         return _scache[key]
     if spec in _scache:
         return _scache[spec]
@@ -191,7 +229,10 @@ def get_sprite(spec, defs=None, view='front'):
         _scache[spec] = buildings.layer_image(spec)
         return _scache[spec]
     if spec in CHARACTERS:
-        out = sprite_from_pixels(CHARACTERS[spec])
+        out = charhd.sprite(CHARACTERS[spec])
+    elif isinstance(spec, str) and '~' in spec and spec.split('~')[0] in VARIANTS:
+        base, k = spec.split('~', 1)
+        out = VARIANTS[base][1](int(k))
     elif spec.lower().endswith('.png'):
         im = Image.open(spec).convert('RGBA')
         rgba = np.asarray(im, dtype=np.float32) / 255
@@ -281,6 +322,7 @@ for _name in KITS:
     PROP_DEFAULTS.update(getattr(_kit, 'PROP_DEFAULTS', {}))
     NO_CONTACT_SHADOW |= getattr(_kit, 'NO_CONTACT_SHADOW', set())
     DEBRIS_SETS.update(getattr(_kit, 'DEBRIS_SETS', {}))
+    VARIANTS.update(getattr(_kit, 'VARIANTS', {}))
     DECALS.update(getattr(_kit, 'DECALS', {}))
     FRINGES.update(getattr(_kit, 'FRINGES', {}))
 

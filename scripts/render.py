@@ -1311,6 +1311,7 @@ class Renderer:
         for sp in (self.s.get('sprites', []) + self.w.scatter_sprites + self.w.fringe_sprites
                    + cam.get('extra_sprites', [])):
             sp = {**assets.sprite_defaults(sp['type'], defs), **sp}
+            sp['type'] = assets.variant_name(sp, self.s)     # one of the prop's drawings, by where it stands
             if sp.get('glass') and int(sp.get('planes', 0)) <= 0:
                 sp['planes'] = 1                  # a pane of glass is flat: it stands as a card
             sx, sy = float(sp['x']) - px, float(sp['y']) - py
