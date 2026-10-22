@@ -1517,6 +1517,44 @@ def check_objects():
           f'rock, linings, columns fluted and Doric, fill, timber, standing stones cast, crystals bend the light)')
 
 
+def check_lettering_pages(tmp):
+    """Lettering: every style makes a texture of its words, a second line under the first; a sign stands it in 3D
+    and a scene's sprite_defs make a billboard of it. Pages: panels of shots laid out on one page, at their shapes,
+    with a title, captions and notes."""
+    sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+    import assets
+    import lettering
+    import objects
+    import pages
+    one, two = lettering.mask('SIGN'), lettering.mask('SIGN\nTWO')
+    assert one.any() and two.shape[0] > 2 * one.shape[0] and two.shape[1] >= one.shape[1], 'a second line under'
+    assert lettering.mask('SIGN', 4, smooth=True).shape[0] >= 4 * one.shape[0] - 4, 'big lettering, rounded'
+    for style in lettering.STYLES:
+        rgba, em = lettering.sign('THE CROWN', style)
+        assert rgba.shape[2] == 4 and em.shape == rgba.shape[:2] and (rgba[..., 3] > 0.5).sum() > 40, style
+        assert style != 'neon' or em.max() > 0.9, 'neon glows'
+    sg = objects.expand({'map': ['.'], 'objects': [{'type': 'sign', 'x': 0.0, 'y': 0.0, 'text': 'INN', 'height': 0.3}]})
+    zs = np.array([c for pn in sg['panels'] for c in (pn['o'], pn['o'] + pn['v'])])[:, 2]
+    assert abs(zs.max() - 0.3) < 1e-6 and len(sg['panels']) == 6, 'a board of lettering, as tall as asked'
+    rgba, _ = assets.get_sprite('name', {'name': {'text': 'THE CROWN', 'style': 'gilt'}})
+    assert rgba.shape[1] > rgba.shape[0] * 3, 'a scene sprite of lettering'
+    scene = {'map': ['#####', '#...#', '#...#', '#...#', '#####'], 'resolution': [64, 40], 'sky': None,
+             'legend': {'#': {'wall': 'brick', 'h': 1.0}, '.': {'floor': 'wood_floor'}}, 'ambient': [0.6, 0.6, 0.6],
+             'camera': {'x': 2.5, 'y': 3.5, 'angle': 270}, 'shots': [{'x': 2.5, 'y': 3.5, 'angle': 270},
+                                                                    {'x': 1.5, 'y': 1.5, 'angle': 45}]}
+    with open(os.path.join(tmp, 'room.json'), 'w') as f:
+        json.dump(scene, f)
+    page = {'title': 'A PAGE', 'width': 400, 'rows': [
+        {'height': 150, 'panels': [{'scene': 'room.json', 'shot': 1, 'width': 2, 'caption': 'A room.'},
+                                   {'scene': 'room.json', 'shot': 2, 'sfx': 'BANG'}]},
+        {'height': 120, 'panels': [{'scene': 'room.json', 'shot': 2, 'note': 'The corner.'}]}]}
+    im = pages.render_page(page, tmp)
+    assert im.width == 400 and im.height > 270 + 26 * 2, 'two rows on a page, a title over them'
+    board = pages.render_page(dict(page, style='storyboard'), tmp)
+    assert board.height > im.height, 'a storyboard leaves room for its notes'
+    print('ok lettering (every style, signs, scene sprites) and pages (comic and storyboard)')
+
+
 def check_docs():
     """The docs name assets, keys and counts by hand: fail as soon as they and the code disagree."""
     sys.path.insert(0, os.path.join(ROOT, 'scripts'))
@@ -1637,6 +1675,7 @@ def main():
         check_light_and_lens()
         check_wireframes()
         check_objects()
+        check_lettering_pages(tmp)
         check_docs()
         gs = os.path.join(tmp, 'gui_post.json')
         with open(gs, 'w') as f:

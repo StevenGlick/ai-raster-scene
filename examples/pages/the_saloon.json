@@ -1,0 +1,16 @@
+{
+ "title": "SC. 12  THE SALOON",
+ "style": "storyboard",
+ "width": 1200,
+ "rows": [
+  {"height": 300, "panels": [
+    {"scene": "../ghost_town.json", "shot": 1, "note": "EXT. MAIN STREET - NOON. Wide: the street empty, the heat."},
+    {"scene": "../ghost_town.json", "shot": 2, "note": "The saloon's doors. The barkeep in the doorway, watching."}]},
+  {"height": 300, "panels": [
+    {"scene": "../saloon.json", "shot": 1, "note": "INT. SALOON. The sun in the dust. Find the gambler's table."},
+    {"scene": "../saloon.json", "shot": 4, "note": "CU the gambler. 'Sit down. Cards are dealt.'"}]},
+  {"height": 300, "panels": [
+    {"scene": "../saloon.json", "shot": 2, "note": "Over the cowboy's shoulder: three ladies."},
+    {"scene": "../saloon.json", "shot": 3, "note": "LATER. Empty room. The piano plays itself."}]}
+ ]
+}

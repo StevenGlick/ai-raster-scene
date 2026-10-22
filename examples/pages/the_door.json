@@ -1,0 +1,16 @@
+{
+ "title": "THE DOOR ON THE SALT FLAT",
+ "style": "comic",
+ "width": 1200,
+ "rows": [
+  {"height": 400, "panels": [
+    {"scene": "../salt_flat.json", "shot": 1, "width": 2,
+     "caption": "An hour before dark the flat turns to sky, and you walk on it."},
+    {"scene": "../salt_flat.json", "shot": 2, "caption": "Someone had left a door out here."}]},
+  {"height": 400, "panels": [
+    {"scene": "../salt_flat.json", "shot": 6, "caption": "It was open.",
+     "sfx": {"text": "CREAK", "x": 0.72, "y": 0.2, "color": "#f4d24a"}},
+    {"scene": "../winter_woods.json", "shot": 1, "caption": "On the other side, it was winter.",
+     "caption_at": "bottom"}]}
+ ]
+}

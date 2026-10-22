@@ -32,7 +32,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Objects | 33 | 33 | 0 | 0 | 0 |
+| Objects | 34 | 34 | 0 | 0 | 0 |
 | Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 68 | 68 | 0 | 0 | 0 |
-| **all** | **828** | **828** | **0** | **0** | **0** |
+| **all** | **829** | **829** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -919,7 +919,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
-## Objects (33)
+## Objects (34)
 
 Things too big for a billboard, built in 3D out of flat panels (`scripts/objects.py`).
 
@@ -963,6 +963,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `piano` | good | saloon | An upright piano in 3D, polished mahogany: its sides cut to its outline with the arms that hold the keyboard, carved; the keys from above (white keys, the black in their twos and threes), a gilt maker's name, carved panels, the music open on the desk, `candle`s in sconces at its corners (`lit` burns them, the night shot's does), a long panel with two brass pedals, turned legs. |
 | `portal` | good | hall_of_doors, salt_flat | An opening onto another place - another scene file, or another part of this one: before the frame, the renderer draws the view from where the camera would stand beyond its exit (`to`), at the frame's own size and lens, and the opening shows that through this scene's air (Renderer._portal_views, _through), so it lines up from any shot; `view` a fixed camera instead. A frame (wood, stone, marble, gold), a door swung open, a rim of light. The salt flat's door onto the winter woods; the hall of doors' three. |
 | `screen` | good | neon_bar | A picture of another shot, of another scene file or of this one, rendered once with its own effects and palette and laid on the screen keeping its pixels (render.screen_texture), lit: on a `tv` (a boxy set on legs, rabbit ears), a `monitor`, a flat screen on a `wall`, or bare; `crt` scanlines. Snow with nothing to show, or within another screen. The neon bar's screen over the bar; an arcade cabinet's `show` lays one on its screen. |
+| `sign` | good | neon_bar | Lettering on a board in 3D (scripts/lettering.py): any text, a newline for a second line, in a style - painted (wood grain, a painted line inside the edge, flaking), neon (tubes and a halo, glowing, with its light), plaque (brass, engraved, screws), carved (cut in stone), chalk (a blackboard), gilt (gold leaf), poster (ink on paper); as tall as asked, as wide as its words; reads from both sides. The neon bar's name on its wall. |
 
 ## Held items (8)
 
@@ -1196,6 +1197,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-22, lettering and pages.** Lettering (scripts/lettering.py): the pixel font drawn into textures in eight styles - painted board, neon tubes, brass plaque, carved stone, chalk, gilt, ink, poster - big lettering rounded by scale2x; a `sign` object stands it on a board in 3D, and `sprite_defs` / `decal_defs` take `text`. The neon bar's name now hangs in neon on its wall. Pages (scripts/pages.py): rows of panels, each a shot of any scene rendered at the panel's own shape, as a comic page (caption boxes, the shots' bubbles, a sound in big letters, a title) or a storyboard (numbered panels, a note under each, no bubbles - they crowd small panels); examples/pages/, gallery `page_door` and `page_saloon`.
 - **2026-10-22, pictures within pictures.** The user's idea, from the salt flat's lone door: mark where a portal shows, render another scene, lay it there. A `portal` object: before each frame the renderer draws the view from its far side - the camera moved through the portal to stand beyond its exit, at the same size and lens - and the opening shows those pixels, depth-tested and fogged as any panel (so it is hidden behind nearer things and lies in the scene's air). A `screen` object shows a whole shot, rendered once, as its texture: a TV, a monitor, a screen on a wall; an arcade cabinet's `show`. New shots `salt_portal` (the door onto the winter woods) and `doors_portal` (the hall's door onto the salt flat); the hall's three free doors are portals (the sky islands, the salt flat, the kelp forest); in the neon bar a screen over the bar shows the street and a cabinet plays the Vector World. Tried: the beach and an autumn lane behind the hall's door - seen at an angle they looked into palms and hedges; a wide-open place (the salt flat) reads from any side.
 - **2026-10-22, props in 3D.** The user's list: the arcade cabinets, the capsule hotel's vending machine, the village's market stalls and well, the saloon's tables and piano - all objects now: `arcade_cabinet` (a `joystick` billboard on its controls, three games on the screens), `vending_machine` (its window and hatch let in as recesses, `_recess`), `well` (new rock `fieldstone`, rock keys `joint`, `mottle`, `dome`), `crate`, `barrel`, `card_table`, `saloon_chair`, `piano` (new props `whiskey`, `candle`, `candle_lit`); the `market_stand` heaps its trays in 3D (`PRODUCE`, `_mound`) and takes `paint` and `goods`, and a second stand, blue, joined the village. The neon street's machines went 3D too. And the user's catch on the headland temple: thin streaks of sky down the broken columns - a broken column's faces were laid with their top corners raised straight up off the taper, so each sat a hair off its true plane and the faces gaped where they met. Each face is now a panel in its own plane, solid in every texel it reaches into, as the standing columns' faces were.
 - **2026-10-21, kelp, knees and rubble.** Kelp (three, and the kelp fringe stamps one per frond), cypress knees and rubble drawn three ways. The saguaro, banana plant and driftwood were tried and left: their seeds barely touch the drawing (the driftwood's not at all).

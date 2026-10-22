@@ -518,6 +518,18 @@
    "lights": false
   },
   {
+   "type": "sign",
+   "text": "THE BLUE\nLANTERN",
+   "style": "neon",
+   "color": "#4ad8ff",
+   "x": 1.02,
+   "y": 6.95,
+   "z": 0.76,
+   "angle": 0,
+   "height": 0.3,
+   "depth": 0.02
+  },
+  {
    "type": "rock_wall",
    "lining": "O",
    "rock": "reef",

@@ -78,6 +78,7 @@ Sixty example scenes in [`examples/`](examples/), every one a single JSON file y
 - **[Haunts and old stones](#haunts-and-old-stones)** - [the haunted house](#the-haunted-house) · [the castle and the chapel](#the-castle-and-the-chapel) · [encounters](#encounters)
 - **[Space and other worlds](#space-and-other-worlds)** - [stations and ships](#stations-and-ships) · [the Moon](#the-moon) · [Vector World](#vector-world) · [Doomed](#doomed)
 - **[Dreams and wonders](#dreams-and-wonders)** - [dreams](#dreams) · [the drowned library](#the-drowned-library) · [the hall of doors](#the-hall-of-doors) · [the sky islands](#the-sky-islands) · [the aurora palace](#the-aurora-palace) · [ask Claude](#ask-claude)
+- **[Pages](#pages)** - comics and storyboards, every panel a shot
 
 ## Cities
 
@@ -525,6 +526,17 @@ Asked what it would look like and where it would want to be, Claude picked a sma
 |---|---|
 | ![Claude's avatar in its reading room, answering](docs/gallery/claude_ask.png) | ![On the balcony above the clouds](docs/gallery/claude_balcony.png) |
 
+## Pages
+
+Shots of any scenes laid out on one page, each panel rendered at its own size and shape: a comic page with caption
+boxes, the shots' speech bubbles and a sound in big letters, or a storyboard with numbered panels and a note under
+each. A page is a JSON file of rows of panels ([`examples/pages/`](examples/pages/)), and
+`python scripts/pages.py page.json -o page.png` lays it out.
+
+![A comic page: the door on the salt flat, and through it, winter](docs/gallery/page_door.png)
+
+![A storyboard: the frontier town's saloon in six numbered panels, a note under each](docs/gallery/page_saloon.png)
+
 ## GUI toolkit
 
 Speech bubbles anchored over characters, dialog panels, choice menus, HUDs, inventories and title cards, drawn in a hand-made pixel font over any shot.
@@ -588,6 +600,9 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
 - **Glass**: a pass of its own after everything else, showing what is behind each pane tinted and softly blurred - the frame shrunk to half size and blown back up without smoothing - under a faint reflection
 - **Objects**: things bigger than a prop - a `car`, a `noodle_stand`, a `rock_wall` of overlapping rounded pieces along a wall's foot, a `boulder`, a `column` of stone or wood and a `beam` to lay across them, a `trough`, a `shed_roof` and a `gable_roof` of weathered boards (or thatch, or clay tiles, with a chimney), a `market_stand` with its goods heaped in 3D, `crate`s and `barrel`s, a village `well`, a `saloon_bar` with `card_table`s, `saloon_chair`s and a `piano`, `arcade_cabinet`s and a `vending_machine`, a `portal` that opens onto another scene and a `screen` that shows one, `rails` and an `ore_cart`, a `keel` of rock to hang under a floating island, a `chess_piece` turned in polished marble, a wrecked `ship_hull`, a `longship` under sail, a `lighthouse` with its lamp lit, a `stone_lantern`, a `standing_stone` (that, like any object, can cast the sun's shadow), a `gear` of brass, a `heap` of salt, a roof of `glass` between iron glazing bars, a `crystal_cluster` whose every facet bends the light through it - built in 3D out of flat panels at any angle, see-through wherever the thing is not, with glass to see inside and billboards among them for the small things; drawn in true perspective, depth-tested per pixel and lit like walls; rock is cut from one solid block of stone, so it runs on round a corner (`scripts/objects.py`)
+- **Pictures within pictures**: a `portal` - a door, an arch - opens onto another scene, or another part of this one: the view through it is rendered from where the camera would stand beyond its exit, so it lines up as the camera moves; a `screen` shows another shot on a television, a monitor or a wall, or on an arcade cabinet's screen
+- **Lettering**: any words in the world as pixel art - a painted shop board, neon tubes, a brass plaque, letters cut in stone, chalk on a blackboard, gilt, a poster - on a `sign` object in 3D, or as a sprite or a decal of your own
+- **Pages**: comic pages and storyboards, every panel a shot of any scene at its own shape, with captions, speech bubbles, sound effects and notes
 - **Wireframes**: low-poly meshes - cubes, pyramids, polyhedra, mountains, racers, palms, or your own vertices - drawn as lines of light in true 3D, one pixel wide at any distance, hidden behind what is nearer and mirrored in wet floors; solid ones are black faces edged in light
 - **Prefabs**: named groups placed with one line - a campsite with its light, a palm grove, a beach hut with its walls, door, window, roof and torches - turned, scaled and varied by seed; scenes can define their own
 - **Procedural scatter**: declare debris by set, density and size class and the loader expands it into hundreds of placed props, clumped by a noise field so it drifts and leaves bare patches instead of spreading evenly - and never piles up on a camera or in front of a speaker

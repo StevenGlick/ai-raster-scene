@@ -16,6 +16,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 import charhd
+import lettering
 # re-exported: render.py and world.py use some of these as assets.T, assets.fbm
 from texlib import T, _rng, col, fbm, grain, shade, vnoise  # noqa: F401
 
@@ -227,7 +228,9 @@ def get_sprite(spec, defs=None, view='front'):
     if spec in defs:
         key = 'def:' + json_key(defs[spec])
         if key not in _scache:
-            _scache[key] = charhd.sprite(defs[spec]) if defs[spec].get('hd') else sprite_from_pixels(defs[spec])
+            _scache[key] = (charhd.sprite(defs[spec]) if defs[spec].get('hd')
+                            else lettering.sprite(defs[spec]) if defs[spec].get('text') is not None
+                            else sprite_from_pixels(defs[spec]))
         return _scache[key]
     if spec in _scache:
         return _scache[spec]
@@ -342,7 +345,8 @@ def get_decal(spec, defs=None):
     if spec in defs:
         key = 'def:' + json_key(defs[spec])
         if key not in _dcache:
-            _dcache[key] = sprite_from_pixels(defs[spec])
+            _dcache[key] = (lettering.sprite(defs[spec]) if defs[spec].get('text') is not None
+                            else sprite_from_pixels(defs[spec]))
         return _dcache[key]
     if spec in _dcache:
         return _dcache[spec]

@@ -11,6 +11,7 @@ picture. Files in docs/gallery that this script does not build are reported (or 
 --prune), because an image nobody regenerates is an image that silently goes stale.
 """
 import argparse
+import json
 import os
 import sys
 
@@ -242,8 +243,10 @@ SHOTS = {
 SHEETS = {'post_presets': 'post_presets', 'gui_themes': 'gui_themes'}
 # gallery image -> example whose --map layout check is shown
 MAPS = {'layout_map': 'garden_encounter'}
+# gallery image -> a page of panels in examples/pages/, laid out by scripts/pages.py
+PAGES = {'page_door': 'the_door', 'page_saloon': 'the_saloon'}
 SPECIAL = {'cast', 'catalog'}
-ALL = set(SHOTS) | set(SHEETS) | set(MAPS) | SPECIAL
+ALL = set(SHOTS) | set(SHEETS) | set(MAPS) | set(PAGES) | SPECIAL
 
 _scenes = {}
 
@@ -304,6 +307,11 @@ def build(name):
         build_sheet(out, SHEETS[name])
     elif name in MAPS:
         build_map(out, MAPS[name])
+    elif name in PAGES:
+        import pages
+        path = os.path.join(EXAMPLES, 'pages', PAGES[name] + '.json')
+        with open(path, encoding='utf-8') as f:
+            render.save_png(pages.render_page(json.load(f), os.path.dirname(path)), out)
     elif name == 'cast':
         build_cast(out)
     elif name == 'catalog':

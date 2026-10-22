@@ -38,7 +38,7 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset',
                   'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel', 'ends', 'sail',
                   'band', 'lit', 'casts', 'teeth', 'spokes', 'goods', 'game', 'to', 'view', 'scene', 'shape',
-                  'frame', 'edge', 'door', 'swing', 'show', 'crt'}
+                  'frame', 'edge', 'door', 'swing', 'show', 'crt', 'text', 'style', 'ground', 'smooth'}
 
 
 # ------------------------------------------------------------------ parts
@@ -3594,6 +3594,40 @@ def screen(pl):
 
 
 @functools.lru_cache(maxsize=None)
+def _lettering(text, style, color, ground, smooth, seed):
+    import lettering
+    return lettering.sign(text, style, color, ground, 4 if smooth else 2, smooth, seed=seed)
+
+
+def sign(pl):
+    """A sign with lettering on it (scripts/lettering.py): `text` (a newline starts another line) in a `style` -
+    `painted` (a board, the default), `neon` (glowing tubes on a dark backing: it throws their light), `plaque`
+    (brass, engraved), `carved` (cut in stone), `chalk` (a blackboard), `gilt` (gold leaf on a dark ground),
+    `poster` (ink on paper) - the letters in `color`, the board in `ground`; `height` tall (default 0.22: its width
+    follows its lettering), `depth` thick (default 0.03; 0 for a flat sheet on a wall, read only from the front);
+    `smooth` draws big lettering with its steps rounded. Its foot at `z`. Faces +x: its lettering reads from that
+    side, and from behind too."""
+    style = pl.get('style', 'painted')
+    rgba, em = _lettering(str(pl.get('text', 'SIGN')), style, pl.get('color'), pl.get('ground'),
+                          bool(pl.get('smooth', False)), int(pl.get('seed', 1)))
+    H = float(pl.get('height', 0.22))
+    W = H * rgba.shape[1] / rgba.shape[0]
+    D = float(pl.get('depth', 0.03))
+    tex = (rgba, em)
+    if D <= 0:
+        parts = [quad(tex, (0.0, W / 2, H), (0.0, -W / 2, H), (0.0, W / 2, 0.0), cull=True)]
+    else:
+        edge = _plain_face(_fine(D), _fine(H), '#2a2420' if style != 'plaque' else '#8a6a2c')
+        top = _plain_face(_fine(W), _fine(D), '#2a2420' if style != 'plaque' else '#8a6a2c')
+        parts = box((-D / 2, -W / 2, 0.0), (D / 2, W / 2, H),
+                    {'front': tex, 'back': tex, 'right': edge, 'left': edge, 'top': top, 'bottom': top})
+    if style == 'neon' and pl.get('lights', True):
+        c = np.asarray(rgba[em > 0.9][:, :3].mean(0) if (em > 0.9).any() else (1.0, 0.4, 0.7), float)
+        parts.append(light(0.25, 0.0, H / 2, 1.2 + W, [float(v) for v in c / max(float(c.max()), 1e-3)], 0.8))
+    return parts
+
+
+@functools.lru_cache(maxsize=None)
 def _snow_tex(w, h):
     """A screen's own face before its picture is laid on it (or with nothing to show): grey snow, lit."""
     rng = np.random.default_rng(w * 7 + h)
@@ -3610,4 +3644,4 @@ OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'bo
            'standing_stone': standing_stone, 'gear': gear, 'heap': heap, 'arcade_cabinet': arcade_cabinet,
            'vending_machine': vending_machine, 'well': well, 'crate': crate, 'barrel': barrel,
            'card_table': card_table, 'saloon_chair': saloon_chair, 'piano': piano, 'portal': portal,
-           'screen': screen}
+           'screen': screen, 'sign': sign}

@@ -5,7 +5,8 @@ Shows the bar kit (scripts/bar.py) with the aquarium's: `bar_shelves` on the wal
 the bar itself a `bar_counter` card standing along it with `bar_stool`s in front and `bottles`
 on top, a row of `arcade_cabinet` objects (cabinets in 3D, each in its own colour with its own game on the
 screen - a shooter, a maze chase, a racer, and on one another scene, the Vector World - and a joystick standing
-up from its controls), a `screen` over the back bar showing the street outside (neon_street.json), `booth`s, a `jukebox`,
+up from its controls), a `screen` over the back bar showing the street outside (neon_street.json), the bar's name
+in neon on a wall (a `sign`), `booth`s, a `jukebox`,
 the `hacker` by the arcade row, `neon_cocktail`
 and `neon_fish` on the walls (additive); and a reef tank done as the aquarium's are, small: its back
 wall painted as open water (`deep_water` under `open_water`, dimmed for the bar), a low `rock_wall` of
@@ -74,7 +75,10 @@ cabinets = [{'type': 'arcade_cabinet', 'x': 6.84, 'y': y, 'angle': 180, 'color':
 cabinets[2]['show'] = {'scene': 'vector_world.json', 'shot': 1}     # one plays another scene: the Vector World
 # a screen over the back bar, showing the street outside (another scene: a picture within the picture)
 screens = [{'type': 'screen', 'frame': 'wall', 'x': 2.45, 'y': 4.04, 'z': 0.77, 'angle': 90, 'width': 0.7,
-            'height': 0.38, 'show': {'scene': 'neon_street.json', 'shot': 3}, 'lights': False}]
+            'height': 0.38, 'show': {'scene': 'neon_street.json', 'shot': 3}, 'lights': False},
+           # and the bar's name in neon on the wall by the booths (lettering: a `sign`)
+           {'type': 'sign', 'text': 'THE BLUE\nLANTERN', 'style': 'neon', 'color': '#4ad8ff', 'x': 1.02, 'y': 6.95,
+            'z': 0.76, 'angle': 0, 'height': 0.3, 'depth': 0.02}]
 
 s = scene(
     g,
