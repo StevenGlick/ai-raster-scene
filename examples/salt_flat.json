@@ -593,7 +593,10 @@
    "x": 27.0,
    "y": 35.0,
    "height": 0.3,
-   "look_at": "door",
+   "look_at": [
+    26.5,
+    30.0
+   ],
    "fov": 60
   },
   {
@@ -718,6 +721,459 @@
      ],
      "density": 0.005
     }
+   }
+  },
+  {
+   "x": 26.95,
+   "y": 32.4,
+   "height": 0.42,
+   "look_at": [
+    26.5,
+    30.0,
+    0.52
+   ],
+   "fov": 62,
+   "overrides": {
+    "sprites": [
+     {
+      "x": 43.7,
+      "y": 32.43,
+      "type": "salt_clods",
+      "flip": false
+     },
+     {
+      "x": 47.59,
+      "y": 34.21,
+      "type": "salt_clods",
+      "flip": true
+     },
+     {
+      "x": 41.96,
+      "y": 33.42,
+      "type": "salt_clods",
+      "flip": true
+     },
+     {
+      "x": 45.8,
+      "y": 33.12,
+      "type": "salt_clods",
+      "flip": true
+     },
+     {
+      "x": 41.33,
+      "y": 34.87,
+      "type": "salt_clods",
+      "flip": true
+     },
+     {
+      "x": 46.28,
+      "y": 35.53,
+      "type": "salt_clods",
+      "flip": false
+     },
+     {
+      "x": 45.43,
+      "y": 33.73,
+      "type": "salt_clods",
+      "flip": true
+     },
+     {
+      "x": 47.67,
+      "y": 33.04,
+      "type": "salt_clods",
+      "flip": false
+     },
+     {
+      "id": "walker",
+      "x": 31.4,
+      "y": 43.2,
+      "type": "dreamer"
+     },
+     {
+      "x": 22.0,
+      "y": 26.5,
+      "type": "armchair",
+      "flip": true
+     },
+     {
+      "x": 29.5,
+      "y": 24.0,
+      "type": "grandfather_clock"
+     }
+    ],
+    "objects": [
+     {
+      "type": "heap",
+      "x": 39.18,
+      "y": 31.32,
+      "height": 0.212,
+      "size": 0.37,
+      "fill": 0.8,
+      "seed": 0
+     },
+     {
+      "type": "heap",
+      "x": 40.28,
+      "y": 31.33,
+      "height": 0.149,
+      "size": 0.261,
+      "fill": 0.8,
+      "seed": 1
+     },
+     {
+      "type": "heap",
+      "x": 41.13,
+      "y": 31.5,
+      "height": 0.212,
+      "size": 0.371,
+      "fill": 0.8,
+      "seed": 2
+     },
+     {
+      "type": "heap",
+      "x": 42.3,
+      "y": 31.43,
+      "height": 0.15,
+      "size": 0.262,
+      "fill": 0.8,
+      "seed": 3
+     },
+     {
+      "type": "heap",
+      "x": 43.53,
+      "y": 31.44,
+      "height": 0.143,
+      "size": 0.251,
+      "fill": 0.8,
+      "seed": 4
+     },
+     {
+      "type": "heap",
+      "x": 44.56,
+      "y": 31.49,
+      "height": 0.21,
+      "size": 0.368,
+      "fill": 0.8,
+      "seed": 5
+     },
+     {
+      "type": "heap",
+      "x": 45.54,
+      "y": 31.48,
+      "height": 0.138,
+      "size": 0.242,
+      "fill": 0.8,
+      "seed": 6
+     },
+     {
+      "type": "heap",
+      "x": 46.39,
+      "y": 31.35,
+      "height": 0.241,
+      "size": 0.421,
+      "fill": 0.8,
+      "seed": 7
+     },
+     {
+      "type": "heap",
+      "x": 47.33,
+      "y": 31.41,
+      "height": 0.258,
+      "size": 0.451,
+      "fill": 0.8,
+      "seed": 8
+     },
+     {
+      "type": "heap",
+      "x": 48.36,
+      "y": 31.33,
+      "height": 0.12,
+      "size": 0.21,
+      "fill": 0.8,
+      "seed": 9
+     },
+     {
+      "type": "heap",
+      "x": 39.66,
+      "y": 32.56,
+      "height": 0.269,
+      "size": 0.47,
+      "fill": 0.8,
+      "seed": 10
+     },
+     {
+      "type": "heap",
+      "x": 40.69,
+      "y": 32.58,
+      "height": 0.223,
+      "size": 0.39,
+      "fill": 0.8,
+      "seed": 11
+     },
+     {
+      "type": "heap",
+      "x": 41.52,
+      "y": 32.6,
+      "height": 0.243,
+      "size": 0.425,
+      "fill": 0.8,
+      "seed": 12
+     },
+     {
+      "type": "heap",
+      "x": 42.7,
+      "y": 32.5,
+      "height": 0.287,
+      "size": 0.503,
+      "fill": 0.8,
+      "seed": 13
+     },
+     {
+      "type": "heap",
+      "x": 43.98,
+      "y": 32.63,
+      "height": 0.286,
+      "size": 0.5,
+      "fill": 0.8,
+      "seed": 14
+     },
+     {
+      "type": "heap",
+      "x": 44.88,
+      "y": 32.66,
+      "height": 0.214,
+      "size": 0.375,
+      "fill": 0.8,
+      "seed": 15
+     },
+     {
+      "type": "heap",
+      "x": 45.88,
+      "y": 32.52,
+      "height": 0.217,
+      "size": 0.38,
+      "fill": 0.8,
+      "seed": 16
+     },
+     {
+      "type": "heap",
+      "x": 46.67,
+      "y": 32.44,
+      "height": 0.131,
+      "size": 0.229,
+      "fill": 0.8,
+      "seed": 17
+     },
+     {
+      "type": "heap",
+      "x": 47.58,
+      "y": 32.55,
+      "height": 0.216,
+      "size": 0.377,
+      "fill": 0.8,
+      "seed": 18
+     },
+     {
+      "type": "heap",
+      "x": 48.95,
+      "y": 32.53,
+      "height": 0.249,
+      "size": 0.436,
+      "fill": 0.8,
+      "seed": 19
+     },
+     {
+      "type": "heap",
+      "x": 39.09,
+      "y": 33.68,
+      "height": 0.239,
+      "size": 0.418,
+      "fill": 0.8,
+      "seed": 20
+     },
+     {
+      "type": "heap",
+      "x": 40.25,
+      "y": 33.64,
+      "height": 0.168,
+      "size": 0.294,
+      "fill": 0.8,
+      "seed": 21
+     },
+     {
+      "type": "heap",
+      "x": 41.24,
+      "y": 33.59,
+      "height": 0.279,
+      "size": 0.489,
+      "fill": 0.8,
+      "seed": 22
+     },
+     {
+      "type": "heap",
+      "x": 42.5,
+      "y": 33.74,
+      "height": 0.13,
+      "size": 0.227,
+      "fill": 0.8,
+      "seed": 23
+     },
+     {
+      "type": "heap",
+      "x": 43.45,
+      "y": 33.79,
+      "height": 0.211,
+      "size": 0.369,
+      "fill": 0.8,
+      "seed": 24
+     },
+     {
+      "type": "heap",
+      "x": 44.77,
+      "y": 33.73,
+      "height": 0.261,
+      "size": 0.456,
+      "fill": 0.8,
+      "seed": 25
+     },
+     {
+      "type": "heap",
+      "x": 45.7,
+      "y": 33.8,
+      "height": 0.263,
+      "size": 0.46,
+      "fill": 0.8,
+      "seed": 26
+     },
+     {
+      "type": "heap",
+      "x": 46.72,
+      "y": 33.59,
+      "height": 0.157,
+      "size": 0.274,
+      "fill": 0.8,
+      "seed": 27
+     },
+     {
+      "type": "heap",
+      "x": 47.51,
+      "y": 33.62,
+      "height": 0.143,
+      "size": 0.25,
+      "fill": 0.8,
+      "seed": 28
+     },
+     {
+      "type": "heap",
+      "x": 48.62,
+      "y": 33.58,
+      "height": 0.285,
+      "size": 0.498,
+      "fill": 0.8,
+      "seed": 29
+     },
+     {
+      "type": "heap",
+      "x": 39.77,
+      "y": 34.92,
+      "height": 0.145,
+      "size": 0.254,
+      "fill": 0.8,
+      "seed": 30
+     },
+     {
+      "type": "heap",
+      "x": 40.81,
+      "y": 34.81,
+      "height": 0.15,
+      "size": 0.263,
+      "fill": 0.8,
+      "seed": 31
+     },
+     {
+      "type": "heap",
+      "x": 41.78,
+      "y": 34.74,
+      "height": 0.249,
+      "size": 0.436,
+      "fill": 0.8,
+      "seed": 32
+     },
+     {
+      "type": "heap",
+      "x": 42.86,
+      "y": 34.82,
+      "height": 0.175,
+      "size": 0.306,
+      "fill": 0.8,
+      "seed": 33
+     },
+     {
+      "type": "heap",
+      "x": 44.08,
+      "y": 34.75,
+      "height": 0.277,
+      "size": 0.484,
+      "fill": 0.8,
+      "seed": 34
+     },
+     {
+      "type": "heap",
+      "x": 44.95,
+      "y": 34.85,
+      "height": 0.157,
+      "size": 0.274,
+      "fill": 0.8,
+      "seed": 35
+     },
+     {
+      "type": "heap",
+      "x": 46.04,
+      "y": 34.85,
+      "height": 0.257,
+      "size": 0.45,
+      "fill": 0.8,
+      "seed": 36
+     },
+     {
+      "type": "heap",
+      "x": 47.19,
+      "y": 34.78,
+      "height": 0.208,
+      "size": 0.365,
+      "fill": 0.8,
+      "seed": 37
+     },
+     {
+      "type": "heap",
+      "x": 48.17,
+      "y": 34.94,
+      "height": 0.273,
+      "size": 0.478,
+      "fill": 0.8,
+      "seed": 38
+     },
+     {
+      "type": "portal",
+      "x": 26.5,
+      "y": 30.0,
+      "angle": 90,
+      "width": 0.44,
+      "height": 0.98,
+      "frame": "wood",
+      "paint": "#ece4d4",
+      "door": "#4a6a8a",
+      "swing": 140,
+      "fill": 1.0,
+      "scene": "winter_woods.json",
+      "to": {
+       "x": 17.15,
+       "y": 35.6,
+       "angle": 270,
+       "z": 0.08
+      }
+     }
+    ]
    }
   }
  ],

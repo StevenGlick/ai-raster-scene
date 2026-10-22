@@ -324,24 +324,6 @@
    "scale": 1.6
   },
   {
-   "x": 3.0,
-   "y": 23.9,
-   "type": "door_frame",
-   "z": 1.55
-  },
-  {
-   "x": 5.4,
-   "y": 16.0,
-   "type": "door_frame",
-   "flip": true
-  },
-  {
-   "x": 5.6,
-   "y": 8.0,
-   "type": "door_frame",
-   "z": 0.9
-  },
-  {
    "x": 4.6,
    "y": 28.0,
    "type": "koi",
@@ -1560,6 +1542,66 @@
    "depth": 0.1,
    "material": "marble",
    "seed": 29
+  },
+  {
+   "type": "portal",
+   "x": 3.0,
+   "y": 23.9,
+   "z": 1.55,
+   "angle": 90,
+   "width": 0.42,
+   "height": 0.95,
+   "frame": "wood",
+   "paint": "#ece4d4",
+   "door": "#4a6a8a",
+   "swing": 135,
+   "scene": "sky_islands.json",
+   "to": {
+    "x": 30.77,
+    "y": 37.4,
+    "angle": 268.8,
+    "z": 1.67
+   }
+  },
+  {
+   "type": "portal",
+   "x": 5.4,
+   "y": 16.0,
+   "z": 0.0,
+   "angle": 90,
+   "width": 0.42,
+   "height": 0.95,
+   "frame": "wood",
+   "paint": "#ece4d4",
+   "door": "#8a3a32",
+   "swing": 135,
+   "scene": "salt_flat.json",
+   "to": {
+    "x": 32.4,
+    "y": 41.0,
+    "angle": 270,
+    "z": -0.2
+   }
+  },
+  {
+   "type": "portal",
+   "x": 5.6,
+   "y": 8.0,
+   "z": 0.9,
+   "angle": 90,
+   "width": 0.42,
+   "height": 0.95,
+   "frame": "wood",
+   "paint": "#ece4d4",
+   "door": "#3a6a4a",
+   "swing": 135,
+   "scene": "kelp_forest.json",
+   "to": {
+    "x": 17.27,
+    "y": 20.54,
+    "angle": 282.2,
+    "z": 1.3
+   }
   }
  ],
  "shots": [
@@ -1630,6 +1672,24 @@
    ],
    "fov": 70,
    "height": 0.4,
+   "post": [
+    {
+     "fx": "bloom",
+     "threshold": 0.7,
+     "strength": 0.4,
+     "radius": 6
+    }
+   ]
+  },
+  {
+   "x": 5.25,
+   "y": 19.0,
+   "look_at": [
+    5.4,
+    15.9,
+    0.6
+   ],
+   "fov": 62,
    "post": [
     {
      "fx": "bloom",

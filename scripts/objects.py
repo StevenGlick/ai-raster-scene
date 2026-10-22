@@ -37,7 +37,8 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
                   'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset',
                   'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel', 'ends', 'sail',
-                  'band', 'lit', 'casts', 'teeth', 'spokes', 'goods', 'game'}
+                  'band', 'lit', 'casts', 'teeth', 'spokes', 'goods', 'game', 'to', 'view', 'scene', 'shape',
+                  'frame', 'edge', 'door', 'swing', 'show', 'crt'}
 
 
 # ------------------------------------------------------------------ parts
@@ -2681,8 +2682,9 @@ def arcade_cabinet(pl):
     (default a dark violet) with side art of a ringed planet, stars and sweeping bands in its `color`
     (default pink) and the edge lit round in that colour; a marquee lit from behind with the game's name,
     a shooter glowing on the screen, buttons on the control panel and a joystick standing up from it (a
-    billboard), a coin door with its inserts lit. `seed` changes the game and its name; `lights` false
-    leaves out the glow it throws on the player. Faces +x: the player stands there."""
+    billboard), a coin door with its inserts lit. `seed` changes the game and its name; `show` puts another
+    scene on its screen instead (as a `screen` shows one: `{"scene": "file.json", "shot": 1}`), scanlined;
+    `lights` false leaves out the glow it throws on the player. Faces +x: the player stands there."""
     paint, color = pl.get('paint', '#342a5c'), pl.get('color', '#ff4fa0')
     seed = int(pl.get('seed', 1))
     prof, half = ARCADE_PROFILE, ARCADE_HALF
@@ -2705,6 +2707,10 @@ def arcade_cabinet(pl):
     back = texs[0]                                                    # the back reads the right way up
     texs[0] = (back[0][::-1], back[1][::-1])
     parts += _profile_faces(prof, half, texs)
+    if pl.get('show'):                                                # a scene on its screen instead of a game
+        for p in parts:
+            if p['tex'] is texs[4]:
+                p['screen'] = dict(pl['show'], rect=(3, span[4] - 3, 4, W - 4), glow=0.95, crt=True)
     (cx0, cz0), (cx1, cz1) = prof[5], prof[6]                         # the joystick, on the control panel
     parts.append(sprite('joystick', cx0 + 0.5 * (cx1 - cx0), half - 0.27 * 2 * half, cz0 + 0.5 * (cz1 - cz0),
                         shadow=False))
@@ -3402,6 +3408,200 @@ def piano(pl):
     return [p for p in parts if p]
 
 
+# ------------------------------------------------------------------ pictures within pictures: portals, screens
+
+@functools.lru_cache(maxsize=None)
+def _opening(w, h, shape):
+    """The mask of an opening on a w x h texture: a `rect`, an `arch` (a round head on straight sides) or a
+    `round` (an oval filling it)."""
+    ys, xs = np.mgrid[0:h, 0:w] + 0.5
+    if shape == 'round':
+        return ((xs / w - 0.5) / 0.5) ** 2 + ((ys / h - 0.5) / 0.5) ** 2 <= 1.0
+    if shape == 'arch':
+        r = w / 2
+        return (ys >= r) | ((xs - r) ** 2 + (ys - r) ** 2 <= r * r)
+    return np.ones((h, w), bool)
+
+
+@functools.lru_cache(maxsize=None)
+def _mist(w, h, shape, edge=None):
+    """A portal's own face, where it is not opened (seen from inside another portal's view): a dark swirl of
+    violet mist, and with `edge` a rim of that light round it."""
+    ys, xs = np.mgrid[0:h, 0:w] + 0.5
+    a = np.arctan2(ys / h - 0.5, (xs / w - 0.5) * w / h)
+    r = np.hypot(ys / h - 0.5, (xs / w - 0.5) * w / h)
+    swirl = 0.5 + 0.5 * np.sin(a * 3 + r * 22)
+    rgba = np.zeros((h, w, 4), np.float32)
+    rgba[..., :3] = (np.array([0.16, 0.08, 0.28]) + np.array([0.18, 0.1, 0.3]) * swirl[..., None] * (1 - r[..., None]))
+    m = _opening(w, h, shape)
+    rgba[..., 3] = m
+    em = (0.3 * swirl * (1 - r)).astype(np.float32)
+    if edge:
+        rim = m & ~_inset(_inset(m))
+        rgba[rim, :3] = _lit(edge)
+        em[rim] = 1.0
+    return rgba, em * m
+
+
+@functools.lru_cache(maxsize=None)
+def _door_leaf(w, h, paint):
+    """A door's leaf, read from its outside: boards in its paint, two raised panels, a brass knob."""
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.4, top=0.6, bevel=1.0, mat=0)
+    cv.box(w * 0.16, h * 0.08, w * 0.68, h * 0.36, z=0.6, top=0.5, bevel=1.4, mat=0, tone=0.04)
+    cv.box(w * 0.16, h * 0.52, w * 0.68, h * 0.4, z=0.6, top=0.5, bevel=1.4, mat=0, tone=0.04)
+    cv.ellipse(w * 0.84, h * 0.5, 1.4, 1.4, z=1.0, dome=0.8, mat=1)
+    return _finish(cv, [ramp(paint, dark=0.4, light=1.3), ramp('#c8a048', dark=0.35, light=1.5)], relief=0.9)
+
+
+def _frame_mat(pl):
+    """What a frame is made of: `frame` a kind of rock (`stone` is dressed stone), `gold` (brass), or `wood` -
+    painted in `paint` if it has one."""
+    kind = pl.get('frame')
+    if kind in ('stone', 'ashlar'):
+        return _rock_kind({'rock': 'ashlar', 'angle': pl.get('angle', 0.0)})
+    if kind in ROCKS:
+        return _rock_kind({'rock': kind, 'angle': pl.get('angle', 0.0)})
+    if kind == 'gold':
+        return dict(IRONS['brass'], paint=_painted, key=_turned(IRONS['brass']['key'], pl), density=2.5)
+    if pl.get('paint'):
+        return dict(paint=_painted, ramps=[ramp(pl['paint'], dark=0.4, light=1.2)], key=_turned((-0.4, 0.45, 0.8), pl),
+                    shade=(0.42, 0.5), rust=1.1, density=2.5)
+    return dict(_timber(pl, (0.025, 0.025, 0.4), 0.5), density=2.5)
+
+
+def portal(pl):
+    """A portal: an opening `width` across (default 0.36) and `height` tall (default 0.92) standing on its foot,
+    through which another place shows - `to` where it comes out (`x`, `y`, `angle` - the way you face coming
+    through - and `z`, in `scene`, another scene file, or this one): the view through it is taken from where the
+    camera would stand on the far side, so it lines up from any shot. `view` (a camera: `x`, `y`, `angle` or
+    `look_at`, `height`, and `scene`) shows that one view instead, whatever the shot. `shape` `rect`, `arch` or
+    `round`; `frame` (a rectangle's) `wood` (in its `paint`, if any), `stone`, `marble` or `gold`; `door` (a
+    colour) hangs a door on its left post swung open `swing` degrees (default 105) toward you; `edge` (a colour)
+    rims the opening with light. Faces +x: it opens toward that side; from behind it is not there. Keep the
+    ground behind its exit open: the view through it is taken from there."""
+    seed = int(pl.get('seed', 1))
+    W, H = float(pl.get('width', 0.36)), float(pl.get('height', 0.92))
+    shape, edge = pl.get('shape', 'rect'), pl.get('edge')
+    spec = {k: pl[k] for k in ('to', 'view') if pl.get(k)}
+    if 'to' in spec and pl.get('scene'):
+        spec['scene'] = pl['scene']
+    if 'view' in spec and spec['view'].get('scene'):
+        spec['scene'] = spec['view']['scene']
+    parts = [quad(_mist(_fine(W), _fine(H), shape, edge), (0.0, W / 2, H), (0.0, -W / 2, H), (0.0, W / 2, 0.0),
+                  portal=spec or None, cull=True)]
+    if pl.get('frame') and shape == 'rect':                          # posts, a lintel, a sill
+        mat, t, d = _frame_mat(pl), 0.05, 0.035
+        for k, s in enumerate((1, -1)):
+            parts += _block(mat, seed + 6 * k, (-d, s * W / 2 - (t if s < 0 else 0), 0.0),
+                            (d, s * W / 2 + (t if s > 0 else 0), H + t), skip=('bottom',))
+        parts += _block(mat, seed + 20, (-d, -W / 2, H), (d, W / 2, H + t), skip=('right', 'left'))
+        parts += _block(mat, seed + 30, (-d - 0.01, -W / 2 - t - 0.01, 0.0), (d + 0.01, W / 2 + t + 0.01, 0.02))
+    if pl.get('door'):                                                # a door, swung open toward you
+        sw = math.radians(float(pl.get('swing', 105.0)))
+        hinge = np.array([0.0, W / 2])
+        end = hinge + W * np.array([math.sin(sw), -math.cos(sw)])
+        leaf = _door_leaf(_fine(W), _fine(H), pl['door'])
+        parts.append(quad(leaf, (hinge[0], hinge[1], H - 0.005), (end[0], end[1], H - 0.005),
+                          (hinge[0], hinge[1], 0.01), back=0.85))                 # its knob on the free edge
+    if edge:
+        parts.append(light(0.15, 0.0, H * 0.55, 1.6, [float(c) for c in _lit(edge)], 0.8))
+    parts.append(shadow(0.0, 0.0, W + 0.3, 0.4))
+    return [p for p in parts if p]
+
+
+@functools.lru_cache(maxsize=None)
+def _tv_front(w, h, sx0, sx1, sy0, sy1):
+    """A television's front: a bezel of dark plastic round the screen (columns sx0..sx1, rows sy0..sy1), a strip
+    below with two knobs and a little red lamp."""
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.4, top=0.6, bevel=1.4, mat=0)
+    cv.box(sx0 - 2, sy0 - 2, sx1 - sx0 + 4, sy1 - sy0 + 4, z=0.3, top=0.2, bevel=1.0, mat=1)    # the tube's surround
+    ky = (sy1 + h) / 2
+    for x in (w * 0.72, w * 0.84):
+        cv.ellipse(x, ky, 1.6, 1.6, z=0.9, dome=0.8, mat=2)
+    cv.ellipse(w * 0.14, ky, 0.7, 0.7, z=0.8, dome=0.4, mat=3)
+    rgba, em = _finish(cv, [ramp('#3a3436', dark=0.5, light=1.7), CAB_BLACK, CAB_STEEL, ramp('#e83a2a')], relief=0.8)
+    em = em.copy()
+    em[cv.mat == 3] = 1.0
+    return rgba, em
+
+
+def screen(pl):
+    """A screen showing a picture of another place: another shot of this scene - a security camera's view, say
+    - or of another scene file, lit. `show` names it: `{"scene": "file.json", "shot": 2}` (shots counted from
+    1; leave `scene` out for this one) or a `camera` of its own, at a `resolution` ([w, h], default the
+    scene's). The picture is `width` across (default 0.4) and `height` tall (default 0.3); `frame` `tv` (a boxy
+    television on short legs, rabbit ears on top: lift it onto a table with `z`), `monitor` (a thin bezel on a
+    stand), `wall` (a flat screen hung on a wall: set it at the wall's face, its foot at `z`) or none (a bare
+    picture: a projection on a wall, a window of light); `crt` lays scanlines over the
+    picture and darkens its corners; `glow` is how much it shines (default 0.9); `lights` false leaves out the
+    glow it throws. Faces +x."""
+    seed = int(pl.get('seed', 1))
+    W, H = float(pl.get('width', 0.4)), float(pl.get('height', 0.3))
+    show = dict(pl.get('show') or {'snow': True})
+    show.update({k: pl[k] for k in ('crt', 'glow') if k in pl})
+    kind = pl.get('frame')
+    parts = []
+    z0 = 0.0
+    if kind == 'tv':                                                  # a cabinet behind the tube, on legs
+        b, D, legs = W * 0.12, W * 0.75, 0.07
+        z0 = legs + b
+        X1, Y, Z = 0.0, W / 2 + b, H + 2 * b
+        cw, ch = _fine(2 * Y), _fine(Z)
+        sx0, sx1 = int(round(b / (2 * Y) * cw)), int(round((b + W) / (2 * Y) * cw))
+        sy0, sy1 = int(round(b / Z * ch)), int(round((b + H) / Z * ch))
+        body = _plain_face(_fine(D), ch, '#4a3424')
+        parts += box((X1 - D, -Y, legs), (X1, Y, legs + Z),
+                     {'front': _tv_front(cw, ch, sx0, sx1, sy0, sy1), 'back': _plain_face(cw, ch, '#2a2420'),
+                      'right': body, 'left': body, 'top': _plain_face(cw, _fine(D), '#4a3424')})
+        for sx_ in (-1, 1):
+            for sy_ in (-1, 1):
+                parts += _painted_box((X1 - D / 2 + sx_ * D * 0.38 - 0.008, sy_ * Y * 0.8 - 0.008, 0.0),
+                                      (X1 - D / 2 + sx_ * D * 0.38 + 0.008, sy_ * Y * 0.8 + 0.008, legs), '#2a2420')
+        chrome = dict(IRONS['iron_white'], paint=_painted, key=_turned((-0.4, 0.45, 0.8), pl), density=2.5)
+        top = np.array([X1 - D / 2, 0.0, legs + Z])
+        for s in (1, -1):                                             # rabbit ears
+            parts += _strut(chrome, seed + 40, top, top + np.array([-0.05, s * 0.16, 0.24]), 0.006)
+    elif kind == 'wall':                                              # a flat screen hung on a wall
+        b, D = W * 0.04, 0.025
+        parts += box((-D, -W / 2 - b, -b), (0.0, W / 2 + b, H + b),
+                     {'front': _plain_face(_fine(W + 2 * b), _fine(H + 2 * b), '#18181c'),
+                      'right': _plain_face(_fine(D), _fine(H + 2 * b), '#18181c'),
+                      'left': _plain_face(_fine(D), _fine(H + 2 * b), '#18181c'),
+                      'top': _plain_face(_fine(W + 2 * b), _fine(D), '#18181c'),
+                      'bottom': _plain_face(_fine(W + 2 * b), _fine(D), '#18181c')})
+    elif kind == 'monitor':                                           # a thin bezel on a stand
+        b, D = W * 0.06, 0.04
+        z0 = 0.09
+        parts += box((-D, -W / 2 - b, z0 - b), (0.0, W / 2 + b, z0 + H + b),
+                     {'front': _plain_face(_fine(W + 2 * b), _fine(H + 2 * b), '#1e1e22'),
+                      'back': _plain_face(_fine(W + 2 * b), _fine(H + 2 * b), '#2a2a2e'),
+                      'right': _plain_face(_fine(D), _fine(H + 2 * b), '#1e1e22'),
+                      'left': _plain_face(_fine(D), _fine(H + 2 * b), '#1e1e22'),
+                      'top': _plain_face(_fine(W + 2 * b), _fine(D), '#1e1e22')})
+        parts += _painted_box((-D - 0.03, -0.025, 0.012), (-D, 0.025, z0 - b), '#2a2a2e')         # the neck
+        parts += _painted_box((-D - 0.09, -0.1, 0.0), (-D + 0.02, 0.1, 0.012), '#2a2a2e')        # the foot
+    ahead = 0.003 if kind else 0.0
+    snow = _snow_tex(_fine(W), _fine(H))
+    parts.append(quad(snow, (ahead, W / 2, z0 + H), (ahead, -W / 2, z0 + H), (ahead, W / 2, z0), screen=show,
+                      cull=bool(kind)))
+    if pl.get('lights', True):
+        parts.append(light(0.2, 0.0, z0 + H / 2, 1.2, (0.75, 0.85, 1.0), 0.6))
+    if kind:
+        parts.append(shadow(-0.1, 0.0, W + 0.2, 0.45))
+    return [p for p in parts if p]
+
+
+@functools.lru_cache(maxsize=None)
+def _snow_tex(w, h):
+    """A screen's own face before its picture is laid on it (or with nothing to show): grey snow, lit."""
+    rng = np.random.default_rng(w * 7 + h)
+    v = rng.random((h, w)).astype(np.float32) * 0.7 + 0.15
+    rgba = np.concatenate([np.repeat(v[..., None], 3, 2), np.ones((h, w, 1), np.float32)], -1)
+    return rgba, np.full((h, w), 0.7, np.float32)
+
+
 OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder, 'column': column,
            'beam': beam, 'crystal_cluster': crystal_cluster, 'trough': trough, 'shed_roof': shed_roof,
            'gable_roof': gable_roof, 'market_stand': market_stand, 'saloon_bar': saloon_bar, 'rails': rails,
@@ -3409,4 +3609,5 @@ OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'bo
            'longship': longship, 'lighthouse': lighthouse, 'stone_lantern': stone_lantern,
            'standing_stone': standing_stone, 'gear': gear, 'heap': heap, 'arcade_cabinet': arcade_cabinet,
            'vending_machine': vending_machine, 'well': well, 'crate': crate, 'barrel': barrel,
-           'card_table': card_table, 'saloon_chair': saloon_chair, 'piano': piano}
+           'card_table': card_table, 'saloon_chair': saloon_chair, 'piano': piano, 'portal': portal,
+           'screen': screen}

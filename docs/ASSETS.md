@@ -32,7 +32,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Objects | 31 | 31 | 0 | 0 | 0 |
+| Objects | 33 | 33 | 0 | 0 | 0 |
 | Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 68 | 68 | 0 | 0 | 0 |
-| **all** | **826** | **826** | **0** | **0** | **0** |
+| **all** | **828** | **828** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -580,7 +580,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `sky_lantern` | good | 0.34 tall, glows, aura, no shadow | drowned_library, hall_of_doors | Drawn with the toolkit in dream.py: a tapering paper shade lit from inside, the flame at its foot, a wire ring; aura. |
 | `book_fly` | good | 0.3 tall, no shadow | drowned_library, hall_of_doors, mansion_library | Drawn with the toolkit in dream.py: an open book with its covers raised as wings and its pages fanned. |
 | `chess_pawn` | good | 0.9 tall | - | Drawn with the toolkit in dream.py: a turned marble pawn (lathe profile), faint veins. Tint dark for the other side. |
-| `door_frame` | good | 1.1 tall | dream_chess, dream_world, hall_of_doors, salt_flat |  |
+| `door_frame` | good | 1.1 tall | dream_chess, dream_world, salt_flat |  |
 | `floating_rock` | good | 1.6 tall, no shadow | dream_world, sky_islands |  |
 | `koi` | good | 0.35 tall, no shadow | dream_chess, dream_world, drowned_library, hall_of_doors |  |
 | `orb` | good | 0.2 tall, glows, aura, no shadow | coast_lighthouse, dream_world |  |
@@ -919,7 +919,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
-## Objects (31)
+## Objects (33)
 
 Things too big for a billboard, built in 3D out of flat panels (`scripts/objects.py`).
 
@@ -961,6 +961,8 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `card_table` | good | saloon | A round card table in 3D: green baize in a rim of polished mahogany, a turned pedestal on a round foot; mid-game (`game`) a hand dealt at each of four places, one fanned face up, the pot spilled in the middle, chips standing in stacks (tiny prisms), a `whiskey` bottle and glass. |
 | `saloon_chair` | good | saloon | A bentwood chair in 3D: a round seat with a rounded edge, four legs splayed out (bars between two points, `_strut`) with a ring round them, the back a cut-out panel - two posts bent over in a hoop, a smaller hoop inside - leaning back. |
 | `piano` | good | saloon | An upright piano in 3D, polished mahogany: its sides cut to its outline with the arms that hold the keyboard, carved; the keys from above (white keys, the black in their twos and threes), a gilt maker's name, carved panels, the music open on the desk, `candle`s in sconces at its corners (`lit` burns them, the night shot's does), a long panel with two brass pedals, turned legs. |
+| `portal` | good | hall_of_doors, salt_flat | An opening onto another place - another scene file, or another part of this one: before the frame, the renderer draws the view from where the camera would stand beyond its exit (`to`), at the frame's own size and lens, and the opening shows that through this scene's air (Renderer._portal_views, _through), so it lines up from any shot; `view` a fixed camera instead. A frame (wood, stone, marble, gold), a door swung open, a rim of light. The salt flat's door onto the winter woods; the hall of doors' three. |
+| `screen` | good | neon_bar | A picture of another shot, of another scene file or of this one, rendered once with its own effects and palette and laid on the screen keeping its pixels (render.screen_texture), lit: on a `tv` (a boxy set on legs, rabbit ears), a `monitor`, a flat screen on a `wall`, or bare; `crt` scanlines. Snow with nothing to show, or within another screen. The neon bar's screen over the bar; an arcade cabinet's `show` lays one on its screen. |
 
 ## Held items (8)
 
@@ -1118,7 +1120,7 @@ The environments, judged on their gallery images and shots.
 | `capsule_hotel` | good | 4 | capsule_corridor, capsule_berths, capsule_sleepwalker, capsule_vending | A corridor between two walls of berths at 4 a.m.: the berths up close, the sleepwalker with her candle, the hacker at the vending machine. |
 | `doomed` | good | 4 | doomed_pit, doomed_overview, doomed_fight, doomed_window | The slime pit: a walkway zigzagging over glowing sludge, green banded walls, barrels, zombified soldiers; the HUD with a pistol; the pit from above; a shotgun going off and a fireball coming in; the window onto the rock. |
 | `vector_world` | good | 5 | vector_sunset, vector_racers, vector_beacon, vector_core, vector_runner | A city of light on the grid: towers ruled in neon, racers trailing light down the avenue under a striped sun, a black core over a plaza of light beams, a beacon's flare, a runner in a suit of light. |
-| `salt_flat` | good | 5 | salt_sunset, salt_door, salt_noon, salt_night, salt_whale | A salt flat after rain mirroring the sky: a girl with a candle at sunset, a door standing alone, raked heaps of salt in 3D at noon, the stars doubled, a whale over the mirror. |
+| `salt_flat` | good | 6 | salt_sunset, salt_door, salt_noon, salt_night, salt_whale, salt_portal | A salt flat after rain mirroring the sky: a girl with a candle at sunset, a door standing alone, raked heaps of salt in 3D at noon, the stars doubled, a whale over the mirror. |
 | `sky_islands` | good | 5 | isles_temple, isles_bridge, isles_above, isles_golden, isles_falls | Meadows adrift over a sea of cloud: a temple island with a waterfall, keels of rock in 3D, a ruined ring of Doric columns in marble, a plank bridge to an islet of trees, golden hour. Ringing the islands' cliffs with `rock_wall`s was tried and dropped: they turned the floating meadows into a rocky fortress. |
 | `glow_jungle` | good | 4 | glow_pool, glow_head, glow_flowers, glow_path | A clearing at night where every plant glows: a pool of glowing plankton, a stone head lit green, a heliconia burning pink, a path into the jungle. |
 | `aurora_palace` | good | 4 | aurora_lake, aurora_gate, aurora_throne, aurora_shore | A palace of ice on a frozen lake under the aurora: the lake doubling it, the gate, the throne in a hall of frost, the shore. Crystals of ice in 3D now flank the gate, the throne and the shore, bending the aurora; their light makes the palace glow (it was dark blocks). |
@@ -1150,7 +1152,7 @@ The environments, judged on their gallery images and shots.
 | `dream_world` | good | 3 | dream_stair, dream_mirror | Islands in a pastel sky, each with a `keel` of rock in 3D under its cliff; the stair shot is taken from out over the void, so the island floats; chess pieces in 3D on the chequered island. |
 | `dream_chess` | good | 4 | dream_plain, dream_door, dream_hole, dream_clock | A giant chess game in 3D (`chess_piece`, polished white and black marble, mirrored in the floor) on a floating plain of checker_marble under a melting sky clock: arches and stairs in the air, a stair up to a lone door, a hole onto the sky. |
 | `drowned_library` | good | 4 | library_hall, library_reader, library_beams, library_water | Bookshelves three storeys high in still water under tall windows and skylights: beams in dark fog, jellyfish, lanterns, flying books, koi and a whale. Dark timber roof beams cross the hall between the skylights (`beam` objects of wood, on brackets), and the light is a touch stronger so the shelves read. |
-| `hall_of_doors` | good | 4 | doors_hall, doors_stair, doors_sky, doors_up | An endless corridor of doors in every colour, three storeys and the ceiling; a door onto the sky, a stair to a door in the air, the sleepwalker. In relief now: a pilaster of cream marble between every two doors and a cornice along every storey (`column` and `beam` objects), so the corridor catches the light. |
+| `hall_of_doors` | good | 5 | doors_hall, doors_stair, doors_sky, doors_up, doors_portal | An endless corridor of doors in every colour, three storeys and the ceiling; a door onto the sky, a stair to a door in the air, the sleepwalker. In relief now: a pilaster of cream marble between every two doors and a cornice along every storey (`column` and `beam` objects), so the corridor catches the light. |
 
 ### Claude
 
@@ -1194,6 +1196,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-22, pictures within pictures.** The user's idea, from the salt flat's lone door: mark where a portal shows, render another scene, lay it there. A `portal` object: before each frame the renderer draws the view from its far side - the camera moved through the portal to stand beyond its exit, at the same size and lens - and the opening shows those pixels, depth-tested and fogged as any panel (so it is hidden behind nearer things and lies in the scene's air). A `screen` object shows a whole shot, rendered once, as its texture: a TV, a monitor, a screen on a wall; an arcade cabinet's `show`. New shots `salt_portal` (the door onto the winter woods) and `doors_portal` (the hall's door onto the salt flat); the hall's three free doors are portals (the sky islands, the salt flat, the kelp forest); in the neon bar a screen over the bar shows the street and a cabinet plays the Vector World. Tried: the beach and an autumn lane behind the hall's door - seen at an angle they looked into palms and hedges; a wide-open place (the salt flat) reads from any side.
 - **2026-10-22, props in 3D.** The user's list: the arcade cabinets, the capsule hotel's vending machine, the village's market stalls and well, the saloon's tables and piano - all objects now: `arcade_cabinet` (a `joystick` billboard on its controls, three games on the screens), `vending_machine` (its window and hatch let in as recesses, `_recess`), `well` (new rock `fieldstone`, rock keys `joint`, `mottle`, `dome`), `crate`, `barrel`, `card_table`, `saloon_chair`, `piano` (new props `whiskey`, `candle`, `candle_lit`); the `market_stand` heaps its trays in 3D (`PRODUCE`, `_mound`) and takes `paint` and `goods`, and a second stand, blue, joined the village. The neon street's machines went 3D too. And the user's catch on the headland temple: thin streaks of sky down the broken columns - a broken column's faces were laid with their top corners raised straight up off the taper, so each sat a hair off its true plane and the faces gaped where they met. Each face is now a panel in its own plane, solid in every texel it reaches into, as the standing columns' faces were.
 - **2026-10-21, kelp, knees and rubble.** Kelp (three, and the kelp fringe stamps one per frond), cypress knees and rubble drawn three ways. The saguaro, banana plant and driftwood were tried and left: their seeds barely touch the drawing (the driftwood's not at all).
 - **2026-10-21, and the small plants.** Cattails, flowers, poppies, monstera, prickly pear and tumbleweed drawn three ways each (another stream for each). Heliconia was tried and left: its stream only jitters a few pixels.

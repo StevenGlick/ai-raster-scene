@@ -117,12 +117,12 @@ After dark a lane of the same city fills with a night market: food carts with th
 
 ### The bar
 
-And off the market, a bar: smoke in the air, bottles glowing on their shelves, a reef tank let into the back wall, a row of arcade cabinets built in 3D, each in its own colour with its own game on the screen, booths, a jukebox, neon on the walls.
+And off the market, a bar: smoke in the air, bottles glowing on their shelves, a reef tank let into the back wall, a row of arcade cabinets built in 3D, each in its own colour with its own game on the screen - one of them playing another scene, the Vector World - a screen over the bar showing the street outside, booths, a jukebox, neon on the walls.
 
 | | |
 |---|---|
 | ![A neon bar in the small hours: the bar, a jukebox, a booth, smoke](docs/gallery/bar_room.png) | ![The reef tank in the bar's back wall](docs/gallery/bar_tank.png) |
-| ![The arcade row, a runner at a cabinet, all of it mirrored in the floor](docs/gallery/bar_arcade.png) | ![The bartender: your man was in an hour ago](docs/gallery/bar_bartender.png) |
+| ![The arcade row, a runner at a cabinet, all of it mirrored in the floor](docs/gallery/bar_arcade.png) | ![The bartender under the screen showing the street outside: your man was in an hour ago](docs/gallery/bar_bartender.png) |
 | ![A street samurai in the market, under a clear umbrella](docs/gallery/market_samurai.png) | ![A hacker in a booth: don't look at the screen, it looks back](docs/gallery/bar_hacker.png) |
 
 ### The rooftops
@@ -313,6 +313,10 @@ A dry lake bed of salt after rain: a film of still water over the crust mirrors 
 | ![A door standing on its own in the mirror, a clock and an armchair](docs/gallery/salt_door.png) | ![Noon: rows of raked salt - mounds, heaps and clods - on a white island of cracked crust, the sky in the water](docs/gallery/salt_noon.png) |
 | ![Night: the moon and every star doubled in the flat](docs/gallery/salt_night.png) | ![A whale drifting over the mirror in a pastel dream sky](docs/gallery/salt_whale.png) |
 
+And the door can open somewhere else. A `portal` shows another scene through its opening, rendered from where the camera would stand on the far side, so it lines up as you look: here a pine wood in winter, mirrored in the flat.
+
+![The door on the salt flat swung open on a snowy pine wood, the view mirrored in the water](docs/gallery/salt_portal.png)
+
 ### The fjord
 
 A longship drawn up on the shingle at the head of a fjord, its striped sail set and its shields along the side, cliffs of grey stone rising sheer on both sides, another ship riding at anchor; a longhouse of logs under thatch on the grass above, smoke from its roof - by day, at dusk by the fire, and from out on the water.
@@ -484,12 +488,14 @@ A hall of books standing in still water and open to the sky: a whale drifting do
 
 ### The hall of doors
 
-A corridor that does not end: doors in every wall, storey above storey, doors in the ceiling, a few of them opening onto the sky, and a sleepwalker going on down it with her candle.
+A corridor that does not end: doors in every wall, storey above storey, doors in the ceiling, a few of them opening onto the sky, and a sleepwalker going on down it with her candle. Three doors stand free in the hall, and each is a portal onto another scene: the sky islands from the top of the stair, the salt flat at sunset on the floor, the kelp forest hanging in the air.
 
 | | |
 |---|---|
 | ![An endless hall of doors in every colour, a sleepwalker going on down it](docs/gallery/doors_hall.png) | ![A stair rising out of the floor to a door hung in the air](docs/gallery/doors_stair.png) |
 | ![A door in the wall that has opened onto the sky](docs/gallery/doors_sky.png) | ![Looking up: doors in the ceiling, koi drifting under them](docs/gallery/doors_up.png) |
+
+![A door standing in the hall swung open on the salt flat at sunset, its light on the marble floor](docs/gallery/doors_portal.png)
 
 ### The sky islands
 
@@ -581,7 +587,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Layered forest edges**: give the walls of a jungle or a wood a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth; with `wander` the layers follow a natural, rounded line instead of the grid's square corners
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
 - **Glass**: a pass of its own after everything else, showing what is behind each pane tinted and softly blurred - the frame shrunk to half size and blown back up without smoothing - under a faint reflection
-- **Objects**: things bigger than a prop - a `car`, a `noodle_stand`, a `rock_wall` of overlapping rounded pieces along a wall's foot, a `boulder`, a `column` of stone or wood and a `beam` to lay across them, a `trough`, a `shed_roof` and a `gable_roof` of weathered boards (or thatch, or clay tiles, with a chimney), a `market_stand` with its goods heaped in 3D, `crate`s and `barrel`s, a village `well`, a `saloon_bar` with `card_table`s, `saloon_chair`s and a `piano`, `arcade_cabinet`s and a `vending_machine`, `rails` and an `ore_cart`, a `keel` of rock to hang under a floating island, a `chess_piece` turned in polished marble, a wrecked `ship_hull`, a `longship` under sail, a `lighthouse` with its lamp lit, a `stone_lantern`, a `standing_stone` (that, like any object, can cast the sun's shadow), a `gear` of brass, a `heap` of salt, a roof of `glass` between iron glazing bars, a `crystal_cluster` whose every facet bends the light through it - built in 3D out of flat panels at any angle, see-through wherever the thing is not, with glass to see inside and billboards among them for the small things; drawn in true perspective, depth-tested per pixel and lit like walls; rock is cut from one solid block of stone, so it runs on round a corner (`scripts/objects.py`)
+- **Objects**: things bigger than a prop - a `car`, a `noodle_stand`, a `rock_wall` of overlapping rounded pieces along a wall's foot, a `boulder`, a `column` of stone or wood and a `beam` to lay across them, a `trough`, a `shed_roof` and a `gable_roof` of weathered boards (or thatch, or clay tiles, with a chimney), a `market_stand` with its goods heaped in 3D, `crate`s and `barrel`s, a village `well`, a `saloon_bar` with `card_table`s, `saloon_chair`s and a `piano`, `arcade_cabinet`s and a `vending_machine`, a `portal` that opens onto another scene and a `screen` that shows one, `rails` and an `ore_cart`, a `keel` of rock to hang under a floating island, a `chess_piece` turned in polished marble, a wrecked `ship_hull`, a `longship` under sail, a `lighthouse` with its lamp lit, a `stone_lantern`, a `standing_stone` (that, like any object, can cast the sun's shadow), a `gear` of brass, a `heap` of salt, a roof of `glass` between iron glazing bars, a `crystal_cluster` whose every facet bends the light through it - built in 3D out of flat panels at any angle, see-through wherever the thing is not, with glass to see inside and billboards among them for the small things; drawn in true perspective, depth-tested per pixel and lit like walls; rock is cut from one solid block of stone, so it runs on round a corner (`scripts/objects.py`)
 - **Wireframes**: low-poly meshes - cubes, pyramids, polyhedra, mountains, racers, palms, or your own vertices - drawn as lines of light in true 3D, one pixel wide at any distance, hidden behind what is nearer and mirrored in wet floors; solid ones are black faces edged in light
 - **Prefabs**: named groups placed with one line - a campsite with its light, a palm grove, a beach hut with its walls, door, window, roof and torches - turned, scaled and varied by seed; scenes can define their own
 - **Procedural scatter**: declare debris by set, density and size class and the loader expands it into hundreds of placed props, clumped by a noise field so it drifts and leaves bare patches instead of spreading evenly - and never piles up on a camera or in front of a speaker

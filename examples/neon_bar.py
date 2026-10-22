@@ -4,7 +4,8 @@ back wall, a row of arcade cabinets, booths, a jukebox, neon on the walls and sm
 Shows the bar kit (scripts/bar.py) with the aquarium's: `bar_shelves` on the wall behind the bar,
 the bar itself a `bar_counter` card standing along it with `bar_stool`s in front and `bottles`
 on top, a row of `arcade_cabinet` objects (cabinets in 3D, each in its own colour with its own game on the
-screen - a shooter, a maze chase, a racer - and a joystick standing up from its controls), `booth`s, a `jukebox`,
+screen - a shooter, a maze chase, a racer, and on one another scene, the Vector World - and a joystick standing
+up from its controls), a `screen` over the back bar showing the street outside (neon_street.json), `booth`s, a `jukebox`,
 the `hacker` by the arcade row, `neon_cocktail`
 and `neon_fish` on the walls (additive); and a reef tank done as the aquarium's are, small: its back
 wall painted as open water (`deep_water` under `open_water`, dimmed for the bar), a low `rock_wall` of
@@ -70,6 +71,10 @@ lights = (
 # the arcade row along the east wall, each cabinet in its own colour with its own game and its glow on the player
 cabinets = [{'type': 'arcade_cabinet', 'x': 6.84, 'y': y, 'angle': 180, 'color': c, 'seed': k}
             for k, (y, c) in enumerate(((5.1, '#a070ff'), (5.95, '#40e0ff'), (6.8, '#ff4fa0'), (7.65, '#40e0ff')))]
+cabinets[2]['show'] = {'scene': 'vector_world.json', 'shot': 1}     # one plays another scene: the Vector World
+# a screen over the back bar, showing the street outside (another scene: a picture within the picture)
+screens = [{'type': 'screen', 'frame': 'wall', 'x': 2.45, 'y': 4.04, 'z': 0.77, 'angle': 90, 'width': 0.7,
+            'height': 0.38, 'show': {'scene': 'neon_street.json', 'shot': 3}, 'lights': False}]
 
 s = scene(
     g,
@@ -88,7 +93,7 @@ s = scene(
     fog={'color': [0.05, 0.03, 0.07], 'density': 0.06, 'glow': 1.2},
     lights=lights,
     sprites=sprites,
-    objects=cabinets + [
+    objects=cabinets + screens + [
         {'type': 'rock_wall', 'lining': 'O', 'rock': 'reef', 'depth': 0.3, 'height': [0.24, 0.5],
          'pieces': [0.8, 1.3], 'plants': False, 'seed': 3},                           # live rock along the tank's back
         {'type': 'boulder', 'x': 6.45, 'y': 3.42, 'angle': 90, 'size': 0.34, 'height': 0.2, 'rock': 'reef',

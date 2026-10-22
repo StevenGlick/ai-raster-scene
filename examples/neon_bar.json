@@ -488,7 +488,11 @@
    "y": 6.8,
    "angle": 180,
    "color": "#ff4fa0",
-   "seed": 2
+   "seed": 2,
+   "show": {
+    "scene": "vector_world.json",
+    "shot": 1
+   }
   },
   {
    "type": "arcade_cabinet",
@@ -497,6 +501,21 @@
    "angle": 180,
    "color": "#40e0ff",
    "seed": 3
+  },
+  {
+   "type": "screen",
+   "frame": "wall",
+   "x": 2.45,
+   "y": 4.04,
+   "z": 0.77,
+   "angle": 90,
+   "width": 0.7,
+   "height": 0.38,
+   "show": {
+    "scene": "neon_street.json",
+    "shot": 3
+   },
+   "lights": false
   },
   {
    "type": "rock_wall",

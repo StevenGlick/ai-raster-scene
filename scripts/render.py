@@ -353,13 +353,89 @@ def soft_swing(x, knee=0.5, limit=0.9):
     return out
 
 
+# ------------------------------------------------------------------ pictures within pictures
+
+PORTAL_REACH = 8.0      # how far behind a portal's exit the camera on its far side may stand
+_SCREENS = {}           # a screen's picture, by what it shows: a shot is rendered once however often it is shown
+_SCREEN_DEPTH = [0]     # how deep in screens-within-screens the render is: one level shows, the next is snow
+
+
+def _snow(h, w, seed=7):
+    """A screen with nothing to show: grey snow."""
+    rng = np.random.default_rng(seed)
+    return np.repeat((rng.random((h, w, 1)) * 0.7 + 0.15).astype(np.float32), 3, 2)
+
+
+def screen_picture(spec, scene):
+    """The picture a screen shows (h x w x 3, 0..1): a shot of another scene file (`scene`, its `shot` counted
+    from 1) or of the scene it is in, or the view of a `camera` of its own, at the scene's resolution or the
+    spec's `resolution` - rendered with its own post effects and overlays, palette and all."""
+    key = json.dumps([spec.get('scene') or scene.get('title'), spec.get('shot', 1), spec.get('camera'),
+                      spec.get('resolution')], sort_keys=True, default=str)
+    if key not in _SCREENS:
+        if _SCREEN_DEPTH[0] >= 1 or spec.get('snow'):
+            W, H = spec.get('resolution') or scene.get('resolution', [320, 200])
+            _SCREENS[key] = _snow(int(H), int(W))
+        else:
+            _SCREEN_DEPTH[0] += 1
+            try:
+                sc = load_scene(spec['scene']) if spec.get('scene') else scene
+                if spec.get('resolution'):
+                    sc = dict(sc, resolution=[int(v) for v in spec['resolution']])
+                shots = [spec['camera']] if spec.get('camera') else sc.get('shots') or [sc['camera']]
+                i = 0 if spec.get('camera') else max(0, min(len(shots), int(spec.get('shot', 1))) - 1)
+                cam = prepare_shot(sc, merge_camera(sc, shots[i]))
+                sc2 = {**sc, **cam.get('overrides', {})}
+                rr = Renderer(World(sc2), sc2)
+                frame = rr.render(cam)
+                pal, levels = post.palette_spec(rr.last_effects, sc2)
+                arr = post.quantize(frame, pal, float(sc2.get('dither', 1.0)), levels, rr.palette_ref)
+                _SCREENS[key] = arr.astype(np.float32) / 255.0
+            finally:
+                _SCREEN_DEPTH[0] -= 1
+    return _SCREENS[key]
+
+
+def screen_texture(pn, scene):
+    """A panel with a `screen` (see objects.screen) as it shows its picture: the picture laid into its texture
+    - over the whole of it, or the `rect` (rows and columns) of a screen set in a bezel - the texture grown so
+    the picture keeps its pixels, lit by `glow`, with `crt` scanlines and rounded corners."""
+    spec = pn['screen']
+    pic = screen_picture(spec, scene)
+    rgba, em = np.asarray(pn['rgba'], np.float32), np.asarray(pn['em'], np.float32)
+    th, tw = rgba.shape[:2]
+    y0, y1, x0, x1 = spec.get('rect') or (0, th, 0, tw)
+    k = max(1, int(math.ceil(pic.shape[1] / max(x1 - x0, 1))))         # the texture grown to hold it
+    rgba = np.repeat(np.repeat(rgba, k, 0), k, 1).copy()
+    em = np.repeat(np.repeat(em, k, 0), k, 1).copy()
+    h, w = (y1 - y0) * k, (x1 - x0) * k
+    im = Image.fromarray((np.clip(pic, 0, 1) * 255).astype(np.uint8)).resize((w, h), Image.NEAREST)
+    p = np.asarray(im, np.float32) / 255.0
+    if spec.get('crt'):                                                # scanlines, the tube's dark corners
+        p[1::2] *= 0.72
+        yy, xx = np.mgrid[0:h, 0:w]
+        r = np.hypot((xx + 0.5) / w * 2 - 1, (yy + 0.5) / h * 2 - 1)
+        p *= np.clip(1.25 - 0.45 * r ** 2, 0, 1)[..., None]
+    rgba[y0 * k:y1 * k, x0 * k:x1 * k, :3] = p
+    rgba[y0 * k:y1 * k, x0 * k:x1 * k, 3] = 1.0
+    em[y0 * k:y1 * k, x0 * k:x1 * k] = float(spec.get('glow', 0.9))
+    return rgba, em
+
+
 # ------------------------------------------------------------------ renderer
 
 class Renderer:
     def __init__(self, world, scene):
+        raw = scene
         scene = prefabs.expand(scene)
         self.w = world
         self.s = scene
+        # a portal shows the view from its far side (rendered before each frame, see _portal_views); a screen
+        # a picture of another shot, rendered once
+        self._portal_frames, self._portal_depth, self._portal_rr = {}, 0, {}
+        for pn in scene.get('panels', []):
+            if pn.get('screen') is not None:
+                pn['rgba'], pn['em'] = screen_texture(pn, raw)
         self.W, self.H = scene.get('resolution', [320, 200])
         self.ambient = np.array(scene.get('ambient', [0.18, 0.18, 0.22]), np.float32)
         self.levels = int(scene.get('light_levels', 24))
@@ -837,10 +913,95 @@ class Renderer:
                 e[m] = np.maximum(e[m], de * (a[:, 0] > 0.4))
         return e
 
+    def _raw(self, cam, W, H):
+        """The 3D frame of `cam` at W x H (the frame's own supersampled size), its air included: the colour
+        and the emission, before any post effect - what a portal shows of the place it opens on."""
+        bw, bh = self.W, self.H
+        self.W, self.H = W, H
+        try:
+            img = self._render3d(cam)
+            if self.vol is not None:
+                img = self._atmosphere(img, self.depth, self._ss)
+        finally:
+            self.W, self.H = bw, bh
+        return img, self._emis.copy()
+
+    def _through(self, pn, cam):
+        """The camera on a portal's far side: standing where this shot's camera would stand, and looking the
+        way it would look, if the portal's opening were its exit - so the view through it lines up from here.
+        A portal with a `view` looks out from that camera instead, whatever the shot (a window onto one view)."""
+        spec = pn['portal']
+        keep = {k: cam[k] for k in ('fov', 'pitch') if k in cam}
+        if spec.get('view'):
+            v = dict(spec['view'])
+            sc = self._portal_scene(spec)
+            return resolve_camera(sc, {**keep, 'x': v.pop('x'), 'y': v.pop('y'), **v})
+        o, u, v = (np.asarray(pn[k], float) for k in ('o', 'u', 'v'))
+        foot = o + u / 2 + v                                 # the middle of its foot
+        n = np.cross(u, v)                                   # toward the side it is seen from
+        f = -n[:2] / max(np.linalg.norm(n[:2]), 1e-9)        # the way into it
+        r = np.array([-f[1], f[0]])
+        to = spec['to']
+        a = math.radians(float(to.get('angle', 0.0)))
+        fd, rd = np.array([math.cos(a), math.sin(a)]), np.array([-math.sin(a), math.cos(a)])
+        rel = np.array([float(cam['x']), float(cam['y'])]) - foot[:2]
+        p = np.array([float(to['x']), float(to['y'])]) + (rel @ f) * fd + (rel @ r) * rd
+        back = -(rel @ f) - PORTAL_REACH
+        if back > 0:                         # seen from far off, the far side's camera comes no further back
+            p = p + back * fd                # than `reach` (it would stand in a wall): a small portal, no matter
+        turn = math.degrees(a - math.atan2(f[1], f[0]))
+        return {**keep, 'x': float(p[0]), 'y': float(p[1]), 'angle': (float(cam.get('angle', 0.0)) + turn) % 360,
+                'height': float(cam.get('height', 0.5)) - float(foot[2]) + float(to.get('z', 0.0))}
+
+    def _portal_scene(self, spec):
+        """The scene a portal opens on: its own `scene` file, or this one."""
+        return load_scene(spec['scene']) if spec.get('scene') else self.s
+
+    def _portal_views(self, cam):
+        """What each portal in sight shows - {its spec's id: (colour, emission)} at the frame's size - rendered
+        from its far side's camera, in its own scene or this one. Inside a portal's view, portals are not
+        opened again: they show their own texture."""
+        frames = {}
+        portals = [pn for pn in self.s.get('panels', []) if pn.get('portal') is not None]
+        if self._portal_depth or not portals:
+            return frames
+        ang = math.radians(float(cam.get('angle', 0.0)))
+        fwd = np.array([math.cos(ang), math.sin(ang)])
+        half = math.radians(float(cam.get('fov', 66))) / 2 + 0.2
+        for pn in portals:
+            lift = self.w.base_z(float(pn['at'][0]), float(pn['at'][1])) if 'at' in pn else 0.0
+            pn = dict(pn, o=np.asarray(pn['o'], float) + np.array([0.0, 0.0, lift]))
+            corners = pn['o'] + np.array([[0, 0], [1, 0], [0, 1], [1, 1]], float) @ np.stack([pn['u'], pn['v']])
+            rel = corners[:, :2] - np.array([float(cam['x']), float(cam['y'])])
+            ahead = rel @ fwd
+            if (ahead < 0.05).all():
+                continue                                     # behind the camera
+            off = np.arctan2(rel @ np.array([-fwd[1], fwd[0]]), np.maximum(ahead, 1e-3))
+            if (ahead > 0.05).all() and ((off > half).all() or (off < -half).all()):
+                continue                                     # out of the frame to one side
+            spec = pn['portal']
+            if spec.get('scene'):
+                path = os.path.abspath(spec['scene'])
+                if path not in self._portal_rr:
+                    sc = load_scene(path)
+                    self._portal_rr[path] = Renderer(World(sc), sc)
+                rr = self._portal_rr[path]
+            else:
+                rr = self
+            dcam = self._through(pn, cam)
+            rr._portal_depth, rr._ss = self._portal_depth + 1, self._ss
+            try:
+                frames[id(spec)] = rr._raw(dcam, self.W, self.H)
+            finally:
+                rr._portal_depth = self._portal_depth if rr is self else 0
+        return frames
+
     def _render3d(self, cam):
         """One frame of the world seen from `cam`: the sky, floors and ceilings, walls, then what stands
         in the world - sprites, cards, wireframes, glass - each pass drawing into the frame's colour,
         depth and emission buffers; then the reflections. Returns the colour, 0..1."""
+        self._portal_frames = {}
+        self._portal_frames = self._portal_views(cam)
         f = self._frame(cam)
         self._sky_pass(f)
         self._floor_pass(f)
@@ -1819,6 +1980,13 @@ class Renderer:
         tint = np.array(pn.get('tint', [1, 1, 1]), np.float32)
         colr = self.shade(block[..., :3] * (fac * tint), dyn, self.fade_z(hx, hy, hz), ed, emm,
                           flash(rr, cc, ed), sun)
+        seen = self._portal_frames.get(id(pn['portal'])) if pn.get('portal') is not None else None
+        if seen is not None:                 # a portal: the view from its far side, through this scene's air
+            colr, glow = seen[0][r0:r1, c0:c1], seen[1][r0:r1, c0:c1]
+            if self.fog_c is not None and self.vol is None:
+                k = (1 - np.exp(-self.fog_d * ed))[..., None]
+                colr, glow = colr * (1 - k) + self.fog_c[None, None, :] * k, glow * (1 - k)
+            self._glow = glow
         if bends:
             self._bend(img, depth, pn, n, box, t, mask, alpha, colr, cam3, proj)
             return
@@ -2139,7 +2307,7 @@ SHOT_KEYS = {'x', 'y', 'angle', 'look_at', 'fov', 'height', 'pitch', 'flashlight
              'post', 'scanlines', 'seed', 'supersample', 'extra_sprites', 'extra_wireframes', 'title',
              'description', 'notes'}
 CELL_KEYS = {'wall', 'h', 'top', 'floor', 'ceil', 'drop', 'reflect', 'side', 'fringe', 'facade', 'glazed', 'cliff'}
-ASSET_EXTS = ('.png', '.ttf', '.otf')
+ASSET_EXTS = ('.png', '.ttf', '.otf', '.json')     # a .json: another scene, that a portal or a screen shows
 
 
 def lint_scene(scene):

@@ -1493,6 +1493,26 @@ def check_objects():
     well = build(type='well')
     wz = np.array([c for pn in well['panels'] for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])
     assert wz[:, 2].max() > 1.0 and np.abs(wz[:, :2]).max() < 0.45, 'its roof over its wall'
+    # 17. a portal shows its far side - the view from where the camera would stand beyond its exit - and not
+    # its own face; a screen shows a picture of another shot instead of its snow
+    def room(**extra):
+        return {'map': ['#########', '#.......#', '#.......#', '#.......#', '#...b...#', '#.......#', '#.......#',
+                        '#########'], 'resolution': [64, 40], 'sky': None, 'ambient': [0.6, 0.6, 0.6],
+                'legend': {'#': {'wall': 'brick', 'h': 1.0}, 'b': {'wall': 'plaster', 'h': 1.0},
+                           '.': {'floor': 'wood_floor'}},
+                'camera': {'x': 4.5, 'y': 6.4, 'angle': 270, 'height': 0.45}, **extra}
+    door = {'type': 'portal', 'x': 4.5, 'y': 5.6, 'angle': 90, 'width': 0.6, 'height': 0.9}
+    shut = R.render_shot(room(objects=[door]), 0)
+    seen = R.render_shot(room(objects=[dict(door, to={'x': 2.0, 'y': 4.5, 'angle': 0})]), 0)
+    plain = R.render_shot(room(camera={'x': 2.0 - 0.8, 'y': 4.5, 'angle': 0, 'height': 0.45}), 0)
+    mid = lambda im: np.asarray(im.convert('RGB'), np.float32)[54:66, 90:100].mean((0, 1))  # noqa: E731
+    assert np.abs(mid(seen) - mid(shut)).max() > 8, 'a portal opens: not its own face'
+    assert np.abs(mid(seen) - mid(plain)).max() < 25, 'what it shows is the view from its far side'
+    tv = objects.expand({'map': ['.'], 'objects': [{'type': 'screen', 'x': 0.0, 'y': 0.0,
+                                                    'show': {'camera': {'x': 2.0, 'y': 4.5, 'angle': 0}}}]})
+    rr = R.Renderer(R.World(room(objects=tv.get('objects', []))), room(panels=tv['panels']))
+    pic = [pn for pn in rr.s['panels'] if pn.get('screen')][0]
+    assert pic['rgba'].shape[0] >= 40 and float(pic['rgba'][..., :3].std()) > 0.02, 'a screen shows its picture'
     print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights, '
           f'rock, linings, columns fluted and Doric, fill, timber, standing stones cast, crystals bend the light)')
 

@@ -8,7 +8,8 @@ Shows the salt flat kit (scripts/saltflat.py): `salt_water` (the crust under wat
 0.9 and `"reflections": {"ripple": 0, "smear": 0}` - a still mirror instead of a rippled one -
 `salt_flat` (the dry crust: pale plates with raised rims) in islands, `salt_brick` for the house, and
 rows of `salt_mound`s with a `salt_heap` or a `salt_pile` among them and `salt_clods` lying about, no
-two the same size; the sky doubled at sunset, at noon, at night and in a dream, with the `sky_whale`.
+two the same size; the sky doubled at sunset, at noon, at night and in a dream, with the `sky_whale`; and in
+one shot the door is a `portal` onto a wood in winter in another scene (winter_woods.json).
 Run:  python salt_flat.py  -> writes salt_flat.json
 """
 import math
@@ -57,6 +58,12 @@ sprites = salt + [
     {'x': 22.0, 'y': 26.5, 'type': 'armchair', 'flip': True},
     {'x': 29.5, 'y': 24.0, 'type': 'grandfather_clock'},
 ]
+# the door, in one shot, opening onto a wood in winter in another scene: a portal, the view through it taken from
+# where the camera would stand on the far side (here on a path through the wood); an override, so the other
+# shots keep their door standing open on nothing
+PORTAL = {'type': 'portal', 'x': 26.5, 'y': 30.0, 'angle': 90, 'width': 0.44, 'height': 0.98, 'frame': 'wood',
+          'paint': '#ece4d4', 'door': '#4a6a8a', 'swing': 140, 'fill': 1.0,
+          'scene': 'winter_woods.json', 'to': {'x': 17.15, 'y': 35.6, 'angle': 270, 'z': 0.08}}
 s = scene(
     g,
     title='The salt flat - the sky on the ground',
@@ -78,7 +85,7 @@ s = scene(
     shots=[
         {'x': 32.4, 'y': 47.0, 'height': 0.32, 'look_at': [30.0, 20.0, 0.7], 'fov': 70,
          'overlays': [{'type': 'caption', 'text': 'The salt flat', 'at': 'top', 'box': True}]},
-        {'x': 27.0, 'y': 35.0, 'height': 0.3, 'look_at': 'door', 'fov': 60},
+        {'x': 27.0, 'y': 35.0, 'height': 0.3, 'look_at': [26.5, 30.0], 'fov': 60},   # the door, by where it stands
         {'x': 40.5, 'y': 36.6, 'height': 0.28, 'look_at': [44.0, 31.0, 0.12], 'fov': 66,
          'overrides': {'sky': 'day', 'ambient': [0.34, 0.35, 0.4],
                        'lights': [{'type': 'sun', 'azimuth': 120, 'elevation': 55, 'intensity': 0.6}],
@@ -91,6 +98,8 @@ s = scene(
          'extra_sprites': [{'x': 31.0, 'y': 26.0, 'type': 'sky_whale', 'z': 3.0, 'scale': 2.6}],
          'overrides': {'sky': 'dream', 'ambient': [0.55, 0.5, 0.58], 'lights': [dict(SUNSET, elevation=12)],
                        'fog': {'color': [0.96, 0.8, 0.84], 'density': 0.005}}},
+        {'x': 26.95, 'y': 32.4, 'height': 0.42, 'look_at': [26.5, 30.0, 0.52], 'fov': 62,
+         'overrides': {'sprites': [sp for sp in sprites if sp.get('id') != 'door'], 'objects': heaps + [PORTAL]}},
     ],
     contact_shadows=0.3,
     supersample=2,
