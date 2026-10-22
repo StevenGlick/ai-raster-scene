@@ -1231,11 +1231,11 @@ def spr_pipe_valve():
     return _finish(im, em, w, h)
 
 
-def spr_rubble():
+def spr_rubble(v=0):
     w, h = 32, 14
     im, d, em, de = _canvas(w, h)
     S = 4
-    rng = np.random.default_rng(41)
+    rng = np.random.default_rng(41 + 41 * v)     # v: another one, drawn the same way
     for _ in range(26):
         x, y = rng.random() * 28 + 2, rng.random() * 8 + 5
         s = rng.random() * 3.5 + 1.5
@@ -1874,6 +1874,8 @@ def spr_orrery():
     return _finish(im, em, w, h)
 
 
+# props drawn a few ways, one picked per placement (assets.variant_name): name -> (count, draw(k))
+VARIANTS = {'rubble': (3, spr_rubble)}
 SPRITES = {
     'lamp_post': spr_lamp_post, 
     'lantern': spr_lantern,

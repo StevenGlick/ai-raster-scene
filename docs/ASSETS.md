@@ -421,9 +421,9 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `reeds` | good | 0.8 tall | coast_lighthouse, winter_woods |  |
 | `bald_cypress` | good | 4.2 tall | bayou | Drawn with the toolkit in swamp.py: a fluted, buttressed foot, limbs under flat sprays of feathery leaves, moss hanging from every limb, knees round it. Drawn 3 ways (variants), one picked per placement. |
 | `spanish_moss` | good | 1.4 tall, no shadow | bayou | Drawn with the toolkit in swamp.py: a curtain of grey-green strands from a stub of branch, to hang with `z`. |
-| `cypress_knees` | good | 0.3 tall | bayou | Drawn with the toolkit in swamp.py: knobbly cones of root standing out of the water. |
+| `cypress_knees` | good | 0.3 tall | bayou | Drawn with the toolkit in swamp.py: knobbly cones of root standing out of the water. Drawn 3 ways (variants), one picked per placement. |
 | `cattails` | good | 1 tall | bayou | Drawn with the toolkit in swamp.py: long blades and stems with brown velvet heads. Drawn 3 ways (variants), one picked per placement. |
-| `kelp` | good | 5 tall | kelp_forest, sunken_temple | Drawn with the toolkit in sea.py: a swaying stipe from its holdfast, long golden blades streaming off small floats, a tangle at the top. |
+| `kelp` | good | 5 tall | kelp_forest, sunken_temple | Drawn with the toolkit in sea.py: a swaying stipe from its holdfast, long golden blades streaming off small floats, a tangle at the top. Drawn 3 ways (variants), one picked per placement. |
 | `brain_coral` | good | 0.3 tall | aquarium, kelp_forest, neon_bar, sunken_temple | Drawn with the toolkit in aquarium.py: a dome lit on its crown, its surface all meandering ridges (ochre) and grooves (green-brown). |
 | `staghorn_coral` | good | 0.42 tall | aquarium, kelp_forest, neon_bar, sunken_temple | Drawn with the toolkit in aquarium.py: a thicket of golden-brown branches forking like antlers, lilac-white growing tips. |
 | `sea_fan` | good | 0.62 tall | aquarium, kelp_forest, neon_bar, sunken_temple | Drawn with the toolkit in aquarium.py: a flat purple lace: thicker branches fanning from a short trunk with a fine net of little cells between them. |
@@ -447,7 +447,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 |---|---|---|---|---|
 | `bones` | good | 0.22 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, crystal_cave, derelict_ship, neon_street, rain_alley, sewer_tunnels, temple_inside, woodland_night |  |
 | `broken_barrel` | good | 0.46 tall | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, neon_street, rain_alley, rainy_street, sewer_tunnels, woodland_night | Redrawn with the toolkit in basics.py: the hooped bottom half, its front staves splintered off at different heights over the dark inside, the back staves taller, loose staves and a fallen hoop. |
-| `rubble` | good | 0.34 tall | ancient_ruins, bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, rainy_street, sewer_tunnels, woodland_night |  |
+| `rubble` | good | 0.34 tall | ancient_ruins, bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, rainy_street, sewer_tunnels, woodland_night | Drawn 3 ways (variants), one picked per placement. |
 
 ### Monuments and outdoors
 
@@ -1182,6 +1182,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, kelp, knees and rubble.** Kelp (three, and the kelp fringe stamps one per frond), cypress knees and rubble drawn three ways. The saguaro, banana plant and driftwood were tried and left: their seeds barely touch the drawing (the driftwood's not at all).
 - **2026-10-21, and the small plants.** Cattails, flowers, poppies, monstera, prickly pear and tumbleweed drawn three ways each (another stream for each). Heliconia was tried and left: its stream only jitters a few pixels.
 - **2026-10-21, more drawn a few ways.** The bald cypress (three, its limbs set another way; the swamp's edge stamps one per tree), the palm (three), the dead tree (three, forking another way), the log and the stump (three each).
 - **2026-10-21, eyes and close shots.** Seen close, the upper lid that ran outward over a pupil on the nose's side made people look cross-eyed; now each eye is a one-pixel pupil with the socket's shade beside it at the top - straight ahead up close, still an eye from across a room. Two close shots in the saloon to show people seen close: `saloon_gambler` and `saloon_barkeep`.

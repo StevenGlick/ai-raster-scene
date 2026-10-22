@@ -73,10 +73,10 @@ def tex_water_surface(name):
 
 # ---------------------------------------------------------------- props
 
-def spr_kelp():
+def spr_kelp(v=0):
     """A stalk of giant kelp: a stipe swaying up from its holdfast toward the light, long golden
     blades streaming off it, each from a small gas float, and a tangle of blades at the top."""
-    rng = np.random.default_rng(201)
+    rng = np.random.default_rng(201 + 41 * v)     # v: another one, drawn the same way
     w, h = 80, 252
     cv = Canvas(w, h, wrap=False, ground=-9)
     ph = rng.uniform(0, 2 * np.pi)
@@ -194,8 +194,9 @@ def spr_wreck_mast():
 
 def _kelp_card(layer):
     """One layer of a kelp forest's edge, 1 (front) to 2 (back): a few stalks, then a dense stand."""
-    from assets import get_sprite
+    from assets import get_sprite, variant_pick
     rng = np.random.default_rng(700 + layer)
+    pick = np.random.default_rng(770 + layer)    # which drawing of the kelp
     height = {1: 5.0, 2: 5.8}[layer]
     H = int(height * CARD_PX)
     card = np.zeros((H, CARD_W, 4), np.float32)
@@ -206,7 +207,7 @@ def _kelp_card(layer):
         x = (off + (i + rng.uniform(0.15, 0.85)) * CARD_W / k) % CARD_W
         stamps.append((x, rng.uniform(3.6, height - 0.1)))
     for x, tl in sorted(stamps, key=lambda s: -s[1]):
-        _stamp(card, get_sprite('kelp')[0], x, H, tl, flip=bool(rng.random() < 0.5))
+        _stamp(card, get_sprite(variant_pick('kelp', pick))[0], x, H, tl, flip=bool(rng.random() < 0.5))
     card[..., :3] *= {1: 0.95, 2: 0.78}[layer]
     card[..., 3] = (card[..., 3] > 0.5).astype(np.float32)
     return card, np.zeros(card.shape[:2], np.float32)
@@ -214,6 +215,8 @@ def _kelp_card(layer):
 
 TEXTURES = {'seabed': lambda n: (tex_seabed(n), None), 'water_surface': tex_water_surface}
 TEXTURE_NOISE = {'seabed': 1.2, 'water_surface': 0.3}
+# props drawn a few ways, one picked per placement (assets.variant_name): name -> (count, draw(k))
+VARIANTS = {'kelp': (3, spr_kelp)}
 SPRITES = {'kelp': spr_kelp, 'fish_school': spr_fish_school, 'bubbles': spr_bubbles, 'anchor': spr_anchor,
            'wreck_mast': spr_wreck_mast}
 SPRITES.update({f'kelp_card_{k}': (lambda k=k: _kelp_card(k)) for k in (1, 2)})

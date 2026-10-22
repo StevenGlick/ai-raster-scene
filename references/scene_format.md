@@ -344,7 +344,7 @@ Add any of the keys below and fog becomes **volumetric**. Each pixel marches thr
 | `type` | built-in prop, built-in character, a name from `sprite_defs`, or a PNG path (RGBA) |
 | `id` | name for overlays to anchor a speech bubble to, and for a camera's `look_at` |
 | `scale` | world height in units (each built-in has a default; people are ~0.6-0.66) |
-| `variant` | which drawing of a prop that is drawn a few ways (`rocks`, `grass_tuft`, `dry_tuft`, `fern`, `bush`, `bush_autumn`, `boulder`, `boulder_snow`, `mushrooms`, the trees `pine`, `snowy_pine`, `tree`, `tree_autumn`, `birch`, `birch_autumn`, `bald_cypress`, `palm`, `dead_tree`, `log` and `stump`, and the plants `cattails`, `flowers`, `poppies`, `monstera`, `prickly_pear`, `tumbleweed`): `0` is its first drawing. Without it one is picked by where the prop stands - the same every render, but no two alike - wherever it comes from: `sprites`, `scatter`, a prefab or an object |
+| `variant` | which drawing of a prop that is drawn a few ways (`rocks`, `grass_tuft`, `dry_tuft`, `fern`, `bush`, `bush_autumn`, `boulder`, `boulder_snow`, `mushrooms`, the trees `pine`, `snowy_pine`, `tree`, `tree_autumn`, `birch`, `birch_autumn`, `bald_cypress`, `palm`, `dead_tree`, `log` and `stump`, the plants `cattails`, `flowers`, `poppies`, `monstera`, `prickly_pear`, `tumbleweed`, `kelp` and `cypress_knees`, and `rubble`): `0` is its first drawing. Without it one is picked by where the prop stands - the same every render, but no two alike - wherever it comes from: `sprites`, `scatter`, a prefab or an object |
 | `z` | height off the floor (wall lanterns ~0.8) |
 | `flip` | mirror horizontally |
 | `tint` | RGB multiplier, e.g. `[1.2, 0.8, 0.8]` |
