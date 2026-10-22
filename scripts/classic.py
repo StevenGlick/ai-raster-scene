@@ -586,6 +586,80 @@ def tex_stained_glass(name, wall='#8a857c'):
     return np.clip(img, 0, 1), em
 
 
+JEWELS = ('#ff4a3a', '#3a78ff', '#ffd23a', '#3ad27a', '#b65aff', '#ff8a2a')   # glass with the sun behind it
+
+
+def _leaded(img, em, win, pane, lead):
+    """Lay leaded glass into a stone wall texture: the window's opening `win`, its glass coloured `pane` (an RGB
+    image) where not `lead`, each pane a little uneven; the lead dark. The panes glow (they are lit from behind)."""
+    rng = np.random.default_rng(int(win.sum()) + 7)
+    glass = win & ~lead
+    img[glass] = np.clip(pane * (0.86 + 0.24 * rng.random(pane.shape[:2]))[..., None], 0, 1)[glass]
+    img[win & lead] = col('#1a1814')
+    em[glass] = 1.0
+
+
+def tex_lancet_window(name, wall='#b0a890'):
+    """A tall lancet window of stained glass in a pale stone wall: a pointed head, a border of cobalt and gold
+    round a column of ruby, a medallion of gold and emerald at its middle and another at its head, all leaded.
+    The panes glow - and where the sun stands behind the wall its light comes in through them, coloured."""
+    img = tex_stone(name + 's', wall, '#6a6250')
+    em = np.zeros((T, T), np.float32)
+    yy, xx = np.mgrid[0:T, 0:T] + 0.5
+    cx, hw = T / 2, 12.0
+    sp = 3 + np.sqrt(3) * hw                                    # where its pointed head springs
+    body = (np.abs(xx - cx) <= hw) & (yy >= sp) & (yy <= 60)
+    head = (yy < sp) & ((xx - (cx - hw)) ** 2 + (yy - sp) ** 2 <= (2 * hw) ** 2) \
+        & ((xx - (cx + hw)) ** 2 + (yy - sp) ** 2 <= (2 * hw) ** 2)
+    win = body | head
+    ring = win & ~(np.roll(win, 2, 1) & np.roll(win, -2, 1) & np.roll(win, 2, 0) & np.roll(win, -2, 0))
+    j = [col(c) for c in JEWELS]
+    pane = np.zeros((T, T, 3), np.float32)
+    pane[:] = j[0]
+    edge = win & ~(np.roll(win, 4, 1) & np.roll(win, -4, 1) & np.roll(win, 4, 0) & np.roll(win, -4, 0))
+    pane[edge] = np.where(((yy[edge] // 4) % 2)[:, None] == 0, j[1], j[2])
+    for my, r, a, b in ((41, 8.0, 2, 3), (15, 5.5, 2, 4)):                     # the medallions
+        d = np.hypot(xx - cx, yy - my)
+        pane[(d < r) & win] = j[a]
+        pane[(d < r * 0.55) & win] = j[b]
+    lead = ((np.abs(xx - cx) < 0.6) & (yy > sp)) | (((yy + 2) % 7) < 0.8) & body | ring
+    for my, r in ((41, 8.0), (15, 5.5)):
+        lead |= np.abs(np.hypot(xx - cx, yy - my) - r) < 0.6
+    surround = (np.roll(win, 2, 1) | np.roll(win, -2, 1) | np.roll(win, 2, 0) | np.roll(win, -2, 0)) & ~win
+    img[surround] = col('#5a564c')
+    _leaded(img, em, win, pane, lead)
+    return np.clip(img, 0, 1), em
+
+
+def tex_rose_window(name, wall='#b0a890'):
+    """A rose window: a great round of stained glass in a pale stone wall - twelve petals of ruby and cobalt round
+    a gold heart, a ring of small panes outside them - its stone tracery and lead between. The panes glow, and the
+    sun behind the wall comes in through them, coloured."""
+    img = tex_stone(name + 's', wall, '#6a6250')
+    em = np.zeros((T, T), np.float32)
+    yy, xx = np.mgrid[0:T, 0:T] + 0.5
+    cx, cy, R = T / 2, T / 2, 27.0
+    r = np.hypot(xx - cx, yy - cy)
+    a = (np.arctan2(yy - cy, xx - cx) + np.pi) / (2 * np.pi)
+    win = r <= R
+    j = [col(c) for c in JEWELS]
+    pane = np.zeros((T, T, 3), np.float32)
+    petal = (a * 12).astype(int)
+    pane[:] = np.where((petal % 2 == 0)[..., None], j[0], j[1])
+    outer = r > R * 0.72
+    small = (a * 24).astype(int)
+    pane[outer] = np.where((small[outer] % 3 == 0)[:, None], j[2], np.where((small[outer] % 3 == 1)[:, None], j[3], j[4]))
+    pane[r < R * 0.24] = j[2]
+    pane[r < R * 0.12] = j[5]
+    spokes = (np.abs(((a * 12) % 1.0) - 0.5) > 0.44) & (r > R * 0.24)
+    tracery = (np.abs(r - R * 0.72) < 1.1) | (np.abs(r - R * 0.24) < 0.9) | spokes | (r > R - 1.6)
+    lead = (np.abs(((a * 24) % 1.0) - 0.5) > 0.46) & outer | (np.abs(r - R * 0.48) < 0.6)
+    _leaded(img, em, win, pane, lead)
+    img[win & tracery] = col('#8a8474')                                         # its stone tracery
+    em[win & tracery] = 0.0
+    return np.clip(img, 0, 1), em
+
+
 def tex_slime_brick(name):
     """Dark sewer brick, wet, with green slime creeping up from the waterline."""
     rng = _rng(name)
@@ -936,6 +1010,7 @@ TEXTURES = {
     'castle': _plain(tex_castle),
     'flagstone': _plain(tex_flagstone),
     'stained_glass': _em(tex_stained_glass),
+    'lancet_window': _em(tex_lancet_window), 'rose_window': _em(tex_rose_window),
     'slime_brick': _plain(tex_slime_brick),
     'door_wood': _plain(tex_door_wood),
     # sci-fi
@@ -1992,7 +2067,7 @@ TEXTURE_NOISE = {
     # see-through: only their solid parts are drawn, so the factor applies to the metal or wood
     'chainlink': 0.6, 'fence_iron': 0.8, 'picket': 0.8, 'bars': 1.0, 'railing': 1.0,
     'lattice': 1.0, 'portcullis': 1.2, 'window_broken': 1.4,
-    'castle': 2.0, 'flagstone': 2.2, 'stained_glass': 0.3, 'ice': 0.8, 'snow_rock': 1.8,
+    'castle': 2.0, 'flagstone': 2.2, 'stained_glass': 0.3, 'lancet_window': 0.3, 'rose_window': 0.3, 'ice': 0.8, 'snow_rock': 1.8,
     'slime_brick': 1.4, 'door_wood': 1.0,
     'hull': 0.6, 'hull_lit': 0.5, 'hull_red': 0.6, 'hull_dark': 0.6, 'tech_panel': 0.5, 'server': 0.4,
     'blast_door': 0.7, 'hazard': 1.2, 'deck': 1.0, 'grid_floor': 0.2, 'hex_panel': 0.8,

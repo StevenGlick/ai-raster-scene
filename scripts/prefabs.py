@@ -26,6 +26,7 @@ mirrors half of them. A prefab-level `scale` pair varies the whole group. The pl
 import math
 import random
 
+import daylight
 import objects
 
 MAX_DEPTH = 6
@@ -193,10 +194,15 @@ def _fresh(state):
             return ch
 
 
-def expand(scene):
-    """The scene with every prefab placement turned into its parts, and every object into its
-    panels (objects.expand). A scene without prefabs or objects comes back as it is - the same
-    object - and an expanded one is never expanded twice."""
+def expand(scene, keep=()):
+    """The scene with every prefab placement turned into its parts, every object into its panels
+    (objects.expand), and its `time` of day into its sky, its sun or moon and its air
+    (daylight.apply: the keys named in `keep` stay as they are). A scene with none of them comes
+    back as it is - the same object - and an expanded one is never expanded twice."""
+    return daylight.apply(_expand(scene), keep)
+
+
+def _expand(scene):
     if not scene.get('prefabs'):
         return objects.expand(scene)
     defs = {**PREFABS, **(scene.get('prefab_defs') or {})}

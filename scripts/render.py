@@ -31,8 +31,9 @@ import icons  # noqa: E402
 import post  # noqa: E402
 import prefabs  # noqa: E402
 import buildings  # noqa: E402
+import daylight  # noqa: E402
 import wires  # noqa: E402
-from world import (SCATTER_PERIOD, VOID_DEPTH, World, find_sprite, merge_camera,  # noqa: E402,F401
+from world import (GLASS_TEXTURES, SCATTER_PERIOD, VOID_DEPTH, World, find_sprite, merge_camera,  # noqa: E402,F401
                    noise_field, plane_quads, resolve_camera, sample_noise)
 
 T = assets.T
@@ -165,7 +166,10 @@ def build_sun(world, L, res=4):
     Under a roof the light can only arrive through a gap - a doorway, a see-through window, the
     open side of a porch - so a second map holds the highest height that can still see it: the
     ray toward the light must be below the ceiling where it leaves the last roofed cell. A
-    sunbeam therefore comes in low through a window and lands on the floor across the room.
+    sunbeam therefore comes in low through a window and lands on the floor across the room. A
+    solid wall that rises to meet the roof is roofed over for this, so no light slips in along the
+    join; a wall with a storey of coloured glass stands in neither march - its panes let the light
+    through coloured and its lead and stone stop it (sun_tint).
 
     Objects that cast (`"casts": true`) stand in the same march at a finer grain, by the highest of
     their panels over each sample, so a standing stone throws its own shape of shadow.
@@ -180,7 +184,9 @@ def build_sun(world, L, res=4):
     px, py = (sx + 0.5) / res, (sy + 0.5) / res
     zlit = np.full((H, W), -1.0, np.float32)
     occ = _occluders(world, res) if L.get('shadows', True) else None
-    maxh = max(float(world.solid_h.max()), float(occ[0].max()) if occ is not None else 0.0)
+    glass = getattr(world, 'glass', None)
+    solid = world.solid_h if glass is None or not glass.any() else np.where(glass, 0.0, world.solid_h)
+    maxh = max(float(solid.max()), float(occ[0].max()) if occ is not None else 0.0)
     if L.get('shadows', True) and maxh > 0:
         own_x, own_y = np.floor(px).astype(int), np.floor(py).astype(int)
         reach = min(maxh / tan_el, float(world.mw + world.mh))
@@ -188,7 +194,7 @@ def build_sun(world, L, res=4):
             qx = np.floor(px + ux * t).astype(int)
             qy = np.floor(py + uy * t).astype(int)
             inb = (qx >= 0) & (qy >= 0) & (qx < world.mw) & (qy < world.mh)
-            hb = np.where(inb, world.solid_h[np.clip(qy, 0, world.mh - 1), np.clip(qx, 0, world.mw - 1)], 0)
+            hb = np.where(inb, solid[np.clip(qy, 0, world.mh - 1), np.clip(qx, 0, world.mw - 1)], 0)
             cand = np.where((qx == own_x) & (qy == own_y), -1.0, hb - t * tan_el)
             if occ is not None:                       # and the objects that cast, but never on themselves
                 fx = np.floor((px + ux * t) * res).astype(int)
@@ -202,6 +208,15 @@ def build_sun(world, L, res=4):
     zroof = np.full((H, W), np.inf, np.float32)
     zsky = np.full((2, H, W), -np.inf, np.float32)     # the band of heights lit down through a skylight
     if roof.any() and L.get('shadows', True):
+        # a solid wall that rises to meet the roof leaves no gap at its top: light from under the roof must clear
+        # its far side as well (else a sheet of it slips in where the wall's shadow and the roof's meet)
+        beside = np.zeros_like(roof)                    # (corners too: a ray can cross one diagonally)
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                beside[max(dy, 0):roof.shape[0] + min(dy, 0), max(dx, 0):roof.shape[1] + min(dx, 0)] |= \
+                    roof[max(-dy, 0):roof.shape[0] + min(-dy, 0), max(-dx, 0):roof.shape[1] + min(-dx, 0)]
+        sealed = beside & ~roof & (solid >= world.ceil_h - 1e-6)
+        own = np.floor(py).astype(int) * world.mw + np.floor(px).astype(int)
         last = np.full((H, W), -1.0, np.float32)    # how far toward the light the roof lasts
         t_open = np.full((H, W), np.inf, np.float32)     # where the first stretch of open sky begins...
         t_shut = np.full((H, W), np.inf, np.float32)     # ...and where roof takes over again
@@ -210,10 +225,12 @@ def build_sun(world, L, res=4):
             qx = np.floor(px + ux * t).astype(int)
             qy = np.floor(py + uy * t).astype(int)
             inb = (qx >= 0) & (qy >= 0) & (qx < world.mw) & (qy < world.mh)
-            under = inb & roof[np.clip(qy, 0, world.mh - 1), np.clip(qx, 0, world.mw - 1)]
-            last = np.where(under, t, last)
+            cq = np.clip(qy, 0, world.mh - 1), np.clip(qx, 0, world.mw - 1)
+            under = inb & roof[cq]
+            shut = under | (inb & sealed[cq] & (qy * world.mw + qx != own))      # (a wall's own face is not sealed)
+            last = np.where(shut, t, last)
             t_shut = np.where(np.isfinite(t_open) & np.isinf(t_shut) & under, t, t_shut)
-            t_open = np.where(np.isinf(t_open) & ~under, t, t_open)
+            t_open = np.where(np.isinf(t_open) & ~shut, t, t_open)
         zroof = np.where(last >= 0, world.ceil_h - (last + 0.25) * tan_el, np.inf).astype(np.float32)
         # a ray rising from height z crosses the roof's height (t - z/tan) along the way; if it
         # crosses inside that first open stretch it escapes, whatever roof lies beyond
@@ -221,6 +238,7 @@ def build_sun(world, L, res=4):
         zsky[0] = np.where(np.isfinite(t_shut), world.ceil_h - (t_shut - 0.25) * tan_el, -np.inf)
     elif roof.any():
         zroof[np.repeat(np.repeat(roof, res, 0), res, 1)] = -np.inf
+    panes = _glass_cells(world, ux, uy) if glass is not None and glass.any() and L.get('shadows', True) else None
     rgb = np.array(L.get('color', colour), np.float32) * float(L.get('intensity', inten))
     disc = None
     if L.get('disc', True):
@@ -228,7 +246,86 @@ def build_sun(world, L, res=4):
                 'color': L.get('disc_color', disc_c), 'radius': float(L.get('disc_size', disc_r)), 'glow': glow,
                 'style': L.get('disc_style')}
     return {'ux': ux, 'uy': uy, 'sin': math.sin(el), 'cos': math.cos(el), 'rgb': rgb, 'zlit': zlit,
-            'zroof': zroof, 'zsky': zsky, 'ceil_h': world.ceil_h, 'res': res, 'disc': disc, 'kind': kind}
+            'zroof': zroof, 'zsky': zsky, 'ceil_h': world.ceil_h, 'res': res, 'disc': disc, 'kind': kind,
+            'glass': panes, 'roof': roof, 'tan': tan_el}
+
+
+def _glass_cells(world, ux, uy):
+    """The walls of coloured glass (World.glass) as sun_tint reads them for a light from (ux, uy): each cell, its
+    height, whether it rises to the roof, each storey's panes - each pane's hue, bright, where the texture glows;
+    None for a storey of stone - and whether the faces the light comes in by lie inside the wall, against another
+    cell of glass (the light took its colour at the first)."""
+    cells, panes = [], {}
+    for cy, cx in zip(*np.nonzero(world.glass)):
+        tiers = []
+        for tid in world.stacks.get((cy, cx), [world.wall_tid[cy, cx]]):
+            if world.tex_key[tid] not in GLASS_TEXTURES:
+                tiers.append(None)
+                continue
+            if tid not in panes:
+                rgb_, em_ = world.tex[tid]
+                pane = em_ > 0.5 if em_ is not None else np.zeros(rgb_.shape[:2], bool)
+                hue = rgb_ / np.maximum(rgb_.max(-1, keepdims=True), 1e-3)
+                panes[tid] = np.where(pane[..., None], hue * 0.95, 0.0).astype(np.float32)
+            tiers.append(panes[tid])
+        ox, oy = cx - (1 if ux > 0 else -1), cy - (1 if uy > 0 else -1)
+        cells.append({'x': int(cx), 'y': int(cy), 'h': float(world.height[cy, cx]), 'tiers': tiers,
+                      'roofed': float(world.height[cy, cx]) >= world.ceil_h - 1e-6,
+                      'inner': (0 <= ox < world.mw and bool(world.glass[cy, ox]),
+                                0 <= oy < world.mh and bool(world.glass[oy, cx]))})
+    return cells
+
+
+def sun_tint(s_, x, y, z):
+    """The colour a sun's or moon's light has at points (x, y, z) from the coloured glass it came in through - 1.0
+    where it came through none. Wherever the ray from a point toward the light enters a wall of glass beyond the
+    point - at the height it has climbed to there, at its place along the face it crosses - a pane lets it on in the
+    pane's colour and the lead and the stone round the panes stop it, as a wall of stone does; over the wall's top
+    it passes untouched, unless the wall rises to the roof and the point is indoors, under a roof of its own."""
+    cells = s_.get('glass')
+    if not cells:
+        return 1.0
+    x, y, z = np.broadcast_arrays(np.asarray(x, np.float64), np.asarray(y, np.float64), np.asarray(z, np.float64))
+    shape = x.shape
+    x, y, z = x.reshape(-1), y.reshape(-1), z.reshape(-1)
+    ux = s_['ux'] if abs(s_['ux']) > 1e-9 else 1e-9
+    uy = s_['uy'] if abs(s_['uy']) > 1e-9 else 1e-9
+    tint = None
+    for c in cells:
+        tx = (c['x'] + (0 if ux > 0 else 1) - x) / ux          # where the ray crosses into the cell's span in x,
+        ty = (c['y'] + (0 if uy > 0 else 1) - y) / uy          # and in y: it is in the cell between the later of
+        t_in = np.maximum(tx, ty)                              # those and the earlier of the crossings out
+        hit = (t_in > 1e-6) & (t_in < np.minimum(tx + 1.0 / abs(ux), ty + 1.0 / abs(uy)))
+        if not hit.any():
+            continue
+        sel = np.nonzero(hit)
+        tc, xface = t_in[sel], tx[sel] >= ty[sel]
+        zc = z[sel] + tc * s_['tan']
+        along = np.where(xface, (y[sel] + uy * tc) % 1.0, (x[sel] + ux * tc) % 1.0)
+        along = np.where(np.where(xface, ux < 0, uy > 0), 1 - along, along)      # as the wall pass reads it
+        col = np.zeros(zc.shape + (3,), np.float32)
+        over = zc >= c['h']
+        col[over] = 1.0
+        if c['roofed'] and over.any():                         # from indoors it went through the roof to get there
+            xo, yo, zo = x[sel][over], y[sel][over], z[sel][over]
+            roof = s_['roof']
+            iy = np.clip(np.floor(yo).astype(int), 0, roof.shape[0] - 1)
+            ix = np.clip(np.floor(xo).astype(int), 0, roof.shape[1] - 1)
+            col[over] = (~(roof[iy, ix] & (zo < s_['ceil_h'] - 1e-6)))[:, None]
+        k = np.clip(np.floor(zc).astype(int), 0, len(c['tiers']) - 1)
+        for kk in np.unique(k[~over]):
+            light = c['tiers'][kk]
+            if light is None:
+                continue                                       # a storey of stone
+            s2 = ~over & (k == kk)
+            n = light.shape[0]
+            v = ((1 - zc[s2] % 1.0) * n).astype(int).clip(0, n - 1)
+            col[s2] = light[v, (along[s2] * n).astype(int).clip(0, n - 1)]
+        col[np.where(xface, c['inner'][0], c['inner'][1])] = 1.0
+        if tint is None:
+            tint = np.ones(x.shape + (3,), np.float32)
+        tint[sel] *= col
+    return 1.0 if tint is None else tint.reshape(shape + (3,))
 
 
 def sun_visibility(s_, x, y, z, soft=0.12):
@@ -385,7 +482,7 @@ def screen_picture(spec, scene):
                 shots = [spec['camera']] if spec.get('camera') else sc.get('shots') or [sc['camera']]
                 i = 0 if spec.get('camera') else max(0, min(len(shots), int(spec.get('shot', 1))) - 1)
                 cam = prepare_shot(sc, merge_camera(sc, shots[i]))
-                sc2 = {**sc, **cam.get('overrides', {})}
+                sc2 = shot_scene(sc, cam, shots[i])
                 rr = Renderer(World(sc2), sc2)
                 frame = rr.render(cam)
                 pal, levels = post.palette_spec(rr.last_effects, sc2)
@@ -428,6 +525,8 @@ class Renderer:
     def __init__(self, world, scene):
         raw = scene
         scene = prefabs.expand(scene)
+        if any(pn.get('screen') is not None for pn in scene.get('panels', [])):
+            scene = dict(scene, panels=[dict(pn) for pn in scene['panels']])     # its own, to lay pictures into
         self.w = world
         self.s = scene
         # a portal shows the view from its far side (rendered before each frame, see _portal_views); a screen
@@ -525,7 +624,7 @@ class Renderer:
         point lights' height falloff: sunlight reaches the top of a tall facade as well."""
         total = 0.0
         for s_ in self.suns:
-            total = total + (sun_visibility(s_, x, y, z) * lam(s_))[..., None] * s_['rgb']
+            total = total + (sun_visibility(s_, x, y, z) * lam(s_))[..., None] * s_['rgb'] * sun_tint(s_, x, y, z)
         return total
 
     @staticmethod
@@ -747,7 +846,7 @@ class Renderer:
         each pane and what is seen through it (see _glass_pass).
         """
         if not self._marched:
-            self._march(depth.shape, ss)
+            self._march(depth, ss)
         H, W = depth.shape
         Tp, Lp = self._fog_px(np.arange(H)[:, None], np.arange(W)[None, :], depth)
         out = img * Tp[..., None] + Lp
@@ -756,13 +855,16 @@ class Renderer:
         self._emis = self._emis * Tp[..., None]
         return out
 
-    def _march(self, shape, ss):
+    def _march(self, depth, ss):
         """The march itself, once a frame: how much of the light from each distance along every
         ray gets through the air, and how much the air adds, kept in self.fog_t."""
         self._marched = True
         v, r = self.vol, self.rays
-        H, W = shape
+        H, W = depth.shape
         h, w = H // ss, W // ss
+        # no ray takes its light from past the farthest thing its pixel shows: the stretch that holds a wall or a
+        # ceiling is sampled in front of it, not in the sunlit air beyond (over the roof, behind the wall)
+        reach = np.nan_to_num(depth[:h * ss, :w * ss].reshape(h, ss, w, ss).max(axis=(1, 3)), nan=np.inf, posinf=np.inf)
         c0 = np.arange(w) * ss + ss // 2
         rdx, rdy, rlen = r['rdx'][c0], r['rdy'][c0], r['rlen'][c0]
         slope = (r['horizon'] - (np.arange(h) * ss + ss / 2)) / r['proj']        # z gained per unit t
@@ -776,6 +878,7 @@ class Renderer:
         jit = (bayer[np.arange(h)[:, None] % 4, np.arange(w)[None, :] % 4] + 0.5) / 16
         tv = np.zeros((n + 1, h, w), np.float32)
         lv = np.zeros((n + 1, h, w, 3), np.float32)
+        live = np.ones((n + 1, h, w), np.float32)         # 1 where the ray still has air at the start of the step
         T = np.ones((h, w), np.float32)
         L = np.zeros((h, w, 3), np.float32)
         tv[0] = 1.0
@@ -788,7 +891,7 @@ class Renderer:
             phase.append(((1 - g * g) / (1 + g * g - 2 * g * cos) ** 1.5).astype(np.float32))
         for k in range(1, n + 1):
             dt = t[k] - t[k - 1]
-            tm = t[k - 1] + jit * dt
+            tm = t[k - 1] + jit * np.clip(np.minimum(t[k], reach) - t[k - 1], 0.0, dt)
             x, y = r['px'] + sx * tm, r['py'] + rdy[None, :] * tm
             z = r['camz'] + sl * tm
             z = np.broadcast_to(z, (h, w))
@@ -813,14 +916,19 @@ class Renderer:
                 for s_, ph in zip(self.suns, phase):
                     # scaled so a beam seen side-on reads as a beam, and the air round a low
                     # sun glows without whiting out the frame
-                    light = light + (0.6 * v['shafts'] * sun_visibility(s_, x, y, z, 0.35) * ph)[..., None] * s_['rgb']
+                    light = light + ((0.6 * v['shafts'] * sun_visibility(s_, x, y, z, 0.35) * ph)[..., None] * s_['rgb']
+                                     * sun_tint(s_, x, y, z))
             L = L + (T * a)[..., None] * light
             T = T * (1 - a)
-            tv[k], lv[k] = T, L
+            tv[k], lv[k], live[k] = T, L, t[k - 1] < reach
         # neighbouring rays see nearly the same air: averaging each step over the 4x4 tile of the
         # dither pattern removes the pattern but keeps shafts and banks, and each pixel still reads
-        # the result at its own depth, so nothing bleeds across a silhouette
-        tv, lv = _box4(tv), _box4(lv)
+        # the result at its own depth, so nothing bleeds across a silhouette - nor from past the wall
+        # a neighbour stops at: each step is averaged over the rays that still have air there
+        n_live = _box4(live)
+        some = n_live > 1e-6
+        tv = np.where(some, _box4(tv * live) / np.maximum(n_live, 1e-6), tv)
+        lv = np.where(some[..., None], _box4(lv * live[..., None]) / np.maximum(n_live, 1e-6)[..., None], lv)
         self.fog_t = (t, tv, lv)        # kept for weather, which sits inside the same fog
 
     def _fog_px(self, ri, ci, depth):
@@ -1760,7 +1868,7 @@ class Renderer:
         behind = {}
         fogged = None
         if self.vol is not None and any(glass_spec(sp['glass'])['fog'] for _, _, sp in glass if sp.get('glass')):
-            self._march(depth.shape, self._ss)
+            self._march(depth, self._ss)
             H, W = depth.shape
             Ts, Ls = self._fog_px(np.arange(H)[:, None], np.arange(W)[None, :], depth)
             fogged = img * Ts[..., None] + Ls
@@ -2153,8 +2261,11 @@ def finish(img, scene, effects=(), seed=0, ref=None):
 
 
 def prepare_shot(scene, cam):
-    """Per-shot adjustments: held lights from viewmodels (lantern, torch) and the flashlight item."""
+    """Per-shot adjustments: held lights from viewmodels (lantern, torch) and the flashlight item; a shot's
+    `time` of day goes into its overrides."""
     cam = dict(cam)
+    if 'time' in cam:
+        cam['overrides'] = {**cam.get('overrides', {}), 'time': cam.pop('time')}
     overlays = list(scene.get('overlays', [])) + list(cam.get('overlays', []))
     extra = []
     for ov in overlays:
@@ -2188,7 +2299,7 @@ def render_shot(scene, i, base=None, report=None):
     shots = scene.get('shots') or [scene['camera']]
     cam = prepare_shot(scene, merge_camera(scene, shots[i]))
     if cam.get('overrides'):
-        sc = {**scene, **cam['overrides']}
+        sc = shot_scene(scene, cam, shots[i])
         rr = Renderer(World(sc), sc)
     else:
         if base is None:
@@ -2199,6 +2310,13 @@ def render_shot(scene, i, base=None, report=None):
     if report is not None:
         report.extend(rr.last_report)
     return finish(frame, {**scene, **cam.get('overrides', {})}, rr.last_effects, i, rr.palette_ref)
+
+
+def shot_scene(scene, cam, shot):
+    """The scene as a shot sees it: the shot's `overrides` laid over it and the whole expanded - its prefabs,
+    objects and time of day (prefabs.expand) - the keys the shot itself overrides beside a `time` staying as the
+    shot gives them."""
+    return prefabs.expand({**scene, **cam.get('overrides', {})}, keep=set(shot.get('overrides') or {}) - {'time'})
 
 
 def save_png(im, path):
@@ -2300,11 +2418,11 @@ SCENE_KEYS = {
     'palette', 'auto_levels', 'dither', 'scanlines', 'overbright', 'lightmap_res', 'max_distance',
     'supersample', 'overlays', 'ui', 'post', 'icon_defs', 'viewmodel_defs', 'seed',
     'skyline', 'contact_shadows', 'heights', 'height_unit', 'reflections', 'sky_objects', 'wet',
-    'prefabs', 'prefab_defs', 'wireframes', 'objects',
+    'prefabs', 'prefab_defs', 'wireframes', 'objects', 'time',
     'title', 'description', 'notes',  # free-form metadata, never read
 }
 SHOT_KEYS = {'x', 'y', 'angle', 'look_at', 'fov', 'height', 'pitch', 'flashlight', 'overlays', 'overrides',
-             'post', 'scanlines', 'seed', 'supersample', 'extra_sprites', 'extra_wireframes', 'title',
+             'post', 'scanlines', 'seed', 'supersample', 'extra_sprites', 'extra_wireframes', 'time', 'title',
              'description', 'notes'}
 CELL_KEYS = {'wall', 'h', 'top', 'floor', 'ceil', 'drop', 'reflect', 'side', 'fringe', 'facade', 'glazed', 'cliff'}
 ASSET_EXTS = ('.png', '.ttf', '.otf', '.json')     # a .json: another scene, that a portal or a screen shows
@@ -2325,11 +2443,14 @@ def lint_scene(scene):
             out.append(f"{where}: unknown key {k!r}" + (f" - did you mean {hint[0]!r}?" if hint else ''))
 
     check(scene, SCENE_KEYS, 'scene')
+    check(scene.get('time'), daylight.SPEC_KEYS, 'time')
     check(scene.get('camera'), SHOT_KEYS, 'camera')
     for i, shot in enumerate(scene.get('shots') or []):
         check(shot, SHOT_KEYS, f'shot {i + 1}')
         if isinstance(shot, dict):
             check(shot.get('overrides'), SCENE_KEYS, f'shot {i + 1} overrides')
+            for t in (shot.get('time'), (shot.get('overrides') or {}).get('time')):
+                check(t, daylight.SPEC_KEYS, f'shot {i + 1} time')
     for ch, spec in (scene.get('legend') or {}).items():
         check(spec, CELL_KEYS, f'legend {ch!r}')
     for i, pl in enumerate(scene.get('prefabs') or []):

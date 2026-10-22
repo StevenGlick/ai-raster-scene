@@ -3408,6 +3408,74 @@ def piano(pl):
     return [p for p in parts if p]
 
 
+# ------------------------------------------------------------------ a chapel's pews
+
+PEW_PROFILE = [(-0.075, 0.0), (-0.096, 0.29), (-0.062, 0.303), (-0.05, 0.155), (0.075, 0.155), (0.075, 0.137),
+               (-0.056, 0.137), (-0.06, 0.0)]      # its side: the back behind, its cap, its front, the seat, the
+PEW_TONES = (-0.04, 0.24, 0.0, 0.07, 0.1, -0.25, -0.15)     # the cap rubbed pale along the top, dark under the seat
+PEW_END = [(-0.1, 0.0), (-0.1, 0.3), (-0.09, 0.33), (-0.068, 0.345), (-0.05, 0.328), (-0.044, 0.2), (0.058, 0.18),
+           (0.084, 0.164), (0.084, 0.0)]           # seat's edge, under it, the board below it; and its ends
+OAK = ramp('#74502e', dark=0.32, light=1.5)
+
+
+@functools.lru_cache(maxsize=None)
+def _pew_boards(w, h, seed, tone0=0.0):
+    """A pew's oak, flat: boards running its length (the texture's width), each its own tone (about `tone0`),
+    the grain faint along them and the joints between dark."""
+    rng = np.random.default_rng(seed)
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.2, top=1.0, bevel=0, mat=0, tone=-0.12)
+    y = 0
+    while y < h:
+        bh, tone = int(rng.integers(6, 9)), tone0 + float(rng.normal(0, 0.05))
+        cv.box(0, y, w, bh - 1, z=0.6, top=1.0, bevel=0.5, mat=0, tone=tone)
+        for _ in range(w * bh // 50):                                                      # the grain along it
+            gx, gy = rng.uniform(0, w), rng.uniform(y + 1, max(y + 1.5, y + bh - 2))
+            cv.stroke([(gx, gy), (gx + rng.uniform(6, 22), gy + rng.normal(0, 0.25))], 0.7, z=1.56, dome=0.02,
+                      mat=0, tone=tone - 0.07)
+        y += bh
+    return _finish(cv, [OAK], relief=0.5, outline=0)
+
+
+@functools.lru_cache(maxsize=None)
+def _pew_end(w, h):
+    """A pew's end, its front to the right: a board of oak standing past the seat and the back all round,
+    scrolled over at the top of the back, a sunk panel in it and a carved roundel above."""
+    x0, x1 = PEW_END[0][0], max(p[0] for p in PEW_END)
+    H = max(p[1] for p in PEW_END)
+    pts = [((x - x0) / (x1 - x0) * w, (H - z) / H * h) for x, z in PEW_END]
+    cv = Canvas(w, h, wrap=False)
+    cv.polygon(pts, z=0.4, top=0.6, bevel=1.5, mat=0)
+    cv.box(w * 0.14, h * 0.48, w * 0.72, h * 0.44, z=0.2, top=0.4, bevel=1.4, mat=0, tone=-0.06)    # the panel
+    cv.ellipse(w * 0.17, h * 0.13, w * 0.09, w * 0.09, z=0.8, dome=0.5, mat=0, tone=0.08)           # the roundel
+    rgba, em = _finish(cv, [OAK], relief=0.9)
+    rgba = rgba.copy()
+    rgba[..., 3] = _grown(_poly(w, h, pts))
+    return rgba, em
+
+
+def pew(pl):
+    """A chapel's pew: a bench of dark oak `length` long (default 1.2) for a row of people, its seat at the
+    height of a knee, its back leaning a little back with a cap along its top and boarded down to the floor
+    behind the seat, and at each end a carved board standing past it all round, scrolled over at the top, a
+    panel sunk in it. Faces +x: whoever sits in it looks that way."""
+    seed = int(pl.get('seed', 1))
+    half = float(pl.get('length', 1.2)) / 2
+    prof = PEW_PROFILE
+    W = _fine(2 * half)
+    texs = [_pew_boards(W, _fine(math.hypot(b[0] - a[0], b[1] - a[1])), seed + k, PEW_TONES[k])
+            for k, (a, b) in enumerate(zip(prof, prof[1:]))]
+    parts = _profile_faces(prof, half, texs)
+    x0, x1 = PEW_END[0][0], max(p[0] for p in PEW_END)
+    H = max(p[1] for p in PEW_END)
+    end = _pew_end(_fine(x1 - x0), _fine(H))
+    parts += [quad(end, (x0, half, H), (x1, half, H), (x0, half, 0.0)),                         # its ends
+              quad((end[0][:, ::-1], end[1][:, ::-1]), (x1, -half, H), (x0, -half, H), (x1, -half, 0.0))]
+    n = max(1, int(round(half / 0.3)))
+    parts += [shadow(0.0, (2 * k + 1 - n) / n * half, 0.34, 0.35) for k in range(n)]
+    return [p for p in parts if p]
+
+
 # ------------------------------------------------------------------ pictures within pictures: portals, screens
 
 @functools.lru_cache(maxsize=None)
@@ -3643,5 +3711,5 @@ OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'bo
            'longship': longship, 'lighthouse': lighthouse, 'stone_lantern': stone_lantern,
            'standing_stone': standing_stone, 'gear': gear, 'heap': heap, 'arcade_cabinet': arcade_cabinet,
            'vending_machine': vending_machine, 'well': well, 'crate': crate, 'barrel': barrel,
-           'card_table': card_table, 'saloon_chair': saloon_chair, 'piano': piano, 'portal': portal,
+           'card_table': card_table, 'saloon_chair': saloon_chair, 'piano': piano, 'pew': pew, 'portal': portal,
            'screen': screen, 'sign': sign}

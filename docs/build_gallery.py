@@ -117,6 +117,9 @@ SHOTS = {
     'castle_hall': ('castle_keep', 6),
     'chapel_yard': ('chapel_graveyard', 1),
     'chapel_nave': ('chapel_graveyard', 3),
+    'glass_matins': ('glass_chapel', 1),
+    'glass_beam': ('glass_chapel', 2),
+    'glass_monk': ('glass_chapel', 3),
     'cave_beast': ('crystal_cave', 3),
     'crystal_cave': ('crystal_cave', 1),
     'crystal_violet': ('crystal_cave', 4),
@@ -240,7 +243,7 @@ SHOTS = {
     'gui_trade_02': ('gui_trade', 2),
 }
 # gallery image -> example whose every shot is tiled at half size, two to a row
-SHEETS = {'post_presets': 'post_presets', 'gui_themes': 'gui_themes'}
+SHEETS = {'post_presets': 'post_presets', 'gui_themes': 'gui_themes', 'village_hours': 'village_hours'}
 # gallery image -> example whose --map layout check is shown
 MAPS = {'layout_map': 'garden_encounter'}
 # gallery image -> a page of panels in examples/pages/, laid out by scripts/pages.py

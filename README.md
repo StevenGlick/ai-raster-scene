@@ -153,6 +153,10 @@ The `timber` style builds a village instead: timber-framed houses in limewash an
 | ![Market day on a village street of timber-framed houses, the inn's sign out over it](docs/gallery/village_market.png) | ![A stallholder by a striped stall of apples and bread](docs/gallery/village_stall.png) |
 | ![The well on the village green, an oak and a row of gables behind](docs/gallery/village_well.png) | ![The inn's lanterns lit after closing, a knight at the door](docs/gallery/village_night.png) |
 
+The same street through a day, one key per shot - `"time": "dawn"`, `"morning"`, `"noon"`, `"afternoon"`, `"golden"`, `"sunset"`, `"dusk"`, `"night"` (or any hour, 17.5): the sun goes round from the east to the west and down and the moon rises after it, the sky turns, the air darkens and tints, more of the windows show a lamp, and the inn's lanterns, lights marked `"night": true`, burn from sunset on.
+
+![The village street at eight times of day, from dawn to night](docs/gallery/village_hours.png)
+
 ### The frontier town
 
 The `western` style raises a frontier main street: clapboard false fronts with their painted signs - saloon, bank, livery, general store - a covered boardwalk out in front, the saloon's batwing doors lit from inside.
@@ -408,9 +412,19 @@ A castle keep with its throne on a stepped dais and a portcullis you can see thr
 | | |
 |---|---|
 | ![The throne room on its raised dais](docs/gallery/castle_throne.png) | ![The portcullis: a see-through wall](docs/gallery/castle_gate.png) |
+| ![The churchyard under the moon, with a treeline skyline](docs/gallery/chapel_yard.png) | ![The nave: stained glass and a stepped altar](docs/gallery/chapel_nave.png) |
 
 ![The great hall from its foot: round pillars of dressed stone and timber beams framing the throne](docs/gallery/castle_hall.png)
-| ![The churchyard under the moon, with a treeline skyline](docs/gallery/chapel_yard.png) | ![The nave: stained glass and a stepped altar](docs/gallery/chapel_nave.png) |
+
+### The glass chapel
+
+Mid-morning in a nave of pale stone, the sun standing behind the lancets down its south wall: the light comes in through them coloured, each window's pattern laid across the floor and the pews where it falls and hanging in the dusty air as coloured shafts, a monk standing in it. Glass the sun shines through (`lancet_window`, `rose_window`, `stained_glass`) lets the light on in each pane's colour and stops it at the lead and the stone; the pews are 3D `pew` objects.
+
+![Matins: the aisle to the altar under the rose window, a window's colours laid across the floor](docs/gallery/glass_matins.png)
+
+| | |
+|---|---|
+| ![A lancet's light falling over the pews](docs/gallery/glass_beam.png) | ![A monk standing in the coloured light](docs/gallery/glass_monk.png) |
 
 ### Encounters
 
@@ -618,7 +632,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Post-processing**: colour grading, bloom (from the whole frame, or only from what gives off light - neon, windows, flames, fireflies, a held lantern, the sun - so it can glow hard), depth of field that focuses on the shot's subject and leaves its colours alone, streaks (the twinkle of a star filter on the brightest lights, or the long blue lines of an anamorphic lens), a lens flare from a sun in the frame, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
 - **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
 - **Pixel art drawn in code**: the jungle, ruins and beach are built from shapes - leaves, stones, planks, blades of grass, carved glyphs - stamped into a height field, lit from one direction, and snapped onto hue-shifted colour ramps with dark edges on their shadow sides (`scripts/pixelart.py`), so they read as pixel art rather than noise. The held items go a step further: each is a small 3D model - capsules for finger bones, cylinders and boxes for a revolver - posed in a hand, rendered from the player's eye and painted onto the same ramps with an outline (`scripts/sculpt.py`), so the perspective is right: the barrel runs away into the view and you see the back of your own hand
-- **No assets to download**: all 199 textures, 307 props, 33 characters, 27 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
+- **No assets to download**: all 201 textures, 311 props, 33 characters, 27 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
 
 ![Character cast](docs/gallery/cast.png)
 

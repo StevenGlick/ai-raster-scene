@@ -29,6 +29,9 @@ def find_sprite(scene, sid, cam=None):
 
 # How far the edge of solid ground drops into a void floor before the sky shows beneath it.
 VOID_DEPTH = 2.5
+# Wall textures of coloured glass the sun shines through, its light taking the colour of each pane (their
+# emissive texels are the panes): render.sun_tint colours the light at every point it reaches through them.
+GLASS_TEXTURES = ('stained_glass', 'rose_window', 'lancet_window')
 
 
 def resolve_camera(scene, cam):
@@ -171,6 +174,11 @@ class World:
         self.reflect = np.clip(self.reflect + self.wet * 0.35, 0, 1).astype(np.float32)
         # what blocks light and hides what is behind it: see-through cells do neither
         self.solid_h = np.where(self.see, 0.0, self.height).astype(np.float32)
+        # walls with a storey of coloured glass: the sun comes in through their panes, coloured (render.sun_tint)
+        self.glass = np.zeros((self.mh, self.mw), bool)
+        for y, x in zip(*np.nonzero(self.height > 0)):
+            tids = self.stacks.get((y, x), [self.wall_tid[y, x]])
+            self.glass[y, x] = any(self.tex_key[t] in GLASS_TEXTURES for t in tids)
 
         self.floor_decals, self.ceil_decals, self.wall_decals = [], [], {}
         self._facade_objects = []           # things the facades build in 3D (a porch's roof), as objects

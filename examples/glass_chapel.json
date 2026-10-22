@@ -1,0 +1,374 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,##L##L##L##L##L##L##,,,",
+  ",,,#..................#,,,",
+  ",,,#...............DDDL,,,",
+  ",,,#...............DDD#,,,",
+  ",,,................DDAR,,,",
+  ",,,#...............DDD#,,,",
+  ",,,#...............DDDL,,,",
+  ",,,#..................#,,,",
+  ",,,##L##L##L##L##L##L##,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,"
+ ],
+ "legend": {
+  ",": {
+   "floor": "grass"
+  },
+  "#": {
+   "wall": "stone_pale",
+   "h": 3.0
+  },
+  "L": {
+   "wall": [
+    "stone_pale",
+    "lancet_window",
+    "lancet_window"
+   ],
+   "h": 3.0
+  },
+  "R": {
+   "wall": [
+    "stone_pale",
+    "stone_pale",
+    "rose_window"
+   ],
+   "h": 3.0
+  },
+  ".": {
+   "floor": "flagstone",
+   "ceil": "wood_panel"
+  },
+  "D": {
+   "wall": "marble",
+   "top": "flagstone",
+   "ceil": "wood_panel"
+  },
+  "A": {
+   "wall": "marble",
+   "top": "marble",
+   "ceil": "wood_panel"
+  }
+ },
+ "camera": {
+  "x": 5.6,
+  "y": 6.5,
+  "look_at": [
+   19.0,
+   7.0,
+   0.8
+  ],
+  "fov": 66,
+  "height": 0.56
+ },
+ "title": "The glass chapel - morning through the windows",
+ "heights": [
+  "..........................",
+  "..........................",
+  "..........................",
+  "..........................",
+  "...................222....",
+  "...................222....",
+  "...................224....",
+  "...................222....",
+  "...................222....",
+  "..........................",
+  "..........................",
+  "..........................",
+  ".........................."
+ ],
+ "height_unit": 0.15,
+ "ceiling_height": 3.0,
+ "sky": "day",
+ "ambient": [
+  0.25,
+  0.245,
+  0.28
+ ],
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 75,
+   "elevation": 25,
+   "color": [
+    1.0,
+    0.92,
+    0.78
+   ],
+   "intensity": 2.2,
+   "disc": false
+  },
+  {
+   "x": 20.6,
+   "y": 6.5,
+   "z": 0.9,
+   "radius": 2.4,
+   "color": [
+    1.0,
+    0.7,
+    0.4
+   ],
+   "intensity": 0.7
+  }
+ ],
+ "fog": {
+  "color": [
+   0.16,
+   0.15,
+   0.15
+  ],
+  "density": 0.02,
+  "glow": 0.4,
+  "shafts": 8
+ },
+ "objects": [
+  {
+   "type": "pew",
+   "x": 8.4,
+   "y": 4.6,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 0,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 8.4,
+   "y": 8.4,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 0,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 9.0,
+   "y": 4.6,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 1,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 9.0,
+   "y": 8.4,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 1,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 9.6,
+   "y": 4.6,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 2,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 9.6,
+   "y": 8.4,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 2,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 10.2,
+   "y": 4.6,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 3,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 10.2,
+   "y": 8.4,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 3,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 10.8,
+   "y": 4.6,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 4,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 10.8,
+   "y": 8.4,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 4,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 11.4,
+   "y": 4.6,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 5,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 11.4,
+   "y": 8.4,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 5,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 12.0,
+   "y": 4.6,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 6,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 12.0,
+   "y": 8.4,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 6,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 12.600000000000001,
+   "y": 4.6,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 7,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 12.600000000000001,
+   "y": 8.4,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 7,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 13.2,
+   "y": 4.6,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 8,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 13.2,
+   "y": 8.4,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 8,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 13.8,
+   "y": 4.6,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 9,
+   "fill": 0.4
+  },
+  {
+   "type": "pew",
+   "x": 13.8,
+   "y": 8.4,
+   "angle": 0,
+   "length": 2.4,
+   "seed": 9,
+   "fill": 0.4
+  }
+ ],
+ "sprites": [
+  {
+   "id": "monk",
+   "x": 16.75,
+   "y": 7.0,
+   "type": "monk",
+   "facing": 234
+  },
+  {
+   "x": 21.5,
+   "y": 6.2,
+   "type": "candles"
+  },
+  {
+   "x": 21.5,
+   "y": 6.8,
+   "type": "candles"
+  }
+ ],
+ "shots": [
+  {
+   "x": 5.6,
+   "y": 6.5,
+   "look_at": [
+    19.0,
+    7.0,
+    0.8
+   ],
+   "fov": 66,
+   "height": 0.56,
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Matins",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 12.4,
+   "y": 3.3,
+   "look_at": [
+    14.0,
+    10.0,
+    1.0
+   ],
+   "fov": 70,
+   "height": 0.55
+  },
+  {
+   "x": 15.0,
+   "y": 4.6,
+   "look_at": "monk",
+   "fov": 60,
+   "height": 0.45
+  }
+ ],
+ "contact_shadows": 0.5,
+ "supersample": 2
+}

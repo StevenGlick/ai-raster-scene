@@ -1,0 +1,484 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV",
+  "VVVVVVffffffffffffffffffffffVVVVVV",
+  "VVVVVVfggggggggggggggggggggfVVVVVV",
+  "VVVVVVfggggggggggggggggggggfVVVVVV",
+  "VVVVVVfggggggggggggggggggggfVVVVVV",
+  "VVVVVVfggggggggggggggggggggfVVVVVV",
+  "VVVVVVfggggggggggggggggggggfVVVVVV",
+  "VVVVVVfggggggggggggggggggggfVVVVVV",
+  "VVVVVVfggggggggggggggggggggfVVVVVV",
+  "VVVVVVfggggggggggggggggggggfVVVVVV",
+  "VVVVVVfggggggggggggggggggggfVVVVVV",
+  "VVVVVVfggggggggggggggggggggfVVVVVV",
+  "VVVVVVfggggggggggggggggggggfVVVVVV",
+  "VVVVVVfggggggggggggggggggggfVVVVVV",
+  "VVVVVVfgggggggccccccgggggggfVVVVVV",
+  "VVVVVVffffffffccccccffffffffVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV",
+  "VVVVVVVVVVVVVfccccccfVVVVVVVVVVVVV"
+ ],
+ "legend": {
+  "V": {
+   "wall": "plaster",
+   "h": 1.0,
+   "facade": {
+    "style": "timber",
+    "storeys": [
+     1,
+     2
+    ],
+    "widths": [
+     2,
+     3
+    ],
+    "lit": 0.4,
+    "shops": 0.3,
+    "seed": 5
+   }
+  },
+  "f": {
+   "floor": "cobble"
+  },
+  "c": {
+   "floor": "cobble"
+  },
+  "g": {
+   "floor": "grass"
+  }
+ },
+ "camera": {
+  "x": 17.0,
+  "y": 44.5,
+  "angle": 270,
+  "fov": 68,
+  "height": 0.5
+ },
+ "title": "The village green through a day - one shot at eight times",
+ "sky": "day",
+ "ambient": [
+  0.42,
+  0.42,
+  0.46
+ ],
+ "fog": {
+  "color": [
+   0.72,
+   0.74,
+   0.8
+  ],
+  "density": 0.009
+ },
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 205,
+   "elevation": 24,
+   "intensity": 1.0
+  },
+  {
+   "x": 19.6,
+   "y": 29.4,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.66,
+    0.34
+   ],
+   "intensity": 1.3,
+   "night": true
+  },
+  {
+   "x": 19.6,
+   "y": 31.6,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.66,
+    0.34
+   ],
+   "intensity": 1.3,
+   "night": true
+  }
+ ],
+ "sprites": [
+  {
+   "id": "keeper",
+   "x": 16.5,
+   "y": 34.5,
+   "type": "shopkeeper",
+   "facing": 45
+  },
+  {
+   "x": 19.55,
+   "y": 30.5,
+   "type": "inn_sign",
+   "planes": 1,
+   "angle": 0,
+   "length": 0.9,
+   "z": 1.25
+  },
+  {
+   "x": 19.6,
+   "y": 29.4,
+   "type": "lantern",
+   "z": 0.85
+  },
+  {
+   "x": 19.6,
+   "y": 31.6,
+   "type": "lantern",
+   "z": 0.85
+  },
+  {
+   "id": "knight",
+   "x": 18.7,
+   "y": 27.6,
+   "type": "knight",
+   "facing": 180
+  },
+  {
+   "x": 14.6,
+   "y": 26.4,
+   "type": "cart"
+  },
+  {
+   "x": 14.3,
+   "y": 25.4,
+   "type": "flowers"
+  },
+  {
+   "x": 14.3,
+   "y": 41.0,
+   "type": "flowers"
+  },
+  {
+   "x": 19.7,
+   "y": 38.4,
+   "type": "flowers"
+  },
+  {
+   "x": 19.7,
+   "y": 23.2,
+   "type": "flowers"
+  },
+  {
+   "x": 14.4,
+   "y": 38.6,
+   "type": "bench"
+  },
+  {
+   "x": 14.0,
+   "y": 5.6,
+   "type": "tree",
+   "scale": 3.2
+  },
+  {
+   "x": 23.6,
+   "y": 7.6,
+   "type": "birch"
+  },
+  {
+   "id": "child",
+   "x": 14.6,
+   "y": 12.4,
+   "type": "child",
+   "facing": 45
+  },
+  {
+   "x": 18.8,
+   "y": 11.4,
+   "type": "villager",
+   "facing": 120
+  },
+  {
+   "x": 20.5,
+   "y": 12.0,
+   "type": "crow"
+  },
+  {
+   "x": 21.4,
+   "y": 11.4,
+   "type": "crow",
+   "flip": true
+  },
+  {
+   "x": 9.0,
+   "y": 14.0,
+   "type": "cart",
+   "flip": true
+  }
+ ],
+ "objects": [
+  {
+   "type": "market_stand",
+   "x": 15.5,
+   "y": 33.6,
+   "angle": 44,
+   "scale": 0.8
+  },
+  {
+   "type": "market_stand",
+   "x": 19.25,
+   "y": 35.1,
+   "angle": 180,
+   "scale": 0.8,
+   "paint": "#2e5a9a",
+   "goods": [
+    "potatoes",
+    "apples",
+    "cabbages"
+   ],
+   "seed": 4
+  },
+  {
+   "type": "well",
+   "x": 16.5,
+   "y": 10.5,
+   "scale": 1.5
+  },
+  {
+   "type": "crate",
+   "x": 14.5,
+   "y": 34.6,
+   "angle": 12,
+   "size": 0.34,
+   "seed": 0,
+   "goods": "cabbages"
+  },
+  {
+   "type": "crate",
+   "x": 19.5,
+   "y": 33.45,
+   "angle": 85,
+   "size": 0.34,
+   "seed": 1
+  },
+  {
+   "type": "crate",
+   "x": 19.45,
+   "y": 33.85,
+   "angle": 80,
+   "size": 0.34,
+   "seed": 2,
+   "goods": "apples"
+  },
+  {
+   "type": "barrel",
+   "x": 14.6,
+   "y": 32.2,
+   "seed": 0
+  },
+  {
+   "type": "barrel",
+   "x": 19.5,
+   "y": 28.4,
+   "seed": 1
+  },
+  {
+   "type": "barrel",
+   "x": 19.55,
+   "y": 33.05,
+   "seed": 2
+  }
+ ],
+ "scatter": [
+  {
+   "of": "grass_tuft",
+   "on": "g",
+   "density": 0.12,
+   "sizes": {
+    "tiny": 3,
+    "small": 1
+   },
+   "seed": 2
+  }
+ ],
+ "shots": [
+  {
+   "x": 17.0,
+   "y": 40.5,
+   "angle": 270,
+   "fov": 64,
+   "time": "dawn",
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Dawn",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 17.0,
+   "y": 40.5,
+   "angle": 270,
+   "fov": 64,
+   "time": "morning",
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Morning",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 17.0,
+   "y": 40.5,
+   "angle": 270,
+   "fov": 64,
+   "time": "noon",
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Noon",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 17.0,
+   "y": 40.5,
+   "angle": 270,
+   "fov": 64,
+   "time": "afternoon",
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Afternoon",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 17.0,
+   "y": 40.5,
+   "angle": 270,
+   "fov": 64,
+   "time": "golden",
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Golden",
+     "at": "top",
+     "box": true
+    }
+   ]
+  },
+  {
+   "x": 17.0,
+   "y": 40.5,
+   "angle": 270,
+   "fov": 64,
+   "time": "sunset",
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Sunset",
+     "at": "top",
+     "box": true
+    }
+   ],
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ]
+  },
+  {
+   "x": 17.0,
+   "y": 40.5,
+   "angle": 270,
+   "fov": 64,
+   "time": "dusk",
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Dusk",
+     "at": "top",
+     "box": true
+    }
+   ],
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ]
+  },
+  {
+   "x": 17.0,
+   "y": 40.5,
+   "angle": 270,
+   "fov": 64,
+   "time": "night",
+   "overlays": [
+    {
+     "type": "caption",
+     "text": "Night",
+     "at": "top",
+     "box": true
+    }
+   ],
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ]
+  }
+ ],
+ "contact_shadows": 0.5,
+ "supersample": 2
+}

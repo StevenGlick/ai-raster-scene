@@ -1108,6 +1108,97 @@ def check_light_and_lens():
     print('ok light falloff by height and on roofs, palette under depth of field, streaks, flare, glowing particles')
 
 
+def check_coloured_glass():
+    """The sun comes in through coloured glass coloured - its pattern on the floor where its light falls - and the
+    stone beside the window stops it; the air outside the window is lit by the sun itself. A room shut under its
+    roof lets no sun in at all - none where a wall meets the roof, none into the air under the ceiling from the
+    sunlit air above it - so it renders the same with a sun as without one, fog and all."""
+    sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+    import render as R
+
+    # 1. one lancet in a south wall, the sun straight in front of it: the light lies on the floor where it falls,
+    # coloured, and only there
+    nave = {'map': [',,,,,,,', '#######', '#.....#', '#.....#', '#.....#', '#.....#', '###G###', ',,,,,,,'], 'sky': 'day',
+            'ceiling_height': 2.0, 'lights': [{'type': 'sun', 'azimuth': 90, 'elevation': 30}],
+            'legend': {'#': {'wall': 'stone_pale', 'h': 2.0}, 'G': {'wall': ['stone_pale', 'lancet_window'], 'h': 2.0},
+                       '.': {'floor': 'flagstone', 'ceil': 'beams'}, ',': {'floor': 'grass'}},
+            'camera': {'x': 3.5, 'y': 2.0, 'angle': 90}}
+    s_ = R.build_sun(R.World(nave), nave['lights'][0])
+
+    def light(x, y, z=0.0):
+        x, y = np.broadcast_arrays(np.asarray(x, float), np.asarray(y, float))
+        z = np.full(x.shape, z)
+        return R.sun_visibility(s_, x, y, z)[..., None] * np.broadcast_to(R.sun_tint(s_, x, y, z), x.shape + (3,))
+    ys, xs = np.mgrid[2.6:4.2:0.05, 3.33:3.68:0.02]
+    patch = light(xs, ys).reshape(-1, 3)
+    lit = patch[patch.max(-1) > 0.3]
+    assert len(lit) > 20 and (lit.max(-1) / np.maximum(lit.min(-1), 1e-3) > 2).mean() > 0.5, 'the light comes in coloured'
+    assert light(np.full(30, 2.5), np.linspace(2.6, 4.2, 30)).max() < 0.05, 'the stone beside the window stops it'
+    assert light(np.full(30, 4.5), np.linspace(2.6, 4.2, 30)).max() < 0.05, 'and on its other side'
+    out = light(3.5, 7.5, 2.4)                       # outside, in line with the window: the sun itself, white
+    assert out.min() > 0.9 and np.ptp(out) < 1e-6, f'the air outside the window is lit by the sun itself: {out}'
+    over = np.asarray(R.sun_tint(s_, 3.5, 0.5, 0.0))  # outside to the north: its ray goes high over the window's top
+    assert over.min() > 0.99, f'a ray passing over a wall of glass from outdoors is not stopped: {over}'
+
+    # 2. a room shut under its roof, a sun outside it and fog that would carry its beams: nothing gets in
+    room = {'map': ['########'] + ['#......#'] * 6 + ['########'], 'sky': None, 'ceiling_height': 2.0,
+            'resolution': [96, 60], 'ambient': [0.3, 0.3, 0.3], 'surface_noise': 0,
+            'legend': {'#': {'wall': 'stone_pale', 'h': 2.0}, '.': {'floor': 'flagstone', 'ceil': 'beams'}},
+            'fog': {'color': [0.3, 0.3, 0.3], 'density': 0.06, 'shafts': 4},
+            'camera': {'x': 1.6, 'y': 1.6, 'look_at': [6.5, 6.5, 1.6], 'fov': 80}}
+    sunny = dict(room, lights=[{'type': 'sun', 'azimuth': 60, 'elevation': 20}])
+    a, b = (R.Renderer(R.World(s), s).render(R.prepare_shot(s, R.merge_camera(s, s['camera']))) for s in (room, sunny))
+    assert np.abs(a - b).max() < 0.01, f'a room shut under its roof lets no sun in ({np.abs(a - b).max():.3f})'
+    print('ok coloured glass: the light comes in coloured, stone stops it, a shut room lets none in')
+
+
+def check_time_of_day():
+    """One `time` sets a scene to an hour: the sky, the sun where the clock has it or the moon, the ambient and the
+    fog darkened and tinted from the scene's own, lamps marked for the night only after dark, more of a facade's
+    rooms lit; keys a shot gives beside its time stay; a scene with no sky keeps its light; a shot can carry one."""
+    sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+    import daylight
+    import render as R
+
+    assert daylight.hour('dusk') == 19.5 and daylight.hour(25.5) == 1.5 and daylight.hour({'at': 7}) == 7.0
+    try:
+        daylight.hour('teatime')
+        raise AssertionError('an unknown time must be refused')
+    except KeyError:
+        pass
+    street = {'map': ['...'], 'sky': 'day', 'ambient': [0.4, 0.4, 0.4], 'fog': {'color': [0.7, 0.7, 0.7], 'density': 0.01},
+              'legend': {'#': {'wall': 'brick', 'facade': {'style': 'timber', 'lit': 0.4}}},
+              'lights': [{'type': 'sun', 'azimuth': 200, 'elevation': 30, 'disc': False}, {'x': 1, 'y': 1, 'night': True},
+                         {'x': 2, 'y': 2, 'day': True}, {'x': 3, 'y': 3}]}
+    assert daylight.apply(street) is street, 'no time: the scene as it is'
+    night, noon = (daylight.apply(dict(street, time=t)) for t in ('night', 'noon'))
+    assert 'time' not in night and night['sky'] == 'night' and noon['sky'] == 'day'
+    moon = [L for L in night['lights'] if L.get('type') in ('sun', 'moon')]
+    assert len(moon) == 1 and moon[0]['type'] == 'moon' and moon[0]['elevation'] > 5 and moon[0]['disc'] is False
+    sun = [L for L in noon['lights'] if L.get('type') == 'sun']
+    assert len(sun) == 1 and abs(sun[0]['elevation'] - 58) < 1 and abs(sun[0]['azimuth'] - 90) < 1, sun
+    a = night['ambient']
+    assert max(a) < 0.2 and a[2] > a[0] and night['fog']['color'][0] < 0.2, 'the night dark and blue'
+    assert {(L.get('x'), L.get('y')) for L in night['lights'] if 'x' in L} == {(1, 1), (3, 3)}, 'the night lamp lit'
+    assert {(L.get('x'), L.get('y')) for L in noon['lights'] if 'x' in L} == {(2, 2), (3, 3)}, 'and out by day'
+    assert night['legend']['#']['facade']['lit'] == 0.4 > noon['legend']['#']['facade']['lit'] * 4, 'rooms lit at night'
+    kept = daylight.apply(dict(street, time='night'), keep={'ambient'})
+    assert kept['ambient'] == street['ambient'], 'a key given beside the time stays'
+    indoors = daylight.apply(dict(street, sky=None, time='night'))
+    assert indoors['ambient'] == street['ambient'] and indoors.get('sky') is None, 'no sky: nowhere the hour reaches'
+    sunk = daylight.apply(dict(street, time={'at': 'golden', 'azimuth': 100}))
+    assert [L['azimuth'] for L in sunk['lights'] if L.get('type') == 'sun'] == [100.0], 'turned where asked'
+    assert any('azimth' in w for w in R.lint_scene(dict(street, camera={'x': 0, 'y': 0}, time={'azimth': 9}))), 'lint'
+    # a shot carries its own time: the night frame darker than the noon one, the same camera
+    yard = {'map': ['.' * 8] * 8, 'resolution': [64, 40], 'sky': 'day', 'ambient': [0.4, 0.4, 0.42],
+            'legend': {'.': {'floor': 'grass'}}, 'lights': [{'type': 'sun', 'azimuth': 200, 'elevation': 30}],
+            'camera': {'x': 1.0, 'y': 4.0, 'angle': 0}}
+    yard['shots'] = [dict(yard['camera'], time='noon'), dict(yard['camera'], time='night')]
+    lit, dark = (np.asarray(R.render_shot(yard, i).convert('RGB'), np.float32).mean() for i in (0, 1))
+    assert dark < lit * 0.5, (lit, dark)
+    print('ok time of day: sky, sun and moon by the clock, the air, lamps after dark, rooms lit, keys kept')
+
+
 def check_wireframes():
     """Wireframes are drawn in true 3D: lines where the mesh is, hidden behind a wall and behind a
     solid mesh, found by look_at; every built-in mesh is sound; Vector World's textures glow and
@@ -1476,7 +1567,7 @@ def check_objects():
     # 16. furniture and machines in 3D: a cabinet's joystick stands on its controls and its screen glows; a
     # vending machine's window is let in behind its front; a crate is shut unless it holds goods; a card table
     # mid-game has chips standing on it, an empty one none; a piano's candles burn only when lit; a well's roof
-    # stands over its wall
+    # stands over its wall; a pew has a seat, its back over it and its ends over that
     def build(**pl):
         return objects.expand({'map': ['.'], 'objects': [dict(pl, x=0.0, y=0.0)]})
     cab = build(type='arcade_cabinet')
@@ -1493,6 +1584,9 @@ def check_objects():
     well = build(type='well')
     wz = np.array([c for pn in well['panels'] for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])
     assert wz[:, 2].max() > 1.0 and np.abs(wz[:, :2]).max() < 0.45, 'its roof over its wall'
+    pew = build(type='pew', length=2.0)                     # a seat at a knee's height, its back over it, its ends
+    pz = np.array([c for pn in pew['panels'] for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])
+    assert tops(pew) and np.abs(pz[:, 1]).max() < 1.0 + 1e-6 and 0.3 < pz[:, 2].max() < 0.4, 'a pew'
     # 17. a portal shows its far side - the view from where the camera would stand beyond its exit - and not
     # its own face; a screen shows a picture of another shot instead of its snow
     def room(**extra):
@@ -1513,6 +1607,8 @@ def check_objects():
     rr = R.Renderer(R.World(room(objects=tv.get('objects', []))), room(panels=tv['panels']))
     pic = [pn for pn in rr.s['panels'] if pn.get('screen')][0]
     assert pic['rgba'].shape[0] >= 40 and float(pic['rgba'][..., :3].std()) > 0.02, 'a screen shows its picture'
+    own = [pn for pn in tv['panels'] if pn.get('screen')][0]           # laid into the renderer's copy, not the scene's
+    assert own is not pic and own['rgba'] is not pic['rgba'], 'a renderer lays its pictures into panels of its own'
     print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights, '
           f'rock, linings, columns fluted and Doric, fill, timber, standing stones cast, crystals bend the light)')
 
@@ -1673,6 +1769,8 @@ def main():
         check_planes_prefabs()
         check_glass_facades()
         check_light_and_lens()
+        check_coloured_glass()
+        check_time_of_day()
         check_wireframes()
         check_objects()
         check_lettering_pages(tmp)
