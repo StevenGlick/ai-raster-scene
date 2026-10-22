@@ -169,6 +169,10 @@ Inside the saloon: flocked wallpaper over dark panels, the back bar's bottles ro
 
 ![After midnight the piano plays itself: a ghost at the keys by candlelight](docs/gallery/saloon_piano.png)
 
+| | |
+|---|---|
+| ![Close across the card table: the gambler, "Sit down. Cards are dealt."](docs/gallery/saloon_gambler.png) | ![Close across the bar: the bartender before his bottles](docs/gallery/saloon_barkeep.png) |
+
 And up in the hills the gold mine: a tunnel timbered every few paces in 3D, rails running into the dark under the lanterns, a prospector at a vein of gold glinting in the rock, and the portal in the hillside at dusk.
 
 | | |

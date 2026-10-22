@@ -10,8 +10,8 @@ it. So before a character becomes a texture its grid goes through a few steps, e
 - **twice the pixels**: scale2x (EPX) - every pixel into four, a corner taking a neighbour's colour where
   two neighbours agree, which rounds the silhouette and smooths diagonals without a single new colour;
 - **a finer face**, where the face uses the usual chars (`s` skin, `S` its shade, `e` dark eyes): each
-  eye an upper lid two pixels wide over a one-pixel pupil on the side toward the nose (so it still reads
-  as an eye from across a room), a brow of skin shade over it, the nose's shade only at its foot;
+  eye a one-pixel pupil with the socket's shade beside it at the top (looking straight out up close, and
+  still an eye from across a room), a brow of skin shade over it, the nose's shade only at its foot;
 - **form shading** from the upper left: across every row each run of the figure darkens toward its
   right edge and lifts a little at its left, and top edges catch the light - in steps, as pixel art is
   shaded.
@@ -94,7 +94,7 @@ def face(rows, defn):
     cx = sum(x + 1 for _, x in eyes) / len(eyes)
     for y, x in eyes:
         outer = x if x + 1 < cx else x + 1
-        g[y + 1][outer] = 's'                       # the lid stays two wide, the pupil one
+        g[y][outer], g[y + 1][outer] = 'S', 's'     # a pupil, the socket's shade beside it
         if y >= 1 and g[y - 1][x] == 's' and g[y - 1][x + 1] == 's':
             g[y - 1][x] = g[y - 1][x + 1] = 'S'
     ey = max(y for y, _ in eyes)

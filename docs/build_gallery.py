@@ -73,6 +73,8 @@ SHOTS = {
     'saloon_noon': ('saloon', 1),
     'saloon_cards': ('saloon', 2),
     'saloon_piano': ('saloon', 3),
+    'saloon_gambler': ('saloon', 4),
+    'saloon_barkeep': ('saloon', 5),
     'mine_tunnel': ('gold_mine', 1),
     'mine_vein': ('gold_mine', 2),
     'mine_portal': ('gold_mine', 3),

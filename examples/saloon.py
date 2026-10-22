@@ -96,6 +96,11 @@ def saloon():
              'overrides': night,
              'overlays': [{'type': 'caption', 'text': 'After midnight the piano plays itself', 'at': 'top', 'box': True}],
              'post': [{'fx': 'bloom', 'threshold': 0.6, 'strength': 0.6, 'radius': 5}]},
+            # people seen close: the gambler across his table, the bartender across the bar
+            {'x': 4.45, 'y': 3.62, 'height': 0.52, 'look_at': [4.45, 2.55, 0.5], 'fov': 50, 'extra_sprites': day,
+             'overlays': [{'type': 'bubble', 'anchor': 'gambler', 'name': 'The Gambler',
+                           'text': 'Sit down. Cards are dealt.'}]},
+            {'x': 2.35, 'y': 3.1, 'height': 0.5, 'look_at': [1.3, 3.1, 0.52], 'fov': 50, 'extra_sprites': day},
         ],
         contact_shadows=0.5,
         supersample=2,
