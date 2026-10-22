@@ -1137,12 +1137,13 @@ CANVAS_RED = ramp('#c04a3a')
 CANVAS_CREAM = ramp('#e8dcc0', dark=0.5, light=1.08)
 
 
-def spr_palm(lean=0.0, part='all'):
+def spr_palm(lean=0.0, part='all', v=0):
     """A coconut palm: a ringed trunk curving up out of the sand, long fronds arching out of the
     crown with their leaflets hanging in a curtain, coconuts bunched under them. `lean` tips the
     tree over to one side, the way palms lean out over a beach. `part` 'trunk' or 'crown' draws
-    only that, in the same frame, so the two stack into one tree (see the palm_3d prefab)."""
-    rng = np.random.default_rng(55 + int(lean * 10))
+    only that, in the same frame, so the two stack into one tree (see the palm_3d prefab). `v` draws
+    another palm: its fronds and nuts hung another way."""
+    rng = np.random.default_rng(55 + int(lean * 10) + 41 * v)
     w, h = 200, 208
     cx0 = 100 - 40 * lean
     base = (cx0, h)
@@ -1720,7 +1721,7 @@ DEBRIS_SETS = {
     'ruins': ['column_drum', 'rubble', 'rocks', 'rocks', 'poppies', 'dry_tuft', 'dry_tuft', 'amphora'],
 }
 # props drawn a few ways, one picked per placement (assets.variant_name): name -> (count, draw(k))
-VARIANTS = {'rocks': (6, _rocks), 'grass_tuft': (4, _grass), 'dry_tuft': (4, _dry), 'fern': (3, _fern)}
+VARIANTS = {'palm': (3, lambda v: spr_palm(v=v)), 'rocks': (6, _rocks), 'grass_tuft': (4, _grass), 'dry_tuft': (4, _dry), 'fern': (3, _fern)}
 # fringe sets: cards back to front, for a wall's `fringe`
 FRINGES = {'jungle': ['jungle_card_4', 'jungle_card_3', 'jungle_card_2', 'jungle_card_1']}
 DECALS = {

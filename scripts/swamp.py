@@ -110,7 +110,13 @@ def spr_bald_cypress():
     """A bald cypress standing in the water: a trunk flared and fluted into buttresses at its foot,
     branches spreading high up under flat sprays of feathery leaves, and Spanish moss hanging from
     every branch in grey-green curtains. A few knees stand out of the water round it."""
-    rng = np.random.default_rng(181)
+    return _bald_cypress(0)
+
+
+def _bald_cypress(v):
+    """The bald cypress, drawn v ways (variant v: its limbs set at other heights and reaches)."""
+    rng = np.random.default_rng(181 + 41 * v)
+    jig = np.random.default_rng(700 + v).uniform(-7, 7, (6, 2)) if v else np.zeros((6, 2))
     w, h = 112, 196
     cx = 56
     cv = Canvas(w, h, wrap=False, ground=-9)
@@ -125,6 +131,8 @@ def spr_bald_cypress():
     limbs = [((cx, 100), (cx - 30, 86), (cx - 48, 84)), ((cx, 92), (cx + 28, 78), (cx + 50, 80)),
              ((cx, 70), (cx - 22, 56), (cx - 40, 52)), ((cx + 1, 62), (cx + 22, 48), (cx + 42, 46)),
              ((cx + 1, 40), (cx - 14, 30), (cx - 28, 26)), ((cx + 1, 36), (cx + 14, 24), (cx + 26, 22))]
+    limbs = [((p0[0], p0[1] + jy * 0.5), (p1[0] + jx * 0.6, p1[1] + jy),
+              (float(np.clip(p2[0] + jx, 6, w - 6)), p2[1] + jy)) for (p0, p1, p2), (jx, jy) in zip(limbs, jig)]
     for p0, p1, p2 in limbs:
         cv.stroke([p0, p1, p2], 3.2, z=0.8, dome=0.8, taper=(1.0, 0.4), mat=0)
     for p0, p1, p2 in limbs:                                    # flat sprays of leaves along each limb
@@ -261,8 +269,9 @@ def _swamp_card(layer):
     """One layer of a swamp's edge, 1 (front) to 4 (back): cattails, knees and reeds at the water's
     edge; then a few young cypresses among cattails; then a looser stand of cypresses hung with moss;
     then a dense stand of tall ones, darker as they go back."""
-    from assets import get_sprite
+    from assets import get_sprite, variant_pick
     rng = np.random.default_rng(600 + layer)
+    pick = np.random.default_rng(670 + layer)   # which drawing of a tree drawn a few ways
     height = SWAMP_CARDS[layer]
     H = int(height * CARD_PX)
     card = np.zeros((H, CARD_W, 4), np.float32)
@@ -280,7 +289,7 @@ def _swamp_card(layer):
             x = (off + (i + rng.uniform(0.15, 0.85)) * CARD_W / k) % CARD_W
             stamps.append((x, kind, rng.uniform(lo, min(hi, height - 0.15))))
     for x, kind, tl in sorted(stamps, key=lambda s: -s[2]):
-        _stamp(card, get_sprite(kind)[0], x, H, tl, flip=bool(rng.random() < 0.5))
+        _stamp(card, get_sprite(variant_pick(kind, pick))[0], x, H, tl, flip=bool(rng.random() < 0.5))
     card[..., :3] *= {1: 1.0, 2: 0.9, 3: 0.8, 4: 0.7}[layer]
     card[..., 3] = (card[..., 3] > 0.5).astype(np.float32)
     return card, np.zeros(card.shape[:2], np.float32)
@@ -293,6 +302,8 @@ TEXTURES = {
 }
 TEXTURE_NOISE = {'swamp_water': 0.6, 'bog': 2.2, 'swamp_deep': 1.6}
 TEXTURE_REFLECT = {'swamp_water': 0.42}
+# props drawn a few ways, one picked per placement (assets.variant_name): name -> (count, draw(k))
+VARIANTS = {'bald_cypress': (3, _bald_cypress)}
 SPRITES = {'bald_cypress': spr_bald_cypress, 'spanish_moss': spr_spanish_moss, 'cypress_knees': spr_cypress_knees,
            'cattails': spr_cattails, 'heron': spr_heron, 'alligator': spr_alligator, 'fireflies': spr_fireflies}
 SPRITES.update({f'swamp_card_{k}': (lambda k=k: _swamp_card(k)) for k in SWAMP_CARDS})

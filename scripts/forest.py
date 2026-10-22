@@ -371,10 +371,10 @@ def spr_boulder_snow():
     return _boulder(snow=True)
 
 
-def spr_stump():
+def spr_stump(v=0):
     """A sawn stump: a pale cut face ringed with growth rings, furrowed bark down its sides, roots
-    spreading into the ground and a cushion of moss on one shoulder."""
-    rng = np.random.default_rng(63)
+    spreading into the ground and a cushion of moss on one shoulder. (`v`: another stump.)"""
+    rng = np.random.default_rng(63 + 41 * v)
     w, h = 40, 30
     cv = Canvas(w, h, wrap=False, ground=-9)
     for dx, L in ((-1, 12), (1, 13), (-1, 7), (1, 6)):                     # the roots
@@ -390,10 +390,10 @@ def spr_stump():
     return _prop(cv, [OAK_BARK, CUT_WOOD, FOREST_MOSS], relief=1.0, cavity=0.45, shadow=0.45)
 
 
-def spr_log():
+def spr_log(v=0):
     """A fallen trunk lying across the ground: bark in long ridges, the stub of a branch, moss along
-    its top and the pale, ringed end where it broke off."""
-    rng = np.random.default_rng(65)
+    its top and the pale, ringed end where it broke off. (`v`: another log.)"""
+    rng = np.random.default_rng(65 + 41 * v)
     w, h = 88, 22
     cv = Canvas(w, h, wrap=False, ground=-9)
     cv.stroke([(6, 13), (44, 12), (80, 13)], 15, z=0.0, dome=1.4, taper=(1.0, 0.92), mat=0)
@@ -409,10 +409,10 @@ def spr_log():
     return _prop(cv, [OAK_BARK, CUT_WOOD, FOREST_MOSS], relief=1.0, cavity=0.45, shadow=0.45)
 
 
-def spr_dead_tree():
+def spr_dead_tree(v=0):
     """A dead tree: a split trunk on a gnarled foot, bare limbs forking into twigs, the bark gone
-    grey and peeling in strips."""
-    rng = np.random.default_rng(67)
+    grey and peeling in strips. (`v`: another dead tree, its limbs forking another way.)"""
+    rng = np.random.default_rng(67 + 41 * v)
     w, h = 128, 128
     cv = Canvas(w, h, wrap=False, ground=-9)
 
@@ -819,7 +819,8 @@ TEXTURE_NOISE = {'forest_deep': 1.6, 'forest_deep_autumn': 1.6, 'forest_deep_sno
 VARIANTS = {'pine': (4, lambda v: _spruce(v=v)), 'snowy_pine': (4, lambda v: _spruce(snow=True, v=v)),
             'tree': (3, lambda v: _oak(v=v)), 'tree_autumn': (3, lambda v: _oak(autumn=True, v=v)),
             'birch': (3, lambda v: _birch(v=v)), 'birch_autumn': (3, lambda v: _birch(autumn=True, v=v)),
-            'mushrooms': (4, _mushrooms), 'bush': (4, lambda v: _bush(v=v)), 'bush_autumn': (4, lambda v: _bush(autumn=True, v=v)),
+            'mushrooms': (4, _mushrooms), 'dead_tree': (3, spr_dead_tree), 'log': (3, spr_log),
+            'stump': (3, spr_stump), 'bush': (4, lambda v: _bush(v=v)), 'bush_autumn': (4, lambda v: _bush(autumn=True, v=v)),
             'boulder': (4, lambda v: _boulder(v=v)), 'boulder_snow': (4, lambda v: _boulder(snow=True, v=v))}
 SPRITES = {'mushrooms': spr_mushrooms, 'pine': spr_pine, 'tree': spr_tree, 'birch': spr_birch, 'bush': spr_bush, 'boulder': spr_boulder,
            'stump': spr_stump, 'log': spr_log, 'dead_tree': spr_dead_tree, 'snowy_pine': spr_snowy_pine,
