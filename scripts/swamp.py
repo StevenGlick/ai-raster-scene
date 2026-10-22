@@ -180,9 +180,9 @@ def spr_cypress_knees():
     return _prop(cv, [CYPRESS_BARK], relief=1.0, cavity=0.4, shadow=0.45)
 
 
-def spr_cattails():
+def spr_cattails(v=0):
     """Cattails at the water's edge: long blades and stems, the brown velvet heads on top."""
-    rng = np.random.default_rng(187)
+    rng = np.random.default_rng(187 + 41 * v)     # v: another one, drawn the same way
     w, h = 36, 64
     cv = Canvas(w, h, wrap=False, ground=-9)
     for _ in range(14):                                         # blades
@@ -303,7 +303,7 @@ TEXTURES = {
 TEXTURE_NOISE = {'swamp_water': 0.6, 'bog': 2.2, 'swamp_deep': 1.6}
 TEXTURE_REFLECT = {'swamp_water': 0.42}
 # props drawn a few ways, one picked per placement (assets.variant_name): name -> (count, draw(k))
-VARIANTS = {'bald_cypress': (3, _bald_cypress)}
+VARIANTS = {'cattails': (3, spr_cattails), 'bald_cypress': (3, _bald_cypress)}
 SPRITES = {'bald_cypress': spr_bald_cypress, 'spanish_moss': spr_spanish_moss, 'cypress_knees': spr_cypress_knees,
            'cattails': spr_cattails, 'heron': spr_heron, 'alligator': spr_alligator, 'fireflies': spr_fireflies}
 SPRITES.update({f'swamp_card_{k}': (lambda k=k: _swamp_card(k)) for k in SWAMP_CARDS})

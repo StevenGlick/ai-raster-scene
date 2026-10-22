@@ -699,9 +699,9 @@ def spr_banana_plant():
     return _prop(cv, [LEAF_SUN, ramp('#8a9a4a'), ramp('#8a6a3a')], relief=1.1, cavity=0.4, shadow=0.5)
 
 
-def spr_monstera():
+def spr_monstera(v=0):
     """Monstera: big glossy heart-shaped leaves, split and holed, on long stalks."""
-    rng = np.random.default_rng(7)
+    rng = np.random.default_rng(7 + 41 * v)     # v: another one, drawn the same way
     w, h = 72, 56
     cv = Canvas(w, h, wrap=False, ground=-9)
     spots = [(14, 40, 11, -0.18), (58, 40, 11, -0.15), (20, 26, 15, -0.1), (50, 24, 15, -0.06), (35, 18, 16, 0.08)]
@@ -1110,9 +1110,9 @@ def spr_olive_tree():
     return _prop(cv, [OLIVE, ramp('#6a6458', dark=0.3)], relief=1.0, cavity=0.35, shadow=0.45)
 
 
-def spr_poppies():
+def spr_poppies(v=0):
     """A clump of red poppies among dry grass."""
-    rng = np.random.default_rng(29)
+    rng = np.random.default_rng(29 + 41 * v)     # v: another one, drawn the same way
     w, h = 44, 28
     cv = Canvas(w, h, wrap=False, ground=-9)
     for _ in range(14):
@@ -1721,7 +1721,7 @@ DEBRIS_SETS = {
     'ruins': ['column_drum', 'rubble', 'rocks', 'rocks', 'poppies', 'dry_tuft', 'dry_tuft', 'amphora'],
 }
 # props drawn a few ways, one picked per placement (assets.variant_name): name -> (count, draw(k))
-VARIANTS = {'palm': (3, lambda v: spr_palm(v=v)), 'rocks': (6, _rocks), 'grass_tuft': (4, _grass), 'dry_tuft': (4, _dry), 'fern': (3, _fern)}
+VARIANTS = {'poppies': (3, spr_poppies), 'monstera': (3, spr_monstera), 'palm': (3, lambda v: spr_palm(v=v)), 'rocks': (6, _rocks), 'grass_tuft': (4, _grass), 'dry_tuft': (4, _dry), 'fern': (3, _fern)}
 # fringe sets: cards back to front, for a wall's `fringe`
 FRINGES = {'jungle': ['jungle_card_4', 'jungle_card_3', 'jungle_card_2', 'jungle_card_1']}
 DECALS = {

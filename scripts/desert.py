@@ -212,10 +212,10 @@ def spr_saguaro():
     return _prop(cv, [CACTUS, SPINE, BLOOM], relief=1.0, cavity=0.4, shadow=0.45)
 
 
-def spr_prickly_pear():
+def spr_prickly_pear(v=0):
     """A prickly pear: flat oval pads growing out of one another, dotted with spines, a few
     ripe magenta fruits along the top edges."""
-    rng = np.random.default_rng(173)
+    rng = np.random.default_rng(173 + 41 * v)     # v: another one, drawn the same way
     w, h = 56, 44
     cv = Canvas(w, h, wrap=False, ground=-9)
     pads = [(28, 34, 9, 10, 0), (17, 26, 8, 9.5, -25), (39, 26, 8, 9, 22), (24, 15, 7, 8.5, -10),
@@ -231,9 +231,9 @@ def spr_prickly_pear():
     return _prop(cv, [CACTUS, SPINE, FRUIT], relief=1.0, cavity=0.4, shadow=0.45)
 
 
-def spr_tumbleweed():
+def spr_tumbleweed(v=0):
     """A tumbleweed: a loose ball of dry, wiry stems, tangled every way, the light coming through."""
-    rng = np.random.default_rng(175)
+    rng = np.random.default_rng(175 + 41 * v)     # v: another one, drawn the same way
     w, h = 40, 34
     cv = Canvas(w, h, wrap=False, ground=-9)
     for _ in range(46):
@@ -369,6 +369,8 @@ TEXTURES = {
 }
 TEXTURE_NOISE = {'sandstone': 1.4, 'sandstone_pale': 1.4, 'slot_rock': 0.6, 'desert_wash': 1.6, 'pueblo_stone': 1.2,
                  'pueblo_door': 0.8}
+# props drawn a few ways, one picked per placement (assets.variant_name): name -> (count, draw(k))
+VARIANTS = {'prickly_pear': (3, spr_prickly_pear), 'tumbleweed': (3, spr_tumbleweed)}
 SPRITES = {'saguaro': spr_saguaro, 'prickly_pear': spr_prickly_pear, 'tumbleweed': spr_tumbleweed,
            'cow_skull': spr_cow_skull, 'clay_pot': spr_clay_pot, 'windpump': spr_windpump,
            'water_trough': spr_water_trough, 'wagon_wheel': spr_wagon_wheel}

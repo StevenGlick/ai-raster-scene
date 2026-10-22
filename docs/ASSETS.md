@@ -411,7 +411,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `birch_winter` | good | 3 tall | winter_woods | Drawn with the toolkit in forest.py: the white birch bare: branches reaching out with fine twigs weeping from them, snow on a few. |
 | `dead_tree` | good | 2.9 tall | chapel_graveyard, haunted_house, misty_moor, woodland_night | Redrawn with the toolkit in forest.py: a split trunk on a gnarled foot, bare limbs forking into twigs, grey peeling bark. Drawn 3 ways (variants), one picked per placement. |
 | `fern` | good | 0.42 tall | autumn_garden, autumn_lane, cathedral_ruin, chapel_graveyard, fjord, jungle_temple, misty_moor, palm_house, temple_inside, tropical_beach, woodland_night | Redrawn: arching fronds from one crown. Drawn 3 ways (variants), one picked per placement. |
-| `flowers` | good | 0.35 tall | fjord, garden_encounter, gui_menus, hospital_garden, palm_house, post_presets, rainy_street, sky_islands, village_green | Redrawn with the toolkit in basics.py: leaves and stems with blooms of four colours, five petals round a dark eye, at different heights. |
+| `flowers` | good | 0.35 tall | fjord, garden_encounter, gui_menus, hospital_garden, palm_house, post_presets, rainy_street, sky_islands, village_green | Redrawn with the toolkit in basics.py: leaves and stems with blooms of four colours, five petals round a dark eye, at different heights. Drawn 3 ways (variants), one picked per placement. |
 | `grass_tuft` | good | 0.4 tall | autumn_garden, autumn_lane, basalt_coast, cathedral_ruin, chapel_graveyard, coast_lighthouse, fjord, misty_moor, palm_house, rainy_street, tropical_beach, village_green, woodland_night | Redrawn: thin arching blades. Drawn 4 ways (variants), one picked per placement. |
 | `ivy_hang` | good | 0.8 tall, no shadow | cathedral_ruin, rainy_street |  |
 | `log` | good | 0.28 tall | cathedral_ruin, fjord, tropical_beach, winter_lake, winter_woods, woodland_night | Redrawn with the toolkit in forest.py: bark in long ridges, a branch stub, moss along the top, a pale ringed end. Drawn 3 ways (variants), one picked per placement. |
@@ -422,7 +422,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `bald_cypress` | good | 4.2 tall | bayou | Drawn with the toolkit in swamp.py: a fluted, buttressed foot, limbs under flat sprays of feathery leaves, moss hanging from every limb, knees round it. Drawn 3 ways (variants), one picked per placement. |
 | `spanish_moss` | good | 1.4 tall, no shadow | bayou | Drawn with the toolkit in swamp.py: a curtain of grey-green strands from a stub of branch, to hang with `z`. |
 | `cypress_knees` | good | 0.3 tall | bayou | Drawn with the toolkit in swamp.py: knobbly cones of root standing out of the water. |
-| `cattails` | good | 1 tall | bayou | Drawn with the toolkit in swamp.py: long blades and stems with brown velvet heads. |
+| `cattails` | good | 1 tall | bayou | Drawn with the toolkit in swamp.py: long blades and stems with brown velvet heads. Drawn 3 ways (variants), one picked per placement. |
 | `kelp` | good | 5 tall | kelp_forest, sunken_temple | Drawn with the toolkit in sea.py: a swaying stipe from its holdfast, long golden blades streaming off small floats, a tangle at the top. |
 | `brain_coral` | good | 0.3 tall | aquarium, kelp_forest, neon_bar, sunken_temple | Drawn with the toolkit in aquarium.py: a dome lit on its crown, its surface all meandering ridges (ochre) and grooves (green-brown). |
 | `staghorn_coral` | good | 0.42 tall | aquarium, kelp_forest, neon_bar, sunken_temple | Drawn with the toolkit in aquarium.py: a thicket of golden-brown branches forking like antlers, lilac-white growing tips. |
@@ -592,7 +592,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
 | `banana_plant` | good | 1.7 tall | jungle_temple, palm_house |  |
-| `monstera` | good | 0.75 tall | jungle_temple, palm_house |  |
+| `monstera` | good | 0.75 tall | jungle_temple, palm_house | Drawn 3 ways (variants), one picked per placement. |
 | `tree_fern` | good | 2.4 tall | jungle_temple, palm_house |  |
 | `heliconia` | good | 1.1 tall | jungle_temple, palm_house |  |
 | `bromeliad` | good | 0.22 tall | jungle_temple, palm_house |  |
@@ -617,10 +617,10 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `wagon_wheel` | good | 0.55 tall | ghost_town | Drawn with the toolkit in desert.py: an iron-shod rim, twelve spokes, a heavy hub. |
 | `cypress` | good | 4 tall | ancient_ruins |  |
 | `saguaro` | good | 3.2 tall | ghost_town, gold_mine, red_canyon | Drawn with the toolkit in desert.py: a ribbed column with two arms bending up, spines along the ribs, white blossoms on the crown. |
-| `prickly_pear` | good | 0.6 tall | ghost_town, gold_mine, red_canyon | Drawn with the toolkit in desert.py: oval pads growing out of one another, spines, magenta fruit along the top. |
-| `tumbleweed` | good | 0.45 tall | ghost_town, gold_mine, red_canyon, saloon | Drawn with the toolkit in desert.py: a loose ball of wiry dry stems, the light coming through. |
+| `prickly_pear` | good | 0.6 tall | ghost_town, gold_mine, red_canyon | Drawn with the toolkit in desert.py: oval pads growing out of one another, spines, magenta fruit along the top. Drawn 3 ways (variants), one picked per placement. |
+| `tumbleweed` | good | 0.45 tall | ghost_town, gold_mine, red_canyon, saloon | Drawn with the toolkit in desert.py: a loose ball of wiry dry stems, the light coming through. Drawn 3 ways (variants), one picked per placement. |
 | `olive_tree` | good | 2.2 tall | ancient_ruins |  |
-| `poppies` | good | 0.24 tall | ancient_ruins |  |
+| `poppies` | good | 0.24 tall | ancient_ruins | Drawn 3 ways (variants), one picked per placement. |
 | `dry_tuft` | good | 0.36 tall | ancient_ruins, ghost_town, gold_mine, red_canyon, tropical_beach | Drawn 4 ways (variants), one picked per placement. |
 
 ### Beach
@@ -1182,6 +1182,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, and the small plants.** Cattails, flowers, poppies, monstera, prickly pear and tumbleweed drawn three ways each (another stream for each). Heliconia was tried and left: its stream only jitters a few pixels.
 - **2026-10-21, more drawn a few ways.** The bald cypress (three, its limbs set another way; the swamp's edge stamps one per tree), the palm (three), the dead tree (three, forking another way), the log and the stump (three each).
 - **2026-10-21, eyes and close shots.** Seen close, the upper lid that ran outward over a pupil on the nose's side made people look cross-eyed; now each eye is a one-pixel pupil with the socket's shade beside it at the top - straight ahead up close, still an eye from across a room. Two close shots in the saloon to show people seen close: `saloon_gambler` and `saloon_barkeep`.
 - **2026-10-21, four new characters.** `miner` (a gold-rush prospector: slouch hat, grey beard, red flannel and suspenders, a pick), `viking` (iron cap, braided red beard, fur cloak over a green tunic, leg wraps, an axe), `monk` (shaven, brown robe, rope belt, sandals) and `villager` (red kerchief, green dress, white apron, a basket) - 16x32 grids with back views, drawn in finer pixels like the rest; they take over from the stand-ins in the mine (the cowboy), the fjord (the pirate), the garden (the shopkeeper) and the village (a farmer).

@@ -920,10 +920,10 @@ def spr_bench():
     return _prop(cv, [SLAT, CAST_IRON], relief=1.0, cavity=0.4, shadow=0.45, ambient=0.3, diffuse=0.65)
 
 
-def spr_flowers():
+def spr_flowers(v=0):
     """A clump of flowers: leaves and stems, and blooms of four kinds - red, yellow, white, pink -
     each five petals round a dark eye, at different heights."""
-    rng = np.random.default_rng(161)
+    rng = np.random.default_rng(161 + 41 * v)     # v: another one, drawn the same way
     w, h = 44, 30
     cv = Canvas(w, h, wrap=False, ground=-9)
     for _ in range(26):                                               # leaves
@@ -1170,6 +1170,8 @@ TEXTURES = {
     'menhir_top': lambda n: (tex_menhir(n, top=True), None),
     'alien_ground': lambda n: (tex_alien_ground(n), None),
 }
+# props drawn a few ways, one picked per placement (assets.variant_name): name -> (count, draw(k))
+VARIANTS = {'flowers': (3, spr_flowers)}
 SPRITES = {'barrel': spr_barrel, 'broken_barrel': spr_broken_barrel, 'crate': spr_crate, 'fountain': spr_fountain,
            'rowboat': spr_rowboat, 'bench': spr_bench, 'flowers': spr_flowers, 'statue': spr_statue,
            'bed': spr_bed, 'wheelchair': spr_wheelchair, 'table': spr_table, 'chest': spr_chest,
