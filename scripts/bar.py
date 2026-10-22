@@ -77,6 +77,74 @@ def _game_screen(h, w, rng):
     return img
 
 
+def _maze_screen(h, w, rng):
+    """A frame of a maze chase: blue walls round a grid of corridors laid with dots, a round yellow
+    muncher with its mouth open, two ghosts after it, the score along the top."""
+    img = np.zeros((h, w, 3), np.float32)
+    img[:] = (0.01, 0.01, 0.03)
+    wall = np.zeros((h, w), bool)
+    y0, step = 3, 4
+    wall[y0, 1:w - 1] = wall[h - 2, 1:w - 1] = True
+    wall[y0:h - 1, 1] = wall[y0:h - 1, w - 2] = True
+    for y in range(y0 + step, h - 3, step):                       # blocks between the corridors
+        for x in range(4, w - 5, step):
+            if rng.random() < 0.6:
+                wall[y - 1:y + 1, x:x + step - 2] = True
+    img[wall] = (0.2, 0.3, 1.0)
+    for y in range(y0 + 2, h - 2, 2):                              # dots along the open corridors
+        for x in range(3, w - 3, 2):
+            if not wall[max(y - 1, 0):y + 2, x - 1:x + 2].any():
+                img[y, x] = (0.95, 0.8, 0.7)
+    cy, cx = y0 + 2 + 2 * int(rng.integers(0, (h - y0 - 5) // 2)), w // 2
+    yy, xx = np.mgrid[0:h, 0:w]
+    body = (yy - cy) ** 2 + (xx - cx) ** 2 <= 2.3
+    mouth = (xx > cx) & (np.abs(yy - cy) < (xx - cx))
+    img[body & ~mouth & ~wall] = (1.0, 0.9, 0.1)
+    for gx, colr in ((cx - 7, (1.0, 0.15, 0.15)), (cx + 6, (1.0, 0.6, 0.85))):
+        if 2 <= gx < w - 3:
+            img[cy - 1:cy + 2, gx - 1:gx + 2] = colr
+            img[cy + 1, gx] = (0.01, 0.01, 0.03)                     # its skirt
+            img[cy - 1, gx - 1:gx + 2:2] = (1.0, 1.0, 1.0)            # its eyes
+    img[1, 2:10:2] = (1.0, 1.0, 1.0)
+    img[1, w - 8:w - 2:2] = (1.0, 0.3, 0.3)
+    return img
+
+
+def _racer_screen(h, w, rng):
+    """A frame of a racer: a road running away to a horizon of hills under a dusk sky, rumble strips
+    in red and white, the dashed line down the middle, the player's car and another ahead."""
+    img = np.zeros((h, w, 3), np.float32)
+    hz = h * 2 // 5
+    for y in range(hz):                                             # the sky, darkening up
+        t = y / max(hz - 1, 1)
+        img[y] = (0.25 + 0.6 * t, 0.1 + 0.25 * t, 0.4 - 0.1 * t)
+    for x in range(w):                                              # hills on the horizon
+        top = hz - 1 - int(2 + 1.5 * np.sin(x * 0.45 + rng.uniform(0, 6)))
+        img[top:hz, x] = (0.25, 0.12, 0.35)
+    for y in range(hz, h):
+        t = (y - hz + 1) / (h - hz)                                 # 0 at the horizon, 1 at the foot
+        half = 1 + t * (w * 0.55)
+        row = np.abs(np.arange(w) - w / 2 + 0.5)
+        img[y] = (0.1, 0.45, 0.15) if (y // 2) % 2 else (0.15, 0.55, 0.2)
+        img[y, row < half] = (0.35, 0.35, 0.4)
+        edge = (row >= half - 1 - t) & (row < half)
+        img[y, edge] = (1.0, 1.0, 1.0) if (y // 2) % 2 else (0.95, 0.15, 0.15)
+        if (y // 2) % 2 and t > 0.2:
+            img[y, (row < 0.6 + 0.3 * t)] = (1.0, 0.95, 0.6)
+    cx = w // 2 + int(rng.integers(-3, 3))
+    img[h - 4:h - 1, cx - 2:cx + 3] = (0.95, 0.1, 0.1)               # the player's car
+    img[h - 4, cx - 1:cx + 2] = (0.4, 0.8, 1.0)
+    img[h - 1, [cx - 2, cx + 2]] = (0.05, 0.05, 0.05)
+    ay = hz + (h - hz) // 3
+    img[ay:ay + 2, w // 2 + 1:w // 2 + 3] = (0.3, 0.5, 1.0)          # another, ahead
+    img[1, 2:10:2] = (1.0, 1.0, 1.0)
+    img[1, w - 8:w - 2:2] = (0.4, 1.0, 0.5)
+    return img
+
+
+GAMES = (_game_screen, _maze_screen, _racer_screen)
+
+
 def spr_arcade_cabinet():
     """An upright arcade cabinet: a dark body with neon side art, a marquee lit along the top in
     glowing pseudo-letters, a shooter on its screen in the bezel, a control panel with a joystick
@@ -115,6 +183,16 @@ def spr_arcade_cabinet():
     _line(side, [(40, 66), (32, 98)])
     _tube(rgba, em, side & (rgba[..., 3] > 0.5), NEON[2])
     return rgba.astype(np.float32), em
+
+
+def spr_joystick():
+    """An arcade joystick: a red ball on a black shaft, to stand on a cabinet's control panel (the
+    `arcade_cabinet` object stands one on its own)."""
+    w, h = 7, 13
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.stroke([(3.5, h - 0.5), (3.5, 4.5)], 1.5, z=0.4, dome=0.5, mat=0)                  # the shaft
+    cv.ellipse(3.5, 3.2, 2.7, 2.6, z=1.0, dome=1.0, mat=1)                                 # the ball
+    return _prop(cv, [BLACK, VINYL], relief=1.0, cavity=0.3, shadow=0.3)
 
 
 def spr_bar_counter():
@@ -379,12 +457,12 @@ TEXTURES = {'bar_shelves': tex_bar_shelves, 'capsules': tex_capsules,
 TEXTURE_NOISE = {'bar_shelves': 0.2, 'capsules': 0.2, 'capsules_lit': 0.2}
 SPRITES = {'arcade_cabinet': spr_arcade_cabinet, 'bar_counter': spr_bar_counter, 'bar_stool': spr_bar_stool,
            'booth': spr_booth, 'jukebox': spr_jukebox, 'neon_cocktail': spr_neon_cocktail,
-           'neon_fish': spr_neon_fish, 'bottles': spr_bottles}
+           'neon_fish': spr_neon_fish, 'bottles': spr_bottles, 'joystick': spr_joystick}
 SPRITE_HEIGHT = {'arcade_cabinet': 0.68, 'bar_counter': 0.35, 'bar_stool': 0.27, 'booth': 0.5, 'jukebox': 0.56,
-                 'neon_cocktail': 0.4, 'neon_fish': 0.32, 'bottles': 0.12}
+                 'neon_cocktail': 0.4, 'neon_fish': 0.32, 'bottles': 0.12, 'joystick': 0.045}
 PROP_DEFAULTS = {'bar_counter': {'planes': 1, 'shadow': False},
                  'neon_cocktail': {'blend': 'additive', 'shadow': False},
                  'neon_fish': {'blend': 'additive', 'shadow': False},
                  'arcade_cabinet': {'aura': {'color': [0.6, 0.5, 1.0], 'strength': 0.25, 'radius': 0.15}},
                  'jukebox': {'aura': {'color': [1.0, 0.6, 0.3], 'strength': 0.3, 'radius': 0.18}}}
-NO_CONTACT_SHADOW = {'neon_cocktail', 'neon_fish', 'bar_counter'}
+NO_CONTACT_SHADOW = {'neon_cocktail', 'neon_fish', 'bar_counter', 'joystick'}

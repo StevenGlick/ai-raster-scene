@@ -37,7 +37,7 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'count', 'spread', 'color', 'refract', 'glow', 'base', 'material', 'sides', 'radius', 'top', 'capital',
                   'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset',
                   'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel', 'ends', 'sail',
-                  'band', 'lit', 'casts', 'teeth', 'spokes'}
+                  'band', 'lit', 'casts', 'teeth', 'spokes', 'goods', 'game'}
 
 
 # ------------------------------------------------------------------ parts
@@ -212,7 +212,6 @@ def solid(w, h, base, rough=0.04, seed=0):
 LACQUER = ramp('#7a2a22', dark=0.35, light=1.35, warm=0.12)
 WOOD_DARK = ramp('#4a3020', dark=0.35, light=1.3)
 WOOD_PALE = ramp('#b08a5a', dark=0.45, light=1.25)
-AWN_RED = ramp('#b8322c', dark=0.4, light=1.3)
 AWN_CREAM = ramp('#e6dcc2', dark=0.5, light=1.12)
 INDIGO = ramp('#283052', dark=0.4, light=1.4, cool=0.1)
 CLOTH_WHITE = ramp('#e2ded2', dark=0.55, light=1.1)
@@ -291,17 +290,17 @@ def _stripes(w, h, stripe):
 
 
 @functools.lru_cache(maxsize=None)
-def _awning(w, h, stripe):
+def _awning(w, h, stripe, color='#b8322c'):
     cv = _stripes(w, h, stripe)
     cv.box(0, 0, w, 2, z=0.8, top=1.0, bevel=0.3, mode='over', mat=0, tone=-0.05)   # the bent front edge
-    return _finish(cv, [AWN_RED, AWN_CREAM], relief=0.6)
+    return _finish(cv, [ramp(color, dark=0.4, light=1.3), AWN_CREAM], relief=0.6)
 
 
 @functools.lru_cache(maxsize=None)
-def _valance(w, h, stripe):
+def _valance(w, h, stripe, color='#b8322c'):
     """The awning's hanging edge, its stripes in step with the awning's, cut in scallops."""
     cv = _stripes(w, h, stripe)
-    rgba, em = _finish(cv, [AWN_RED, AWN_CREAM], relief=0.6)
+    rgba, em = _finish(cv, [ramp(color, dark=0.4, light=1.3), AWN_CREAM], relief=0.6)
     xx = np.arange(w) + 0.5
     ph = (xx % stripe) / stripe
     edge = (h - 2.2) + 2.2 * np.sin(np.pi * ph)                   # each stripe ends in a tongue
@@ -821,6 +820,13 @@ ROCKS = {
                    mass=(2.0, 2.0, 2.0), chip=(0.12, 0.12, 0.1), key=(-0.4, 0.45, 0.8), shade=(0.3, 0.6),
                    crust=0.7, weed=0.2, up=0.7, pores=0.0, cracks=0.2, courses=0.42, staggered=True,
                    plants=[('grass_tuft', 0.14, 0.22)]),
+    # small stones laid dry, every joint showing (`joint`: how wide, in cells) and each stone a shade of its own
+    # (`mottle`): a well's wall
+    'fieldstone': dict(ramps=[ramp('#8a8070', dark=0.32, light=1.35), ramp('#9a9a7a', dark=0.4, light=1.25),
+                              ramp('#4e6a34', dark=0.35, light=1.3)],
+                       mass=(0.1, 0.1, 0.065), chip=(0.035, 0.035, 0.03), key=(-0.4, 0.45, 0.8), shade=(0.4, 0.6),
+                       crust=0.74, weed=0.6, up=0.55, pores=0.0, cracks=1.0, joint=0.1, mottle=0.3, density=2.5,
+                       plants=[('grass_tuft', 0.12, 0.2)]),
     'salt': dict(ramps=[ramp('#ebe6dc', dark=0.55, light=1.08), ramp('#d6ccbc', dark=0.55, light=1.08),
                         ramp('#f4f0ea', dark=0.55, light=1.06)],
                  mass=(0.3, 0.3, 0.3), chip=(0.05, 0.05, 0.05), key=(-0.4, 0.45, 0.8), shade=(0.6, 0.42),
@@ -870,7 +876,8 @@ def _stone(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
     F1, F2, e1, e2, id1, id2 = cells3(P, mass, seed)
     f1, f2, c1, c2, cid, _ = cells3(P, chip, seed + 1)
     gap = F2 - F1                                                   # 0 where two masses meet
-    grad = _dome(gap, e1, e2, mass, 0.35, 0.06) + _dome(f2 - f1, c1, c2, chip, 0.3, 0.035 * table(2, cid) ** 2)
+    grad = (_dome(gap, e1, e2, mass, 0.35, rk.get('dome', 0.06))
+            + _dome(f2 - f1, c1, c2, chip, 0.3, 0.035 * table(2, cid) ** 2))
     grad -= (grad @ nrm)[:, None] * nrm                             # its slope across the face
     N = nrm - grad
     if rim is not None:
@@ -879,9 +886,11 @@ def _stone(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
         N += tilt.reshape(-1)[at][:, None] * (u / np.linalg.norm(u)).astype(np.float32)[None, :]
     N /= np.linalg.norm(N, axis=1, keepdims=True)
     lit = np.clip(N @ key, 0, 1)
-    crack = (gap < 0.04) & (table(4, np.minimum(id1, id2) * 31 + np.maximum(id1, id2)) < rk.get('cracks', 0.45))
+    crack = ((gap < rk.get('joint', 0.04))
+             & (table(4, np.minimum(id1, id2) * 31 + np.maximum(id1, id2)) < rk.get('cracks', 0.45)))
     pits = (f1 < 0.12) & (table(3, cid) < rk['pores'])
-    val = rk['shade'][0] + rk['shade'][1] * lit + tone + (table(5, id1) - 0.5) * 0.12 - 0.22 * crack - 0.3 * pits
+    val = (rk['shade'][0] + rk['shade'][1] * lit + tone + (table(5, id1) - 0.5) * rk.get('mottle', 0.12) - 0.22 * crack
+           - 0.3 * pits)
     val -= 0.2 * (1 - np.clip(P[:, 2] / 0.3, 0, 1)) ** 2            # darker at the foot
     mat = np.zeros(len(P), int)
     mat[(noise3(P, 0.16, seed + 2) > rk['crust']) & (table(4, id1) < 0.5)] = 1
@@ -1776,10 +1785,12 @@ ROOFS = {
 
 def market_stand(pl):
     """A market stand: a trestle table of boards, 1.5 long, a striped skirt hanging from its front,
-    under a striped awning on four poles that slopes down to the front, a scalloped valance round it;
-    goods heaped on the table - apples, cabbages, loaves - and crates by it, as billboards. Faces +x:
-    the customers stand there."""
+    under a striped awning on four poles that slopes down to the front, a scalloped valance round it -
+    striped in its `paint` and cream (default red); on the table three trays heaped with `goods` (default
+    apples, cabbages and loaves; potatoes too), and by it crates, one of them full, all in 3D, and a sack.
+    Faces +x: the customers stand there."""
     seed = int(pl.get('seed', 1))
+    paint = pl.get('paint', '#b8322c')
     wood = _timber(pl, (0.025, 0.4, 0.025), 0.12)                    # boards along the table
     post = _timber(pl, (0.025, 0.025, 0.4), 0.5)
     d0, d1, half, top = -0.28, 0.24, 0.75, 0.42                      # the table: back, front, half length
@@ -1803,22 +1814,30 @@ def market_stand(pl):
                          {f: _solid_cached(3, _texels(z), '#4a3828') for f in ('front', 'back', 'right', 'left')})
     aw, stripe, vh = half + 0.12, 7, 0.12
     T = _texels
-    parts.append(quad(_awning(T(2 * aw), T(math.hypot(xf - xb, zb - zf)), stripe),
+    parts.append(quad(_awning(T(2 * aw), T(math.hypot(xf - xb, zb - zf)), stripe, paint),
                       (xf, -aw, zf), (xf, aw, zf), (xb, -aw, zb), back=0.85))
-    val = _valance(T(2 * aw), T(vh), stripe)
+    val = _valance(T(2 * aw), T(vh), stripe, paint)
     parts.append(quad((val[0][:, ::-1], val[1][:, ::-1]), (xf, aw, zf), (xf, -aw, zf), (xf, aw, zf - vh), back=0.85))
     for y, sgn in ((aw, 1), (-aw, -1)):                              # its sides, along the slope
         tl, tr = ((xb, y, zb), (xf, y, zf)) if sgn > 0 else ((xf, y, zf), (xb, y, zb))
-        parts.append(quad(_valance(T(math.hypot(xf - xb, zb - zf)), T(vh), stripe), tl, tr,
+        parts.append(quad(_valance(T(math.hypot(xf - xb, zb - zf)), T(vh), stripe, paint), tl, tr,
                           (tl[0], tl[1], tl[2] - vh), back=0.85))
-    skirt = _valance(T(2 * half), T(top - 0.12), stripe)             # its skirt, in step with the awning
+    skirt = _valance(T(2 * half), T(top - 0.12), stripe, paint)      # its skirt, in step with the awning
     parts.append(quad((skirt[0][:, ::-1], skirt[1][:, ::-1]), (d1 + 0.01, half, top - 0.04),
                       (d1 + 0.01, -half, top - 0.04), (d1 + 0.01, half, 0.08), back=0.8))
-    ct = top + 0.005                                                  # the goods on the table
-    for y, kind in ((-0.48, 'apples'), (0.0, 'cabbages'), (0.48, 'loaves')):
-        parts.append(sprite(f'goods_{kind}', 0.04, y, ct))
-    parts += [sprite('crate', d1 + 0.12, -0.42, 0.0, scale=0.3), sprite('crate', d1 + 0.1, 0.36, 0.0, scale=0.28),
-              sprite('sack', d0 - 0.12, 0.62, 0.0, scale=0.3)]
+    goods = list(pl.get('goods') or ['apples', 'cabbages', 'loaves'])
+    tray = _timber(pl, (0.4, 0.025, 0.025), 0.1)
+    a, b, xm = 0.15, 0.2, (d0 + d1) / 2                               # the trays on the table, heaped
+    for k, (y, kind) in enumerate(zip((-0.48, 0.0, 0.48), goods)):
+        parts += _block(dict(tray, density=2.5), seed + 20 + 6 * k, (xm - a, y - b, top), (xm + a, y + b, top + 0.03),
+                        skip=('bottom', 'top'))
+        rise = 0.13 if kind == 'cabbages' else 0.1                     # heaped high, to show over the tray's rim
+        parts += _moved(_mound(_produce(pl, kind), seed + 60 + 5 * k, a - 0.01, b - 0.01, top + 0.012, top + rise,
+                               k=0.42), xm, y)
+    turn = pl.get('angle', 0.0)                                       # crates by it, one full, and a sack
+    parts += _moved(crate({'size': 0.26, 'goods': goods[0], 'seed': seed + 90, 'angle': turn}), d1 + 0.17, -0.42)
+    parts += _moved(crate({'size': 0.24, 'seed': seed + 95, 'angle': turn}), d1 + 0.15, 0.38)
+    parts.append(sprite('sack', d0 - 0.12, 0.62, 0.0, scale=0.3))
     parts.append(shadow(0.0, 0.0, 1.8, 0.5))
     return [p for p in parts if p]
 
@@ -2495,9 +2514,899 @@ def crystal_cluster(pl):
     return parts
 
 
+# ------------------------------------------------------------------ machines: an arcade cabinet, a vending machine
+
+FINE = 160                  # texels per unit for small things seen close - a cabinet, a table, a piano
+
+
+def _fine(length):
+    return max(2, int(round(length * FINE)))
+
+
+def _edge(m):
+    """The outermost ring of texels of a mask."""
+    return m & ~_inset(m)
+
+
+def _profile_faces(prof, half, texs, **kw):
+    """The faces between the two sides of a thing whose side is the outline `prof` - (forward, up) points
+    going round it from the foot of its back, up, over and down its front - each a panel `half` either
+    side of the middle, read from outside: one texture per edge of the outline, None where it is open."""
+    parts = []
+    for (x0, z0), (x1, z1), tex in zip(prof, prof[1:], texs):
+        if tex is not None:
+            parts.append(quad(tex, (x0, half, z0), (x0, -half, z0), (x1, half, z1), **kw))
+    return parts
+
+
+ARCADE_PROFILE = [(-0.155, 0.0), (-0.155, 0.66), (0.075, 0.66), (0.075, 0.565), (0.035, 0.555), (0.08, 0.405),
+                  (0.155, 0.39), (0.155, 0.355), (0.1, 0.345), (0.1, 0.0)]     # its side: back, top, marquee,
+ARCADE_HALF = 0.115                                                        # screen, controls, coin door
+CAB_BLACK = ramp('#1a1820', dark=0.6, light=2.0)
+CAB_STEEL = ramp('#3e4048', dark=0.45, light=1.7, cool=0.1)
+CAB_GOLD = ramp('#f0d860', dark=0.45, light=1.2)
+CAB_WHITE = ramp('#f4f0ff', dark=0.7, light=1.05)
+
+
+def _lit(c):
+    """A light's colour from a paint: as bright as it goes, a little toward white."""
+    c = rgb(c)
+    return np.clip(c / max(float(c.max()), 1e-3) * 0.75 + 0.25, 0, 1)
+
+
+@functools.lru_cache(maxsize=None)
+def _arcade_side(paint, color, seed):
+    """An arcade cabinet's right side, its front to the right: the body in its paint, side art of a ringed
+    planet, stars and two bands sweeping down toward the front, and its edge banded all round in a strip
+    of light - the T-moulding, lit."""
+    x0, x1 = ARCADE_PROFILE[0][0], max(p[0] for p in ARCADE_PROFILE)
+    H = max(p[1] for p in ARCADE_PROFILE)
+    w, h = _fine(x1 - x0), _fine(H)
+    pts = [((x - x0) / (x1 - x0) * w, (H - z) / H * h) for x, z in ARCADE_PROFILE]
+    mask = _grown(_poly(w, h, pts))                                   # a texel proud of the front, no crack
+    rng = np.random.default_rng(seed)
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.4, top=0.4, bevel=0, mat=0)
+    cv.ellipse(w * 0.32, h * 0.2, w * 0.17, w * 0.17, z=0.6, dome=0.4, mat=2)                    # the planet
+    cv.stroke([(w * 0.06, h * 0.25), (w * 0.6, h * 0.15)], 1.0, z=0.7, dome=0.2, mat=1)          # its ring
+    for _ in range(9):                                                                         # stars
+        cv.ellipse(rng.uniform(2, w - 4), rng.uniform(3, h * 0.36), 0.6, 0.6, z=0.6, dome=0.2, mat=3)
+    cv.polygon([(0, h * 0.4), (0, h * 0.5), (w, h * 0.82), (w, h * 0.72)], z=0.6, top=0.2, bevel=0.6, mat=1)
+    cv.polygon([(0, h * 0.54), (0, h * 0.57), (w, h * 0.89), (w, h * 0.86)], z=0.6, top=0.2, bevel=0.6, mat=2)
+    rgba, em = _finish(cv, [ramp(paint, dark=0.5, light=1.6), ramp(color, dark=0.4, light=1.3), CAB_GOLD, CAB_WHITE],
+                       relief=0.5, outline=0)
+    rgba, em = rgba.copy(), em.copy()
+    rgba[..., 3] = mask
+    rim = _edge(mask) | _edge(_inset(mask))                         # two texels wide, to read across a room
+    rgba[rim, :3] = _lit(color)
+    em[rim] = 0.8
+    return rgba, em
+
+
+@functools.lru_cache(maxsize=None)
+def _plain_face(w, h, paint, stripe=None):
+    """A plain face of a cabinet, a machine, a piano: its paint, faintly bevelled, and with `stripe` a line of
+    that colour across its middle."""
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.5, top=0.4, bevel=0.6, mat=0)
+    if stripe:
+        cv.box(0, h // 2 - 1, w, 2, z=0.6, top=0.2, bevel=0.3, mat=1)
+    return _finish(cv, [ramp(paint, dark=0.5, light=1.6), ramp(stripe or paint, dark=0.4, light=1.3)], relief=0.4,
+                   outline=0)
+
+
+@functools.lru_cache(maxsize=None)
+def _arcade_marquee(w, h, color, seed):
+    """The marquee: a panel lit from behind, the game's name across it in glowing pseudo-letters."""
+    from buildings import _glyph_mask
+    rng = np.random.default_rng(seed + 7)
+    c = rgb(color)
+    rgba = np.zeros((h, w, 4), np.float32)
+    rgba[..., 3] = 1.0
+    rgba[..., :3] = c * 0.25 + 0.05
+    em = np.full((h, w), 0.55, np.float32)
+    glyph = np.zeros((h, w), bool)
+    glyph[2:h - 2, 2:w - 2] = _glyph_mask(h - 4, w - 4, rng, False)
+    rgba[glyph, :3] = np.clip(c * 0.7 + 0.35, 0, 1)
+    em[glyph] = 1.0
+    rgba[[0, -1], :, :3] = rgba[:, [0, -1], :3] = (0.1, 0.09, 0.12)                       # its frame
+    em[[0, -1], :] = em[:, [0, -1]] = 0.0
+    return rgba, em
+
+
+@functools.lru_cache(maxsize=None)
+def _arcade_screen(w, h, color, seed):
+    """The screen in its bezel: a frame of a game - a shooter, a maze chase or a racer, by `seed` - scanlined
+    and glowing, round-cornered in a black bezel printed with a line of the colour."""
+    from bar import GAMES
+    rng = np.random.default_rng(seed + 11)
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.4, top=0.4, bevel=1.0, mat=0)
+    cv.box(1.5, 1, w - 3, h - 2, z=0.5, top=0.1, bevel=0.3, mat=1)
+    cv.box(2.5, 2, w - 5, h - 4, z=0.4, top=0.1, bevel=0.3, mat=0)
+    rgba, em = _finish(cv, [CAB_BLACK, ramp(color, dark=0.4, light=1.2)], relief=0.4, outline=0)
+    rgba, em = rgba.copy(), em.copy()
+    y0, y1, x0, x1 = 3, h - 3, 4, w - 4
+    game = GAMES[seed % len(GAMES)](y1 - y0, x1 - x0, rng)
+    game[::2] *= 0.75                                                                      # scanlines
+    rgba[y0:y1, x0:x1, :3] = game
+    em[y0:y1, x0:x1] = 0.95
+    for yy, xx in ((y0, x0), (y0, x1 - 1), (y1 - 1, x0), (y1 - 1, x1 - 1)):                # its round corners
+        rgba[yy, xx, :3] = (0.03, 0.03, 0.04)
+        em[yy, xx] = 0.0
+    return rgba, em
+
+
+@functools.lru_cache(maxsize=None)
+def _arcade_controls(w, h, paint, color):
+    """The control panel from above, the player's left to the left: a band of the colour printed along its
+    front, the joystick's dust washer, three fire buttons and two small start buttons."""
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.4, top=0.3, bevel=0.6, mat=0)
+    cv.box(0, h - 3, w, 2, z=0.45, top=0.1, bevel=0.2, mat=1)
+    cv.ellipse(w * 0.27, h * 0.5, 2.2, 2.0, z=0.6, dome=0.3, mat=2)                               # the washer
+    for k, m in enumerate((3, 4, 1)):                                                            # fire buttons
+        cv.ellipse(w * (0.56 + 0.13 * k), h * 0.5 - (k == 1), 1.5, 1.4, z=0.6, dome=0.9, mat=m)
+    for k in range(2):                                                                           # start buttons
+        cv.ellipse(w * (0.44 + 0.1 * k), h * 0.18, 0.9, 0.8, z=0.6, dome=0.6, mat=5)
+    return _finish(cv, [ramp(paint, dark=0.5, light=1.6), ramp(color, dark=0.4, light=1.3), CAB_BLACK,
+                        ramp('#d8302a', dark=0.4, light=1.3), CAB_GOLD, CAB_WHITE], relief=0.8, outline=0)
+
+
+@functools.lru_cache(maxsize=None)
+def _arcade_coin_door(w, h, paint, color):
+    """The cabinet's front below the controls: a steel coin door with two coin slots, their inserts lit red,
+    a lock; a band of the colour over a black kick plate at the foot."""
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.4, top=0.4, bevel=0.6, mat=0)
+    dx, dy, dw, dh = w * 0.3, h * 0.2, w * 0.4, h * 0.3
+    cv.box(dx, dy, dw, dh, z=0.6, top=0.4, bevel=0.8, mat=1)                                      # the door
+    for k in range(2):
+        sx = dx + dw * (0.3 + 0.4 * k)
+        cv.box(sx - 1.2, dy + 2, 2.4, 4, z=0.75, top=0.2, bevel=0.4, mat=2)                     # the inserts
+        cv.box(sx - 0.5, dy + 7, 1, 3, z=0.55, top=0.0, bevel=0.2, mat=3)                       # the slots
+    cv.ellipse(dx + dw / 2, dy + dh - 3, 0.9, 0.9, z=0.8, dome=0.5, mat=1, tone=0.1)            # the lock
+    cv.box(0, h - 9, w, 2, z=0.45, top=0.1, bevel=0.2, mat=4)
+    cv.box(0, h - 6, w, 6, z=0.5, top=0.3, bevel=0.5, mat=3)                                    # kick plate
+    rgba, em = _finish(cv, [ramp(paint, dark=0.5, light=1.6), CAB_STEEL, ramp('#e83a2a', dark=0.5, light=1.2),
+                            CAB_BLACK, ramp(color, dark=0.4, light=1.3)], relief=0.8, outline=0)
+    em = em.copy()
+    em[cv.mat == 2] = 0.9
+    return rgba, em
+
+
+def arcade_cabinet(pl):
+    """An upright arcade cabinet, as tall as a man: its sides cut to the cabinet's outline - the marquee
+    jutting over the screen, the screen tilted back, the control panel standing out - in its `paint`
+    (default a dark violet) with side art of a ringed planet, stars and sweeping bands in its `color`
+    (default pink) and the edge lit round in that colour; a marquee lit from behind with the game's name,
+    a shooter glowing on the screen, buttons on the control panel and a joystick standing up from it (a
+    billboard), a coin door with its inserts lit. `seed` changes the game and its name; `lights` false
+    leaves out the glow it throws on the player. Faces +x: the player stands there."""
+    paint, color = pl.get('paint', '#342a5c'), pl.get('color', '#ff4fa0')
+    seed = int(pl.get('seed', 1))
+    prof, half = ARCADE_PROFILE, ARCADE_HALF
+    x0, x1 = prof[0][0], max(p[0] for p in prof)
+    H = max(p[1] for p in prof)
+    side = _arcade_side(paint, color, seed)
+    parts = [quad(side, (x0, half, H), (x1, half, H), (x0, half, 0.0)),                           # its sides
+             quad((side[0][:, ::-1], side[1][:, ::-1]), (x1, -half, H), (x0, -half, H), (x1, -half, 0.0))]
+    W = _fine(2 * half)
+    span = [_fine(math.hypot(b[0] - a[0], b[1] - a[1])) for a, b in zip(prof, prof[1:])]
+    texs = [_plain_face(W, span[0], '#121016'),                                      # the back
+            _plain_face(W, span[1], paint),                                          # the top
+            _arcade_marquee(W, span[2], color, seed),
+            _plain_face(W, span[3], '#121016'),                                      # under the marquee
+            _arcade_screen(W, span[4], color, seed),
+            _arcade_controls(W, span[5], paint, color),
+            _plain_face(W, span[6], paint, color),                                   # the panel's front edge
+            _plain_face(W, span[7], '#121016'),                                      # under it
+            _arcade_coin_door(W, span[8], paint, color)]
+    back = texs[0]                                                    # the back reads the right way up
+    texs[0] = (back[0][::-1], back[1][::-1])
+    parts += _profile_faces(prof, half, texs)
+    (cx0, cz0), (cx1, cz1) = prof[5], prof[6]                         # the joystick, on the control panel
+    parts.append(sprite('joystick', cx0 + 0.5 * (cx1 - cx0), half - 0.27 * 2 * half, cz0 + 0.5 * (cz1 - cz0),
+                        shadow=False))
+    if pl.get('lights', True):
+        parts.append(light(x1 + 0.12, 0.0, 0.48, 1.0, [float(c) for c in _lit(color)], 0.7))
+    parts.append(shadow(0.0, 0.0, 0.45, 0.5))
+    return parts
+
+
+def _recess(front, depth, cols, rows, size, half, H, back, wall, glass=None, opacity=1.0):
+    """A hole let into a front face (at x = `front`) and the box behind it, `depth` deep: its back panel
+    and its four sides. The hole is texel-aligned on the face's texture - `cols` and `rows` (first, past
+    the last) of a texture `size` (w, h) laid `half` either side of the middle and `H` tall - so its edges
+    meet the face's exactly. `glass` lays a pane over it at `opacity`, drawn over what is behind it."""
+    w, h = size
+    yl, yr = half - cols[0] / w * 2 * half, half - cols[1] / w * 2 * half
+    zt, zb = H - rows[0] / h * H, H - rows[1] / h * H
+    xb = front - depth
+    parts = [quad(back, (xb, yl, zt), (xb, yr, zt), (xb, yl, zb)),
+             quad(wall, (front, yl, zt), (front, yr, zt), (xb, yl, zt)),                   # its top, seen from below
+             quad(wall, (xb, yl, zb), (xb, yr, zb), (front, yl, zb)),                      # its floor
+             quad(wall, (front, yl, zt), (xb, yl, zt), (front, yl, zb)),                   # its sides
+             quad(wall, (xb, yr, zt), (front, yr, zt), (xb, yr, zb))]
+    if glass is not None:
+        parts.append(quad(glass, (front + 0.002, yl, zt), (front + 0.002, yr, zt), (front + 0.002, yl, zb),
+                          translucent=True, opacity=opacity))
+    return parts
+
+
+# a vending machine's box - depth, half its width, height - and its window and hatch as (columns, rows) of the
+# texture of its front (FINE texels to the unit)
+VEND = dict(D=0.27, half=0.18, H=0.68, window=((3, 41), (12, 58)), hatch=((9, 35), (88, 99)))
+
+
+@functools.lru_cache(maxsize=None)
+def _vend_products(w, h, seed):
+    """What shows in a vending machine's window, lit: three shelves of cans and bottles in bright colours,
+    a white band round each, and under each a button that glows."""
+    rng = np.random.default_rng(seed)
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.0, top=0.2, bevel=0, mat=0)
+    rh = h / 3
+    for r in range(3):
+        y0 = r * rh
+        cv.box(0, y0 + rh - 3.5, w, 3, z=0.4, top=0.2, bevel=0.3, mat=1)                    # the button strip
+        n = 6
+        for c in range(n):
+            x = (c + 0.5) * w / n
+            m = 2 + int(rng.integers(0, 6))
+            if rng.random() < 0.35:                                                         # a bottle
+                cv.box(x - 1.6, y0 + 4.5, 3.2, rh - 9, z=0.8, top=0.6, bevel=1.2, mat=m)
+                cv.box(x - 0.7, y0 + 2.2, 1.4, 2.6, z=0.8, top=0.4, bevel=0.4, mat=m)
+                cv.box(x - 0.8, y0 + 1.4, 1.6, 1.0, z=0.9, top=0.2, bevel=0.2, mat=8)
+            else:                                                                            # a can
+                cv.box(x - 1.9, y0 + 2.8, 3.8, rh - 7.3, z=0.8, top=0.7, bevel=1.4, mat=m)
+            cv.box(x - 1.6, y0 + rh * 0.45, 3.2, 1.2, z=0.85, top=0.2, bevel=0.2, mat=8)
+            cv.ellipse(x, y0 + rh - 2, 0.9, 0.7, z=0.6, dome=0.5, mat=9)                     # its button
+    rgba, em = _finish(cv, [ramp('#e8f2f8', dark=0.6, light=1.05), CAB_BLACK, ramp('#d8302a', dark=0.45),
+                            ramp('#2a6ad8', dark=0.45), ramp('#f0c030', dark=0.5), ramp('#30b060', dark=0.45),
+                            ramp('#f07a2a', dark=0.5), ramp('#8a3ac8', dark=0.45), CAB_WHITE,
+                            ramp('#5ae0ff', dark=0.6, light=1.05)], relief=0.7, outline=1)
+    em = em.copy()
+    em[:] = np.where(cv.mat == 0, 0.6, np.where(cv.mat == 1, 0.1, 0.35))
+    em[cv.mat == 9] = 1.0
+    return rgba, em
+
+
+@functools.lru_cache(maxsize=None)
+def _vend_front(w, h, paint, seed):
+    """A vending machine's front, its window and its hatch cut out (they are recesses): a lit sign along
+    the top in pseudo-letters, the money panel at the right - a red price display, coin and note slots, the
+    coin-return lever - a white wave across its foot, a black kick plate."""
+    from buildings import _glyph_mask
+    rng = np.random.default_rng(seed + 3)
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.4, top=0.5, bevel=1.0, mat=0)
+    cv.box(2, 2, w - 4, 7, z=0.6, top=0.2, bevel=0.4, mat=1)                                   # the sign
+    px = VEND['window'][0][1] + 3
+    cv.box(px, 12, w - px - 3, 46, z=0.5, top=0.3, bevel=0.6, mat=2)                          # money panel
+    cv.box(px + 2, 15, w - px - 7, 4, z=0.6, top=0.1, bevel=0.2, mat=3)                       # its display
+    cv.box(px + 3, 24, 3, 5, z=0.65, top=0.3, bevel=0.4, mat=4)                               # coin slot
+    cv.box(px + 1.5, 33, w - px - 6, 2, z=0.6, top=0.0, bevel=0.2, mat=2, tone=-0.3)          # note slot
+    cv.ellipse(px + 4.5, 44, 1.6, 1.6, z=0.7, dome=0.8, mat=4)                               # coin return
+    cv.polygon([(0, 72), (w * 0.33, 67), (w * 0.66, 73), (w, 72), (w, 78), (w * 0.66, 79), (w * 0.33, 73),
+                (0, 78)], z=0.45, top=0.1, bevel=0.4, mat=5)                                  # the wave
+    cv.box(0, h - 5, w, 5, z=0.5, top=0.3, bevel=0.4, mat=6)                                  # kick plate
+    rgba, em = _finish(cv, [ramp(paint, dark=0.4, light=1.4), ramp('#fff0f8', dark=0.6, light=1.02), CAB_STEEL,
+                            ramp('#1a0808', dark=0.6, light=1.5), CAB_WHITE, CAB_WHITE, CAB_BLACK], relief=0.6,
+                       outline=0)
+    rgba, em = rgba.copy(), em.copy()
+    sign = np.zeros((h, w), bool)
+    sign[3:8, 3:w - 3] = _glyph_mask(5, w - 6, rng, False)
+    rgba[2:9, 2:w - 2, :3] = (0.98, 0.94, 0.96)
+    em[2:9, 2:w - 2] = 0.7
+    rgba[sign, :3] = rgb(paint) * 0.8
+    em[sign] = 0.4
+    digits = np.zeros((h, w), bool)                                                          # the price, lit
+    digits[16:18, px + 3:w - 6:2] = True
+    rgba[digits, :3] = (1.0, 0.25, 0.15)
+    em[digits] = 1.0
+    for (c0, c1), (r0, r1) in (VEND['window'], VEND['hatch']):
+        rgba[r0:r1, c0:c1, 3] = 0.0
+    return rgba, em
+
+
+@functools.lru_cache(maxsize=None)
+def _vend_side(w, h, paint, seed):
+    """A vending machine's right side, its front to the right: its paint, a white wave sweeping across it,
+    a ring for a maker's mark and a drop of the paint in it."""
+    rng = np.random.default_rng(seed + 5)
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.4, top=0.5, bevel=1.0, mat=0)
+    cv.polygon([(0, 62), (w * 0.5, 58), (w, 72), (w, 78), (w * 0.5, 64), (0, 68)], z=0.45, top=0.1, bevel=0.5,
+               mat=1)                                                                  # the wave, on round the corner
+    cv.ellipse(w * 0.5, h * 0.3, w * 0.24, w * 0.24, z=0.5, dome=0.1, mat=1)
+    cv.ellipse(w * 0.5, h * 0.3, w * 0.17, w * 0.17, z=0.55, dome=0.1, mat=0)
+    cv.ellipse(w * 0.5, h * 0.31 + rng.uniform(-1, 1), w * 0.08, w * 0.11, z=0.6, dome=0.6, mat=1)
+    cv.box(0, h - 5, w, 5, z=0.5, top=0.3, bevel=0.4, mat=2)
+    return _finish(cv, [ramp(paint, dark=0.4, light=1.4), CAB_WHITE, CAB_BLACK], relief=0.6, outline=0)
+
+
+@functools.lru_cache(maxsize=None)
+def _glass_sheen(w, h):
+    """A pane of clear plastic: nearly invisible but for a pale streak of light across it on the slant."""
+    yy, xx = np.mgrid[0:h, 0:w]
+    d = (xx - w * 0.3) - (yy - h * 0.5) * 0.6
+    rgba = np.zeros((h, w, 4), np.float32)
+    rgba[..., :3] = 0.9
+    rgba[..., 3] = 0.06 + 0.22 * ((np.abs(d) < w * 0.07) | (np.abs(d - w * 0.22) < w * 0.025))
+    return rgba, np.zeros((h, w), np.float32)
+
+
+def vending_machine(pl):
+    """A drinks vending machine, a little taller than a man: a steel box in its `paint` (default red) - a
+    window let into its front, lit, on three shelves of cans and bottles with a glowing button under each
+    behind clear plastic, a lit sign over it, a money panel beside it (a red price display, coin and note
+    slots, the coin return), the hatch at its foot let in under a smoked flap, a white wave and a maker's
+    ring on its sides. `seed` restocks it; `lights` false leaves out the cool light it throws. Faces +x."""
+    paint, seed = pl.get('paint', '#b02a3a'), int(pl.get('seed', 1))
+    D, half, H = VEND['D'], VEND['half'], VEND['H']
+    x0, x1 = -D / 2, D / 2
+    W, Hh = _fine(2 * half), _fine(H)
+    side = _vend_side(_fine(D), Hh, paint, seed)
+    plain = _plain_face(W, _fine(D), '#8a8e96')
+    parts = box((x0, -half, 0.0), (x1, half, H),
+                {'front': _vend_front(W, Hh, paint, seed), 'back': _plain_face(W, Hh, '#2a2a30'),
+                 'right': side, 'left': (side[0][:, ::-1], side[1][:, ::-1]), 'top': plain})
+    (c0, c1), (r0, r1) = VEND['window']
+    parts += _recess(x1, 0.03, (c0, c1), (r0, r1), (W, Hh), half, H, _vend_products(_fine((c1 - c0) / W * 2 * half),
+                     _fine((r1 - r0) / Hh * H), seed), _plain_face(8, 8, '#d8dee4'),
+                     glass=_glass_sheen(c1 - c0, r1 - r0))
+    (c0, c1), (r0, r1) = VEND['hatch']
+    parts += _recess(x1, 0.045, (c0, c1), (r0, r1), (W, Hh), half, H, _plain_face(8, 8, '#141418'),
+                     _plain_face(8, 8, '#202024'), glass=_solid_cached(8, 8, '#2a2a34'), opacity=0.75)
+    if pl.get('lights', True):
+        parts.append(light(x1 + 0.15, 0.0, 0.45, 1.4, (0.8, 0.95, 1.0), 0.8))
+    parts.append(shadow(0.0, 0.0, 0.5, 0.5))
+    return parts
+
+
+# ------------------------------------------------------------------ a village well
+
+def _block(mat, seed, lo, hi, skip=('bottom',)):
+    """A block of `mat` from corner `lo` to corner `hi`: its faces (named as `box` names them, read from
+    outside), each cut from the material where it lies; `skip` leaves faces out."""
+    x0, y0, z0 = lo
+    x1, y1, z1 = hi
+    faces = {'front': ((x1, y1, z1), (x1, y0, z1), (x1, y1, z0)), 'back': ((x0, y0, z1), (x0, y1, z1), (x0, y0, z0)),
+             'right': ((x0, y1, z1), (x1, y1, z1), (x0, y1, z0)), 'left': ((x1, y0, z1), (x0, y0, z1), (x1, y0, z0)),
+             'top': ((x1, y0, z1), (x1, y1, z1), (x0, y0, z1)), 'bottom': ((x1, y1, z0), (x1, y0, z0), (x0, y1, z0))}
+    parts = [_rock(mat, seed + k, *c) for k, (f, c) in enumerate(faces.items()) if f not in skip]
+    return [p for p in parts if p]
+
+
+def _painted_box(lo, hi, color, skip=('bottom',)):
+    """A small box painted one colour all over - iron, say - its faces textured to their size."""
+    (x0, y0, z0), (x1, y1, z1) = lo, hi
+    dx, dy, dz = (_fine(abs(v)) for v in (x1 - x0, y1 - y0, z1 - z0))
+    sizes = {'front': (dy, dz), 'back': (dy, dz), 'right': (dx, dz), 'left': (dx, dz), 'top': (dy, dx),
+             'bottom': (dy, dx)}
+    return box(lo, hi, {f: _solid_cached(*sizes[f], color) for f in sizes if f not in skip})
+
+
+def _annulus(mat, seed, n, r0, r1, z, phase):
+    """A flat ring at height z, read from above: an n-sided disc of radius r1 with one of radius r0 cut from
+    its middle - a well's coping. Solid in every texel it reaches into, so it meets what stands round it."""
+    def shape(w, h):
+        def poly(r):
+            return _poly(w, h, [((y + r1) / (2 * r1) * w, (r1 - x) / (2 * r1) * h) for x, y, _ in _ring(n, r, z, phase)])
+        return _grown(poly(r1)) & ~_inset(poly(r0))
+    return _rock(mat, seed, (r1, -r1, z), (r1, r1, z), (-r1, -r1, z), alpha=shape)
+
+
+@functools.lru_cache(maxsize=None)
+def _well_water(w, h):
+    """A well's shaft seen into from above: dark, the water far down a dim disc with a sliver of sky on it."""
+    ys, xs = np.mgrid[0:h, 0:w]
+    u, v = (xs + 0.5) / w * 2 - 1, (ys + 0.5) / h * 2 - 1
+    r = np.hypot(u, v)
+    rgba = np.zeros((h, w, 4), np.float32)
+    rgba[..., :3] = (0.03, 0.035, 0.04)
+    water = r < 0.6
+    rgba[water, :3] = (0.05, 0.075, 0.085)
+    glint = water & (((u + 0.12) / 0.3) ** 2 + ((v + 0.18) / 0.09) ** 2 < 1)
+    rgba[glint, :3] = (0.2, 0.26, 0.3)
+    rgba[..., 3] = r < 1.0
+    return rgba, np.zeros((h, w), np.float32)
+
+
+@functools.lru_cache(maxsize=None)
+def _rope(w, h, across=True):
+    """Rope wound round a windlass, its turns running across the texture (`across`) or down it - or, two
+    texels wide and long, a rope hanging: twine in close turns, each catching the light along its top."""
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.2, top=0.2, bevel=0, mat=0, tone=-0.2)
+    if across:
+        for y in np.arange(0.0, h + 2, 2.0):
+            cv.stroke([(-1, y), (w + 1, y + 0.6)], 1.7, z=0.5, dome=0.8, mat=0)
+    else:
+        for x in np.arange(0.0, w + 2, 2.0):
+            cv.stroke([(x, -1), (x + 0.6, h + 1)], 1.7, z=0.5, dome=0.8, mat=0)
+    return _finish(cv, [ramp('#a8925e', dark=0.4, light=1.25)], relief=0.8, outline=0)
+
+
+def well(pl):
+    """A village well: a round wall of fieldstones laid dry, `height` high (default 0.32) and `size` across
+    (default 0.56), capped by a coping of flat stones standing proud of it, the water dark far down the
+    shaft; two oak posts on the coping carry a little gabled roof (`cover`, as for gable_roof: boards by
+    default) and between them the windlass, its rope wound round its middle and hanging down the shaft, an
+    iron crank at its front end; a bucket waits on the rim (a billboard). The windlass runs the way it
+    faces; `rock` is the wall's kind of rock (default fieldstone)."""
+    seed = int(pl.get('seed', 1))
+    stone = _rock_kind(dict(pl, rock=pl.get('rock', 'fieldstone')))
+    oak = _timber(pl, (0.025, 0.025, 0.4), 0.5)
+    axle = _timber(pl, (0.4, 0.025, 0.025), 0.5)
+    R, H = float(pl.get('size', 0.56)) / 2, float(pl.get('height', 0.32))
+    r, n, ph = R * 0.72, 14, math.pi / 14                             # the shaft, the wall's sides
+    parts = _prism_faces(stone, seed, n, R, R * 0.97, -0.02, H, ph, block=True)          # the wall, battered
+    parts += _prism_faces(stone, seed + 1, n, r, r, 0.0, H, ph, block=True)              # the shaft's side
+    c0, c1, zc = r * 0.95, R * 1.1, H + 0.04                          # the coping
+    parts += _prism_faces(stone, seed + 2, n, c1, c1, H - 0.005, zc, ph, block=True, tone=0.04)
+    parts += _prism_faces(stone, seed + 3, n, c0, c0, H - 0.005, zc, ph, block=True, tone=-0.04)
+    parts.append(_annulus(stone, seed + 4, n, c0, c1, zc, ph))
+    parts.append(quad(_well_water(_fine(2 * r), _fine(2 * r)), (r, -r, 0.01), (r, r, 0.01), (-r, -r, 0.01)))
+    px, pw = (c0 + c1) / 2, 0.026                                     # the posts, on the coping
+    ze, rise = H + 0.56, 0.2                                          # the roof's eaves and its rise
+    for k, x in enumerate((px, -px)):
+        parts += _block(oak, seed + 10 + 6 * k, (x - pw, -pw, zc), (x + pw, pw, ze + rise), skip=('bottom', 'top'))
+    za = H + 0.3                                                      # the windlass, through the posts
+    parts += _block(axle, seed + 30, (-px - pw, -0.018, za - 0.018), (px + 0.05, 0.018, za + 0.018))
+    coil = (-0.07, -0.03, za - 0.03), (0.07, 0.03, za + 0.03)          # its rope, wound round it
+    parts += box(*coil, {'right': _rope(_fine(0.14), _fine(0.06), False), 'left': _rope(_fine(0.14), _fine(0.06), False),
+                         'top': _rope(_fine(0.06), _fine(0.14)), 'bottom': _rope(_fine(0.06), _fine(0.14))})
+    hang = _rope(2, _fine(za - 0.12))                                 # and hanging down the shaft
+    parts += [quad(hang, (0.0, -0.036, za), (0.0, -0.024, za), (0.0, -0.036, 0.12)),
+              quad(hang, (-0.006, -0.03, za), (0.006, -0.03, za), (-0.006, -0.03, 0.12))]
+    iron = '#3a3634'                                                  # the crank
+    parts += _painted_box((px + 0.03, -0.008, za - 0.08), (px + 0.045, 0.008, za + 0.005), iron)
+    parts += _painted_box((px + 0.045, -0.008, za - 0.08), (px + 0.095, 0.008, za - 0.065), iron)
+    roof = gable_roof({'length': 2 * px + 0.1, 'width': 2 * R * 1.08, 'rise': rise, 'overhang': [0.05, 0.03],
+                       'cover': pl.get('cover', 'boards'), 'seed': seed + 40, 'angle': pl.get('angle', 0.0)})
+    parts += _moved(roof, dz=ze)
+    a = -0.9                                                          # a bucket on the rim
+    parts.append(sprite('bucket', px * math.cos(a), px * math.sin(a), zc, scale=0.075))
+    parts.append(shadow(0.0, 0.0, 2 * R + 0.25, 0.5))
+    return [p for p in parts if p]
+
+
+# ------------------------------------------------------------------ a market's goods: produce, crates, barrels
+
+# Heaps of produce, painted as rock is (_stone) but in small round lumps, each its own shade, the dark showing
+# between them: `dome` rounds each lump, `joint` is how much dark there is between them.
+PRODUCE = {
+    'apples': dict(ramps=[ramp('#b8382a', dark=0.35, light=1.3), ramp('#8aa83a', dark=0.4, light=1.25), LACQUER],
+                   mass=(0.024, 0.024, 0.024), chip=(0.008, 0.008, 0.008), key=(-0.4, 0.45, 0.8), shade=(0.3, 0.62),
+                   crust=0.62, weed=2.0, pores=0.0, cracks=1.0, joint=0.22, mottle=0.25, dome=0.5, density=3.0),
+    'cabbages': dict(ramps=[ramp('#6a9a4a', dark=0.35, light=1.25), ramp('#b8cc8a', dark=0.45, light=1.12), LACQUER],
+                     mass=(0.05, 0.05, 0.045), chip=(0.012, 0.012, 0.012), key=(-0.4, 0.45, 0.8), shade=(0.32, 0.6),
+                     crust=0.66, weed=2.0, pores=0.0, cracks=1.0, joint=0.16, mottle=0.2, dome=0.45, density=3.0),
+    'loaves': dict(ramps=[ramp('#d09a50', dark=0.35, light=1.2), ramp('#9a6430', dark=0.35, light=1.3), LACQUER],
+                   mass=(0.055, 0.032, 0.026), chip=(0.012, 0.012, 0.01), key=(-0.4, 0.45, 0.8), shade=(0.34, 0.62),
+                   crust=0.6, weed=2.0, pores=0.0, cracks=1.0, joint=0.26, mottle=0.25, dome=0.6, density=3.0),
+    'potatoes': dict(ramps=[ramp('#9a7a4e', dark=0.35, light=1.25), ramp('#7a5a3a', dark=0.35, light=1.25), LACQUER],
+                     mass=(0.03, 0.03, 0.026), chip=(0.008, 0.008, 0.008), key=(-0.4, 0.45, 0.8), shade=(0.3, 0.6),
+                     crust=0.6, weed=2.0, pores=0.3, cracks=1.0, joint=0.22, mottle=0.25, dome=0.45, density=3.0),
+}
+
+
+def _trapezoid(cut):
+    """The mask of a face that narrows to its top by `cut` of its width each side (laid on its foot), solid in
+    every texel it reaches into."""
+    def shape(w, h):
+        s0, s1 = np.arange(w)[None, :] / w, (np.arange(w)[None, :] + 1) / w
+        c = cut * (1 - (np.arange(h)[:, None] + 1) / h)
+        return (s1 >= c) & (s0 <= 1 - c)
+    return shape
+
+
+def _mound(mat, seed, a, b, z0, z1, k=0.55):
+    """A heap of `mat` on a rectangle 2a x 2b (along x and y) at height z0, rising to z1 where it is k as wide:
+    its four sloping sides and its top, each cut from the material."""
+    A, B = a * k, b * k
+    cy, cx = (1 - k) / 2, (1 - k) / 2
+    sides = (((A, b, z1), (A, -b, z1), (a, b, z0), cy), ((-A, -b, z1), (-A, b, z1), (-a, -b, z0), cy),
+             ((-a, B, z1), (a, B, z1), (-a, b, z0), cx), ((a, -B, z1), (-a, -B, z1), (a, -b, z0), cx))
+    parts = [_rock(mat, seed + i, tl, tr, bl, alpha=_trapezoid(c)) for i, (tl, tr, bl, c) in enumerate(sides)]
+    parts.append(_rock(mat, seed + 4, (A, -B, z1), (A, B, z1), (-A, -B, z1)))
+    return [p for p in parts if p]
+
+
+def _produce(pl, kind):
+    """The produce `kind` as a kind of rock, its light turned to the placement."""
+    return dict(PRODUCE[kind], key=_turned(PRODUCE[kind]['key'], pl))
+
+
+@functools.lru_cache(maxsize=None)
+def _crate_side(w, h, seed, lid=False):
+    """A crate's side (or with `lid` its lid): planks behind a frame of battens, a brace across, a nail at
+    each corner."""
+    rng = np.random.default_rng(seed)
+    cv = Canvas(w, h, wrap=False)
+    n = max(2, int(round(h / 9)))
+    for k in range(n):                                                # the planks
+        cv.box(0, k * h / n, w, h / n - 0.8, z=0.3, top=0.7, bevel=1.0, mat=0, tone=float(rng.normal(0, 0.05)))
+    if not lid:
+        for x0, y0, x1, y1 in ((1, 1, w - 1, 1), (1, h - 1.5, w - 1, h - 1.5), (1, 1, 1, h - 1), (w - 1.5, 1, w - 1.5, h - 1)):
+            cv.stroke([(x0, y0), (x1, y1)], 2.6, z=0.8, dome=0.7, mat=1)                    # the frame
+        cv.stroke([(3, h - 3), (w - 3, 3)], 2.2, z=0.7, dome=0.6, mat=1)                     # the brace
+        for x, y in ((2, 2), (w - 2.5, 2), (2, h - 2.5), (w - 2.5, h - 2.5)):
+            cv.ellipse(x, y, 0.6, 0.6, z=1.4, dome=0.3, mat=2)                              # nails
+    return _finish(cv, [ramp('#9a7448', dark=0.32, light=1.3), ramp('#7a5634', dark=0.3, light=1.3), IRON_DARK],
+                   relief=0.9)
+
+
+def crate(pl):
+    """A wooden crate, `size` long (default 0.24) the way it faces, three-quarters that across and two-thirds
+    that tall: planks behind a frame of battens, a brace across each side; `goods` (apples, cabbages, loaves,
+    potatoes) heaps it with them and leaves it open, else it is nailed shut."""
+    seed = int(pl.get('seed', 1))
+    L = float(pl.get('size', 0.24))
+    W, H = L * 0.75, L * 0.66
+    side_l, side_w = _crate_side(_fine(L), _fine(H), seed), _crate_side(_fine(W), _fine(H), seed + 1)
+    faces = {'front': side_w, 'back': side_w, 'right': side_l, 'left': side_l}
+    goods = pl.get('goods')
+    if not goods:
+        faces['top'] = _crate_side(_fine(W), _fine(L), seed + 2, lid=True)
+    parts = box((-L / 2, -W / 2, 0.0), (L / 2, W / 2, H), faces, back=0.45)
+    if goods:
+        parts += _mound(_produce(pl, goods), seed + 3, L / 2 - 0.008, W / 2 - 0.008, H - 0.02, H + L * 0.12)
+    parts.append(shadow(0.0, 0.0, L + 0.12, 0.45))
+    return parts
+
+
+def _staves(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
+    """Oak staves, as a barrel's are: each panel one stave, the grain running up it, a dark seam down its
+    edges and a tone of its own, iron hoops round it at the heights `hoops`; lit by the way each texel faces
+    (with `tilt` it shades round smoothly, as a turned piece does)."""
+    key = np.asarray(rk['key'], np.float32)
+    key /= np.linalg.norm(key)
+    at = np.nonzero(alpha.reshape(-1))[0]
+    ys, xs = at // w, at % w
+    P = o + ((xs + 0.5) / w)[:, None] * u + ((ys + 0.5) / h)[:, None] * v
+    nrm = np.cross(u, v)
+    N = np.repeat((nrm / np.linalg.norm(nrm)).astype(np.float32)[None, :], len(at), 0)
+    if tilt is not None:
+        N += tilt.reshape(-1)[at][:, None] * (u / np.linalg.norm(u)).astype(np.float32)[None, :]
+    N /= np.linalg.norm(N, axis=1, keepdims=True)
+    lit = np.clip(N @ key, 0, 1)
+    grain = noise3(P / np.array([0.012, 0.012, 0.3], np.float32), 1.0, seed)
+    a2 = alpha.reshape(h, w)
+    inner = np.pad(a2, ((0, 0), (1, 0)))[:, :-1] & np.pad(a2, ((0, 0), (0, 1)))[:, 1:]
+    seam = (a2 & ~inner).reshape(-1)[at]
+    val = rk['shade'][0] + rk['shade'][1] * lit + tone + 0.25 * (grain - 0.5) + (table(5, seed) - 0.5) * 0.16 - 0.2 * seam
+    hoop = np.zeros(len(at), bool)
+    for z in rk['hoops']:
+        hoop |= np.abs(P[:, 2] - z) < rk['band']
+    mat = hoop.astype(int)
+    val = np.where(hoop, val + 0.06, val)
+    bay = BAYER4[ys % 4, xs % 4]
+    rgb = np.zeros((h * w, 3), np.float32)
+    for m, rp in enumerate(rk['ramps']):
+        sel = mat == m
+        idx = np.clip(np.round(val[sel] * (len(rp) - 1) + (bay[sel] - 0.5) * 0.3), 0, len(rp) - 1).astype(int)
+        rgb[at[sel]] = np.asarray(rp, np.float32)[idx]
+    rgba = np.concatenate([rgb.reshape(h, w, 3), alpha.reshape(h, w, 1).astype(np.float32)], -1)
+    return rgba, np.zeros((h, w), np.float32)
+
+
+def barrel(pl):
+    """A barrel of oak staves, `height` tall (default 0.33), bulging at its middle to `size` across (default
+    0.23): each of its twelve staves a tone of its own, four iron hoops round it, its lid of boards sunk a
+    little inside the rim."""
+    seed = int(pl.get('seed', 1))
+    H = float(pl.get('height', 0.33))
+    rm = float(pl.get('size', 0.23)) / 2
+    re = rm * 0.86
+    n = 12
+    mat = dict(paint=_staves, ramps=[ramp('#8a6440', dark=0.32, light=1.35), IRON_DARK],
+               key=_turned((-0.4, 0.45, 0.8), pl), shade=(0.32, 0.6), density=2.5,
+               hoops=[H * f for f in (0.1, 0.3, 0.7, 0.9)], band=H * 0.028)
+    smooth = -math.tan(math.pi / n)
+    parts = _prism_faces(mat, seed, n, re, rm, 0.0, H / 2, 0.0, flute=smooth)
+    parts += _prism_faces(mat, seed, n, rm, re, H / 2, H, 0.0, flute=smooth)            # each stave one tone
+    lid = _timber(pl, (0.4, 0.025, 0.025), 0.06)
+    parts.append(_disc(dict(lid, density=2.5), seed + 40, n, re * 0.97, H - 0.012, 0.0))
+    parts.append(shadow(0.0, 0.0, 2 * rm + 0.12, 0.45))
+    return [p for p in parts if p]
+
+
+# ------------------------------------------------------------------ saloon furniture: a card table, a chair, a piano
+
+POLISHED = dict(paint=_painted, ramps=[ramp('#6a3424', dark=0.32, light=1.55), MAHOGANY], key=(-0.4, 0.45, 0.8),
+                shade=(0.3, 0.6), rust=1.1, density=2.5)       # polished mahogany, turned or flat, smooth
+
+
+def _polish(pl, color=None):
+    """Polished wood (mahogany, or a wood of `color`), its light turned to the placement."""
+    mat = dict(POLISHED, key=_turned(POLISHED['key'], pl))
+    if color:
+        mat['ramps'] = [ramp(color, dark=0.32, light=1.55)] * 2
+    return mat
+
+
+def _strut(mat, seed, A, B, t):
+    """A square bar of `mat` from point A to point B, `t` thick: its four long faces, read from outside - a
+    leg splayed out, a rung."""
+    A, B = np.asarray(A, float), np.asarray(B, float)
+    d = (B - A) / np.linalg.norm(B - A)
+    e1 = np.cross(d, [0.0, 0.0, 1.0] if abs(d[2]) < 0.9 else [1.0, 0.0, 0.0])
+    e1 /= np.linalg.norm(e1)
+    parts = []
+    for k, n in enumerate((e1, np.cross(d, e1), -e1, -np.cross(d, e1))):
+        m = np.cross(d, n)                                            # across the face, so it reads outward
+        parts.append(_rock(mat, seed + k, B + (n + m) * t / 2, B + (n - m) * t / 2, A + (n + m) * t / 2))
+    return [p for p in parts if p]
+
+
+def _turned_disc(n, R):
+    """The mask of an n-sided disc R across its corners, on the texture of a square panel 2R a side laid as
+    _disc lays it - solid in every texel it reaches into."""
+    def shape(w, h):
+        return _grown(_poly(w, h, [((y + R) / (2 * R) * w, (R - x) / (2 * R) * h) for x, y, _ in
+                                   _ring(n, R, 0.0, math.pi / n)]))
+    return shape
+
+
+def _card(cv, x, y, a, mat, w=3.8, h=5.4, z=0.7):
+    """A playing card lying on a canvas at (x, y), turned by `a` (radians)."""
+    c, s = math.cos(a), math.sin(a)
+    cv.polygon([(x + c * dx - s * dy, y + s * dx + c * dy) for dx, dy in ((-w / 2, -h / 2), (w / 2, -h / 2),
+                                                                          (w / 2, h / 2), (-w / 2, h / 2))],
+               z=z, top=0.1, bevel=0.3, mat=mat)
+
+
+@functools.lru_cache(maxsize=None)
+def _table_top(n, R, game, seed):
+    """A card table's top from above: green baize inside a rim of polished mahogany; with `game`, a hand
+    dealt face down at each of four places, one fanned face up, and the pot spilled in the middle."""
+    w = h = _fine(2 * R)
+    rng = np.random.default_rng(seed)
+    cv = Canvas(w, h, wrap=False)
+    c = w / 2
+    cv.box(0, 0, w, h, z=0.6, top=0.2, bevel=0, mat=0)
+    cv.ellipse(c, c, c * 0.86, c * 0.86, z=0.35, dome=0.05, mat=1)                         # the baize
+    if game:
+        for k in range(4):                                                                  # a hand at each place
+            a = k * math.pi / 2 + rng.uniform(-0.25, 0.25)
+            px, py = c + math.cos(a) * c * 0.55, c + math.sin(a) * c * 0.55
+            if k == 0:                                                                      # one shown, fanned
+                for j in range(5):
+                    _card(cv, px + (j - 2) * 2.2, py + abs(j - 2) * 0.6, a + math.pi / 2 + (j - 2) * 0.25, 2,
+                          z=0.7 + 0.02 * j)
+            else:                                                                           # face down, squared up
+                n_ = int(rng.integers(2, 4))
+                for j in range(n_):
+                    off, turn = (j - (n_ - 1) / 2) * 1.8, a + math.pi / 2 + rng.normal(0, 0.12)
+                    cx_, cy_ = px - math.sin(a) * off, py + math.cos(a) * off
+                    _card(cv, cx_, cy_, turn, 2, z=0.7 + 0.03 * j)                          # its white border
+                    _card(cv, cx_, cy_, turn, 3, w=2.6, h=4.2, z=0.71 + 0.03 * j)           # and red back
+        for _ in range(9):                                                                  # chips in the pot
+            cv.ellipse(c + rng.normal(0, c * 0.12), c + rng.normal(0, c * 0.12), 1.4, 1.4, z=0.75, dome=0.4,
+                       mat=int(rng.choice([4, 5, 6])))
+    rgba, em = _finish(cv, [ramp('#6a3424', dark=0.32, light=1.55), ramp('#2e6a3a', dark=0.35, light=1.35),
+                            ramp('#ece6d6', dark=0.5, light=1.08), ramp('#a83228', dark=0.4, light=1.3),
+                            ramp('#b8302a', dark=0.4, light=1.3), ramp('#2e4a9a', dark=0.4, light=1.3),
+                            ramp('#e8e2d4', dark=0.5, light=1.08)], relief=0.6)
+    rgba = rgba.copy()
+    pips = (cv.mat == 2) & (rng.random((h, w)) < 0.18)                                     # pips on the hand shown
+    rgba[pips, :3] = np.where(rng.random((h, w, 1)) < 0.5, (0.7, 0.1, 0.1), (0.1, 0.1, 0.12))[pips]
+    rgba[..., 3] = _turned_disc(n, R)(w, h)
+    return rgba, em
+
+
+def card_table(pl):
+    """A round card table, felted: a top `size` across (default 0.42) of green baize in a rim of polished
+    mahogany, at the height of a man's waist, on a turned pedestal with a round foot. With `game` (default
+    true) a hand of cards lies dealt at each of four places - one fanned face up - the pot spilled in the
+    middle and stacks of red, blue and white chips standing about it (in 3D), and a bottle and glass at one
+    side (a billboard); `seed` deals another hand."""
+    seed = int(pl.get('seed', 1))
+    game = bool(pl.get('game', True))
+    R, zt, n = float(pl.get('size', 0.42)) / 2, 0.28, 16
+    wood = _polish(pl)
+    smooth = -math.tan(math.pi / n)
+    parts = [quad(_table_top(n, R, game, seed), (R, -R, zt), (R, R, zt), (-R, -R, zt))]
+    parts += _prism_faces(wood, seed, n, R, R, zt - 0.022, zt, math.pi / n, flute=smooth, block=True)    # its edge
+    parts.append(_disc(wood, seed + 1, n, R, zt - 0.022, math.pi / n, below=True))
+    prof = [(0.1, 0.0), (0.1, 0.012), (0.06, 0.03), (0.03, 0.05), (0.024, 0.08), (0.034, 0.13), (0.022, 0.2),
+            (0.026, 0.235), (0.05, zt - 0.022)]                                              # the pedestal
+    parts += _lathe(wood, seed + 2, prof, 1.0, n=10)
+    if game:
+        rng = np.random.default_rng(seed + 9)
+        for k in range(5):                                                                  # stacks of chips
+            a, d = rng.uniform(0, 2 * math.pi), R * rng.uniform(0.3, 0.6)
+            x, y = d * math.cos(a), d * math.sin(a)
+            hgt = 0.004 * int(rng.integers(1, 5))
+            col = ('#b8302a', '#2e4a9a', '#e8e2d4')[k % 3]
+            chip = dict(_polish(pl, col), shade=(0.4, 0.55))
+            parts += _moved(_prism_faces(chip, seed + 20 + k, 8, 0.008, 0.008, zt, zt + hgt, 0.0) +
+                            [_disc(chip, seed + 30 + k, 8, 0.008, zt + hgt, 0.0)], x, y)
+        parts.append(sprite('whiskey', R * 0.55, -R * 0.45, zt, scale=0.075, shadow=False))
+    parts.append(shadow(0.0, 0.0, 2 * R + 0.1, 0.45))
+    return [p for p in parts if p]
+
+
+@functools.lru_cache(maxsize=None)
+def _chair_back(w, h):
+    """A bentwood chair's back, flat: two posts rising from the seat, bent over into a hoop, a smaller hoop
+    inside it - steamed beech stained dark, see-through between."""
+    cv = Canvas(w, h, wrap=False)
+    t = np.linspace(0, math.pi, 24)
+    for k, (rx, top, wid) in enumerate(((w / 2 - 1.5, 1.5, 2.6), (w / 2 - 5.0, h * 0.3, 1.8))):
+        pts = [(w / 2 - rx, h - 1)] + [(w / 2 - rx * math.cos(a), top + (h * 0.45 - top) * (1 - math.sin(a)))
+                                       for a in t] + [(w / 2 + rx, h - 1)]
+        cv.stroke(pts, wid, z=0.6, dome=0.8, mat=0, tone=0.03 * k)
+    rgba, em = _finish(cv, [ramp('#5a2e1e', dark=0.3, light=1.5)], relief=0.9)
+    rgba = rgba.copy()
+    rgba[..., 3] = cv.id > 0
+    return rgba, em
+
+
+def saloon_chair(pl):
+    """A bentwood chair: a round seat at the height of a man's knee, four legs splayed out from under it
+    with a ring of bent wood round them, and the back - two posts bent over in a hoop with a smaller hoop
+    inside - standing up from the seat's back edge, leaning a little back (a cut-out panel, see-through
+    between its hoops). Faces +x: whoever sits on it looks that way."""
+    seed = int(pl.get('seed', 1))
+    wood = _polish(pl, '#5a2e1e')
+    zs, r = 0.165, 0.07
+    parts = [_disc(wood, seed, 12, r, zs, 0.0)]                                            # the seat
+    parts += _prism_faces(wood, seed + 1, 12, r, r, zs - 0.014, zs, 0.0, flute=-math.tan(math.pi / 12), block=True)
+    feet = []
+    for k, (sx, sy) in enumerate(((1, 1), (1, -1), (-1, -1), (-1, 1))):                   # the legs, splayed
+        top, foot = (0.042 * sx, 0.042 * sy, zs - 0.014), (0.06 * sx, 0.06 * sy, 0.0)
+        parts += _strut(wood, seed + 4 * k, foot, top, 0.012)
+        feet.append(np.array(foot) * 0.7 + np.array(top) * 0.3)
+    for k in range(4):                                                                      # the ring
+        parts += _strut(wood, seed + 30 + k, feet[k], feet[(k + 1) % 4], 0.008)
+    w, h = _fine(0.13), _fine(0.17)
+    back = _chair_back(w, h)
+    parts.append(quad(back, (-0.075, 0.065, zs + 0.17), (-0.075, -0.065, zs + 0.17), (-0.058, 0.065, zs)))
+    parts.append(shadow(0.0, 0.0, 0.2, 0.4))
+    return [p for p in parts if p]
+
+
+PIANO_PROFILE = [(-0.11, 0.0), (-0.11, 0.46), (0.06, 0.46), (0.06, 0.295), (0.14, 0.285), (0.14, 0.255),
+                 (0.065, 0.25), (0.065, 0.0)]                    # its side: back, lid, upper front, keys, slip, lower front
+PIANO_HALF = 0.275
+
+
+@functools.lru_cache(maxsize=None)
+def _piano_side(w, h):
+    """An upright piano's side, its front to the right: mahogany, a raised panel in the upper case, the arm
+    that holds the keyboard's end carved in a scroll."""
+    x0, x1 = PIANO_PROFILE[0][0], max(p[0] for p in PIANO_PROFILE)
+    H = max(p[1] for p in PIANO_PROFILE)
+    pts = [((x - x0) / (x1 - x0) * w, (H - z) / H * h) for x, z in PIANO_PROFILE]
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.4, top=0.6, bevel=0.0, mat=0)
+    cv.box(w * 0.08, h * 0.08, w * 0.5, h * 0.42, z=0.6, top=0.5, bevel=1.6, mat=0, tone=0.05)    # a panel
+    cv.box(w * 0.08, h * 0.62, w * 0.5, h * 0.3, z=0.6, top=0.5, bevel=1.6, mat=0, tone=0.04)
+    sx, sy = w * 0.86, h * 0.415                                                            # the arm's scroll
+    cv.ellipse(sx, sy, 2.4, 2.4, z=0.8, dome=0.6, mat=0, tone=0.08)
+    cv.stroke([(w * 0.7, h * 0.36), (sx, sy - 2.5)], 1.2, z=0.75, dome=0.5, mat=0, tone=0.06)
+    rgba, em = _finish(cv, [MAHOGANY], relief=0.9)
+    rgba = rgba.copy()
+    rgba[..., 3] = _grown(_poly(w, h, pts))
+    return rgba, em
+
+
+@functools.lru_cache(maxsize=None)
+def _piano_upper(w, h, seed):
+    """The piano's upper front: two carved panels either side of the music desk's ledge, and above the keys
+    the nameboard, a maker's name across it in gilt."""
+    from buildings import _glyph_mask
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.4, top=0.6, bevel=0.0, mat=0)
+    for x0 in (w * 0.05, w * 0.55):                                                         # the carved panels
+        cv.box(x0, h * 0.08, w * 0.4, h * 0.56, z=0.6, top=0.5, bevel=1.8, mat=0, tone=0.04)
+        cv.ellipse(x0 + w * 0.2, h * 0.36, w * 0.08, h * 0.14, z=0.8, dome=0.5, mat=0, tone=0.08)
+    cv.box(w * 0.3, h * 0.66, w * 0.4, 2, z=0.9, top=0.6, bevel=0.4, mat=0, tone=0.1)      # the desk's ledge
+    cv.box(0, h - 6, w, 6, z=0.5, top=0.3, bevel=0.6, mat=0, tone=-0.06)                     # the nameboard
+    rgba, em = _finish(cv, [MAHOGANY], relief=0.9)
+    rgba = rgba.copy()
+    name = np.zeros((h, w), bool)
+    gw = int(w * 0.24)
+    name[h - 5:h - 1, (w - gw) // 2:(w - gw) // 2 + gw] = _glyph_mask(4, gw, np.random.default_rng(seed), False)
+    rgba[name, :3] = (0.86, 0.68, 0.3)
+    return rgba, em
+
+
+@functools.lru_cache(maxsize=None)
+def _piano_keys(w, h):
+    """The keyboard from above, the player's left to the left: white keys with a dark line between, the black
+    keys in their twos and threes over their back half, a block of the case at each end."""
+    rgba = np.zeros((h, w, 4), np.float32)
+    rgba[..., 3] = 1.0
+    rgba[..., :3] = (0.9, 0.87, 0.78)
+    end = max(2, int(w * 0.045))
+    keys = w - 2 * end
+    n = 52
+    edges = end + np.round(np.arange(n + 1) * keys / n).astype(int)
+    for k, x in enumerate(edges):
+        rgba[:, min(x, w - 1), :3] = (0.55, 0.5, 0.44)                                   # between the white keys
+        if k and (k - 1) % 7 not in (2, 6) and k < n:                                       # a black key here
+            bw = max(1, int(round(keys / n * 0.6)))
+            rgba[:h // 2 + 1, max(x - bw // 2, 0):x - bw // 2 + bw, :3] = (0.08, 0.07, 0.08)
+    rgba[:, :end, :3] = rgba[:, w - end:, :3] = (0.36, 0.18, 0.12)
+    rgba[:2, :, :3] = (0.3, 0.15, 0.1)                                                     # the fall's lip behind
+    return rgba, np.zeros((h, w), np.float32)
+
+
+@functools.lru_cache(maxsize=None)
+def _piano_lower(w, h):
+    """The piano's lower front: one long raised panel, two brass pedals at its foot."""
+    cv = Canvas(w, h, wrap=False)
+    cv.box(0, 0, w, h, z=0.4, top=0.6, bevel=0.0, mat=0)
+    cv.box(w * 0.06, h * 0.1, w * 0.88, h * 0.62, z=0.6, top=0.5, bevel=2.0, mat=0, tone=0.04)
+    for x in (w * 0.44, w * 0.56):
+        cv.box(x - 2, h * 0.84, 4, 3, z=0.9, top=0.6, bevel=0.6, mat=1)
+    cv.box(0, h - 3, w, 3, z=0.5, top=0.4, bevel=0.4, mat=0, tone=-0.1)                    # the plinth
+    return _finish(cv, [MAHOGANY, ramp('#c8a048', dark=0.35, light=1.5, warm=0.1)], relief=0.9)
+
+
+@functools.lru_cache(maxsize=None)
+def _sheet_music(w, h):
+    """Two pages of music standing open: staves ruled across them, notes on the lines."""
+    rng = np.random.default_rng(73)
+    rgba = np.zeros((h, w, 4), np.float32)
+    rgba[..., 3] = 1.0
+    rgba[..., :3] = (0.86, 0.82, 0.7)
+    for y in range(2, h - 1, 4):
+        rgba[y, 1:w - 1, :3] = (0.45, 0.42, 0.38)
+        for x in range(2, w - 2, 3):
+            if rng.random() < 0.45:
+                rgba[y + int(rng.integers(-1, 2)), x, :3] = (0.12, 0.1, 0.1)
+    rgba[:, w // 2, :3] = (0.7, 0.66, 0.56)                                                # the fold
+    return rgba, np.zeros((h, w), np.float32)
+
+
+def piano(pl):
+    """An upright piano: a case of polished mahogany as tall as a man's chest, its sides carved with a panel
+    and the arms that hold the keyboard, the lid; the fall open on the keys - white keys and black in their
+    twos and threes - a gilt maker's name over them, carved panels and the music desk with a sheet of music
+    open on it, candles in brass sconces at its corners (billboards, lit with `lit`), a long panel below
+    with two brass pedals, on turned legs at the front. Faces +x: the player sits there."""
+    seed = int(pl.get('seed', 1))
+    prof, half = PIANO_PROFILE, PIANO_HALF
+    x0, x1 = prof[0][0], max(p[0] for p in prof)
+    H = max(p[1] for p in prof)
+    side = _piano_side(_fine(x1 - x0), _fine(H))
+    parts = [quad(side, (x0, half, H), (x1, half, H), (x0, half, 0.0)),                     # its sides
+             quad((side[0][:, ::-1], side[1][:, ::-1]), (x1, -half, H), (x0, -half, H), (x1, -half, 0.0))]
+    W = _fine(2 * half)
+    span = [_fine(math.hypot(b[0] - a[0], b[1] - a[1])) for a, b in zip(prof, prof[1:])]
+    plain = lambda n: _plain_face(W, n, '#4a2418')                  # noqa: E731
+    back = plain(span[0])
+    texs = [(back[0][::-1], back[1][::-1]), plain(span[1]), _piano_upper(W, span[2], seed),
+            _piano_keys(_fine(2 * half) * 3, span[3] * 2), plain(span[4]), _plain_face(W, span[5], '#1e100c'),
+            _piano_lower(W, span[6])]
+    parts += _profile_faces(prof, half, texs)
+    wood = _polish(pl)
+    for y in (half - 0.04, -half + 0.04):                             # its legs, turned, under the keyboard
+        parts += _moved(_lathe(wood, seed + 5, [(0.02, 0.0), (0.016, 0.04), (0.024, 0.1), (0.015, 0.2),
+                                                (0.02, prof[5][1])], 1.0, n=8), 0.115, y)
+    zl = 0.3 + (H - 0.3) * 0.34                                       # the music, open on the desk
+    parts.append(quad(_sheet_music(_fine(0.16), _fine(0.075)), (0.066, 0.08, zl + 0.075), (0.066, -0.08, zl + 0.075),
+                      (0.074, 0.08, zl)))
+    lit = pl.get('lit', False)
+    for y in (half - 0.05, -half + 0.05):                             # candles in brass sconces
+        parts.append(sprite('candle_lit' if lit else 'candle', 0.085, y, H - 0.12, scale=0.06, shadow=False))
+        if lit:
+            parts.append(light(0.12, y, H - 0.04, 1.0, (1.0, 0.7, 0.4), 0.5))
+    parts.append(shadow(0.0, 0.0, 0.6, 0.5))
+    return [p for p in parts if p]
+
+
 OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'boulder': boulder, 'column': column,
            'beam': beam, 'crystal_cluster': crystal_cluster, 'trough': trough, 'shed_roof': shed_roof,
            'gable_roof': gable_roof, 'market_stand': market_stand, 'saloon_bar': saloon_bar, 'rails': rails,
            'ore_cart': ore_cart, 'keel': keel, 'chess_piece': chess_piece, 'ship_hull': ship_hull,
            'longship': longship, 'lighthouse': lighthouse, 'stone_lantern': stone_lantern,
-           'standing_stone': standing_stone, 'gear': gear, 'heap': heap}
+           'standing_stone': standing_stone, 'gear': gear, 'heap': heap, 'arcade_cabinet': arcade_cabinet,
+           'vending_machine': vending_machine, 'well': well, 'crate': crate, 'barrel': barrel,
+           'card_table': card_table, 'saloon_chair': saloon_chair, 'piano': piano}

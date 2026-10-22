@@ -5,7 +5,8 @@ Shows the `capsules` and `capsules_lit` walls (scripts/bar.py: berths four to a 
 glowing number plate, lamp-lit bedding, a blind drawn with light behind it, a screen's glow or
 dark), alternated cell by cell and storey by storey so the pattern does not march; a corridor
 one cell wide under a low ceiling, cool strip lights, a white floor that mirrors the berths, a
-`ladder` up to the top row, the `dreamer` and the `hacker`.
+`ladder` up to the top row, the `dreamer` and the `hacker`; and at the corridor's end a `vending_machine`
+object, in 3D: its window of drinks let into its front, lit, behind clear plastic.
 Run:  python capsule_hotel.py  -> writes capsule_hotel.json
 """
 import os
@@ -38,8 +39,8 @@ s = scene(
     lights=[{'x': 3.5, 'y': y, 'z': 0.95, 'radius': 1.6, 'color': COOL, 'intensity': 0.7} for y in range(2, 18, 3)]
     + [{'x': 3.5, 'y': 1.5, 'z': 0.5, 'radius': 1.6, 'color': [0.8, 0.95, 1.0], 'intensity': 1.0},       # vending
        {'x': 3.55, 'y': 9.4, 'z': 0.45, 'radius': 0.9, 'color': [1.0, 0.75, 0.4], 'intensity': 0.9}],    # the candle
+    objects=[{'type': 'vending_machine', 'x': 3.5, 'y': 1.15, 'angle': 90, 'lights': False}],   # its light is above
     sprites=[
-        {'x': 3.5, 'y': 1.3, 'type': 'vending_machine', 'scale': 0.7},
         {'id': 'hacker', 'x': 3.75, 'y': 2.2, 'type': 'hacker', 'facing': 270},
         {'id': 'dreamer', 'x': 3.5, 'y': 9.4, 'type': 'dreamer', 'facing': 90},
         {'x': 2.25, 'y': 12.5, 'type': 'ladder', 'scale': 0.95},

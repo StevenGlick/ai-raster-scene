@@ -169,13 +169,16 @@
    "intensity": 0.9
   }
  ],
- "sprites": [
+ "objects": [
   {
-   "x": 3.5,
-   "y": 1.3,
    "type": "vending_machine",
-   "scale": 0.7
-  },
+   "x": 3.5,
+   "y": 1.15,
+   "angle": 90,
+   "lights": false
+  }
+ ],
+ "sprites": [
   {
    "id": "hacker",
    "x": 3.75,

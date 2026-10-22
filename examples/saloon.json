@@ -155,68 +155,6 @@
   },
   {
    "x": 4.5,
-   "y": 3.0,
-   "type": "card_table"
-  },
-  {
-   "x": 3.85,
-   "y": 3.1,
-   "type": "saloon_chair",
-   "flip": true
-  },
-  {
-   "x": 4.6,
-   "y": 3.6,
-   "type": "saloon_chair"
-  },
-  {
-   "x": 6.6,
-   "y": 4.6,
-   "type": "card_table"
-  },
-  {
-   "x": 5.95,
-   "y": 4.7,
-   "type": "saloon_chair",
-   "flip": true
-  },
-  {
-   "x": 7.25,
-   "y": 4.6,
-   "type": "saloon_chair"
-  },
-  {
-   "x": 3.7,
-   "y": 5.4,
-   "type": "card_table"
-  },
-  {
-   "x": 3.05,
-   "y": 5.5,
-   "type": "saloon_chair",
-   "flip": true
-  },
-  {
-   "x": 4.3,
-   "y": 5.3,
-   "type": "saloon_chair"
-  },
-  {
-   "x": 6.8,
-   "y": 1.22,
-   "type": "piano",
-   "planes": 1,
-   "angle": 0,
-   "length": 0.58
-  },
-  {
-   "x": 6.8,
-   "y": 1.7,
-   "type": "saloon_chair",
-   "scale": 0.22
-  },
-  {
-   "x": 4.5,
    "y": 3.5,
    "z": 1.12,
    "type": "chandelier",
@@ -300,6 +238,92 @@
    "y": 3.5,
    "angle": 0,
    "length": 3.4
+  },
+  {
+   "type": "card_table",
+   "x": 4.5,
+   "y": 3.0,
+   "seed": 3,
+   "fill": 1.0
+  },
+  {
+   "type": "card_table",
+   "x": 6.6,
+   "y": 4.6,
+   "game": false,
+   "fill": 1.0
+  },
+  {
+   "type": "card_table",
+   "x": 3.7,
+   "y": 5.4,
+   "game": false,
+   "seed": 2,
+   "fill": 1.0
+  },
+  {
+   "type": "piano",
+   "x": 6.8,
+   "y": 1.12,
+   "angle": 90,
+   "lit": false,
+   "fill": 1.0
+  },
+  {
+   "type": "saloon_chair",
+   "x": 4.12,
+   "y": 3.08,
+   "angle": -8,
+   "seed": 0,
+   "fill": 1.0
+  },
+  {
+   "type": "saloon_chair",
+   "x": 4.45,
+   "y": 3.62,
+   "angle": 268,
+   "seed": 1,
+   "fill": 1.0
+  },
+  {
+   "type": "saloon_chair",
+   "x": 6.24,
+   "y": 4.66,
+   "angle": -8,
+   "seed": 2,
+   "fill": 1.0
+  },
+  {
+   "type": "saloon_chair",
+   "x": 6.96,
+   "y": 4.6,
+   "angle": 180,
+   "seed": 3,
+   "fill": 1.0
+  },
+  {
+   "type": "saloon_chair",
+   "x": 3.34,
+   "y": 5.46,
+   "angle": -8,
+   "seed": 4,
+   "fill": 1.0
+  },
+  {
+   "type": "saloon_chair",
+   "x": 4.06,
+   "y": 5.34,
+   "angle": 170,
+   "seed": 5,
+   "fill": 1.0
+  },
+  {
+   "type": "saloon_chair",
+   "x": 6.8,
+   "y": 1.6,
+   "angle": 270,
+   "seed": 6,
+   "fill": 1.0
   }
  ],
  "shots": [
@@ -444,6 +468,90 @@
      0.06,
      0.09
     ],
+    "objects": [
+     {
+      "type": "saloon_bar",
+      "x": 1.75,
+      "y": 3.5,
+      "angle": 0,
+      "length": 3.4
+     },
+     {
+      "type": "card_table",
+      "x": 4.5,
+      "y": 3.0,
+      "seed": 3
+     },
+     {
+      "type": "card_table",
+      "x": 6.6,
+      "y": 4.6,
+      "game": false
+     },
+     {
+      "type": "card_table",
+      "x": 3.7,
+      "y": 5.4,
+      "game": false,
+      "seed": 2
+     },
+     {
+      "type": "piano",
+      "x": 6.8,
+      "y": 1.12,
+      "angle": 90,
+      "lit": true
+     },
+     {
+      "type": "saloon_chair",
+      "x": 4.12,
+      "y": 3.08,
+      "angle": -8,
+      "seed": 0
+     },
+     {
+      "type": "saloon_chair",
+      "x": 4.45,
+      "y": 3.62,
+      "angle": 268,
+      "seed": 1
+     },
+     {
+      "type": "saloon_chair",
+      "x": 6.24,
+      "y": 4.66,
+      "angle": -8,
+      "seed": 2
+     },
+     {
+      "type": "saloon_chair",
+      "x": 6.96,
+      "y": 4.6,
+      "angle": 180,
+      "seed": 3
+     },
+     {
+      "type": "saloon_chair",
+      "x": 3.34,
+      "y": 5.46,
+      "angle": -8,
+      "seed": 4
+     },
+     {
+      "type": "saloon_chair",
+      "x": 4.06,
+      "y": 5.34,
+      "angle": 170,
+      "seed": 5
+     },
+     {
+      "type": "saloon_chair",
+      "x": 6.8,
+      "y": 1.6,
+      "angle": 270,
+      "seed": 6
+     }
+    ],
     "lights": [
      {
       "x": 4.5,
@@ -547,14 +655,14 @@
   },
   {
    "x": 4.45,
-   "y": 3.62,
-   "height": 0.52,
+   "y": 3.52,
+   "height": 0.58,
    "look_at": [
     4.45,
-    2.55,
-    0.5
+    2.6,
+    0.4
    ],
-   "fov": 50,
+   "fov": 56,
    "extra_sprites": [
     {
      "id": "bartender",
@@ -600,6 +708,8 @@
      "type": "bubble",
      "anchor": "gambler",
      "name": "The Gambler",
+     "offset": -100,
+     "width": 90,
      "text": "Sit down. Cards are dealt."
     }
    ]

@@ -1451,7 +1451,9 @@ def check_objects():
     assert head[:, 1].max() > -head[:, 1].min() + 0.1, 'the knight looks the way it faces'
     stand = objects.expand({'map': ['.'], 'objects': [{'type': 'market_stand', 'x': 0.0, 'y': 0.0}]})
     zs = np.concatenate([[pn['o'] + a * pn['u'] + b * pn['v'] for a in (0, 1) for b in (0, 1)] for pn in stand['panels']])[:, 2]
-    assert zs.max() > 1.3 and any(sp['type'].startswith('goods_') for sp in stand['sprites']), 'goods under an awning'
+    corners = lambda pn: np.array([pn['o'] + a * pn['u'] + b * pn['v'] for a in (0, 1) for b in (0, 1)])[:, 2]  # noqa: E731
+    heaped = [pn for pn in stand['panels'] if corners(pn).min() > 0.43 and corners(pn).max() < 0.6]
+    assert zs.max() > 1.3 and len(heaped) >= 15, 'goods heaped in 3D on trays, under an awning'
     # 15. a broken column's faces lie in their own planes, so neighbours meet with no crack between them: every
     # face's top corners, on the taper over its foot's corners, lie in the face's panel (they stood off it once)
     col = objects.column({'material': 'marble', 'flutes': 20, 'radius': 0.27, 'top': 0.8, 'height': 2.3,
@@ -1471,6 +1473,26 @@ def check_objects():
             assert abs((q - tl) @ nrm) < 1e-9, 'a broken face off its plane'
         checked += 1
     assert checked == 20, f'every face of the broken shaft checked ({checked})'
+    # 16. furniture and machines in 3D: a cabinet's joystick stands on its controls and its screen glows; a
+    # vending machine's window is let in behind its front; a crate is shut unless it holds goods; a card table
+    # mid-game has chips standing on it, an empty one none; a piano's candles burn only when lit; a well's roof
+    # stands over its wall
+    def build(**pl):
+        return objects.expand({'map': ['.'], 'objects': [dict(pl, x=0.0, y=0.0)]})
+    cab = build(type='arcade_cabinet')
+    joy = [sp for sp in cab['sprites'] if sp['type'] == 'joystick']
+    assert len(joy) == 1 and 0.35 < joy[0]['z'] < 0.42 and max(pn['em'].max() for pn in cab['panels']) > 0.9, 'cabinet'
+    vm = build(type='vending_machine')
+    assert any(pn['o'][0] < 0.12 and pn['em'].max() > 0.5 for pn in vm['panels']), 'its lit window let in'
+    tops = lambda ex: [pn for pn in ex['panels'] if abs(pn['u'][2]) + abs(pn['v'][2]) < 1e-9 and pn['o'][2] > 0.1]  # noqa: E731
+    assert tops(build(type='crate')) and len(build(type='crate', goods='apples')['panels']) > 6, 'shut, or heaped'
+    game, empty = build(type='card_table'), build(type='card_table', game=False)
+    assert len(game['panels']) > len(empty['panels']) + 20 and len(game['sprites']) > len(empty['sprites']), 'chips'
+    lit, dark = build(type='piano', lit=True), build(type='piano')
+    assert {sp['type'] for sp in lit['sprites']} == {'candle_lit'} and lit['lights'] and not dark.get('lights'), 'piano'
+    well = build(type='well')
+    wz = np.array([c for pn in well['panels'] for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])
+    assert wz[:, 2].max() > 1.0 and np.abs(wz[:, :2]).max() < 0.45, 'its roof over its wall'
     print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights, '
           f'rock, linings, columns fluted and Doric, fill, timber, standing stones cast, crystals bend the light)')
 

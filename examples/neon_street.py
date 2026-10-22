@@ -3,9 +3,9 @@
 Shows the `neon` facade style - dark concrete blocks hung with glowing signs, blade signs
 standing out over the street on cards of their own, shutters half down over the shops, rooms lit
 pink, blue and green - with the street props from scifi.py: `wires_span` slung across overhead
-with paper lanterns, a `holo_ad` koi turning in the air (additive), `vending_machine`s, `steam`
-rising from the drains, and the `runner` - and a `noodle_stand` object (scripts/objects.py) built
-in 3D out of panels, its cook behind the counter, bowls and a stock pot on it as billboards.
+with paper lanterns, a `holo_ad` koi turning in the air (additive), `steam` rising from the drains,
+and the `runner` - and objects (scripts/objects.py) built in 3D out of panels: a `noodle_stand`, its
+cook behind the counter, bowls and a stock pot on it as billboards, and `vending_machine`s.
 Coloured point lights under the signs throw their colour on the wet street, which mirrors it all.
 Run:  python neon_street.py  -> writes neon_street.json
 """
@@ -50,11 +50,12 @@ s = scene(
         {'x': 11.6, 'y': 26.8, 'z': 0.8, 'radius': 2.5, 'color': [0.75, 0.9, 1.0], 'intensity': 0.9},   # a vending machine
         {'x': 15.0, 'y': 20.0, 'z': 2.8, 'radius': 6.0, 'color': CYAN, 'intensity': 0.9},               # the hologram
     ],
-    objects=[{'type': 'noodle_stand', 'x': 17.95, 'y': 22.0, 'angle': 180}],      # facing the road
+    objects=[{'type': 'noodle_stand', 'x': 17.95, 'y': 22.0, 'angle': 180},       # facing the road
+             {'type': 'vending_machine', 'x': 11.42, 'y': 26.9, 'angle': 90, 'lights': False},   # a pair facing down
+             {'type': 'vending_machine', 'x': 11.81, 'y': 26.9, 'angle': 90, 'paint': '#2a5ac4', 'seed': 2},   # the street
+             {'type': 'vending_machine', 'x': 18.6, 'y': 33.0, 'angle': 180, 'paint': '#d8dce4', 'seed': 3}],
     sprites=[
         {'id': 'cook', 'x': 18.32, 'y': 22.15, 'type': 'shopkeeper', 'facing': 270},
-        {'x': 11.4, 'y': 26.8, 'type': 'vending_machine'}, {'x': 11.4, 'y': 27.7, 'type': 'vending_machine', 'flip': True},
-        {'x': 18.6, 'y': 33.0, 'type': 'vending_machine'},
         {'x': 15.0, 'y': 20.0, 'type': 'holo_ad', 'z': 1.9, 'scale': 2.4},
         {'x': 13.6, 'y': 30.0, 'type': 'steam', 'scale': 1.3}, {'x': 16.2, 'y': 17.0, 'type': 'steam', 'scale': 1.5},
         {'id': 'runner', 'x': 12.0, 'y': 31.5, 'type': 'runner', 'facing': 90},

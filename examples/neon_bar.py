@@ -3,7 +3,9 @@ back wall, a row of arcade cabinets, booths, a jukebox, neon on the walls and sm
 
 Shows the bar kit (scripts/bar.py) with the aquarium's: `bar_shelves` on the wall behind the bar,
 the bar itself a `bar_counter` card standing along it with `bar_stool`s in front and `bottles`
-on top, `arcade_cabinet`s with a shooter on every screen, `booth`s, a `jukebox`, the `hacker` by the arcade row, `neon_cocktail`
+on top, a row of `arcade_cabinet` objects (cabinets in 3D, each in its own colour with its own game on the
+screen - a shooter, a maze chase, a racer - and a joystick standing up from its controls), `booth`s, a `jukebox`,
+the `hacker` by the arcade row, `neon_cocktail`
 and `neon_fish` on the walls (additive); and a reef tank done as the aquarium's are, small: its back
 wall painted as open water (`deep_water` under `open_water`, dimmed for the bar), a low `rock_wall` of
 `reef` rock along its foot and one small `boulder`, `reef_rock`, corals and reef fish in front, behind
@@ -35,10 +37,8 @@ sprites = [
     {'id': 'bartender', 'x': 2.3, 'y': 4.55, 'type': 'android', 'facing': 90},
 ] + [{'x': x, 'y': 5.3, 'type': 'bar_stool'} for x in (1.5, 2.2, 2.9, 3.6)] + [
     {'id': 'stranger', 'x': 3.25, 'y': 5.45, 'type': 'cowboy', 'facing': 280},
-] + [{'x': 6.55, 'y': y, 'type': 'arcade_cabinet', 'flip': k % 2 == 1, 'tint': t}
-     for k, (y, t) in enumerate(((5.1, [1.0, 1.0, 1.0]), (5.95, [0.75, 0.9, 1.1]), (6.8, [1.1, 0.85, 0.85]),
-                                 (7.65, [0.9, 1.05, 0.9])))] + [
-    {'id': 'player', 'x': 6.05, 'y': 6.0, 'type': 'runner', 'facing': 0},
+] + [
+    {'id': 'player', 'x': 6.42, 'y': 5.98, 'type': 'runner', 'facing': 0},
     {'x': 1.45, 'y': 6.6, 'type': 'booth'}, {'x': 1.45, 'y': 7.9, 'type': 'booth'},
     {'id': 'regular', 'x': 5.75, 'y': 7.15, 'type': 'hacker', 'facing': 120},
     {'x': 1.3, 'y': 5.6, 'type': 'jukebox'},
@@ -67,6 +67,10 @@ lights = (
        {'x': 1.6, 'y': 7.0, 'z': 0.4, 'radius': 1.0, 'color': WARM, 'intensity': 0.7},
        {'x': 1.6, 'y': 8.3, 'z': 0.4, 'radius': 1.0, 'color': WARM, 'intensity': 0.7}])
 
+# the arcade row along the east wall, each cabinet in its own colour with its own game and its glow on the player
+cabinets = [{'type': 'arcade_cabinet', 'x': 6.84, 'y': y, 'angle': 180, 'color': c, 'seed': k}
+            for k, (y, c) in enumerate(((5.1, '#a070ff'), (5.95, '#40e0ff'), (6.8, '#ff4fa0'), (7.65, '#40e0ff')))]
+
 s = scene(
     g,
     title='Neon bar - smoke, a reef tank and the arcade row',
@@ -84,10 +88,11 @@ s = scene(
     fog={'color': [0.05, 0.03, 0.07], 'density': 0.06, 'glow': 1.2},
     lights=lights,
     sprites=sprites,
-    objects=[{'type': 'rock_wall', 'lining': 'O', 'rock': 'reef', 'depth': 0.3, 'height': [0.24, 0.5],
-              'pieces': [0.8, 1.3], 'plants': False, 'seed': 3},                      # live rock along the tank's back
-             {'type': 'boulder', 'x': 6.45, 'y': 3.42, 'angle': 90, 'size': 0.34, 'height': 0.2, 'rock': 'reef',
-              'seed': 5}],
+    objects=cabinets + [
+        {'type': 'rock_wall', 'lining': 'O', 'rock': 'reef', 'depth': 0.3, 'height': [0.24, 0.5],
+         'pieces': [0.8, 1.3], 'plants': False, 'seed': 3},                           # live rock along the tank's back
+        {'type': 'boulder', 'x': 6.45, 'y': 3.42, 'angle': 90, 'size': 0.34, 'height': 0.2, 'rock': 'reef',
+         'seed': 5}],
     camera={'x': 6.2, 'y': 8.6, 'look_at': [2.4, 4.3, 0.5], 'fov': 74},
     shots=[
         {'x': 6.2, 'y': 8.6, 'look_at': [2.4, 4.3, 0.5], 'fov': 74, 'post': BLOOM,

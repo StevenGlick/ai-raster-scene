@@ -215,6 +215,43 @@ def spr_saloon_chair():
     return _prop(cv, [MAHOGANY], relief=1.0, cavity=0.4, shadow=0.45)
 
 
+def spr_whiskey():
+    """A bottle of whiskey and a shot glass, for a table: an amber bottle with a pale label and a cork, the
+    glass beside it."""
+    w, h = 14, 20
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(2, 7, 6, 13, z=0.6, top=0.9, bevel=1.4, mat=0)                  # the bottle
+    cv.box(3.8, 2, 2.4, 6, z=0.6, top=0.6, bevel=0.6, mat=0)               # its neck
+    cv.box(3.8, 0.5, 2.4, 2, z=0.8, top=0.4, bevel=0.4, mat=2)             # the cork
+    cv.box(2, 11, 6, 4, z=0.8, top=0.3, bevel=0.4, mat=1)                  # the label
+    cv.box(9, 15, 4, 5, z=0.7, top=0.8, bevel=0.6, mat=3)                  # the glass
+    return _prop(cv, [BOTTLE_AMBER, PAPER, ramp('#8a6a4a', dark=0.4), MIRROR], relief=1.0, cavity=0.3, shadow=0.35)
+
+
+def _candle(lit):
+    cv = Canvas(8, 18, wrap=False, ground=-9)
+    cv.ellipse(4, 16.5, 3.6, 1.4, z=0.6, dome=0.5, mat=0)                  # the sconce's dish
+    cv.stroke([(4, 18), (4, 16)], 1.4, z=0.5, dome=0.5, mat=0)
+    cv.box(2.6, 6, 2.8, 10, z=0.8, top=0.8, bevel=0.8, mat=1)              # the candle
+    cv.stroke([(4, 6), (4, 4.5)], 0.6, z=0.9, dome=0.2, mat=2)             # its wick
+    em = None
+    if lit:
+        cv.ellipse(4, 2.6, 1.3, 2.4, z=1.0, dome=0.6, mat=3)               # the flame
+        em = (cv.mat == 3) * 1.0
+    return _prop(cv, [BRASS, IVORY, INK, ramp('#ffd27a', dark=0.85, light=1.1)], em=em, relief=1.0, cavity=0.3,
+                 shadow=0.35)
+
+
+def spr_candle():
+    """A candle in a brass sconce, unlit - one for a piano, a wall, a table."""
+    return _candle(False)
+
+
+def spr_candle_lit():
+    """A candle in a brass sconce, burning."""
+    return _candle(True)
+
+
 def spr_spittoon():
     """A brass spittoon: a squat bellied pot with a wide funnel mouth."""
     w, h = 18, 14
@@ -259,6 +296,7 @@ TEXTURES = {'saloon_wainscot': tex_saloon_wainscot, 'saloon_paper': tex_saloon_p
 TEXTURE_NOISE = {'saloon_wainscot': 0.3, 'saloon_paper': 0.3, 'saloon_backbar': 0.2, 'saloon_backbar_top': 0.2,
                  'saloon_window': 0.3, 'tin_ceiling': 0.3}
 SPRITES = {'piano': spr_piano, 'card_table': spr_card_table, 'saloon_chair': spr_saloon_chair,
-           'spittoon': spr_spittoon}
-SPRITE_HEIGHT = {'piano': 0.46, 'card_table': 0.3, 'saloon_chair': 0.32, 'spittoon': 0.09}
+           'spittoon': spr_spittoon, 'whiskey': spr_whiskey, 'candle': spr_candle, 'candle_lit': spr_candle_lit}
+SPRITE_HEIGHT = {'piano': 0.46, 'card_table': 0.3, 'saloon_chair': 0.32, 'spittoon': 0.09, 'whiskey': 0.085,
+                 'candle': 0.06, 'candle_lit': 0.06}
 DECALS = {'wanted_poster': dec_wanted_poster}

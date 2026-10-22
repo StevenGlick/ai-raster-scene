@@ -5,9 +5,10 @@ Shows the saloon kit (scripts/saloon.py): `saloon_wainscot` under `saloon_paper`
 wallpaper over dark panels), the back bar (`saloon_backbar` under `saloon_backbar_top`: shelves of
 bottles round a tall mirror), front windows of open panes (`saloon_window`) letting the sun in, a
 `tin_ceiling`; the bar itself a `saloon_bar` object in 3D (mahogany panels, a polished top, a brass
-foot rail); `card_table`s mid-game among `saloon_chair`s, a `piano`, `spittoon`s, `wanted_poster`
-decals, a `chandelier`; and the same room at night through shot overrides, its lamps lit and a ghost
-at the keys.
+foot rail), and the furniture too: `card_table`s (one mid-game, its cards and chips laid out, stacks of
+chips standing), bentwood `saloon_chair`s round them, an upright `piano` with its keys, its music and
+candles in sconces; `spittoon`s, `wanted_poster` decals, a `chandelier`; and the same room at night
+through shot overrides, its lamps lit, the piano's candles burning and a ghost at the keys.
 Run:  python saloon.py  -> writes saloon.json next to this file.
 """
 import os
@@ -21,6 +22,22 @@ LAMPS = [{'x': 4.5, 'y': 3.5, 'z': 1.25, 'radius': 4.5, 'color': WARM, 'intensit
          {'x': 8.6, 'y': 2.5, 'z': 0.9, 'radius': 2.6, 'color': WARM, 'intensity': 1.0},        # wall lamps
          {'x': 8.6, 'y': 5.0, 'z': 0.9, 'radius': 2.6, 'color': WARM, 'intensity': 1.0},
          {'x': 1.4, 'y': 3.5, 'z': 1.0, 'radius': 2.6, 'color': WARM, 'intensity': 0.9}]        # over the bar
+
+
+def furniture(night):
+    """The bar, the card game and two empty tables with their chairs, and the piano against the north wall
+    with a chair at it - its candles burning by `night`; by day the room's light fills the furniture's shade
+    (the windows are behind it from the noon shot)."""
+    fill = {} if night else {'fill': 1.0}
+    return [{'type': 'saloon_bar', 'x': 1.75, 'y': 3.5, 'angle': 0, 'length': 3.4},
+            {'type': 'card_table', 'x': 4.5, 'y': 3.0, 'seed': 3, **fill},
+            {'type': 'card_table', 'x': 6.6, 'y': 4.6, 'game': False, **fill},
+            {'type': 'card_table', 'x': 3.7, 'y': 5.4, 'game': False, 'seed': 2, **fill},
+            {'type': 'piano', 'x': 6.8, 'y': 1.12, 'angle': 90, 'lit': night, **fill},
+            ] + [{'type': 'saloon_chair', 'x': x, 'y': y, 'angle': a, 'seed': k, **fill}
+                 for k, (x, y, a) in enumerate(((4.12, 3.08, -8), (4.45, 3.62, 268), (6.24, 4.66, -8),
+                                                (6.96, 4.6, 180), (3.34, 5.46, -8), (4.06, 5.34, 170),
+                                                (6.8, 1.6, 270)))]
 
 
 def saloon():
@@ -38,16 +55,6 @@ def saloon():
            {'id': 'player', 'x': 5.1, 'y': 3.15, 'type': 'cowboy', 'facing': 200, 'tint': [1.0, 0.82, 0.72]}]
     sprites = [
         {'x': 2.1, 'y': 2.4, 'type': 'spittoon'}, {'x': 2.1, 'y': 5.0, 'type': 'spittoon'},   # along the rail
-        # the card game, and two empty tables
-        {'x': 4.5, 'y': 3.0, 'type': 'card_table'},
-        {'x': 3.85, 'y': 3.1, 'type': 'saloon_chair', 'flip': True}, {'x': 4.6, 'y': 3.6, 'type': 'saloon_chair'},
-        {'x': 6.6, 'y': 4.6, 'type': 'card_table'},
-        {'x': 5.95, 'y': 4.7, 'type': 'saloon_chair', 'flip': True}, {'x': 7.25, 'y': 4.6, 'type': 'saloon_chair'},
-        {'x': 3.7, 'y': 5.4, 'type': 'card_table'},
-        {'x': 3.05, 'y': 5.5, 'type': 'saloon_chair', 'flip': True}, {'x': 4.3, 'y': 5.3, 'type': 'saloon_chair'},
-        # the piano against the north wall, its stool
-        {'x': 6.8, 'y': 1.22, 'type': 'piano', 'planes': 1, 'angle': 0, 'length': 0.58},
-        {'x': 6.8, 'y': 1.7, 'type': 'saloon_chair', 'scale': 0.22},
         # lamps: the chandelier, wall lamps; a steer's skull on the wall
         {'x': 4.5, 'y': 3.5, 'z': 1.12, 'type': 'chandelier', 'scale': 0.38},
         {'x': 8.75, 'y': 2.5, 'z': 0.72, 'type': 'sconce', 'scale': 0.24},
@@ -60,7 +67,7 @@ def saloon():
                'size': 0.3} for y in (3, 4)] + [
               {'tex': 'wanted_poster', 'surface': 'wall', 'cell': [5, 0], 'face': 'south', 'u': 0.4, 'z': 0.72,
                'size': 0.28}]
-    night = {'sky': 'night', 'ambient': [0.06, 0.06, 0.09], 'lights': LAMPS + [
+    night = {'sky': 'night', 'ambient': [0.06, 0.06, 0.09], 'objects': furniture(True), 'lights': LAMPS + [
                  {'x': 6.8, 'y': 1.6, 'z': 0.6, 'radius': 1.8, 'color': [0.6, 0.85, 1.0], 'intensity': 0.9},
                  {'x': 6.55, 'y': 1.35, 'z': 0.5, 'radius': 1.3, 'color': WARM, 'intensity': 0.9}],   # a candle
              'fog': {'color': [0.12, 0.08, 0.06], 'density': 0.03, 'glow': 0.9}}
@@ -83,7 +90,7 @@ def saloon():
                  'disc': False}] + [dict(lamp, intensity=lamp['intensity'] * 0.5) for lamp in LAMPS],
         sprites=sprites,
         decals=decals,
-        objects=[{'type': 'saloon_bar', 'x': 1.75, 'y': 3.5, 'angle': 0, 'length': 3.4}],
+        objects=furniture(False),
         camera={'x': 8.2, 'y': 2.2, 'look_at': [1.8, 5.4, 0.55], 'fov': 70},
         shots=[
             {'x': 8.2, 'y': 2.2, 'look_at': [1.8, 5.4, 0.55], 'fov': 70, 'extra_sprites': day,
@@ -97,8 +104,8 @@ def saloon():
              'overlays': [{'type': 'caption', 'text': 'After midnight the piano plays itself', 'at': 'top', 'box': True}],
              'post': [{'fx': 'bloom', 'threshold': 0.6, 'strength': 0.6, 'radius': 5}]},
             # people seen close: the gambler across his table, the bartender across the bar
-            {'x': 4.45, 'y': 3.62, 'height': 0.52, 'look_at': [4.45, 2.55, 0.5], 'fov': 50, 'extra_sprites': day,
-             'overlays': [{'type': 'bubble', 'anchor': 'gambler', 'name': 'The Gambler',
+            {'x': 4.45, 'y': 3.52, 'height': 0.58, 'look_at': [4.45, 2.6, 0.4], 'fov': 56, 'extra_sprites': day,
+             'overlays': [{'type': 'bubble', 'anchor': 'gambler', 'name': 'The Gambler', 'offset': -100, 'width': 90,
                            'text': 'Sit down. Cards are dealt.'}]},
             {'x': 2.35, 'y': 3.1, 'height': 0.5, 'look_at': [1.3, 3.1, 0.52], 'fov': 50, 'extra_sprites': day},
         ],

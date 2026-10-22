@@ -22,7 +22,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
 | Textures | 199 | 199 | 0 | 0 | 0 |
-| Props | 307 | 307 | 0 | 0 | 0 |
+| Props | 311 | 311 | 0 | 0 | 0 |
 | Characters | 33 | 33 | 0 | 0 | 0 |
 | Decals | 27 | 27 | 0 | 0 | 0 |
 | Skies | 13 | 13 | 0 | 0 | 0 |
@@ -32,7 +32,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Fringe sets | 7 | 7 | 0 | 0 | 0 |
 | Facade styles | 6 | 6 | 0 | 0 | 0 |
 | Prefabs | 13 | 13 | 0 | 0 | 0 |
-| Objects | 23 | 23 | 0 | 0 | 0 |
+| Objects | 31 | 31 | 0 | 0 | 0 |
 | Held items | 8 | 8 | 0 | 0 | 0 |
 | Icons | 26 | 26 | 0 | 0 | 0 |
 | GUI themes | 6 | 6 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 68 | 68 | 0 | 0 | 0 |
-| **all** | **814** | **814** | **0** | **0** | **0** |
+| **all** | **826** | **826** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -337,7 +337,7 @@ New scenes:
 | `glasshouse` | good | see-through | palm_house | Drawn with the toolkit in glasshouse.py: white cast-iron uprights and transoms, a kick panel at the foot, open panes between (see-through). From outside, walls of it read as a cage: shoot a glasshouse from inside. |
 | `encaustic` | good | mirror 0.12 | palm_house | Encaustic tiles: a diamond in each square of terracotta, cream centres alternating black and blue, faint black joints. |
 
-## Props (307)
+## Props (311)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -348,7 +348,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `armchair` | good | 0.6 tall | claude_study, haunted_house, mansion_library, salt_flat |  |
 | `bed` | good | 0.4 tall | bunker_lab, ghost_corridor, gui_hud, hospital_corridor | Redrawn with the toolkit in basics.py: an iron bedstead with uprights, a mattress in white sheets, a pillow, a grey blanket turned back, castors. |
 | `bench` | good | 0.35 tall | aquarium, coast_lighthouse, garden_encounter, gui_menus, hospital_garden, palm_house, post_presets, rainy_street, village_green | Redrawn with the toolkit in basics.py: three backrest slats and two in the seat, held in cast-iron ends with scrolled armrests and curving legs. |
-| `arcade_cabinet` | good | 0.68 tall, glows, aura | neon_bar | Drawn with the toolkit in bar.py: a dark cabinet with neon side art, a lit marquee in pseudo-letters, a space shooter on a scanlined screen, joystick and buttons, a coin door. |
+| `arcade_cabinet` | good | 0.68 tall, glows, aura | - | Drawn with the toolkit in bar.py: a dark cabinet with neon side art, a lit marquee in pseudo-letters, a space shooter on a scanlined screen, joystick and buttons, a coin door. The `arcade_cabinet` object is one in 3D: the neon bar uses that. |
 | `bar_counter` | good | 0.35 tall, glows, no shadow | neon_bar | Drawn with the toolkit in bar.py: dark raised panels, a chrome rail, the black lip of the top, a magenta light strip along the foot; a card that repeats along its length. |
 | `bar_stool` | good | 0.27 tall | neon_bar, neon_street | Drawn with the toolkit in bar.py: a red vinyl seat on a chrome pole with a foot ring and a weighted base. |
 | `booth` | good | 0.5 tall, glows | neon_bar | Drawn with the toolkit in bar.py: a high back buttoned in teal vinyl, the seat, a formica table on a chrome leg with a glowing lamp. |
@@ -358,8 +358,8 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `book_stack` | good | 0.22 tall | claude_study, drowned_library, mansion_library |  |
 | `chest` | good | 0.3 tall | castle_keep, fjord, kelp_forest | Redrawn with the toolkit in basics.py: oak planks under a rounded lid, iron straps studded with rivets, iron corners, a brass lock plate. |
 | `console` | good | 0.85 tall, glows | bunker_lab, orbital_hangar, space_station |  |
-| `crate` | good | 0.4 tall | 20 scenes | Redrawn with the toolkit in basics.py: planks behind battens and a diagonal brace, nails at the corners, a stencilled arrow. |
-| `barrel` | good | 0.45 tall | 21 scenes | Redrawn with the toolkit in basics.py: bulging staves turned on a lathe, three iron hoops, the lid showing at the top. |
+| `crate` | good | 0.4 tall | bunker_lab, clockwork_city, coast_lighthouse, ghost_town, gold_mine, gui_lantern, gui_themes, gui_trade, hospital_corridor, library_medium, mansion_library, neon_street, rain_alley, rainy_street, sewer_tunnels, tunnel_encounter, underground_waterway, winter_lake, woodland_night | Redrawn with the toolkit in basics.py: planks behind battens and a diagonal brace, nails at the corners, a stencilled arrow. |
+| `barrel` | good | 0.45 tall | 20 scenes | Redrawn with the toolkit in basics.py: bulging staves turned on a lathe, three iron hoops, the lid showing at the top. |
 | `locker` | good | 1 tall | bunker_lab |  |
 | `lectern` | good | 0.5 tall | chapel_graveyard |  |
 | `open_book` | good | 0.12 tall, glows, no shadow | claude_study, drowned_library, mansion_library |  |
@@ -378,7 +378,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `ladder` | good | 1 tall, no shadow | capsule_hotel, drowned_library, red_canyon, sewer_tunnels |  |
 | `pipe_valve` | good | 0.32 tall, no shadow | bunker_lab, clockwork_city, sewer_tunnels |  |
 | `sack` | good | 0.42 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, gold_mine, neon_street, rain_alley, rainy_street, sewer_tunnels, village_green, woodland_night |  |
-| `bucket` | good | 0.32 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, neon_street, rain_alley, rainy_street, sewer_tunnels |  |
+| `bucket` | good | 0.32 tall | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, neon_street, rain_alley, rainy_street, sewer_tunnels, village_green |  |
 
 ### Light and fire
 
@@ -470,7 +470,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `pumpkin` | good | 0.32 tall | autumn_lane | Drawn with the toolkit in village.py: a squat gourd of deep ribs, a woody stem, a curl of vine and a leaf. |
 | `jack_o_lantern` | good | 0.34 tall, glows, aura | autumn_lane, haunted_house | Drawn with the toolkit in village.py: the pumpkin carved into a face that burns yellow (emissive), the rind darker round it; aura. |
 | `hay_bale` | good | 0.5 tall | autumn_lane | Drawn with the toolkit in village.py: a square bale packed with stalks, two bands of twine, loose ends bristling. |
-| `well` | good | 1.7 tall | village_green | Drawn with the toolkit in village.py: a round wall of fieldstones with a coping, oak posts under a little shingled roof, a windlass, a rope and a bucket. |
+| `well` | good | 1.7 tall | - | Drawn with the toolkit in village.py: a round wall of fieldstones with a coping, oak posts under a little shingled roof, a windlass, a rope and a bucket. The `well` object is one in 3D: the village uses that. |
 | `cart` | good | 0.75 tall | ghost_town, village_green | Drawn with the toolkit in village.py: a hand cart: a plank bed with stakes on a big spoked wheel, its shafts down, loaded with sacks. |
 | `market_stall` | good | 1.9 tall | - | Drawn with the toolkit in village.py: a red and white striped awning with a scalloped valance over a trestle of apples, cabbages and bread, crates beneath. |
 | `inn_sign` | good | 0.75 tall | village_green | Drawn with the toolkit in village.py: an iron bracket and scroll with a red board hanging from it, a gilt border and crown; stand it out from a front as a card. |
@@ -532,7 +532,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `reactor_core` | good | 2.8 tall, glows, aura | orbital_hangar | Drawn with the toolkit in scifi.py: a glowing column in steel collars with coolant pipes; glows, with an aura. |
 | `robot_arm` | good | 1.8 tall, glows | orbital_hangar | Drawn with the toolkit in scifi.py: three orange segments, dark joints, a turntable base, a welding spark. |
 | `cables_hang` | good | 1.4 tall, no shadow | orbital_hangar | Drawn with the toolkit in scifi.py: slack loops of cable and a few dangling ends; hangs from a ceiling, no contact shadow. |
-| `vending_machine` | good | 1.1 tall, glows, aura | capsule_hotel, neon_street | Drawn with the toolkit in scifi.py: a red steel box, its front a lit window of cans in rows, a glowing strip, coin slot and hatch. |
+| `vending_machine` | good | 1.1 tall, glows, aura | - | Drawn with the toolkit in scifi.py: a red steel box, its front a lit window of cans in rows, a glowing strip, coin slot and hatch. The `vending_machine` object is one in 3D: the capsule hotel and the neon street use that. |
 | `noodle_stall` | good | 1.6 tall, glows | - | Drawn with the toolkit in scifi.py: a counter under a striped awning, red paper lanterns lit, a neon sign of pseudo-letters, pots. |
 | `steam` | good | 1.2 tall, no shadow | clockwork_city, fjord, neon_street, night_market, winter_lake | A dithered plume, soft and spreading as it rises; see-through by default. |
 | `holo_ad` | good | 1.6 tall, glows, no shadow | neon_rooftop, neon_street | A hologram koi in cyan and pink with scanlines, dorsal and pectoral fins; additive by default. |
@@ -699,12 +699,12 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
 | `swamp_card_4` | good | 4.6 tall | bayou | The back: a dense stand of tall bald cypresses hung with moss, their crowns high enough to hide the wall's top. |
-| `goods_apples` | good | 0.22 tall | village_green | Drawn with the toolkit in village.py: a heap of red apples on a shallow tray, for a stall's table (the `market_stand` heaps them). |
-| `goods_cabbages` | good | 0.22 tall | village_green | Cabbages heaped on a tray, as the apples. |
-| `goods_loaves` | good | 0.22 tall | village_green | Loaves heaped on a tray, as the apples. |
-| `piano` | good | 0.46 tall | saloon | An upright: a dark case on carved legs, the fall open on ivory and ebony keys, brass sconces, music on the stand. Stand it as a card against a wall. |
-| `card_table` | good | 0.3 tall | saloon | A round table of green baize mid-game, seen a little from above: cards, stacks of chips, a bottle and two glasses. |
-| `saloon_chair` | good | 0.32 tall | saloon | A bentwood chair, side on: the hooped back, the round seat, splayed legs. |
+| `goods_apples` | good | 0.22 tall | - | Drawn with the toolkit in village.py: a heap of red apples on a shallow tray, for a stall's table. The `market_stand` heaps its trays in 3D now (`goods`). |
+| `goods_cabbages` | good | 0.22 tall | - | Cabbages heaped on a tray, as the apples. The `market_stand` heaps its trays in 3D now (`goods`). |
+| `goods_loaves` | good | 0.22 tall | - | Loaves heaped on a tray, as the apples. The `market_stand` heaps its trays in 3D now (`goods`). |
+| `piano` | good | 0.46 tall | - | An upright: a dark case on carved legs, the fall open on ivory and ebony keys, brass sconces, music on the stand. Stand it as a card against a wall. The `piano` object is one in 3D: the saloon uses that. |
+| `card_table` | good | 0.3 tall | - | A round table of green baize mid-game, seen a little from above: cards, stacks of chips, a bottle and two glasses. The `card_table` object is one in 3D: the saloon uses that. |
+| `saloon_chair` | good | 0.32 tall | - | A bentwood chair, side on: the hooped back, the round seat, splayed legs. The `saloon_chair` object is one in 3D: the saloon uses that. |
 | `spittoon` | good | 0.09 tall | saloon | Brass, squat and bellied, a wide funnel mouth. |
 | `pick_shovel` | good | 0.46 tall | gold_mine | A pick and a shovel leaning together, their hickory handles worn pale. |
 | `dynamite_crate` | good | 0.2 tall | gold_mine | A crate stencilled DYNAMITE, its lid off, red sticks standing in it with their fuses. |
@@ -712,6 +712,10 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `golden_idol` | good | 0.38 tall | temple_inside | Drawn with the toolkit in temple.py: a squat golden jaguar crouched on a carved pedestal, jade in its eyes and collar. |
 | `treasure` | good | 0.1 tall | temple_inside | Gold coins heaped and scattered, a jade mask, a golden cup on its side. |
 | `round_shield` | good | 0.32 tall, no shadow | fjord | Drawn with the toolkit in norse.py: boards painted in quarters red and pale, the seams carved, an iron boss, a rawhide rim. A card by default. |
+| `joystick` | good | 0.045 tall, no shadow | neon_bar | Drawn with the toolkit in bar.py: a red ball on a black shaft; the `arcade_cabinet` object stands one on its control panel, the one billboard among its panels. |
+| `whiskey` | good | 0.085 tall | saloon | Drawn with the toolkit in saloon.py: an amber bottle with a pale label and a cork, a shot glass beside it; the `card_table` object stands one on a table mid-game. |
+| `candle` | good | 0.06 tall | saloon | Drawn with the toolkit in saloon.py: a candle in a brass sconce, unlit; the `piano` object stands one at each corner. |
+| `candle_lit` | good | 0.06 tall, glows | saloon | The candle burning, its flame glowing; the `piano` object's with `lit`. |
 
 ## Characters (33)
 
@@ -915,7 +919,7 @@ Named groups placed with one line (`scripts/prefabs.py`).
 | `graves` | good | 5 sprites | - |  |
 | `shrine` | good | 2 sprites, 1 lights | jungle_temple |  |
 
-## Objects (23)
+## Objects (31)
 
 Things too big for a billboard, built in 3D out of flat panels (`scripts/objects.py`).
 
@@ -936,7 +940,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `trough` | good | ghost_town | A horse trough of weathered boards (`_wood` with `boards`: a seam between each, each its own tone), a rim, still water a hand below it, a soft shadow. Replaces the `water_trough` billboard in the ghost town. |
 | `shed_roof` | good | - | A roof of boards sloping down to its front edge, the boards running down the slope. The western facade builds one over every porch (ghost_town), sloping from the front down to the fascia so it shows from the street. |
 | `gable_roof` | good | autumn_garden, chapel_graveyard, fjord, haunted_house, palm_house, winter_lake | A gabled roof of boards with gable ends of upright boards, `walls` under it (`inset` back from its front). The western facade builds one behind every false front (ghost_town): the building's body, low enough for the front to hide. |
-| `market_stand` | good | village_green | The market stall in 3D, as the noodle stand: a trestle table of weathered boards with a striped skirt (the awning's valance, in step), four poles, a striped awning sloping down to the front with a scalloped valance round it; `goods_*` heaped on the table, crates and a sack by it, as billboards. Replaces the `market_stall` billboard in the village. |
+| `market_stand` | good | village_green | The market stall in 3D, as the noodle stand: a trestle table of weathered boards with a striped skirt (the awning's valance, in step), four poles, a striped awning sloping down to the front with a scalloped valance round it; on the table three trays heaped with `goods` in 3D (produce painted as rock is, each apple, cabbage, loaf or potato a round lump of its own, `PRODUCE`), a full `crate` and a shut one by it, a sack (a billboard); `paint` stripes its awning. Replaces the `market_stall` billboard in the village, where a second, blue, stands across the street. |
 | `saloon_bar` | good | saloon | A saloon's counter in 3D, 0.38 tall: raised mahogany panels between pilasters, a polished top overhanging the drinkers' side, the bartender's shelves behind, a brass foot rail on brackets, bottles on it. |
 | `rails` | good | gold_mine | A narrow track: two iron rails on wooden sleepers every 0.22, their tops worn bright. |
 | `ore_cart` | good | gold_mine | A riveted iron tub gone to rust (`_iron_side`: rivets along its lip and foot, rust running down) on a low frame and four small wheels set to the rails, ore heaped in it. |
@@ -949,6 +953,14 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `standing_stone` | good | misty_moor | A standing stone: a rough slab of `menhir` rock set on end (`size`, `depth`, `height`), its broad faces nearly flat, swelling and drawing in as it rises, leaning a few degrees, its top sloping down from one shoulder with the corners knocked off; low and wide, an altar slab. |
 | `gear` | good | clockwork_city | A gear: a toothed wheel of `brass` (`size`, `depth`, `teeth`, `spokes`), its faces cut to the teeth, rim, spokes and boss, each a shade of its own, the sides of its teeth standing out; verdigris in patches. |
 | `heap` | good | salt_flat | A heap of something loose: an irregular cone of `salt` (or any rock) `size` across and `height` tall, lumpy, its top a blunt point a little off centre; salt raked up to dry on a salt flat. |
+| `arcade_cabinet` | good | neon_bar | An upright cabinet in 3D: its sides cut to the outline (marquee jutting over a screen tilted back, the control panel standing out), side art of a ringed planet, stars and bands in its `color`, the T-moulding lit round its edge; a backlit marquee in pseudo-letters, a game glowing on the screen - a shooter, a maze chase or a racer, by `seed` - buttons on the controls and a `joystick` billboard standing up from them, a coin door with its inserts lit. The neon bar's row of four, each its own colour and game. |
+| `vending_machine` | good | capsule_hotel, neon_street | A drinks machine in 3D, a steel box in its `paint`: its window let into the front (a recess, lit) on three shelves of cans and bottles with a glowing button under each behind clear plastic, a lit sign, a money panel (a red price display, coin and note slots, the coin return), the hatch let in under a smoked flap, a white wave carried on round the corners, a maker's ring on the sides. |
+| `well` | good | village_green | A village well in 3D: a round wall of `fieldstone` (new rock: small stones laid dry, every joint showing, each its own shade), a coping of flat stones proud of it, the dark water far down the shaft; two oak posts carrying a little gabled roof, the windlass between them with its rope wound round and hanging down, an iron crank; a bucket on the rim. |
+| `crate` | good | village_green | A wooden crate in 3D: planks behind a frame of battens, a brace across each side, nails; `goods` heaps it full of produce and leaves it open, else it is nailed shut. |
+| `barrel` | good | village_green | A barrel in 3D: twelve oak staves bulging at the middle, each its own tone with a seam down its edges, shaded round smoothly, four iron hoops, its lid of boards sunk inside the rim (`_staves`). |
+| `card_table` | good | saloon | A round card table in 3D: green baize in a rim of polished mahogany, a turned pedestal on a round foot; mid-game (`game`) a hand dealt at each of four places, one fanned face up, the pot spilled in the middle, chips standing in stacks (tiny prisms), a `whiskey` bottle and glass. |
+| `saloon_chair` | good | saloon | A bentwood chair in 3D: a round seat with a rounded edge, four legs splayed out (bars between two points, `_strut`) with a ring round them, the back a cut-out panel - two posts bent over in a hoop, a smaller hoop inside - leaning back. |
+| `piano` | good | saloon | An upright piano in 3D, polished mahogany: its sides cut to its outline with the arms that hold the keyboard, carved; the keys from above (white keys, the black in their twos and threes), a gilt maker's name, carved panels, the music open on the desk, `candle`s in sconces at its corners (`lit` burns them, the night shot's does), a long panel with two brass pedals, turned legs. |
 
 ## Held items (8)
 
@@ -1182,6 +1194,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-22, props in 3D.** The user's list: the arcade cabinets, the capsule hotel's vending machine, the village's market stalls and well, the saloon's tables and piano - all objects now: `arcade_cabinet` (a `joystick` billboard on its controls, three games on the screens), `vending_machine` (its window and hatch let in as recesses, `_recess`), `well` (new rock `fieldstone`, rock keys `joint`, `mottle`, `dome`), `crate`, `barrel`, `card_table`, `saloon_chair`, `piano` (new props `whiskey`, `candle`, `candle_lit`); the `market_stand` heaps its trays in 3D (`PRODUCE`, `_mound`) and takes `paint` and `goods`, and a second stand, blue, joined the village. The neon street's machines went 3D too. And the user's catch on the headland temple: thin streaks of sky down the broken columns - a broken column's faces were laid with their top corners raised straight up off the taper, so each sat a hair off its true plane and the faces gaped where they met. Each face is now a panel in its own plane, solid in every texel it reaches into, as the standing columns' faces were.
 - **2026-10-21, kelp, knees and rubble.** Kelp (three, and the kelp fringe stamps one per frond), cypress knees and rubble drawn three ways. The saguaro, banana plant and driftwood were tried and left: their seeds barely touch the drawing (the driftwood's not at all).
 - **2026-10-21, and the small plants.** Cattails, flowers, poppies, monstera, prickly pear and tumbleweed drawn three ways each (another stream for each). Heliconia was tried and left: its stream only jitters a few pixels.
 - **2026-10-21, more drawn a few ways.** The bald cypress (three, its limbs set another way; the swamp's edge stamps one per tree), the palm (three), the dead tree (three, forking another way), the log and the stump (three each).
