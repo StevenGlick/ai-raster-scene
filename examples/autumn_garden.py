@@ -67,7 +67,7 @@ def autumn_garden():
                                       (13.8, 21.6), (20.6, 13.4), (20.4, 22.0)))],
         # people: a figure on the bridge, the host at the tea house door
         {'id': 'walker', 'x': 17.5, 'y': 16.2, 'type': 'samurai', 'facing': 270},
-        {'id': 'host', 'x': 17.5, 'y': 9.4, 'type': 'shopkeeper', 'facing': 90},
+        {'id': 'host', 'x': 17.5, 'y': 9.4, 'type': 'monk', 'facing': 90},
     ]
     decals = [{'tex': 'lily_pads', 'surface': 'floor', 'x': x, 'y': y, 'size': s_}
               for x, y, s_ in ((15.0, 15.4, 1.2), (19.6, 19.6, 1.0), (14.2, 19.0, 0.9))]

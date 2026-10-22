@@ -39,7 +39,7 @@ def fjord():
         {'x': 13.2, 'y': 27.4, 'type': 'campfire'},
         {'x': 18.6, 'y': 27.0, 'type': 'barrel'}, {'x': 19.2, 'y': 27.5, 'type': 'barrel', 'flip': True},
         {'x': 14.6, 'y': 25.6, 'type': 'chest'}, {'x': 11.8, 'y': 28.2, 'type': 'log'},
-        {'id': 'seafarer', 'x': 15.8, 'y': 26.3, 'type': 'pirate', 'facing': 290},
+        {'id': 'seafarer', 'x': 15.8, 'y': 26.3, 'type': 'viking', 'facing': 290},
         {'x': 20.5, 'y': 30.5, 'type': 'farmer', 'facing': 250},
         # the longhouse: shields on its wall, smoke from its roof, goats on the grass
         {'x': 7.6, 'y': 37.05, 'type': 'round_shield', 'z': 0.55, 'angle': 0},

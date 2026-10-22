@@ -54,7 +54,7 @@ def gold_mine():
         {'x': 5.18, 'y': y, 'z': 0.6, 'type': 'lantern', 'scale': 0.2} for y in SETS[1::3]
     ] + [
         # the stope: the prospector at the face, his lamp on a post, the ore he has broken
-        {'id': 'prospector', 'x': 10.35, 'y': 8.3, 'type': 'cowboy', 'facing': 0, 'tint': [0.82, 0.76, 0.66]},
+        {'id': 'prospector', 'x': 10.35, 'y': 8.3, 'type': 'miner', 'facing': 0},
         {'x': 10.6, 'y': 7.2, 'type': 'lantern', 'z': 0.55, 'scale': 0.2},
         {'x': 9.6, 'y': 9.4, 'type': 'ore_heap', 'scale': 0.16}, {'x': 10.7, 'y': 9.3, 'type': 'ore_heap', 'scale': 0.12},
         {'x': 7.4, 'y': 6.3, 'type': 'pick_shovel'}, {'x': 8.2, 'y': 9.7, 'type': 'dynamite_crate'},

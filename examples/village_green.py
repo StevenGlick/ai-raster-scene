@@ -48,7 +48,7 @@ def village_green():
         {'x': 16.5, 'y': 10.5, 'type': 'well'},
         {'x': 14.0, 'y': 5.6, 'type': 'tree', 'scale': 3.2}, {'x': 23.6, 'y': 7.6, 'type': 'birch'},
         {'id': 'child', 'x': 14.6, 'y': 12.4, 'type': 'child', 'facing': 45},
-        {'x': 18.8, 'y': 11.4, 'type': 'farmer', 'facing': 120},
+        {'x': 18.8, 'y': 11.4, 'type': 'villager', 'facing': 120},
         {'x': 20.5, 'y': 12.0, 'type': 'crow'}, {'x': 21.4, 'y': 11.4, 'type': 'crow', 'flip': True},
         {'x': 9.0, 'y': 14.0, 'type': 'cart', 'flip': True},
     ]

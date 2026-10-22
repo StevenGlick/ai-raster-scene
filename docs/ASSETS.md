@@ -23,7 +23,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 |---|---|---|---|---|---|
 | Textures | 199 | 199 | 0 | 0 | 0 |
 | Props | 307 | 307 | 0 | 0 | 0 |
-| Characters | 29 | 29 | 0 | 0 | 0 |
+| Characters | 33 | 33 | 0 | 0 | 0 |
 | Decals | 27 | 27 | 0 | 0 | 0 |
 | Skies | 13 | 13 | 0 | 0 | 0 |
 | Skylines | 6 | 6 | 0 | 0 | 0 |
@@ -40,7 +40,7 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
 | Example scenes | 68 | 68 | 0 | 0 | 0 |
-| **all** | **810** | **810** | **0** | **0** | **0** |
+| **all** | **814** | **814** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -713,7 +713,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `treasure` | good | 0.1 tall | temple_inside | Gold coins heaped and scattered, a jade mask, a golden cup on its side. |
 | `round_shield` | good | 0.32 tall, no shadow | fjord | Drawn with the toolkit in norse.py: boards painted in quarters red and pale, the seams carved, an iron boss, a rawhide rim. A card by default. |
 
-## Characters (29)
+## Characters (33)
 
 Pixel-art grids written as text in `scripts/characters.py`, each with a back view.
 
@@ -731,7 +731,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `child` | good | aquarium, autumn_lane, night_market, palm_house, village_green, winter_lake, winter_woods | The head narrowed to ten pixels with a fringe, the eyes closer together, a small mouth and a tapered chin, so it reads as a child rather than a round mask; back view. |
 | `creature` | good | castle_keep, crystal_cave |  |
 | `robot` | good | clockwork_city, crystal_cave |  |
-| `shopkeeper` | good | autumn_garden, clockwork_city, ghost_town, neon_street, night_market, saloon, village_green |  |
+| `shopkeeper` | good | clockwork_city, ghost_town, neon_street, night_market, saloon, village_green |  |
 | `astronaut` | good | alien_world, moon_base, orbital_hangar, space_station |  |
 | `android` | good | neon_bar, neon_street, orbital_hangar, space_station |  |
 | `alien` | good | alien_world, derelict_ship | A familiar archetype; could be made stranger. |
@@ -744,10 +744,19 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `runner` | good | neon_bar, neon_rooftop, neon_street, night_market | A cyberpunk: dark hair with a pink streak, a lit cyan visor, a black jacket striped in neon. |
 | `samurai` | good | autumn_garden, night_market | A street samurai: topknot, glowing red visor, a long black coat lined in crimson over a grey shirt and a gold belt, a sword slung across the back with its hilt over the shoulder, one chrome arm; back view. |
 | `hacker` | good | capsule_hotel, neon_bar | Hood up in deep violet, cyan goggles glowing in the shadow of it, a deck held in both hands with a green screen, cargo trousers, white sneakers on lit pink soles; back view. |
-| `cowboy` | good | ghost_town, gold_mine, neon_bar, night_market, red_canyon, saloon | A wide-brimmed hat, moustache, red bandana, a vest over a tan shirt, a gun belt, jeans and boots; for the canyon. |
+| `cowboy` | good | ghost_town, neon_bar, night_market, red_canyon, saloon | A wide-brimmed hat, moustache, red bandana, a vest over a tan shirt, a gun belt, jeans and boots; for the canyon. |
 | `witch` | good | aurora_palace, autumn_lane, neon_bar | A crooked pointed hat banded in purple, green skin, glowing yellow eyes, a robe, a lit lantern at her side. |
-| `farmer` | good | fjord, palm_house, village_green | A straw hat, plaid shirt and blue overalls, a pitchfork taller than him. |
-| `pirate` | good | bayou, fjord | A gold-edged tricorn, an eye patch and beard, a red coat with gold buttons, a cutlass. |
+| `farmer` | good | fjord, palm_house | A straw hat, plaid shirt and blue overalls, a pitchfork taller than him. |
+| `pirate` | good | bayou | A gold-edged tricorn, an eye patch and beard, a red coat with gold buttons, a cutlass. |
+
+### Not yet sorted
+
+| character | status | used in | notes |
+|---|---|---|---|
+| `miner` | good | gold_mine | A gold-rush prospector: a dusty slouch hat, a grey beard, red flannel under dark suspenders, jeans and boots, a pick on his shoulder. From behind, grey hair under the hat. |
+| `viking` | good | fjord | An iron cap, a braided red beard, a fur cloak over a green tunic, a belt with a gold buckle, leg wraps, an axe in hand. From behind, red hair under the cap. |
+| `monk` | good | autumn_garden | Shaven head, a brown robe with its cowl down on the shoulders, hands folded, a rope belt with a hanging end, sandals. |
+| `villager` | good | village_green | A red kerchief over brown hair, a green dress under a white apron, a basket on her arm. From behind, her hair and the dress. |
 
 ## Decals (27)
 
@@ -1173,6 +1182,7 @@ The environments, judged on their gallery images and shots.
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-21, four new characters.** `miner` (a gold-rush prospector: slouch hat, grey beard, red flannel and suspenders, a pick), `viking` (iron cap, braided red beard, fur cloak over a green tunic, leg wraps, an axe), `monk` (shaven, brown robe, rope belt, sandals) and `villager` (red kerchief, green dress, white apron, a basket) - 16x32 grids with back views, drawn in finer pixels like the rest; they take over from the stand-ins in the mine (the cowboy), the fjord (the pirate), the garden (the shopkeeper) and the village (a farmer).
 - **2026-10-21, the decoration randomizer.** Props drawn a few ways (`VARIANTS` in a kit: name -> count and draw(k)); wherever one is placed the renderer picks a drawing by where it stands (assets.variant_name), the same every render; a sprite's `variant` pins one, a scene's `"variants": false` turns it off. Drawn so far: `rocks` (redrawn faceted like the 3D boulders, six heaps, greys and browns - the user: the small billboard rocks "could use an update"), `grass_tuft` and `dry_tuft` (four), `fern` (three), `bush` and `bush_autumn` (four), `boulder` and `boulder_snow` (four - the old drawing's sides were cut off by its canvas), `mushrooms` (redrawn with the toolkit, four); the trees - `pine` and `snowy_pine` (four spruces, fuller or leaner), `tree` and `tree_autumn` (three oaks, the crown's lobes set another way), `birch` and `birch_autumn` (three, the second stem leaning another way) - and the forest and jungle fringe cards stamp a drawing per plant (assets.variant_pick), so a wood's edge is no longer seventeen copies of one spruce.
 - **2026-10-21, characters in finer pixels.** Every built-in character drawn from its 16x32 grid at twice the resolution and a tenth taller (scripts/charhd.py, new): a torso row and two leg rows said twice where nothing is doubled, scale2x for smooth silhouettes, a finer face (one-pixel pupils, brows, the nose only at its foot), form shading from the upper left; back views the same size; a scene's own character with `"hd": true`. The user: the environments had "blown past" the characters, close-ups "a little too chunky", people "a little bit taller".
 - **2026-10-21, the salt flat's heaps.** In 3D: `heap` (new object) - an irregular cone of `salt` (new rock kind: white grains), `fill` so the side away from the noon sun stays white - in place of the dome cards, which read as tents (an open note from the worlds loop).
