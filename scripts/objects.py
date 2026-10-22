@@ -1398,29 +1398,43 @@ def _disc(mat, seed, n, r, z, phase, below=False):
 def _broken_top(mat, seed, n, r0, r1, z0, H, phase, depth, flute=0.0, block=False):
     """The sides of an n-sided shaft (radius r0 at z0 to r1 at H) broken off ragged: each corner stops
     at its own height, up to `depth` below H, every face cut slanting between its two corners, and the
-    break itself a fan of rough triangles in to a point a little below the top. `flute` and `block` as
-    for _prism_faces."""
+    break itself a fan of rough triangles in to a point a little below the top. Each face is a panel in
+    the face's own plane, laid as _prism_faces lays them, solid in every texel the face reaches into - so
+    the faces overlap at their edges by a sliver of a texel, never leaving a crack the sky shows through.
+    `flute` and `block` as for _prism_faces."""
     rng = np.random.default_rng(seed + 400)
     tops = H - rng.uniform(0, depth, n)
     rad = lambda z: r0 + (r1 - r0) * (z - z0) / max(H - z0, 1e-6)     # noqa: E731
-    ring = [np.array([rad(t) * math.cos(phase + 2 * math.pi * k / n), rad(t) * math.sin(phase + 2 * math.pi * k / n), t])
-            for k, t in enumerate(tops)]
+    ang = [phase + 2 * math.pi * k / n for k in range(n)]
+    at = lambda a, z: np.array([rad(z) * math.cos(a), rad(z) * math.sin(a), z])     # noqa: E731
+    ring = [at(a, t) for a, t in zip(ang, tops)]
     parts = []
     for k in range(n):
-        A, B = ring[k], ring[(k + 1) % n]
-        a0 = np.array([A[0] * r0 / rad(A[2]), A[1] * r0 / rad(A[2]), z0])
-        b0 = np.array([B[0] * r0 / rad(B[2]), B[1] * r0 / rad(B[2]), z0])
-        if np.cross(b0 - a0, np.array([0.0, 0.0, -1.0])) @ (a0 + b0) < 0:   # read from outside
-            A, B, a0, b0 = B, A, b0, a0
-        hi = max(A[2], B[2])
-        tl, tr = np.array([A[0], A[1], hi]), np.array([B[0], B[1], hi])
+        a, b, za, zb = ang[k], ang[(k + 1) % n], tops[k], tops[(k + 1) % n]
+        if np.cross(at(b, z0) - at(a, z0), np.array([0.0, 0.0, -1.0])) @ (at(a, z0) + at(b, z0)) < 0:
+            a, b, za, zb = b, a, zb, za                                # read from outside
+        hi = max(za, zb)
+        B0, B1, T0, T1 = at(a, z0), at(b, z0), at(a, hi), at(b, hi)
+        wide = rad(hi) > r0                                            # laid on its wider edge
+        cut = (1 - min(r0, rad(hi)) / max(r0, rad(hi))) / 2           # how far the narrower edge is drawn in
+        drop = (B0 + B1) / 2 - (T0 + T1) / 2
+        tl, tr = (T0, T1) if wide else (B0 - drop, B1 - drop)
+        ta, tb = (hi - za) / (hi - z0), (hi - zb) / (hi - z0)          # how far down each edge the break is
+        sa, sb = cut * (ta if wide else 1 - ta), 1 - cut * (tb if wide else 1 - tb)
+        slope = (tb - ta) / max(sb - sa, 1e-9)
 
-        def shape(w, h, ha=A[2], hb=B[2], hi=hi):
-            zt = hi - (np.arange(h)[:, None] + 0.5) / h * (hi - z0)    # each row's height
-            s_ = (np.arange(w)[None, :] + 0.5) / w
-            return zt <= ha + (hb - ha) * s_ + 0.5 * (hi - z0) / h
-        tilt = (lambda w, h: flute * (1 - 2 * np.broadcast_to((np.arange(w)[None, :] + 0.5) / w, (h, w)))) if flute else None
-        p = _rock(mat, seed + (0 if block else k), tl, tr, a0, alpha=shape, tilt=tilt)
+        def shape(w, h, cut=cut, wide=wide, ta=ta, sa=sa, slope=slope):
+            s0, s1 = np.arange(w)[None, :] / w, (np.arange(w)[None, :] + 1) / w     # each texel's sides,
+            t0, t1 = np.arange(h)[:, None] / h, (np.arange(h)[:, None] + 1) / h     # its top and its foot
+            c = cut * (t0 if wide else 1 - t1)                        # the face's edge where widest across it
+            under = t1 >= ta + slope * ((s0 if slope > 0 else s1) - sa)              # any of it under the break
+            return (s1 >= c) & (s0 <= 1 - c) & under
+
+        def tilt(w, h, cut=cut, wide=wide):                           # the hollow of a flute, across the face
+            s, t = (np.arange(w)[None, :] + 0.5) / w, (np.arange(h)[:, None] + 0.5) / h
+            c = cut * (t if wide else 1 - t)
+            return flute * (1 - 2 * np.clip((s - c) / (1 - 2 * c), 0, 1))
+        p = _rock(mat, seed + (0 if block else k), tl, tr, tl + drop, alpha=shape, tilt=tilt if flute else None)
         if p:
             parts.append(p)
     peak = np.array([0.0, 0.0, float(tops.mean()) - 0.04])

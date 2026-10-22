@@ -1452,6 +1452,25 @@ def check_objects():
     stand = objects.expand({'map': ['.'], 'objects': [{'type': 'market_stand', 'x': 0.0, 'y': 0.0}]})
     zs = np.concatenate([[pn['o'] + a * pn['u'] + b * pn['v'] for a in (0, 1) for b in (0, 1)] for pn in stand['panels']])[:, 2]
     assert zs.max() > 1.3 and any(sp['type'].startswith('goods_') for sp in stand['sprites']), 'goods under an awning'
+    # 15. a broken column's faces lie in their own planes, so neighbours meet with no crack between them: every
+    # face's top corners, on the taper over its foot's corners, lie in the face's panel (they stood off it once)
+    col = objects.column({'material': 'marble', 'flutes': 20, 'radius': 0.27, 'top': 0.8, 'height': 2.3,
+                          'broken': 0.26, 'seed': 7})
+    r0, r1, z0, H = 0.27, 0.27 * 0.8, -0.02, 2.3
+    checked = 0
+    for pn in col:
+        tl, tr, bl = (np.array(pn[k], float) for k in ('tl', 'tr', 'bl'))
+        nrm = np.cross(tr - tl, bl - tl)
+        nrm /= np.linalg.norm(nrm)
+        foot = [bl, bl + (tr - tl)]
+        if pn['part'] != 'panel' or abs(bl[2] - z0) > 1e-9 or any(abs(np.hypot(*p[:2]) - r0) > 1e-6 for p in foot):
+            continue
+        top = tl[2]
+        for p in foot:                                 # up its edge on the taper to the panel's top
+            q = np.array([*(p[:2] * (r0 + (r1 - r0) * (top - z0) / (H - z0)) / r0), top])
+            assert abs((q - tl) @ nrm) < 1e-9, 'a broken face off its plane'
+        checked += 1
+    assert checked == 20, f'every face of the broken shaft checked ({checked})'
     print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights, '
           f'rock, linings, columns fluted and Doric, fill, timber, standing stones cast, crystals bend the light)')
 
