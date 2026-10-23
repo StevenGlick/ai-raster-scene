@@ -3608,6 +3608,100 @@ def spr_tram():
     return rgba, _tail_em(cv, [2])
 
 
+# ------------------------------------------------------------------ the dragon flight
+
+DRAGON_SCALE = [ramp('#8c1e24', dark=0.4, light=1.5, warm=0.04), ramp('#2a8a4a', dark=0.4, light=1.5, cool=0.03),
+                ramp('#b88a3a', dark=0.4, light=1.4, warm=0.05)]
+DRAGON_WEB = [ramp('#4c141a', dark=0.45, light=1.8), ramp('#1c4a3a', dark=0.45, light=1.7),
+              ramp('#6a4a22', dark=0.45, light=1.7)]
+DRAGON_HORN = ramp('#e4d8b8', dark=0.45, light=1.2)
+
+
+def _dragon_scales(cv, mat=0):
+    """Rows of small overlapping scales over everything drawn in `mat`."""
+    yy, xx = np.mgrid[0:cv.h, 0:cv.w] + 0.5
+    m = (cv.id > 0) & (cv.mat == mat)
+    f = ((yy + 1.4 * np.abs(np.sin(xx * 0.62))) / 3.0) % 1.0                    # scalloped rows
+    cv.tone[m] = (0.08 - 0.2 * (f < 0.3))[m]
+
+
+def spr_dragon_neck():
+    """Your dragon from the saddle: its scaled neck going up ahead of you with a row of spines down it, the head at
+    its end seen from behind - two horns swept back, frills behind the jaw - the reins running up to it, and the
+    great wings spread out to either side, their webs ribbed with the long fingers. A shot's `vehicle` for a dragon
+    flight: wide and low, its wings out past the edges of the view."""
+    w, h, c = 240, 64, 120
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for s in (0, 1):                                                                # the wings, out to either side
+        def m(pts):
+            return [(x if s == 0 else w - x, y) for x, y in pts]
+        cv.polygon(m([(104, 58), (72, 42), (44, 30), (-4, 16), (-4, 44), (10, 40), (22, 50), (38, 44), (54, 56),
+                      (70, 50), (86, 62), (104, 66)]), z=0.6, top=0.3, bevel=1.2, mat=1)       # the web
+        for tip in [(-4, 44), (22, 50), (54, 56)]:                                  # the fingers
+            cv.stroke(m([(44, 30), tip]), 1.8, z=0.9, dome=0.5, taper=(1.0, 0.5), mat=0)
+        cv.stroke(m([(104, 58), (72, 42), (44, 30)]), 5.0, z=1.0, dome=0.8, taper=(1.0, 0.7), mat=0)   # the arm
+        cv.stroke(m([(44, 30), (20, 22), (-4, 15)]), 3.2, z=1.0, dome=0.6, taper=(1.0, 0.5), mat=0)
+        cv.polygon(m([(41, 30), (47, 30), (45, 22)]), z=1.4, top=0.5, bevel=0.6, mat=2)               # its claw
+    neck = [(c, 72), (c - 3, 56), (c - 1, 42), (c + 2, 30), (c, 21)]
+    cv.stroke(neck, 26, z=1.2, dome=1.0, taper=(1.0, 0.38), mat=0)                 # the neck
+    for s in (-1, 1):                                                               # the frills behind its jaw
+        cv.polygon([(c + 10 * s, 14), (c + 19 * s, 13), (c + 16 * s, 18), (c + 20 * s, 24), (c + 9 * s, 22)],
+                   z=1.5, top=0.4, bevel=0.8, mat=1)
+    cv.polygon([(c - 7, 15), (c + 7, 15), (c + 5, 4), (c - 5, 4)], z=1.6, top=0.6, bevel=1.0, mat=0)  # the snout
+    cv.ellipse(c, 17, 13, 7, z=1.8, dome=0.9, mat=0)                            # the back of the head
+    _dragon_scales(cv)
+    for s in (-1, 1):
+        cv.ellipse(c + 2.8 * s, 5.5, 1.6, 1.1, z=1.9, dome=0.5, mat=0, tone=-0.3)    # nostrils
+        cv.stroke([(c + 5 * s, 14), (c + 5.5 * s, 8)], 1.8, z=2.0, dome=0.5, mat=0, tone=0.12)  # brow ridges
+    ys = np.array([p[1] for p in neck][::-1], np.float32)
+    xs = np.array([p[0] for p in neck][::-1], np.float32)
+    for k in range(7):                                                              # the spines down its neck
+        y = 60 - k * 5.4
+        x, sz = float(np.interp(y, ys, xs)), 5.0 - k * 0.45
+        cv.polygon([(x - sz * 0.6, y), (x + sz * 0.6, y), (x, y - sz * 1.5)], z=2.4, top=0.5, bevel=0.6, mat=2)
+    for s in (-1, 1):
+        cv.stroke([(c + 6 * s, 12), (c + 12 * s, 15), (c + 16 * s, 22), (c + 16 * s, 30)], 4.0, z=2.4,
+                  dome=0.7, taper=(1.0, 0.15), mat=2)                               # the horns, swept back
+        cv.stroke([(c + 16 * s, 70), (c + 11 * s, 48), (c + 8 * s, 20)], 1.6, z=2.8, dome=0.4, mat=3)  # reins
+    cv.polygon([(c - 18, 66), (c + 18, 66), (c + 14, 58), (c - 14, 58)], z=3.0, top=0.6, bevel=1.4, mat=3)
+    cv.ellipse(c, 58, 5, 3, z=3.4, dome=0.8, mat=4)                                 # the saddle's front
+    return _prop(cv, [DRAGON_SCALE[0], DRAGON_WEB[0], DRAGON_HORN, ramp('#6a4428', dark=0.45, light=1.6), GILT],
+                 relief=1.0, cavity=0.4, shadow=0.4)
+
+
+def _dragon(k):
+    w, h = 96, 56
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(40, 27), (37, 7), (54, 2), (49, 7), (48, 13), (44, 14), (43, 21)], z=0.4, top=0.3, bevel=1.0,
+               mat=1, tone=-0.15)                                                   # the far wing, behind
+    cv.stroke([(40, 27), (37, 7), (54, 2)], 2.0, z=0.6, dome=0.5, mat=0, tone=-0.1)
+    cv.stroke([(56, 32), (66, 36), (76, 34), (86, 38), (91, 44)], 5.0, z=1.0, dome=0.8, taper=(1.0, 0.25), mat=0)
+    cv.polygon([(89, 42), (95, 43), (92, 50)], z=1.2, top=0.4, bevel=0.6, mat=2)    # the tail's barb
+    cv.ellipse(48, 31, 14, 6.5, z=1.2, dome=1.0, angle=-6, mat=0)                   # the body
+    cv.stroke([(54, 35), (58, 40), (55, 43)], 3.0, z=1.4, dome=0.6, taper=(1.0, 0.5), mat=0)      # legs tucked
+    cv.stroke([(38, 34), (40, 39), (37, 41)], 2.4, z=1.4, dome=0.6, taper=(1.0, 0.5), mat=0)
+    cv.stroke([(38, 29), (30, 24), (24, 18), (18, 16)], 5.0, z=1.4, dome=0.9, taper=(1.0, 0.6), mat=0)  # the neck
+    cv.polygon([(20, 13), (22, 19), (9, 19), (6, 16), (10, 14)], z=1.6, top=0.6, bevel=0.8, mat=0)       # the head
+    _dragon_scales(cv)
+    cv.stroke([(19, 14), (24, 10), (28, 9)], 1.6, z=1.8, dome=0.4, taper=(1.0, 0.2), mat=2)       # its horn
+    for x, y in [(26, 19), (32, 23), (38, 25), (45, 24), (52, 25), (59, 28), (66, 33)]:          # spines
+        cv.polygon([(x - 1.5, y), (x + 1.5, y), (x + 0.8, y - 3)], z=1.9, top=0.4, bevel=0.5, mat=2)
+    cv.polygon([(44, 28), (52, 6), (76, 0), (69, 5), (68, 12), (62, 13), (60, 20), (55, 22), (52, 30)], z=1.8,
+               top=0.4, bevel=1.0, mat=1)                                           # the near wing, raised
+    for tip in [(68, 12), (60, 20)]:
+        cv.stroke([(52, 6), tip], 1.0, z=2.1, dome=0.4, mat=0)
+    cv.stroke([(44, 28), (52, 6)], 2.6, z=2.0, dome=0.6, mat=0)                     # its arm
+    cv.stroke([(52, 6), (76, 0)], 1.8, z=2.0, dome=0.5, taper=(1.0, 0.4), mat=0)
+    return _prop(cv, [DRAGON_SCALE[k], DRAGON_WEB[k], DRAGON_HORN], relief=1.0, cavity=0.4, shadow=0.4)
+
+
+def spr_dragon():
+    """A dragon on the wing, seen from the side: the long neck and horned head, the body, the tail with its barb,
+    both wings raised - the far one behind - their webs ribbed. Crimson, or `variant` 1 emerald, 2 bronze. Hang it
+    in the sky at any `z`."""
+    return _dragon(0)
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -3656,7 +3750,7 @@ TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront':
 VARIANTS = {'traffic_light': (3, _traffic_light), 'car_compact': (4, _car_compact), 'car_sedan': (4, _car_sedan),
             'billboard': (3, _billboard), 'race_car': (4, _race_car), 'car_oncoming': (4, _car_oncoming),
             'mooring_pole': (3, _mooring_pole), 'slalom_gate': (2, _slalom_gate), 'gumdrop': (4, _gumdrop),
-            'signal_light': (2, _signal_light)}
+            'signal_light': (2, _signal_light), 'dragon': (3, _dragon)}
 
 SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_sedan': spr_car_sedan,
            'box_truck': spr_box_truck, 'curve_sign': spr_curve_sign, 'billboard': spr_billboard,
@@ -3691,7 +3785,8 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'erupting_volcano': spr_erupting_volcano, 'signal_light': spr_signal_light, 'metro_cab': spr_metro_cab,
            'log_boat': spr_log_boat, 'prayer_flags': spr_prayer_flags, 'stupa': spr_stupa,
            'basket_rim': spr_basket_rim, 'tractor': spr_tractor, 'hay_wagon': spr_hay_wagon,
-           'sleigh_horse': spr_sleigh_horse, 'christmas_tree': spr_christmas_tree, 'tram': spr_tram}
+           'sleigh_horse': spr_sleigh_horse, 'christmas_tree': spr_christmas_tree, 'tram': spr_tram,
+           'dragon_neck': spr_dragon_neck, 'dragon': spr_dragon}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
@@ -3714,7 +3809,8 @@ SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'bo
                  'flying_saucer': 1.6, 'tractor_beam': 4.0, 'cow': 0.5, 'ferris_wheel': 6.0, 'carousel': 2.2, 'horse': 0.6, 'lighthouse_tower': 7.0,
                  'lighthouse_beam': 1.6, 'erupting_volcano': 25.0, 'signal_light': 0.5,
                  'metro_cab': 1.0, 'log_boat': 0.4, 'prayer_flags': 0.4, 'stupa': 2.4, 'basket_rim': 0.4, 'tractor': 0.75,
-                 'hay_wagon': 0.4, 'sleigh_horse': 0.5, 'christmas_tree': 1.6, 'tram': 0.8}
+                 'hay_wagon': 0.4, 'sleigh_horse': 0.5, 'christmas_tree': 1.6, 'tram': 0.8,
+                 'dragon_neck': 0.24, 'dragon': 3.0}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
@@ -3739,4 +3835,5 @@ PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}
                  'lighthouse_beam': {'shadow': False, 'blend': 'additive'}, 'erupting_volcano': {'shadow': False},
                  'signal_light': {'shadow': False}, 'metro_cab': {'shadow': False},
                  'log_boat': {'shadow': False}, 'prayer_flags': {'shadow': False, 'planes': 1},
-                 'basket_rim': {'shadow': False}, 'hay_wagon': {'shadow': False}, 'sleigh_horse': {'shadow': False}}
+                 'basket_rim': {'shadow': False}, 'hay_wagon': {'shadow': False}, 'sleigh_horse': {'shadow': False},
+                 'dragon_neck': {'shadow': False}, 'dragon': {'shadow': False, 'planes': 1}}

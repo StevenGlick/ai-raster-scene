@@ -564,6 +564,7 @@ class RoadRenderer:
         emis = np.zeros((H, W, 3), np.float32)
         depth = np.full((H, W), np.inf, np.float32)
         void = any(b is None or b[-1][1] == 'void' for b in self.sides.values())     # a side ends in nothing
+        self._open = void                      # so nothing stands in front of what is down there
         self._sky(img, emis, cam, W, H, focal, horizon, mid, below=void)
         self._sky_img, self._sky_emis = img.copy(), emis.copy()          # what the water mirrors
         self._refl = np.zeros((H, W), np.float32)                         # how mirror-like each pixel's ground is
@@ -1143,7 +1144,9 @@ class RoadRenderer:
             cx = mid + s * (xr + it['x'] - camx)
             bot = horizon - s * (yr + float(it.get('z', 0.0)) - camy)
             top, left = bot - hpx, cx - wpx / 2
-            clip = H if it.get('_vehicle') else P['clip'][k]
+            # a crest hides the foot of what stands beyond it; past a void side nothing does (the depth test still
+            # hides what the road in front covers), so a castle far down in the valley is seen
+            clip = H if it.get('_vehicle') or getattr(self, '_open', False) else P['clip'][k]
             r0, r1 = max(0, int(math.floor(top))), min(H, int(math.ceil(min(bot, clip))))
             c0, c1 = max(0, int(math.floor(left))), min(W, int(math.ceil(left + wpx)))
             if it.get('_vehicle'):                 # where the shot's own vehicle is, for `speed` to leave sharp

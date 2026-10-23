@@ -1,0 +1,210 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    60,
+    0.0,
+    0
+   ],
+   [
+    120,
+    0.22,
+    0
+   ],
+   [
+    300,
+    -0.12,
+    0
+   ]
+  ],
+  "width": 0.002,
+  "surface": "asphalt",
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "ground": "void",
+  "below": {
+   "depth": 30,
+   "tile": 16,
+   "haze": 0.5,
+   "texture": [
+    {
+     "width": 4,
+     "texture": "river_water"
+    },
+    {
+     "width": 60,
+     "texture": "farmland"
+    },
+    {
+     "texture": "forest_canopy"
+    }
+   ]
+  },
+  "distance": 400
+ },
+ "camera": {
+  "at": 1.0,
+  "x": 0.0,
+  "height": 0.6,
+  "fov": 64,
+  "pitch": -0.06
+ },
+ "title": "The dragon flight - riding a dragon at sunset down a river valley toward a dark castle on its crag",
+ "sky": "sunset",
+ "skyline": {
+  "type": "mountains",
+  "height": 1.2,
+  "color": [
+   0.3,
+   0.24,
+   0.34
+  ]
+ },
+ "sky_objects": [
+  {
+   "type": "sun",
+   "azimuth": 250,
+   "elevation": 4,
+   "size": 2.6
+  }
+ ],
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 250,
+   "elevation": 8,
+   "intensity": 0.9,
+   "color": [
+    1.0,
+    0.72,
+    0.5
+   ],
+   "disc": false
+  }
+ ],
+ "ambient": [
+  0.56,
+  0.48,
+  0.56
+ ],
+ "fog": {
+  "color": [
+   0.86,
+   0.6,
+   0.56
+  ],
+  "density": 0.003,
+  "sky_mix": 0.3
+ },
+ "sprites": [
+  {
+   "type": "dark_castle",
+   "at": 120,
+   "x": 20,
+   "z": -30,
+   "scale": 44
+  },
+  {
+   "type": "dragon",
+   "variant": 1,
+   "at": 16,
+   "x": -4.2,
+   "z": 0.9,
+   "scale": 2.6
+  },
+  {
+   "type": "dragon",
+   "variant": 2,
+   "at": 30,
+   "x": 12.5,
+   "z": -1.6,
+   "scale": 3.0,
+   "flip": true
+  },
+  {
+   "type": "dragon",
+   "variant": 0,
+   "at": 60,
+   "x": 3.0,
+   "z": 9.0,
+   "scale": 3.0
+  },
+  {
+   "type": "dragon",
+   "variant": 1,
+   "at": 140,
+   "x": 12,
+   "z": 9.0,
+   "scale": 3.0,
+   "flip": true
+  },
+  {
+   "type": "storm_cloud",
+   "at": 40,
+   "x": -18,
+   "z": -8,
+   "scale": 6,
+   "tint": [
+    2.6,
+    1.7,
+    1.8
+   ],
+   "opacity": 0.9
+  },
+  {
+   "type": "storm_cloud",
+   "at": 70,
+   "x": 14,
+   "z": -12,
+   "scale": 8,
+   "tint": [
+    2.6,
+    1.7,
+    1.8
+   ],
+   "opacity": 0.9
+  },
+  {
+   "type": "storm_cloud",
+   "at": 110,
+   "x": -30,
+   "z": -6,
+   "scale": 10,
+   "tint": [
+    2.6,
+    1.7,
+    1.8
+   ],
+   "opacity": 0.9
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": 0.0,
+   "height": 0.6,
+   "fov": 64,
+   "pitch": -0.06,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.6,
+     "radius": 2.2
+    }
+   ],
+   "vehicle": {
+    "type": "dragon_neck",
+    "ahead": 0.7,
+    "z": 0.31,
+    "scale": 0.25
+   }
+  }
+ ],
+ "supersample": 2
+}

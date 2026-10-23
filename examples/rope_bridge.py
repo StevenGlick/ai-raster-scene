@@ -32,8 +32,8 @@ def rope_bridge():
         {'type': 'floating_rock', 'at': 52, 'x': 0.0, 'z': -7.0, 'scale': 14},       # the island it lands on
         {'type': 'stone_arch', 'at': 49, 'x': 0.0, 'scale': 2.6},
         {'type': 'explorer', 'at': 8, 'x': 0.05, 'view': 'back'},
-        {'type': 'crow', 'at': 12, 'x': -3.0, 'z': -2.0, 'scale': 0.8},
-        {'type': 'crow', 'at': 15, 'x': 2.5, 'z': -3.0, 'scale': 0.7, 'flip': True},
+        {'type': 'crow', 'at': 14, 'x': -4.6, 'z': -1.0, 'scale': 0.8},
+        {'type': 'crow', 'at': 19, 'x': 4.4, 'z': -1.4, 'scale': 0.7, 'flip': True},
     ]
     return road_scene(
         road,

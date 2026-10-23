@@ -1873,6 +1873,10 @@ def check_road():
     rr, img = frame(scene([[100, 0, 0]], road={'ground': {'left': 'grass', 'right': 'void'},
                                                'below': {'depth': 20, 'texture': 'farmland', 'tile': 20}}))
     assert np.isfinite(rr.depth[60, 155]) and rr.depth[60, 155] > 20, 'past the edge, the land far below'
+    _, tall = frame(scene([[100, 0, 0]], road={'ground': {'left': 'grass', 'right': 'void'},
+                                               'below': {'depth': 20, 'texture': 'farmland', 'tile': 20}},
+                          sprites=[{'type': 'pine', 'at': 60, 'x': 30, 'z': -20, 'scale': 16}]))
+    assert np.abs(tall - img).max() > 0.1, 'a tree standing far below, past the void side, is seen'
 
     # 9. water mirrors: a buoy on the sea stands over its reflection (one on concrete does not); a street of
     #    buildings: blocks of their own heights, and with every block an alley there is no street at all

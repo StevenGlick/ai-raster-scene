@@ -226,6 +226,7 @@ SHOTS = {
     'road_hill_street': ('hill_street', 1),
     'road_red_planet': ('red_planet', 1),
     'road_ice_cave': ('ice_cave', 1),
+    'road_dragon': ('dragon_flight', 1),
     # where it started: the three concept drawings, made scenes (the drawings are in docs/origins)
     'storm_island': ('storm_island', 1),
     'storm_town': ('storm_island', 2),

@@ -512,6 +512,16 @@ makes the whole cave glow; a pale blue fog and a high blue ambient (darker, it r
 the walls' tops (`z` just under the ceiling), `ice_spire`s and `ice_shards` on the banks; your `boat_bow`. See
 `examples/ice_cave.py`.
 
+### A dragon flight
+
+The way is the road, too narrow to see (`width` 0.002); the `ground` is `void` and the valley lies `below` (`depth`
+30) in bands out from its middle - `river_water`, then `farmland`, then `forest_canopy` - bending as the way bends.
+Props stand down there at a `z` of minus the depth: the `dark_castle` on its crag, scaled to rise over your level.
+Dragons in their colours (`dragon`, `variant` 0-2) at every height and distance, clouds (`storm_cloud` tinted to the
+dusk) drifting below you; a `sunset` sky, the sun low; your own `dragon_neck` as the shot's `vehicle`, wide and low
+(`scale` about a third of its `ahead`, its `z` setting the head just under the horizon). See
+`examples/dragon_flight.py`.
+
 ### A highway at night, and a tunnel
 
 Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.
