@@ -1,0 +1,243 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    14,
+    0,
+    0
+   ],
+   [
+    60,
+    -0.55,
+    1.2
+   ],
+   [
+    50,
+    0.7,
+    -1.4
+   ],
+   [
+    70,
+    -0.45,
+    2.4
+   ],
+   [
+    110,
+    0.3,
+    -1.0
+   ],
+   [
+    120,
+    0,
+    0
+   ]
+  ],
+  "width": 4.2,
+  "lanes": 3,
+  "surface": "asphalt",
+  "rumble": {
+   "width": 0.32,
+   "colors": [
+    "#ececec",
+    "#c83024"
+   ]
+  },
+  "ground": {
+   "left": "beach_sand",
+   "right": [
+    {
+     "width": 5,
+     "texture": "beach_sand"
+    },
+    {
+     "width": 1.5,
+     "texture": "wet_sand"
+    },
+    {
+     "texture": "ocean"
+    }
+   ]
+  }
+ },
+ "camera": {
+  "at": 2.0,
+  "x": 0.0,
+  "height": 0.75,
+  "fov": 64,
+  "pitch": 0.1
+ },
+ "title": "The coast road - an arcade racer's road along the sea at sunset",
+ "sky": "sunset",
+ "skyline": "islands",
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 262,
+   "elevation": 6,
+   "intensity": 0.6,
+   "color": [
+    1.0,
+    0.76,
+    0.5
+   ],
+   "disc_size": 6
+  }
+ ],
+ "ambient": [
+  0.74,
+  0.66,
+  0.64
+ ],
+ "fog": {
+  "color": [
+   0.92,
+   0.66,
+   0.5
+  ],
+  "density": 0.0035
+ },
+ "roadside": [
+  {
+   "type": [
+    "palm",
+    "palm_lean"
+   ],
+   "every": 7,
+   "offset": 1.0,
+   "scale": [
+    3.0,
+    3.8
+   ],
+   "flip": true
+  },
+  {
+   "type": "billboard",
+   "every": 45,
+   "side": "left",
+   "offset": 3.5,
+   "from": 25,
+   "scale": 2.6
+  }
+ ],
+ "sprites": [
+  {
+   "type": "car_compact",
+   "at": 15,
+   "x": -1.4000000000000001
+  },
+  {
+   "type": "car_sedan",
+   "at": 31,
+   "x": 1.4000000000000001
+  },
+  {
+   "type": "box_truck",
+   "at": 46,
+   "x": 0.0
+  },
+  {
+   "type": "car_compact",
+   "at": 70,
+   "x": 1.4000000000000001,
+   "tint": [
+    1.2,
+    0.85,
+    0.5
+   ]
+  },
+  {
+   "type": "curve_sign",
+   "at": 12,
+   "x": 3.4
+  },
+  {
+   "type": "checkpoint",
+   "at": 24,
+   "x": 0.0,
+   "scale": 2.9
+  }
+ ],
+ "shots": [
+  {
+   "at": 2.0,
+   "x": 0.0,
+   "height": 0.75,
+   "fov": 64,
+   "pitch": 0.1,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.0,
+     "radius": 2.0,
+     "spread": 0.5
+    }
+   ],
+   "vehicle": {
+    "type": "sports_car",
+    "ahead": 2.6
+   },
+   "overlays": [
+    {
+     "type": "counter",
+     "value": "58",
+     "label": "TIME",
+     "at": "top",
+     "margin": 16,
+     "color": [
+      255,
+      220,
+      76
+     ]
+    },
+    {
+     "type": "counter",
+     "value": "1086420",
+     "label": "SCORE",
+     "at": "top-left",
+     "margin": 16,
+     "scale": 1
+    },
+    {
+     "type": "counter",
+     "value": "293 km/h",
+     "at": "bottom-right",
+     "scale": 1,
+     "color": [
+      255,
+      128,
+      76
+     ]
+    }
+   ]
+  },
+  {
+   "at": 18.0,
+   "x": 0.0,
+   "height": 0.75,
+   "fov": 64,
+   "pitch": 0.1,
+   "yaw": -4,
+   "roll": -6,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.0,
+     "radius": 2.0,
+     "spread": 0.5
+    }
+   ],
+   "vehicle": {
+    "type": "sports_car",
+    "ahead": 2.6
+   }
+  }
+ ],
+ "supersample": 2
+}

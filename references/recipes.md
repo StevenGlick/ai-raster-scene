@@ -159,6 +159,28 @@ Black cells ruled in light - `vector_grid` (a wall of squares), `vector_windows`
 
 `"ui": {"theme": "doomed"}`; in the shot's overlays a `statusbar` (`ammo`, `health` - the face bloodies below 80 - `armor`, `arms`, `keys`, `ammo_table`, `face`: `grin`/`ouch`), a `message` ("Picked up a clip.") and a `pistol` or `shotgun` viewmodel (`"fire": true`); aim with a 2-point `look_at` and `"pitch": -0.08`, `"light_levels": 16`, a near-black `fog`. The base: `nukage` sunk with `drop` and `"side": "slime_edge"`, `hex_floor` ledges and walkways, `green_trim` walls stacked storey on storey under a `tech_ceiling`, a `green_window`, `toxic_barrel`s, soldiers tinted sick green, a `corpse`, pickups, a `fireball`, `toxic_sign` decals. See `examples/doomed.py`.
 
+## Road scenes
+
+### An arcade racer's road
+
+Three lanes (`width` 4.2), a kerb red and white, sand either side and the sea past it on one (`ground` in bands), palms along both sides every 7 (`palm` and `palm_lean`, `flip`ped on the right), billboards set back on the land side, a `curve_sign` before the first bend and a `checkpoint` over the road on a crest, cars ahead in their lanes; a low sun ahead in a `sunset` sky over the `islands` skyline. The camera 0.75 up and 2.6 behind a `sports_car` (the shot's `vehicle`), `pitch` 0.1. A second shot under the checkpoint with `roll` -6 and `yaw` -4 leans into the bend, the car level under the tilted world. Keep the fog thin (0.0035) and the ambient light (0.74, 0.66, 0.64), or the palms go brown in the sunset. See `examples/coast_road.py`.
+
+### A highway at night, and a tunnel
+
+Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.
+
+### A path through a wood, or a jungle
+
+A path is a road with no lines and no kerb: `width` 1.5, `surface` `dirt` (or `mud`), `edge` `{"ragged": 0.16, "blend": 0.35}`, the ground in bands - a verge of `grass`, `moss`, then `pine_needles` (or all `jungle_floor`). The wood is rows by `density`: trees 1-7 out at about 1 to a unit and more behind them, bushes, ferns and tufts at the path's edge, now and then a stump or mushrooms; a figure walking ahead, seen from behind (`view` back). A low sun ahead in haze (`fog` 0.035) closes the far end. Let the nearest trees frame the shot (`clear` 0.5). In the jungle, kapoks well back and only past the camera (`from`), palms, tree ferns and banana plants, monstera and heliconias at the edges, a `stone_arch` over the trail with a `stone_head` beside it and an explorer walking toward it. See `examples/forest_path.py` and `examples/jungle_trail.py`.
+
+### A fairy-tale path at night
+
+`cobble` through a verge of glowing moss (`lumen_floor`), the glowing jungle's plants and `crystal`s at its edges, dark trees `tint`ed blue behind, giant `glowshroom`s every 8 each with a teal `light`, wisps (`orb`, `blend` add, `z` between 0.4 and 1.1) over the path; two moons in `sky_objects`, `fireflies` (`count` 16, `size` 0.6) and a strong bloom. Give the figure on the path a lantern - a `light` on its sprite - or it is a shadow. See `examples/enchanted_path.py`.
+
+### A road in the sky
+
+`ground` `void` and the `dream` sky: the road floats over its sea of cloud. `marble`, a gilded kerb (the `rumble` in gold), `column`s along its edges (`offset` -0.12, back onto it), a `stone_arch` over it every 18, `floating_rock`s off to the sides at heights between -3 and 5, a `sky_whale` far off and high, balloons in the distance; the sun low ahead. See `examples/sky_road.py`.
+
 ## Landscape scale
 
 ### A kaiju in the city

@@ -19,8 +19,10 @@ A scene is one JSON file, read as UTF-8. Only `map`, `legend` and `camera` are r
 |---|---|---|
 | `resolution` | `[320, 200]` | internal framebuffer size. 320x200 is the VGA look; 400x250 for more detail |
 | `scale` | `3` | nearest-neighbour upscale of the final PNG |
-| `map` | required | list of equal-length strings |
+| `map` | required | list of equal-length strings - or, for a road, a `road` (see Road scenes) |
 | `legend` | required | char -> cell spec (see below) |
+| `road` | none | a road scene: the road of an arcade racer instead of a map - its run of bends and rises, its surface, lanes and kerbs, the ground either side (see Road scenes) |
+| `roadside` | `[]` | rows of props along a road, by spacing or by density (see Road scenes) |
 | `default` | `{"floor":"concrete_floor"}` | spec for chars missing from the legend |
 | `ceiling_height` | `1.0` | z of every ceiling. Walls round a roofed room should be exactly this tall: a taller wall is drawn its full height, over the ceiling (give the outside of a building or a hill cells of their own) |
 | `camera` | required | `{x, y, angle or look_at, fov=66, height=0.5, pitch=0, flashlight}` |
@@ -863,6 +865,52 @@ Make the world small and the camera's eye is a giant's: at landscape scale a map
 - **The props**: `kaiju` (0.62 tall), `giant_moth` (its rival, wings spread twice its height, glowing at their rims), `kaiju_roar` (its head thrown back, its plates and throat glowing), `kaiju_wading` (roaring, the sea up to its thighs: stand it on a water cell), `tanks` and `tanks_firing`, `helicopter` and `jet` (float them with `z`), `blaze` and `smoke_plume` for a city on fire, and `pylon`. The other kits' props work too, shrunk with a scatter's `scale`: `{"of": "pine", "on": "w", "density": 3, "scale": 0.09}` stands small pines along a wood's edges.
 - **The camera**: at its default eye a giant looks out over it all; a `height` of 0.6 to 4 is a view from the air; 0.012 to 0.035 is a person's eye on the quay or in a boat, and from there a kaiju towers. Over fields keep it above 0.07 - the ground is drawn to be seen from the air, and from a few metres up the nearest hedgerow becomes a wide stripe - and bring it close: a kaiju a few cells off is a speck. A long lens (`fov` 20-30) from a few cells away stacks it against a town and the hills, as the films do.
 - **Distance and air**: the world runs many cells away, so give the scene a `max_distance` to match (48 for the city, 80 for the valley) and keep the `fog` thin (`density` 0.008 to 0.035) - air that would fill a room fills a valley. A point light's `radius` is in cells too: a fire's light of radius 1.5 lights the 150 m round it.
+
+## Road scenes
+
+A scene with a `road` instead of a `map` is drawn the way an arcade racer of the 80s drew its road. The road is a long run of short segments, each bending a little and rising or falling a little from the last; every segment ahead is projected onto the screen and filled row by row from the camera outward, so a crest hides the road beyond it until it comes back into view lower down, and every few segments the road and the ground shift a shade - the bands that read as speed. Props stand along it, scaled by their distance and hidden behind the crests in front of them. The frame then goes through the same post effects, weather, GUI and palette as any other (scripts/road.py). It is not only for racing: any way stretching ahead - a path through a wood, a trail into the jungle, a cobbled way through an enchanted forest, a road of marble across the clouds. Examples: `coast_road.py`, `night_highway.py`, `forest_path.py`, `jungle_trail.py`, `enchanted_path.py` and `sky_road.py` in `examples/`.
+
+```json
+{
+  "road": {
+    "sections": [[12, 0, 0], [60, -0.55, 1.2], [50, 0.7, -1.4], [120, 0, 0]],
+    "width": 4.2, "lanes": 3, "surface": "asphalt",
+    "rumble": {"width": 0.32, "colors": ["#ececec", "#c83024"]},
+    "ground": {"left": "beach_sand", "right": [{"width": 5, "texture": "beach_sand"}, {"texture": "ocean"}]}
+  },
+  "roadside": [{"type": ["palm", "palm_lean"], "every": 7, "offset": 1.0, "scale": [3.0, 3.8], "flip": true}],
+  "sprites": [{"type": "car_sedan", "at": 30, "x": 1.4}, {"type": "checkpoint", "at": 24, "x": 0}],
+  "sky": "sunset",
+  "lights": [{"type": "sun", "azimuth": 262, "elevation": 6}],
+  "camera": {"at": 2, "x": 0, "height": 0.75, "pitch": 0.1, "vehicle": {"type": "sports_car", "ahead": 2.6}}
+}
+```
+
+The road (`road`):
+
+| key | default | meaning |
+|---|---|---|
+| `sections` | 400 straight | the road's run, one after another: `[length, curve, rise]` (or `{"length", "curve", "rise"}`) - `length` in units; `curve` how hard it bends, -1 to 1 for gentle to sharp, negative to the left, eased in over its first quarter and out over its last; `rise` how far it climbs over the section (negative falls), eased at both ends |
+| `width` | `4` | across the road, in units (a unit is about 3 m: 4.2 holds three lanes, 1.5 is a path) |
+| `surface` | `asphalt` | its texture - any texture, or `{"base", "tint"}`: `dirt`, `mud`, `cobble`, `marble`, `gravel`... |
+| `lanes`, `lines` | `2`, `#eeeeee` | lanes across it, the lines between them dashed on alternate bands in that colour (`false` for none) |
+| `edges` | none | a solid line in this colour just inside each edge |
+| `centre` | none | a solid centre line in this colour (a country road's yellow) |
+| `rumble` | white and red, 0.3 wide | the kerb along both edges, `{"width", "colors": [light band, dark band]}`; `false` for none |
+| `shoulder` | none | `{"width", "texture"}`: a strip beyond the kerb (`gravel`) |
+| `ground` | `grass` | the ground either side: a texture, or bands out from the road's edge - `[{"width": 5, "texture": "beach_sand"}, {"texture": "ocean"}]`, the last running on - or `{"left": ..., "right": ...}`, each side its own; `"void"` for none at all, the sky carrying on below the road (a sea of cloud under it) |
+| `edge` | none | for a path: `{"ragged": 0.2, "blend": 0.4}` - its edge wanders by `ragged` units and the ground mixes into it over a band `blend` wide |
+| `stripe`, `bands` | `3`, `0.08` | segments to a band, and how much the bands shift the shade |
+| `segment`, `distance` | `1`, `260` | a segment's length; how far ahead the road is drawn |
+| `roofs` | none | `[[from, to, light]]`: stretches under a roof - a tunnel - where the sky's light falls to `light` (default 0.2) and only lamps light the road |
+
+Along it, `roadside` is rows of props: `type` a prop or a list to draw from; `every` units apart, or `density` (so many to a unit, anywhere in the band: a wood rather than an avenue); on `side` `both` (the default), `left`, `right` or `middle`; `offset` how far out from the road's edge, a number or `[from, to]` (negative is back onto the road; for `middle`, from the centre line); `scale` and `z` (or `[min, max]`: heights between the two, so wisps or islands float at many); `jitter` (moves each along the road, so a row is not a fence); `from` and `to` along the road; `flip` (mirrors those on the right), `tint`, `opacity`, `blend`, `view`, `fullbright`, `shadow`, `variant`, `seed`; `light` (one on each: `color`, `radius`, `intensity`, `z`, and `x` out over the road); and `clear` - a scattered row leaves this many units in front of every camera empty (default 3: a tree at the lens is a smear of magnified pixels). The scene's `sprites` stand where they are put: `at` how far along the road, `x` across it from the centre line (+ to the right), and the usual `z`, `scale`, `flip`, `tint`, `id` (for a bubble), `view` (`back` for a figure walking away), `light`. Across a road `width` w of n lanes, lane k (from 0 on the left) is centred at `x` = -w/2 + (k + 0.5) w / n. Props are billboards and the camera always faces along the road, so a sign, a banner or an arch over the road is just a prop at `x` 0 - and a row of arches down the `middle` every unit or so frames each other into a tunnel: `tunnel_ring`s behind a `tunnel_portal` with `roofs` over that stretch, `vault_arch`es for a vault, a `stone_arch` every 18 for a processional way.
+
+The camera of a road scene: `at` (how far along), `x` (across, from the centre line), `height` over the road there (0.75 behind a car, 0.5 on foot), `fov`, `pitch`, `yaw` (degrees off straight ahead) and `roll` (degrees: the frame tilted, as a racer leans the view into a bend - its vehicle stays level). It always faces along the road. `vehicle` stands a prop ahead of it, your own car: `{"type": "sports_car", "ahead": 2.6}`, with `x` across from the camera, `headlights` (true, or a colour) pooling light on the road ahead, and `beam` their strength.
+
+- **Light.** The road runs north from the camera, so a `sun` or `moon` at `azimuth` 270 stands over the road straight ahead and 250 a little to its left; the disc is drawn in the sky, and its light falls on the ground by its height. Point lights stand by `at`, `x` and `z`. `ambient`, `fog`, `time`, `sky`, `skyline`, `sky_objects`, `post`, `overlays`, `sprite_defs`, `contact_shadows`, `resolution`, `supersample` and `palette` work as in any scene; a map's keys - `legend`, `objects`, `prefabs`, `decals`, `scatter` - do not apply.
+- **Length is cheap**: sections can run a kilometre; only `distance` ahead of the camera is drawn, and each shot stands where it likes along it.
+- `render.py --map` draws a road scene from above - the road bending as its curves bend it, its props, the cameras - to check a layout.
 
 ## Grime
 

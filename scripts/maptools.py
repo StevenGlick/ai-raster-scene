@@ -99,3 +99,10 @@ def scene(grid, legend, camera, **kw):
     s = Scene(resolution=[320, 200], scale=3, map=grid.rows(), legend=legend, camera=camera)
     s.update(kw)
     return s
+
+
+def road_scene(road, camera, **kw):
+    """A road scene (road.py): the road and a camera on it, and any other keys - roadside, sprites, sky, lights."""
+    s = Scene(resolution=[320, 200], scale=3, road=road, camera=camera)
+    s.update(kw)
+    return s

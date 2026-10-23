@@ -155,6 +155,15 @@ SHOTS = {
     'valley_village': ('giant_valley', 2),
     'valley_above': ('giant_valley', 3),
     'valley_afternoon': ('giant_valley', 4),
+    # road scenes (road.py)
+    'road_coast': ('coast_road', 1),
+    'road_checkpoint': ('coast_road', 2),
+    'road_night': ('night_highway', 1),
+    'road_tunnel': ('night_highway', 2),
+    'road_forest': ('forest_path', 1),
+    'road_jungle': ('jungle_trail', 1),
+    'road_enchanted': ('enchanted_path', 1),
+    'road_sky': ('sky_road', 1),
     # where it started: the three concept drawings, made scenes (the drawings are in docs/origins)
     'storm_island': ('storm_island', 1),
     'storm_town': ('storm_island', 2),
@@ -301,8 +310,7 @@ def scene(name):
     """Load an example once and keep its (World, Renderer) for every shot that reuses it."""
     if name not in _scenes:
         sc = render.load_scene(os.path.join(EXAMPLES, name + '.json'))
-        w = render.World(sc)
-        _scenes[name] = (sc, (w, render.Renderer(w, sc)))
+        _scenes[name] = (sc, render.make_renderer(sc))
     return _scenes[name]
 
 

@@ -483,7 +483,7 @@ def screen_picture(spec, scene):
                 i = 0 if spec.get('camera') else max(0, min(len(shots), int(spec.get('shot', 1))) - 1)
                 cam = prepare_shot(sc, merge_camera(sc, shots[i]))
                 sc2 = shot_scene(sc, cam, shots[i])
-                rr = Renderer(World(sc2), sc2)
+                rr = make_renderer(sc2)[1]
                 frame = rr.render(cam)
                 pal, levels = post.palette_spec(rr.last_effects, sc2)
                 arr = post.quantize(frame, pal, float(sc2.get('dither', 1.0)), levels, rr.palette_ref)
@@ -689,31 +689,7 @@ class Renderer:
                 for k in ('x', 'top', 'w', 'h'):
                     a[k] /= ss
         self.last_report = self._report(cam, img, ss)
-        overlays = list(self.s.get('overlays', [])) + list(cam.get('overlays', []))
-        effects = post.expand(list(self.s.get('post', [])) + list(cam.get('post', [])))
-        if cam.get('scanlines', self.s.get('scanlines')) and not any(e['fx'] in ('scanlines', 'crt') for e in effects):
-            effects.append({'fx': 'scanlines'})
-        H, W = img.shape[:2]
-        ctx = gui.Ctx(Image.new('RGBA', (W, H), (0, 0, 0, 0)), self.s, self.anchors, cam, self.w, self.camera_light(cam))
-        wctx = self._weather_ctx(cam, ss, bw, bh)
-        lens = [e for e in effects if e['fx'] in post.LENS]
-        rest = [e for e in effects if e['fx'] not in post.LENS]
-        sharp = post.apply_world(img, [], wctx) if lens else None
-        img = post.apply_world(img, lens, wctx)
-        ctx.emission = wctx.get('emission')                 # a held lantern adds its flame to it
-        img = gui.draw_world_layer(img, overlays, ctx)
-        img = post.apply_world(img, rest, dict(wctx, emission=ctx.emission))   # (a copy: embers add to it)
-        img = gui.draw_ui_layer(img, overlays, ctx)
-        # with a lens effect the frame is finished a second time without it, for the palette to be
-        # chosen from (post.quantize): a subject kept sharp keeps the colours it has without the lens
-        self.palette_ref = None
-        if sharp is not None:
-            ctx.emission = wctx.get('emission')
-            sharp = gui.draw_world_layer(sharp, overlays, ctx)
-            sharp = post.apply_world(sharp, rest, dict(wctx, emission=ctx.emission))
-            self.palette_ref = np.clip(gui.overlay_ui(sharp, ctx), 0, 1)
-        self.last_effects = effects
-        return np.clip(img, 0, 1)
+        return finish_world(self, cam, img, ss)
 
     def _report(self, cam, img, ss):
         """Problems with the frame that are easy to miss in a small preview, each with a fix:
@@ -2245,6 +2221,38 @@ class Renderer:
 
 
 
+def finish_world(rr, cam, img, ss):
+    """A frame after its 3D pass, finished: the world-stage post effects (the lens ones first, then weather,
+    grading and the rest, with the GUI's world layer between), then the GUI. Shared by the raycaster and the road
+    (road.py): `rr` gives the scene (`s`), the GUI's `anchors` and `w`, `camera_light` and `_weather_ctx`, and is
+    left holding `last_effects` and `palette_ref`."""
+    H, W = img.shape[:2]
+    overlays = list(rr.s.get('overlays', [])) + list(cam.get('overlays', []))
+    effects = post.expand(list(rr.s.get('post', [])) + list(cam.get('post', [])))
+    if cam.get('scanlines', rr.s.get('scanlines')) and not any(e['fx'] in ('scanlines', 'crt') for e in effects):
+        effects.append({'fx': 'scanlines'})
+    ctx = gui.Ctx(Image.new('RGBA', (W, H), (0, 0, 0, 0)), rr.s, rr.anchors, cam, rr.w, rr.camera_light(cam))
+    wctx = rr._weather_ctx(cam, ss, W, H)
+    lens = [e for e in effects if e['fx'] in post.LENS]
+    rest = [e for e in effects if e['fx'] not in post.LENS]
+    sharp = post.apply_world(img, [], wctx) if lens else None
+    img = post.apply_world(img, lens, wctx)
+    ctx.emission = wctx.get('emission')                 # a held lantern adds its flame to it
+    img = gui.draw_world_layer(img, overlays, ctx)
+    img = post.apply_world(img, rest, dict(wctx, emission=ctx.emission))   # (a copy: embers add to it)
+    img = gui.draw_ui_layer(img, overlays, ctx)
+    # with a lens effect the frame is finished a second time without it, for the palette to be
+    # chosen from (post.quantize): a subject kept sharp keeps the colours it has without the lens
+    rr.palette_ref = None
+    if sharp is not None:
+        ctx.emission = wctx.get('emission')
+        sharp = gui.draw_world_layer(sharp, overlays, ctx)
+        sharp = post.apply_world(sharp, rest, dict(wctx, emission=ctx.emission))
+        rr.palette_ref = np.clip(gui.overlay_ui(sharp, ctx), 0, 1)
+    rr.last_effects = effects
+    return np.clip(img, 0, 1)
+
+
 # ------------------------------------------------------------------ output
 
 def finish(img, scene, effects=(), seed=0, ref=None):
@@ -2300,16 +2308,25 @@ def render_shot(scene, i, base=None, report=None):
     cam = prepare_shot(scene, merge_camera(scene, shots[i]))
     if cam.get('overrides'):
         sc = shot_scene(scene, cam, shots[i])
-        rr = Renderer(World(sc), sc)
+        rr = make_renderer(sc)[1]
     else:
         if base is None:
-            w = World(scene)
-            base = (w, Renderer(w, scene))
+            base = make_renderer(scene)
         rr = base[1]
     frame = rr.render(cam)
     if report is not None:
         report.extend(rr.last_report)
     return finish(frame, {**scene, **cam.get('overrides', {})}, rr.last_effects, i, rr.palette_ref)
+
+
+def make_renderer(scene):
+    """The (world, renderer) pair for a scene as written: its map's World and the raycaster - or, for a scene with
+    a `road`, no world and the road's renderer (road.py)."""
+    if scene.get('road') is not None:
+        import road
+        return None, road.RoadRenderer(scene)
+    w = World(scene)
+    return w, Renderer(w, scene)
 
 
 def shot_scene(scene, cam, shot):
@@ -2418,12 +2435,12 @@ SCENE_KEYS = {
     'palette', 'auto_levels', 'dither', 'scanlines', 'overbright', 'lightmap_res', 'max_distance',
     'supersample', 'overlays', 'ui', 'post', 'icon_defs', 'viewmodel_defs', 'seed',
     'skyline', 'contact_shadows', 'heights', 'height_unit', 'reflections', 'sky_objects', 'wet',
-    'prefabs', 'prefab_defs', 'wireframes', 'objects', 'time',
+    'prefabs', 'prefab_defs', 'wireframes', 'objects', 'time', 'road', 'roadside',
     'title', 'description', 'notes',  # free-form metadata, never read
 }
 SHOT_KEYS = {'x', 'y', 'angle', 'look_at', 'fov', 'height', 'pitch', 'flashlight', 'overlays', 'overrides',
              'post', 'scanlines', 'seed', 'supersample', 'extra_sprites', 'extra_wireframes', 'time', 'title',
-             'description', 'notes'}
+             'description', 'notes', 'at', 'yaw', 'roll', 'vehicle'}
 CELL_KEYS = {'wall', 'h', 'top', 'floor', 'ceil', 'drop', 'reflect', 'side', 'fringe', 'facade', 'glazed', 'cliff'}
 ASSET_EXTS = ('.png', '.ttf', '.otf', '.json')     # a .json: another scene, that a portal or a screen shows
 
@@ -2462,6 +2479,11 @@ def lint_scene(scene):
     for i, shot in enumerate(scene.get('shots') or []):
         for j, wf in enumerate((shot.get('extra_wireframes') or []) if isinstance(shot, dict) else []):
             check(wf, wires.SPEC_KEYS, f'shot {i + 1} wireframe {j + 1}')
+    if isinstance(scene.get('road'), dict):
+        import road
+        check(scene['road'], road.ROAD_KEYS, 'road')
+        for i, row in enumerate(scene.get('roadside') or []):
+            check(row, road.ROADSIDE_KEYS, f'roadside {i + 1}')
     return out
 
 
@@ -2514,15 +2536,15 @@ def main():
         ap.error(f'--shot {args.shot} is out of range: this scene has {len(shots)} shot(s)')
     for i, cam in enumerate(shots):
         c = merge_camera(scene, cam)
-        if 'x' not in c or 'y' not in c:
+        if scene.get('road') is None and ('x' not in c or 'y' not in c):
             ap.error(f'shot {i + 1} has no x/y and there is no camera to inherit them from')
     base, ext = os.path.splitext(args.out)
     if not ext:  # PIL picks the format from the extension, and has nothing to go on without one
         ext = '.png'
         args.out = base + ext
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
-    world = World(scene)
-    base_pair = (world, Renderer(world, scene))
+    base_pair = make_renderer(scene)
+    world = base_pair[0]
     outs = []
     for i in range(len(shots)):
         if args.shot and i + 1 != args.shot:
@@ -2537,7 +2559,11 @@ def main():
         print(path)
     if args.map:
         mp = base + '_map.png'
-        draw_map(world, scene, [merge_camera(scene, c) for c in shots], mp)
+        if world is None:
+            import road
+            road.draw_map(scene, [merge_camera(scene, c) for c in shots], mp)
+        else:
+            draw_map(world, scene, [merge_camera(scene, c) for c in shots], mp)
         print(mp)
     if args.sheet and len(outs) > 1:
         w, h = outs[0][1].size

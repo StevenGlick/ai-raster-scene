@@ -2,7 +2,7 @@
 
 [![smoke](https://github.com/StevenGlick/ai-raster-scene/actions/workflows/smoke.yml/badge.svg)](https://github.com/StevenGlick/ai-raster-scene/actions/workflows/smoke.yml)
 
-**90s game pictures from a text file.** A tiny software raycaster in Python with a Doom/Wolfenstein/Build-engine look, plus everything that makes a frame read as a real game screen: rain-soaked streets whose windows have depth behind glass, layered jungle, fog and sunbeams, reflections in wet stone and water, pixel-art characters and translucent ghosts, a full retro GUI toolkit (dialog, choice menus, HUDs, inventories, title cards) and post-processing (CRT, VHS, Game Boy, night vision, rain, film looks). It can also shrink the world so the camera is a giant's - valleys, volcanoes, deserts and a kaiju loose in the harbour - and lay its shots out as comic pages.
+**90s game pictures from a text file.** A tiny software raycaster in Python with a Doom/Wolfenstein/Build-engine look, plus everything that makes a frame read as a real game screen: rain-soaked streets whose windows have depth behind glass, layered jungle, fog and sunbeams, reflections in wet stone and water, pixel-art characters and translucent ghosts, a full retro GUI toolkit (dialog, choice menus, HUDs, inventories, title cards) and post-processing (CRT, VHS, Game Boy, night vision, rain, film looks). It can also shrink the world so the camera is a giant's - valleys, volcanoes, deserts and a kaiju loose in the harbour - draw a road the way an 80s arcade racer drew one, and lay its shots out as comic pages.
 
 It ships as a Claude skill and works as Claude's retro imagination: ask for a picture of a place, a moment or a game screen, and Claude builds the scene, renders it, looks at the result, iterates, then hands you the image. It also works as a plain command-line tool. It began as three concept drawings Claude made out of plain shapes - [see where it started](#where-it-started), and the same places now.
 
@@ -10,16 +10,18 @@ It ships as a Claude skill and works as Claude's retro imagination: ask for a pi
 
 *Every image on this page is rendered straight from a scene file in [`examples/`](examples/) - no hand-painted assets anywhere - but for the three drawings it [started from](#where-it-started).*
 
-**On this page:** [What's new](#whats-new) · [Where it started](#where-it-started) · [Install](#install) · [A scene in 30 seconds](#a-scene-in-30-seconds) · [The gallery](#the-gallery) · [Landscape scale](#landscape-scale) · [Comic mode](#comic-mode) · [GUI toolkit](#gui-toolkit) · [Post-processing](#post-processing) · [Features](#features) · [Materials](#materials) · [Development](#development)
+**On this page:** [What's new](#whats-new) · [Where it started](#where-it-started) · [Install](#install) · [A scene in 30 seconds](#a-scene-in-30-seconds) · [The gallery](#the-gallery) · [Landscape scale](#landscape-scale) · [Road scenes](#road-scenes) · [Comic mode](#comic-mode) · [GUI toolkit](#gui-toolkit) · [Post-processing](#post-processing) · [Features](#features) · [Materials](#materials) · [Development](#development)
 
 ## What's new
 
+- **[Road scenes](#road-scenes)** - a second renderer: the road of an 80s arcade racer, its bends and crests drawn segment by segment, props scaled along it - a coast road at sunset behind the wheel, a highway at night through a tunnel, a forest path, a jungle trail, an enchanted wood and a road across the clouds. The same post effects, GUI and palette finish it.
 - **[Where it started](#where-it-started)** - the three drawings this project grew from, made of plain shapes in a chat, beside the same three places rendered now: a storm over an island town, a garden through a broken window, a boat waiting in a canal tunnel.
 - **[Landscape scale](#landscape-scale)** - shrink the world and the camera is a giant's: a kaiju wading into a harbour city at night and a giant moth coming in over the bay to meet it, a volcano erupting over an island, buttes and mesas on a red plain, a winter valley under the aurora, a suspension bridge over a sea strait, a tropical archipelago.
 - **[Comic mode](#comic-mode)** - lay shots of any scenes out as a comic page or a storyboard. *It came from the bay* tells the kaiju's night in six panels.
 
 | | |
 |---|---|
+| ![Behind the wheel on the coast road at sunset](docs/gallery/road_coast.png) | ![A road of marble across the clouds](docs/gallery/road_sky.png) |
 | ![The giant moth comes in over the bay, the kaiju roaring up at it](docs/gallery/kaiju_moth.png) | ![A volcano erupting over a harbour town at night](docs/gallery/island_eruption.png) |
 | ![Down the highway into the mesa desert at golden hour](docs/gallery/desert_road.png) | ![A village under snow, the aurora over the white peak](docs/gallery/winter_street.png) |
 
@@ -99,7 +101,7 @@ Rows are y (south is down), columns are x, one cell is one unit, eye height is 0
 
 ## The gallery
 
-Eighty-one example scenes in [`examples/`](examples/), every one a single JSON file you can open, change and render:
+Eighty-seven example scenes in [`examples/`](examples/), every one a single JSON file you can open, change and render:
 
 - **[Where it started](#where-it-started)** - the storm island · the window onto the garden · the canal tunnel
 - **[Cities](#cities)** - [streets in the rain](#city-streets) · [the neon city](#the-neon-city) · [a night market](#the-night-market) · [a bar](#the-bar) · [the rooftops](#the-rooftops) · [a capsule hotel](#the-capsule-hotel) · [a village](#the-village) · [a frontier town](#the-frontier-town) · [a clockwork city](#the-clockwork-city)
@@ -110,6 +112,7 @@ Eighty-one example scenes in [`examples/`](examples/), every one a single JSON f
 - **[Space and other worlds](#space-and-other-worlds)** - [stations and ships](#stations-and-ships) · [the Moon](#the-moon) · [Vector World](#vector-world) · [Doomed](#doomed)
 - **[Dreams and wonders](#dreams-and-wonders)** - [dreams](#dreams) · [the drowned library](#the-drowned-library) · [the hall of doors](#the-hall-of-doors) · [the sky islands](#the-sky-islands) · [the aurora palace](#the-aurora-palace) · [ask Claude](#ask-claude)
 - **[Landscape scale](#landscape-scale)** - [the kaiju in the harbour](#the-kaiju-in-the-harbour) · [the kaiju in the country](#the-kaiju-in-the-country) · [the volcano island](#the-volcano-island) · [the mesa desert](#the-mesa-desert) · [the winter valley](#the-winter-valley) · [the strait bridge](#the-strait-bridge) · [the archipelago](#the-archipelago) · [the giant valley](#the-giant-valley)
+- **[Road scenes](#road-scenes)** - the coast road · the night highway · the forest path · the jungle trail · the enchanted path · the sky road
 - **[Comic mode](#comic-mode)** - comics and storyboards, every panel a shot
 
 ## Cities
@@ -653,6 +656,19 @@ A river valley at dawn as a giant would see it: the river winding through water 
 | ![Dawn: up the valley to the great peak, mist on the valley floor](docs/gallery/valley_dawn.png) | ![The village and its church by the river](docs/gallery/valley_village.png) |
 | ![From the air, down the whole valley](docs/gallery/valley_above.png) | ![The same view in the afternoon](docs/gallery/valley_afternoon.png) |
 
+## Road scenes
+
+The road of an 80s arcade racer, as a second renderer: a scene with a `road` instead of a `map` is a run of short segments, each bending and rising a little from the last, projected onto the screen from the camera outward, so a crest hides what lies beyond it; every few segments the road and the ground shift a shade - the bands that read as speed - and the props along it are scaled by distance and hidden behind the crests in front of them. The sky, the light, the post effects, the GUI and the palette are the same as every other picture's. It is not only for racing: any way stretching ahead - a path through a wood, a trail into the jungle, a road across the clouds.
+
+![The coast road at sunset, from behind the wheel: palms, a chequered checkpoint over the road, the sea beside it, the time and the score over it all](docs/gallery/road_coast.png)
+
+| | |
+|---|---|
+| ![Under the checkpoint, the world leaning into the bend and the car level](docs/gallery/road_checkpoint.png) | ![A highway at night under sodium lamps, tail lights ahead, a tunnel in the hill](docs/gallery/road_night.png) |
+| ![In the tunnel, its lamps in a line down its roof, the city at the far end](docs/gallery/road_tunnel.png) | ![A forest path on a misty morning, someone walking it ahead](docs/gallery/road_forest.png) |
+| ![A jungle trail toward a ruined arch, an explorer ahead](docs/gallery/road_jungle.png) | ![A cobbled path through a glowing wood under two moons, a witch with her lantern](docs/gallery/road_enchanted.png) |
+| ![A road of marble across a sea of cloud, arches over it, a sky whale beside it](docs/gallery/road_sky.png) | |
+
 ## Comic mode
 
 Shots of any scenes laid out on one page, each panel rendered at its own size and shape: a comic page with caption
@@ -723,7 +739,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Volumetric fog**: mist that lies low and drifts in banks, halos round every lamp, and beams of sun or moonlight through windows, doorways, standing stones and trees; sunlight finds its way into roofed rooms through their doorways, windows and skylights
 - **Reflections**: water, ice, wet streets and puddles mirror the lamps, windows and figures beyond them
 - **The 90s look**: 320x200 framebuffer, Bayer-dithered 256-colour palette, chunky nearest-neighbour upscale, optional scanlines and 2x supersampling
-- **Sprites**: 335 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 33-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
+- **Sprites**: 345 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 33-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
 - **Planar sprites**: a plant can stand as fixed planes in the world instead of a billboard - a cross of two, or a star of three that cuts the ground round it into sixths - so it has body as the camera moves; the low plants do by default, and a prefab can mix billboards and planes (a billboard palm trunk under a star of fronds)
 - **Layered forest edges**: give the walls of a jungle or a wood a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth; with `wander` the layers follow a natural, rounded line instead of the grid's square corners
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
@@ -732,6 +748,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Landscape scale**: shrink the world - a map cell about 100 m - and the camera is a giant's: city streets, a harbour, farmland and woods drawn as seen from the air, towers, villages and mountains built small, and a kaiju standing in a city as a person stands in a room
 - **Pictures within pictures**: a `portal` - a door, an arch - opens onto another scene, or another part of this one: the view through it is rendered from where the camera would stand beyond its exit, so it lines up as the camera moves; a `screen` shows another shot on a television, a monitor or a wall, or on an arcade cabinet's screen
 - **Lettering**: any words in the world as pixel art - a painted shop board, neon tubes, a brass plaque, letters cut in stone, chalk on a blackboard, gilt, a poster - on a `sign` object in 3D, or as a sprite or a decal of your own
+- **Road scenes**: a second renderer for roads and paths - the arcade racer's road of segments, bends and rises, crests that hide what lies beyond, the bands, lanes and kerbs, the ground in bands (sand, then the sea; or none, the sky below), props along it by spacing or by density, your own car ahead of the camera with its headlights, tunnels, and a roll into the bends
 - **Comic mode (pages)**: comic pages and storyboards, every panel a shot of any scene at its own shape, with captions, speech bubbles, sound effects and notes
 - **Wireframes**: low-poly meshes - cubes, pyramids, polyhedra, mountains, racers, palms, or your own vertices - drawn as lines of light in true 3D, one pixel wide at any distance, hidden behind what is nearer and mirrored in wet floors; solid ones are black faces edged in light
 - **Prefabs**: named groups placed with one line - a campsite with its light, a palm grove, a beach hut with its walls, door, window, roof and torches - turned, scaled and varied by seed; scenes can define their own

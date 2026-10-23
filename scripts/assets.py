@@ -322,6 +322,7 @@ KITS = (
     'glasshouse',  # a Victorian palm house: walls of glass in white iron, encaustic tiles
     'landscape',   # landscape scale - a cell about 100 m, a giant's eye: city streets, harbour water, a kaiju
     'spooky',      # the spooky island the project began from: a brick vault, a broken casement, roses, a statue
+    'highway',     # road scenes (road.py): cars seen from behind, a chevron sign, a billboard, a checkpoint
 )
 FRINGES = {}
 for _name in KITS:

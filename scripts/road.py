@@ -1,0 +1,756 @@
+"""Road scenes: the road of an arcade racer - a scene with a `road` instead of a `map`.
+
+A road is a long run of short segments, each bending a little and rising or falling a little from the last (its
+`sections`). Every segment ahead of the camera is projected onto the screen and the rows between its near and far
+edges are filled, from the camera outward: a segment is drawn only above the ones nearer it, so a crest hides the
+road beyond until it comes back into view lower down. The road's surface, its lines and rumble strips and the
+ground either side are textures, lit by the scene's ambient, its sun or moon and the lamps along it; every few
+segments the ground and the road shift a shade, the bands that read as speed. Props stand along it - `roadside`
+rows, or `sprites` placed by `at` (how far along) and `x` (how far across) - scaled by distance and clipped by the
+crests in front of them, and a shot's `vehicle` rides ahead of its camera. Overhead, the scene's sky.
+
+The frame comes out as the raycaster's does - colour, depth and light - so the post effects, the weather, the GUI
+and the palette finish it the same way (render.finish_world).
+"""
+import math
+
+import numpy as np
+from PIL import Image, ImageDraw
+
+import assets
+import prefabs
+
+# the keys a road and a roadside row take (render.lint_scene checks them; a road camera's are in render.SHOT_KEYS)
+ROAD_KEYS = {'sections', 'width', 'surface', 'lanes', 'lines', 'edges', 'centre', 'rumble', 'shoulder', 'ground',
+             'stripe', 'bands', 'segment', 'distance', 'edge', 'roofs'}
+ROADSIDE_KEYS = {'type', 'every', 'density', 'side', 'offset', 'scale', 'jitter', 'from', 'to', 'flip', 'z', 'tint',
+                 'light', 'seed', 'variant', 'view', 'opacity', 'blend', 'fullbright', 'shadow', 'clear'}
+NEAR = 0.15                         # nothing nearer the camera than this is drawn
+TEX = 64                            # texels to a unit, as on the raycaster's walls and floors
+
+
+def _col(c, default=(1.0, 1.0, 1.0)):
+    if c is None:
+        return np.array(default, np.float32)
+    if isinstance(c, str):
+        c = c.lstrip('#')
+        return np.array([int(c[i:i + 2], 16) / 255 for i in (0, 2, 4)], np.float32)
+    return np.array(c[:3], np.float32)
+
+
+def _hash01(a, b, seed=0):
+    """A stable pseudo-random 0-1 per integer pair (arrays), for ragged edges and stray tufts."""
+    h = (a.astype(np.int64) * 73856093) ^ (b.astype(np.int64) * 19349663) ^ (seed * 83492791)
+    return ((h * 2654435761) % 4294967296).astype(np.float64) / 4294967296.0
+
+
+class Road:
+    """The road as segments: per segment its curve (how much it bends) and its height at each end.
+
+    `sections` are [length, curve, rise] or {"length", "curve", "rise"}: `length` in units, `curve` how hard it
+    bends (-1 to 1 is gentle to sharp, negative to the left), eased in over its first quarter and out over its
+    last, and `rise` how far it climbs (or falls, negative) over the whole section, eased at both ends."""
+
+    def __init__(self, spec):
+        self.seg = float(spec.get('segment', 1.0))
+        curve, ys = [], [0.0]
+        for s in spec.get('sections') or [[400, 0, 0]]:
+            n, c, rise = (s + [0, 0])[:3] if isinstance(s, list) else (s.get('length', 50), s.get('curve', 0),
+                                                                        s.get('rise', 0))
+            n = max(1, int(round(float(n) / self.seg)))
+            y0 = ys[-1]
+            for k in range(n):
+                t = (k + 0.5) / n
+                ease = min(1.0, t / 0.25, (1 - t) / 0.25)
+                curve.append(float(c) * 0.035 * self.seg * (0.5 - 0.5 * math.cos(math.pi * ease)))
+                ys.append(y0 + float(rise) * (0.5 - 0.5 * math.cos(math.pi * (k + 1) / n)))
+        self.curve = np.array(curve, np.float64)
+        self.y = np.array(ys, np.float64)
+        self.n = len(curve)
+        self.length = self.n * self.seg
+
+    def height(self, at):
+        """The road's height at `at` units along it."""
+        f = np.clip(np.asarray(at, np.float64) / self.seg, 0, self.n - 1e-6)
+        i = f.astype(int)
+        return self.y[i] + (self.y[i + 1] - self.y[i]) * (f - i)
+
+
+class OpenWorld:
+    """Stands in for a grid World where the GUI and the weather want one: open ground, no walls and no roofs."""
+    mw = mh = 1
+    ceil_h = 1e9
+    solid_h = np.zeros((1, 1), np.float32)
+    ceil_tid = np.full((1, 1), -1, np.int32)
+    void = np.zeros((1, 1), bool)
+
+
+def _side_spec(g):
+    """A side's ground as bands out from the road's edge: [(outer edge or inf, texture spec, tint)], or None for
+    void - no ground at all, the sky carrying on below."""
+    if g == 'void':
+        return None
+    if isinstance(g, str) or (isinstance(g, dict) and 'base' in g):
+        g = [{'texture': g}]
+    elif isinstance(g, dict):
+        g = [g]
+    out, edge = [], 0.0
+    for b in g:
+        edge = edge + float(b['width']) if 'width' in b else math.inf
+        out.append((edge, b.get('texture', 'grass'), _col(b.get('tint'))))
+        if math.isinf(edge):
+            break
+    if not math.isinf(out[-1][0]):
+        out.append((math.inf, out[-1][1], out[-1][2]))
+    return out
+
+
+class RoadRenderer:
+    """The road scene's renderer: `render(cam)` gives a finished frame, as render.Renderer does."""
+
+    def __init__(self, scene):
+        scene = prefabs.expand(scene)               # its `time` of day: the sky, the sun or moon, the air
+        self.s = scene
+        spec = scene['road']
+        self.road = Road(spec)
+        self.w = OpenWorld()
+        self.anchors = {}
+        self.palette_ref = None
+        self.last_effects = []
+        self.last_report = []
+        self.defs = scene.get('sprite_defs', {})
+        self.half = float(spec.get('width', 4.0)) / 2
+        rum = spec.get('rumble', {'width': 0.3})
+        self.rumble = None if rum is False else {
+            'width': float(rum.get('width', 0.3)),
+            'colors': [_col(c) for c in rum.get('colors', ['#ececec', '#c83024'])]}
+        sh = spec.get('shoulder', False)
+        self.shoulder = None if not sh else {'width': float(sh.get('width', 0.5)),
+                                             'tex': assets.get_texture(sh.get('texture', 'gravel'))[0]}
+        self.lanes = int(spec.get('lanes', 2))
+        self.lines = None if spec.get('lines', '#eeeeee') is False else _col(spec.get('lines', '#eeeeee'))
+        self.edges = None if not spec.get('edges') else _col(spec['edges'])
+        self.centre = None if not spec.get('centre') else _col(spec['centre'])
+        self.stripe = max(1, int(spec.get('stripe', 3)))
+        self.bands = float(spec.get('bands', 0.08))
+        self.draw = max(10, int(float(spec.get('distance', 260)) / self.road.seg))
+        e = spec.get('edge') or {}
+        self.ragged = float(e.get('ragged', 0.0))        # how far the edge wanders, in units
+        self.blend = float(e.get('blend', 0.0))          # how wide a band the road and the ground mix in
+        self.surface = assets.get_texture(spec.get('surface', 'asphalt'))[0]
+        g = spec.get('ground', 'grass')
+        sides = g if isinstance(g, dict) and ('left' in g or 'right' in g) else {'left': g, 'right': g}
+        self.sides = {k: _side_spec(sides.get(k, 'grass')) for k in ('left', 'right')}
+        for bands in self.sides.values():
+            for b in bands or []:
+                assets.get_texture(b[1])
+        self.ambient = _col(scene.get('ambient'), (0.55, 0.55, 0.6))
+        self.suns = [L for L in scene.get('lights', []) if L.get('type') in ('sun', 'moon')]
+        fog = scene.get('fog') or {}
+        self.fog_c = _col(fog.get('color'), (0.6, 0.65, 0.75)) if fog else None
+        self.fog_d = float(fog.get('density', 0.0)) if fog else 0.0
+        self.roofs = [(float(r[0]), float(r[1]), float(r[2]) if len(r) > 2 else 0.2)
+                      for r in spec.get('roofs', [])]
+        cs = scene.get('contact_shadows', 0.55)
+        self.shadow = 0.0 if cs is False else 0.55 if cs is True else float(cs)
+        self._skies = {}
+        self.items = self._place(scene)
+        self.lamps = self._lamps(scene)
+
+    # ------------------------------------------------------------------ what stands along the road
+
+    def _place(self, scene):
+        """Every prop along the road as {type, at, x, z, scale, ...}: the `roadside` rows laid out (the same every
+        render) and the scene's own `sprites`."""
+        out = []
+        L = self.road.length
+        # a scattered row leaves the few units in front of every shot's camera clear (`clear`, default 3): a tree
+        # right at the lens is a smear of magnified pixels, not a tree
+        cams = [float(c.get('at', 0.0)) for c in [scene.get('camera') or {}] + list(scene.get('shots') or [])]
+        for k, row in enumerate(scene.get('roadside', [])):
+            rng = np.random.default_rng(int(row.get('seed', k)))
+            types = row['type'] if isinstance(row['type'], list) else [row['type']]
+            sides = {'both': (-1, 1), 'left': (-1,), 'right': (1,), 'middle': (0,)}[row.get('side', 'both')]
+            a0, a1 = float(row.get('from', 1.0)), min(L, float(row.get('to', L)))
+            off = row.get('offset', 1.0)
+            o0, o1 = (off, off) if not isinstance(off, list) else off
+            sc = row.get('scale')
+            jit = float(row.get('jitter', 0.0))
+            for side in sides:
+                if 'density' in row:            # scattered: so many to a unit of road, anywhere in the band
+                    n = int(rng.poisson(float(row['density']) * (a1 - a0)))
+                    ats = np.sort(rng.uniform(a0, a1, n))
+                    clear = float(row.get('clear', 3.0))
+                    ats = np.array([a for a in ats if not any(c - 0.5 <= a <= c + clear for c in cams)])
+                else:
+                    ats = np.arange(a0, a1, float(row.get('every', 5.0)))
+                for at in ats:
+                    t = types[int(rng.integers(len(types)))]
+                    edge = self.half + (self.rumble['width'] if self.rumble else 0.0)
+                    if side == 0:                   # down the middle: `offset` is from the road's centre line
+                        x = float(rng.uniform(o0, o1))
+                    else:                           # (`jitter` moves it along the road; `offset` sets how far out)
+                        x = side * (edge + float(rng.uniform(o0, o1)))
+                    it = {k2: v for k2, v in row.items() if k2 not in ('type', 'every', 'density', 'side', 'offset',
+                                                                       'jitter', 'from', 'to', 'scale', 'seed')}
+                    it.update(type=t, at=float(at + rng.uniform(-jit, jit)), x=x)
+                    if isinstance(sc, list):
+                        it['scale'] = float(rng.uniform(sc[0], sc[1]))
+                    elif sc is not None:
+                        it['scale'] = float(sc)
+                    if isinstance(row.get('z'), list):     # floating at heights between the two
+                        it['z'] = float(rng.uniform(row['z'][0], row['z'][1]))
+                    if row.get('flip') and side > 0:
+                        it['flip'] = True
+                    elif 'flip' in it:
+                        it.pop('flip')
+                    out.append(it)
+        for sp in scene.get('sprites', []):
+            out.append(dict(sp, at=float(sp.get('at', 0.0)), x=float(sp.get('x', 0.0))))
+        for it in out:
+            it['type'] = assets.variant_name({**it, 'x': it['at'], 'y': it['x']}, scene)
+            d = assets.sprite_defaults(it['type'], self.defs)
+            for k2, v in d.items():
+                it.setdefault(k2, v)
+        return out
+
+    def _lamps(self, scene):
+        """The point lights along the road: the scene's own (placed by `at` and `x`) and one for every prop that
+        carries a `light` (a roadside row's, or the prop's own)."""
+        out = []
+        for L in scene.get('lights', []):
+            if L.get('type') in ('sun', 'moon'):
+                continue
+            out.append({'at': float(L.get('at', 0.0)), 'x': float(L.get('x', 0.0)), 'z': float(L.get('z', 1.0)),
+                        'r': float(L.get('radius', 3.0)), 'c': _col(L.get('color'), (1, 0.85, 0.6)) *
+                        float(L.get('intensity', 1.0))})
+        for it in self.items:
+            L = it.get('light')
+            if isinstance(L, dict):
+                out.append({'at': it['at'] + float(L.get('at', 0.0)), 'x': it['x'] + float(L.get('x', 0.0)) * (
+                            -1 if it['x'] > 0 else 1), 'z': float(L.get('z', 1.0)), 'r': float(L.get('radius', 3.0)),
+                            'c': _col(L.get('color'), (1, 0.85, 0.6)) * float(L.get('intensity', 1.0))})
+        return out
+
+    def _headlights(self, cam, at, camx):
+        """A shot's vehicle with `headlights` (a colour, or true for white): two pools of light on the road ahead
+        of it."""
+        v = cam.get('vehicle') or {}
+        hl = v.get('headlights')
+        if not hl:
+            return []
+        c = _col(None if hl is True else hl, (1.0, 0.95, 0.82)) * float(v.get('beam', 1.0))
+        ahead = at + float(v.get('ahead', 2.4))
+        return [{'at': ahead + 3.0, 'x': camx + float(v.get('x', 0.0)) + side * 0.5, 'z': 0.35, 'r': 4.5, 'c': c}
+                for side in (-1, 1)]
+
+    # ------------------------------------------------------------------ the frame
+
+    def render(self, cam):
+        """Render one camera: the road at `supersample` times the size, brought down, then finished by the post
+        effects and the GUI (render.finish_world)."""
+        import render as R
+        ss = int(cam.get('supersample', self.s.get('supersample', 1)))
+        res = self.s.get('resolution', [320, 200])
+        bw, bh = int(res[0]), int(res[1])
+        W, H = bw * ss, bh * ss
+        roll = math.radians(float(cam.get('roll', 0.0)))
+        if roll:                       # a bigger frame, turned and cut down, so the corners never show its edge
+            c, sn = abs(math.cos(roll)), abs(math.sin(roll))
+            px, py = int(math.ceil((W * c + H * sn - W) / 2)) + 2, int(math.ceil((W * sn + H * c - H) / 2)) + 2
+            self._pad, self._hold_vehicle = (px, py, W, H), True
+            img, emis, depth = self._frame(cam, W + 2 * px, H + 2 * py)
+            img, emis, depth = (self._turn(a, math.degrees(roll), px, py, W, H, k) for a, k in
+                                ((img, Image.BILINEAR), (emis, Image.BILINEAR), (depth, Image.NEAREST)))
+            for a in self.anchors.values():
+                a['x'] -= px
+                a['top'] -= py
+            self._pad, self._hold_vehicle = (0, 0, W, H), False
+            fov, focal, horizon, mid, at, camy, camx = self._view(cam, W, H)
+            self._mid, self._horizon = mid, horizon
+            if cam.get('vehicle'):                     # your car stays level while the world leans
+                P = self._segments(at, focal, horizon, mid, camy, camx, H)
+                self._props(img, emis, depth, P, cam, at, camy, camx, focal, horizon, mid, W, H, only='vehicle')
+        else:
+            self._pad = (0, 0, W, H)
+            img, emis, depth = self._frame(cam, W, H)
+        self.depth = depth
+        if ss > 1:
+            img = img.reshape(bh, ss, bw, ss, 3).mean(axis=(1, 3))
+            emis = emis.reshape(bh, ss, bw, ss, 3).mean(axis=(1, 3))
+            for a in self.anchors.values():
+                for k in ('x', 'top', 'w', 'h'):
+                    a[k] /= ss
+        self._emis_out = emis
+        self._ss, self._bw, self._bh = ss, bw, bh
+        self.last_report = self._report(cam, img)
+        return R.finish_world(self, cam, img, ss)
+
+    @staticmethod
+    def _turn(a, deg, px, py, W, H, resample):
+        """A buffer turned by `deg` (positive: the picture clockwise) about its middle, cut to W x H."""
+        a = np.where(np.isinf(a), 1e9, a) if a.ndim == 2 else a
+        chans = [a] if a.ndim == 2 else [a[..., k] for k in range(a.shape[2])]
+        out = [np.asarray(Image.fromarray(ch.astype(np.float32), 'F').rotate(-deg, resample=resample))[py:py + H,
+                                                                                                       px:px + W]
+               for ch in chans]
+        if a.ndim == 2:
+            return np.where(out[0] >= 1e8, np.inf, out[0]).astype(np.float32)
+        return np.stack(out, -1).astype(np.float32)
+
+    def _view(self, cam, W, H):
+        """The camera's lens and where it stands: focal length (pixels), the horizon's row, the column the road's
+        line straight ahead falls on, the base segment and the camera's height and offset. A rolled frame is drawn
+        bigger than the picture (`_pad`); the lens is the picture's."""
+        px, py, Wo, Ho = getattr(self, '_pad', (0, 0, W, H))
+        fov = math.radians(float(cam.get('fov', 64)))
+        focal = (Wo / 2) / math.tan(fov / 2)
+        horizon = py + Ho / 2 + float(cam.get('pitch', 0.0)) * Ho
+        mid = px + Wo / 2 - math.tan(math.radians(float(cam.get('yaw', 0.0)))) * focal
+        at = float(np.clip(float(cam.get('at', 0.0)), 0, self.road.length - self.road.seg * 2))
+        camy = float(self.road.height(at)) + float(cam.get('height', 1.0))
+        return fov, focal, horizon, mid, at, camy, float(cam.get('x', 0.0))
+
+    def _segments(self, at, focal, horizon, mid, camy, camx, H):
+        """Every segment ahead projected: near and far edges (column of the road's middle, row, scale, distance),
+        which rows it fills, and the clip row each lies under (the lowest row the segments nearer it reach up to:
+        a prop standing on it is hidden below there)."""
+        rd, seg = self.road, self.road.seg
+        base = int(at // seg)
+        frac = at / seg - base
+        idx = np.arange(base, min(rd.n, base + self.draw))
+        cur = rd.curve[idx]
+        dx = -rd.curve[base] * frac + np.concatenate([[0.0], np.cumsum(cur[:-1])])
+        xn = np.concatenate([[0.0], np.cumsum(dx[:-1])])         # the road's middle at each near edge, sideways
+        xf = xn + dx
+        z1 = idx * seg - at
+        z2 = z1 + seg
+        y1, y2 = rd.y[idx], rd.y[idx + 1]
+        out = {'idx': idx, 'z1': z1, 'z2': z2, 'xn': xn, 'xf': xf, 'y1': y1, 'y2': y2}
+        zc1 = np.maximum(z1, NEAR)
+        # the near edge of the camera's own segment lies behind it: start it at NEAR, where the road then is
+        yc1 = np.where(z1 < NEAR, y1 + (y2 - y1) * (NEAR - z1) / seg, y1)
+        xc1 = np.where(z1 < NEAR, xn + dx * (NEAR - z1) / seg, xn)
+        s1, s2 = focal / zc1, focal / z2
+        out.update(zc1=zc1, xc1=xc1, yc1=yc1, s1=s1, s2=s2,
+                   X1=mid + s1 * (xc1 - camx), X2=mid + s2 * (xf - camx),
+                   Y1=horizon - s1 * (yc1 - camy), Y2=horizon - s2 * (y2 - camy))
+        clip = np.empty(len(idx))
+        drawn = np.zeros(len(idx), bool)
+        maxy = float(H)
+        for k in range(len(idx)):
+            clip[k] = maxy
+            if z2[k] <= NEAR or out['Y2'][k] >= out['Y1'][k] or out['Y2'][k] >= maxy:
+                continue
+            drawn[k] = True
+            maxy = min(maxy, out['Y2'][k])
+        out['clip'], out['drawn'] = clip, drawn
+        return out
+
+    def _frame(self, cam, W, H):
+        """The 3D pass: sky, road and ground, the props; colour, light (emission) and depth at W x H."""
+        fov, focal, horizon, mid, at, camy, camx = self._view(cam, W, H)
+        P = self._segments(at, focal, horizon, mid, camy, camx, H)
+        img = np.zeros((H, W, 3), np.float32)
+        emis = np.zeros((H, W, 3), np.float32)
+        depth = np.full((H, W), np.inf, np.float32)
+        void = self.sides['left'] is None and self.sides['right'] is None
+        self._sky(img, emis, cam, W, H, focal, horizon, mid, below=void)
+        if not void:                           # beyond the farthest segment, the land lost in the haze
+            far = np.arange(H) + 0.5 >= horizon
+            haze = self.fog_c if self.fog_c is not None else self._ground_colour_far()
+            img[far] = haze
+        self.frame_lamps = self.lamps + self._headlights(cam, at, camx)
+        self._ground(img, emis, depth, P, at, camx, focal, mid, W, H)
+        self._props(img, emis, depth, P, cam, at, camy, camx, focal, horizon, mid, W, H)
+        self._focal, self._horizon, self._mid, self._camy = focal, horizon, mid, camy
+        return img, emis, depth
+
+    def _ground_colour_far(self):
+        bands = self.sides['left'] or self.sides['right']
+        tex = assets.get_texture(bands[-1][1])[0]
+        return tex.reshape(-1, 3).mean(0) * bands[-1][2] * self._light_flat()
+
+    def _light_flat(self):
+        """The light on open ground: the ambient and the sun or moon, by how high it stands."""
+        L = self.ambient.copy()
+        for s in self.suns:
+            el = math.radians(float(s.get('elevation', 30)))
+            kind = s['type']
+            c = _col(s.get('color'), (1, 0.94, 0.82) if kind == 'sun' else (0.55, 0.65, 0.95))
+            L = L + c * float(s.get('intensity', 0.85 if kind == 'sun' else 0.4)) * max(0.0, math.sin(el))
+        return L
+
+    def _sky(self, img, emis, cam, W, H, focal, horizon, mid, below=False):
+        """The scene's sky panorama behind everything, turned with the camera's `yaw` (the road runs north, along
+        azimuth 270), its sun or moon placed by the lights."""
+        name = self.s.get('sky', 'day')
+        if not name:
+            return
+        rows = int(max(1, math.ceil(horizon)))
+        pano_w = int(round(W * 2 * math.pi / (2 * math.atan(W / 2 / focal))))
+        extra = max(2, H - rows + 2) if below else 0
+        key = (pano_w, max(rows, H // 2), round(focal, 3), extra)
+        if key not in self._skies:
+            discs = []
+            for s in self.suns:
+                if s.get('disc', True):
+                    sun = s['type'] == 'sun'
+                    discs.append({'azimuth': float(s.get('azimuth', 270)), 'elevation': float(s.get('elevation', 20)),
+                                  'color': s.get('disc_color', [1.0, 0.92, 0.7] if sun else [0.92, 0.94, 1.0]),
+                                  'radius': float(s.get('disc_size', 2.6 if sun else 2.0)),
+                                  'glow': 0.5 if sun else 0.35, 'style': s.get('disc_style')})
+            self._skies[key] = assets.make_sky(name, pano_w, key[1], skyline=self.s.get('skyline'), proj=focal,
+                                               discs=discs, objects=list(self.s.get('sky_objects') or []),
+                                               below=extra)
+        pano = self._skies[key]
+        ph = key[1]
+        view = math.radians(270 + float(cam.get('yaw', 0.0)))
+        ang = (view + np.arctan((np.arange(W) + 0.5 - mid) / focal)) % (2 * math.pi)
+        cols = (ang / (2 * math.pi) * pano_w).astype(int) % pano_w
+        rr = np.arange(H) if below else np.arange(min(H, rows + 2))
+        pr = np.clip(ph - (horizon - rr) - 1, 0, pano.shape[0] - 1).astype(int)
+        img[rr] = pano[pr][:, cols]
+        emis[rr] = np.maximum(img[rr] - 0.9, 0) * 6.0
+        if self.fog_c is not None:
+            k = float((self.s.get('fog') or {}).get('sky_mix', 0.35))
+            img[rr] = img[rr] * (1 - k) + self.fog_c * k
+
+    def _ground(self, img, emis, depth, P, at, camx, focal, mid, W, H):
+        """The road and the ground beside it, row by row: every row belongs to the one segment that reaches it,
+        and every pixel in it to a spot on the road (`along`, `x` across) - its texture, its markings, its band
+        and the light on it."""
+        rd = self.road
+        rows, ks = [], []
+        for k in np.nonzero(P['drawn'])[0]:
+            r0 = max(0, int(math.ceil(P['Y2'][k] - 0.5)))
+            r1 = min(H, int(math.ceil(min(P['Y1'][k], P['clip'][k]) - 0.5)))
+            if r1 > r0:
+                rows.append(np.arange(r0, r1))
+                ks.append(np.full(r1 - r0, k))
+        if not rows:
+            return
+        rows, ks = np.concatenate(rows), np.concatenate(ks)
+        t = np.clip((rows + 0.5 - P['Y2'][ks]) / np.maximum(P['Y1'][ks] - P['Y2'][ks], 1e-6), 0, 1)
+        iz = 1 / P['z2'][ks] + (1 / P['zc1'][ks] - 1 / P['z2'][ks]) * t      # 1/z runs straight down the screen
+        z = 1 / iz
+        tau = (z - P['z2'][ks]) / np.minimum(P['zc1'][ks] - P['z2'][ks], -1e-9)  # 0 at the far edge, 1 at the near
+        xw = P['xf'][ks] + (P['xc1'][ks] - P['xf'][ks]) * tau                    # the road's middle, sideways
+        along = at + z
+        xs = np.arange(W) + 0.5
+        X = camx + (xs[None, :] - mid) * (z / focal)[:, None] - xw[:, None]       # every pixel's place across
+        A = np.repeat(along[:, None], W, 1)
+        ax = np.abs(X)
+        band = ((np.floor(along / (rd.seg * self.stripe)).astype(int)) % 2 == 0)[:, None]
+        half = self.half
+        if self.ragged:                         # a path's edge wanders, and the ground creeps onto it in tufts
+            wob = (np.sin(A * 1.7 + np.sign(X) * 2.1) * 0.5 + np.sin(A * 0.53 + np.sign(X)) * 0.5) * self.ragged
+            half = half + wob
+        edge_in = ax - half                     # how far past the road's edge (negative: on the road)
+        if self.blend:
+            n = _hash01(np.floor(X * 8), np.floor(A * 8), 7)
+            edge_in = edge_in + (n - 0.5) * self.blend
+        out = np.zeros(ax.shape + (3,), np.float32)
+        lightk = np.zeros(ax.shape + (3,), np.float32)
+        tv = (A * TEX).astype(int) % TEX
+        tu = (X * TEX).astype(int) % TEX
+        on = edge_in < 0
+        lift = np.broadcast_to(np.where(band, 1 + self.bands / 2, 1 - self.bands / 2), X.shape)
+        out[on] = self.surface[tv[on], tu[on]] * lift[on][:, None]
+        # the markings: dashed lane lines on the light bands, solid edge and centre lines
+        if self.lines is not None and self.lanes > 1:
+            for j in range(1, self.lanes):
+                lx = -self.half + 2 * self.half * j / self.lanes
+                if self.centre is not None and abs(lx) < 1e-6:
+                    continue
+                m = on & (np.abs(X - lx) < 0.07) & band
+                out[m] = self.lines
+        if self.centre is not None:
+            m = on & (np.abs(np.abs(X) - 0.09) < 0.045)
+            out[m] = self.centre
+        if self.edges is not None:
+            m = on & (np.abs(ax - (half - 0.25)) < 0.06)
+            out[m] = self.edges
+        past = edge_in
+        if self.rumble:
+            w = self.rumble['width']
+            m = (past >= 0) & (past < w)
+            c0, c1 = self.rumble['colors']
+            out[m] = np.where(np.broadcast_to(band, m.shape)[m][:, None], c0, c1)
+            past = past - w
+            on_r = m
+        else:
+            on_r = np.zeros_like(on)
+        rest = (past >= 0) & ~on & ~on_r
+        if self.shoulder:
+            w = self.shoulder['width']
+            m = rest & (past < w)
+            out[m] = self.shoulder['tex'][tv[m], tu[m]]
+            past = past - w
+            rest = rest & ~m
+        shade = np.where(band, 1 + self.bands, 1 - self.bands)
+        void = np.zeros(ax.shape, bool)
+        for side, sgn in (('left', -1), ('right', 1)):
+            bands = self.sides[side]
+            m = rest & ((X < 0) if sgn < 0 else (X >= 0))
+            if bands is None:
+                void |= m
+                continue
+            lo = 0.0
+            for hi, spec, tint in bands:
+                b = m & (past >= lo) & (past < hi)
+                if b.any():
+                    tex = assets.get_texture(spec)[0]
+                    em = assets.get_texture(spec)[1]
+                    out[b] = tex[tv[b], tu[b]] * tint * np.broadcast_to(shade, b.shape)[b][:, None]
+                    if em is not None:
+                        lightk[b] = em[tv[b], tu[b]][:, None] * tex[tv[b], tu[b]] * 1.6
+                lo = hi
+        # the light on it: ambient and sun alike over open ground, and the lamps along the road
+        L = np.broadcast_to(self._light_flat(), out.shape).copy()
+        for a0, a1, k in self.roofs:              # under a roof the sky's light is gone; the lamps still reach
+            m = (along >= a0) & (along < a1)
+            L[m] *= k
+        for lamp in self.frame_lamps:
+            near = np.abs(along - lamp['at']) < lamp['r']
+            if not near.any():
+                continue
+            rr = np.nonzero(near)[0]
+            d2 = (A[rr] - lamp['at']) ** 2 + (X[rr] - lamp['x']) ** 2 + lamp['z'] ** 2
+            f = np.clip(1 - np.sqrt(d2) / lamp['r'], 0, 1) ** 2
+            L[rr] += f[..., None] * lamp['c']
+        col = out * L + lightk
+        emis_g = lightk.copy()
+        if self.fog_c is not None and self.fog_d > 0:
+            fog = np.exp(-self.fog_d * z)[:, None, None]
+            col = col * fog + self.fog_c * (1 - fog)
+            emis_g = emis_g * fog
+        keep = ~void
+        rr_, cc_ = np.nonzero(keep)
+        img[rows[rr_], cc_] = col[rr_, cc_]
+        emis[rows[rr_], cc_] = emis_g[rr_, cc_]
+        depth[rows[rr_], cc_] = z[rr_]
+
+    def _props(self, img, emis, depth, P, cam, at, camy, camx, focal, horizon, mid, W, H, only=None):
+        """Everything standing along the road, far to near: each scaled by its distance, standing on the road's
+        height there, lit by the ambient, the sun and the lamps near it, fogged, and cut off below the clip row of
+        its segment so a crest in front of it hides its foot. `only` 'vehicle' draws just the shot's vehicle; under
+        a roll it is left out of the first pass (`_hold_vehicle`) and drawn so, level, after the frame is turned."""
+        seg = self.road.seg
+        base = int(P['idx'][0])
+        items = [] if only == 'vehicle' else list(self.items)
+        v = cam.get('vehicle')
+        if v and (only == 'vehicle' or not getattr(self, '_hold_vehicle', False)):
+            it = dict(assets.sprite_defaults(v['type'], self.defs))
+            it.update(v)
+            it.update(at=at + float(v.get('ahead', 2.4)), x=camx + float(v.get('x', 0.0)), _vehicle=True)
+            items.append(it)
+        for sp in cam.get('extra_sprites', []) if only is None else []:
+            items.append(dict(sp, at=float(sp.get('at', 0.0)), x=float(sp.get('x', 0.0))))
+        flat = self._light_flat()
+        drawn = []
+        for it in items:
+            z = it['at'] - at
+            if z < NEAR or z > self.draw * seg:
+                continue
+            k = int(it['at'] // seg) - base
+            if not 0 <= k < len(P['idx']):
+                continue
+            f = it['at'] / seg - int(it['at'] // seg)
+            xr = P['xn'][k] + (P['xf'][k] - P['xn'][k]) * f
+            yr = P['y1'][k] + (P['y2'][k] - P['y1'][k]) * f
+            drawn.append((z, k, xr, yr, it))
+        drawn.sort(key=lambda d: -d[0])
+        for z, k, xr, yr, it in drawn:
+            spec = it['type']
+            rgba, em = assets.get_sprite(spec, self.defs, view=it.get('view', 'front'))
+            rgba = np.asarray(rgba, np.float32)
+            em = np.asarray(em, np.float32)
+            s = focal / z
+            hpx = s * float(it.get('scale', 1.0))
+            if hpx < 1.0:
+                continue
+            wpx = hpx * rgba.shape[1] / rgba.shape[0]
+            cx = mid + s * (xr + it['x'] - camx)
+            bot = horizon - s * (yr + float(it.get('z', 0.0)) - camy)
+            top, left = bot - hpx, cx - wpx / 2
+            clip = H if it.get('_vehicle') else P['clip'][k]
+            r0, r1 = max(0, int(math.floor(top))), min(H, int(math.ceil(min(bot, clip))))
+            c0, c1 = max(0, int(math.floor(left))), min(W, int(math.ceil(left + wpx)))
+            if it.get('id'):
+                self.anchors[it['id']] = {'x': cx, 'top': top, 'w': wpx, 'h': hpx, 'depth': z,
+                                          'visible': -wpx < cx < W + wpx and top + hpx > 0 and top < H}
+            if r1 <= r0 or c1 <= c0:
+                continue
+            self._contact_shadow(img, depth, it, z, s, cx, bot, clip, camy - yr, rgba.shape, W, H)
+            vv = ((np.arange(r0, r1) + 0.5 - top) / hpx * rgba.shape[0]).astype(int).clip(0, rgba.shape[0] - 1)
+            uu = ((np.arange(c0, c1) + 0.5 - left) / wpx * rgba.shape[1]).astype(int).clip(0, rgba.shape[1] - 1)
+            if it.get('flip'):
+                uu = rgba.shape[1] - 1 - uu
+            sub = rgba[vv][:, uu]
+            e = em[vv][:, uu]
+            if e.ndim == 2:
+                e = e[..., None]
+            a = sub[..., 3] > 0.5
+            near_d = depth[r0:r1, c0:c1] > z
+            a &= near_d
+            if not a.any():
+                continue
+            L = flat.copy()
+            for a0, a1, kk in self.roofs:
+                if a0 <= it['at'] < a1:
+                    L = L * kk
+            for lamp in self.frame_lamps:
+                d = math.sqrt((it['at'] - lamp['at']) ** 2 + (it['x'] - lamp['x']) ** 2 +
+                              (float(it.get('scale', 1.0)) * 0.5 - lamp['z']) ** 2)
+                if d < lamp['r']:
+                    L = L + lamp['c'] * (1 - d / lamp['r']) ** 2
+            tint = _col(it.get('tint'))
+            full = bool(it.get('fullbright'))
+            rgb = sub[..., :3] * np.where(e > 0, 1.0, tint)       # a tint paints the prop, not its lamps
+            lit = rgb if full else rgb * L
+            colour = np.where(e > 0, np.maximum(lit, rgb * np.clip(e, 0, 1)), lit)
+            glow = rgb * np.clip(e, 0, 1) if not full else rgb
+            if self.fog_c is not None and self.fog_d > 0 and not it.get('_vehicle'):
+                fg = math.exp(-self.fog_d * z)
+                colour = colour * fg + self.fog_c * (1 - fg)
+                glow = glow * fg
+            op = float(it.get('opacity', 1.0))
+            blend = it.get('blend', 'alpha')
+            reg = img[r0:r1, c0:c1]
+            if blend == 'add':
+                reg[a] = reg[a] + colour[a] * op
+            else:
+                reg[a] = reg[a] * (1 - op) + colour[a] * op
+            ereg = emis[r0:r1, c0:c1]
+            if blend == 'add':
+                ereg[a] = ereg[a] + glow[a] * op
+            else:                               # an opaque prop hides the light behind it as it hides the rest
+                ereg[a] = ereg[a] * (1 - op) + glow[a] * op
+            if blend != 'add' and op >= 0.99:
+                depth[r0:r1, c0:c1][a] = z
+
+    def _contact_shadow(self, img, depth, it, z, s, cx, bot, clip, rise, shape, W, H):
+        """A soft dark disc on the ground under a prop's foot, as the raycaster's contact shadow: as wide as the
+        prop and a little more, foreshortened by the camera's height over the ground there (`rise`)."""
+        own = it.get('shadow')
+        k = self.shadow if own is None or own is True else 0.0 if own is False else float(own)
+        if (k <= 0 or float(it.get('z', 0.0)) > 0.05 or it['type'].split('~')[0] in assets.NO_CONTACT_SHADOW
+                or it.get('fullbright') or it.get('blend', 'alpha') != 'alpha' or float(it.get('opacity', 1)) < 1):
+            return
+        width = float(it.get('scale', 1.0)) * shape[1] / shape[0]
+        R = min(max(width * 0.62 + 0.06, 0.15), 0.9)                # the disc's radius, in units
+        rx = s * R
+        ry = max(0.8, rx * max(rise, 0.05) / z)
+        r0, r1 = max(0, int(bot - ry)), min(H, int(math.ceil(min(bot + ry, clip))))
+        c0, c1 = max(0, int(cx - rx)), min(W, int(math.ceil(cx + rx)))
+        if r1 <= r0 or c1 <= c0:
+            return
+        yy, xx = np.mgrid[r0:r1, c0:c1].astype(np.float32) + 0.5
+        d2 = ((xx - cx) / rx) ** 2 + ((yy - bot) / ry) ** 2
+        f = np.clip(1 - d2, 0, 1) ** 1.5
+        dz = depth[r0:r1, c0:c1]
+        on = np.abs(dz - z) < R * 1.6 + 0.2                          # the ground round its foot, nothing else
+        img[r0:r1, c0:c1] *= (1 - k * 0.75 * f * on)[..., None]
+
+    # ------------------------------------------------------------------ what the finishing passes need
+
+    def camera_light(self, cam):
+        """The light on things held at the camera (viewmodels): the ambient and the sun."""
+        return np.clip(self._light_flat(), 0.22, 1.0).astype(np.float32)
+
+    def _weather_ctx(self, cam, ss, bw, bh):
+        """What the world-stage post effects need: the depth buffer and the camera's rays at output resolution,
+        an open world under the sky (rain falls everywhere), the fog, the light buffer, the suns in view."""
+        ctx = {'seed': int(self.s.get('seed', 0)) + int(cam.get('seed', 0)), 'world': self.w,
+               'fog_d': self.fog_d if self.fog_c is not None else 0.0, 'anchors': self.anchors, 'focus': None}
+        dz = self.depth.reshape(bh, ss, bw, ss).min(axis=(1, 3)) if ss > 1 else self.depth
+        cols = (np.arange(bw) + 0.5) * ss
+        ctx['rays'] = {'px': 0.5, 'py': 0.5, 'rdx': (cols - self._mid) / self._focal, 'rdy': np.ones(bw),
+                       'horizon': self._horizon / ss, 'proj': self._focal / ss,
+                       'camz': float(cam.get('height', 1.0))}
+        ctx['depth'] = dz
+        ctx['emission'] = self._emis_out
+        ctx['suns'] = self._suns_in_view(cam, dz, ss)
+        return ctx
+
+    def _suns_in_view(self, cam, depth, ss):
+        """Each sun or moon disc in the frame (output pixels), for the flare and the streaks."""
+        out = []
+        H, W = depth.shape
+        proj, horizon, mid = self._focal / ss, self._horizon / ss, self._mid / ss
+        view = 270 + float(cam.get('yaw', 0.0))
+        for s in self.suns:
+            if not s.get('disc', True):
+                continue
+            delta = math.radians((float(s.get('azimuth', 270)) - view + 180) % 360 - 180)
+            if abs(delta) >= math.radians(80):
+                continue
+            x = mid + proj * math.tan(delta) - 0.5
+            y = horizon - proj * math.tan(math.radians(float(s.get('elevation', 20)))) - 0.5
+            r = max(1.0, proj * math.tan(math.radians(float(s.get('disc_size', 2.6)))))
+            n = int(math.ceil(r))
+            gy, gx = np.mgrid[-n:n + 1, -n:n + 1]
+            inside = gx * gx + gy * gy <= r * r
+            py, px = np.round(y + gy[inside]).astype(int), np.round(x + gx[inside]).astype(int)
+            on = (py >= 0) & (py < H) & (px >= 0) & (px < W)
+            seen = np.isinf(depth[py[on], px[on]]).sum() / max(1, inside.sum())
+            if seen > 0:
+                out.append({'x': x, 'y': y, 'r': r, 'color': s.get('disc_color', [1.0, 0.92, 0.7]),
+                            'visible': float(seen), 'power': 1.0 if s['type'] == 'sun' else 0.4})
+        return out
+
+    def _report(self, cam, img):
+        """Problems with the frame worth a warning: too dark, blown out, a camera past the road's end."""
+        out = []
+        lum = img @ np.array([0.299, 0.587, 0.114], np.float32)
+        if float(lum.mean()) < 0.045:
+            out.append(f'the frame is very dark (mean brightness {float(lum.mean()):.2f}): raise "ambient" '
+                       'or add lights')
+        if float((lum > 0.97).mean()) > 0.25:
+            out.append('a quarter of the frame is near white: lower the sun, the lights or "ambient"')
+        if float(cam.get('at', 0.0)) > self.road.length - self.road.seg * 2:
+            out.append(f'the camera is at {cam.get("at")}, past the road\'s end ({self.road.length:g}): '
+                       'lengthen the sections')
+        return out
+
+
+# ------------------------------------------------------------------ the layout check
+
+def draw_map(scene, cams, path, scale=4):
+    """The road seen from above, for checking a layout (render.py --map): its line bending as its curves bend it
+    (a top view of what the camera sees as it drives), the props along it as dots, the cameras as arrows."""
+    road = Road(scene['road'])
+    heading = -math.pi / 2 + np.concatenate([[0.0], np.cumsum(road.curve * 1.6)])
+    pts = np.stack([np.concatenate([[0.0], np.cumsum(np.cos(heading[:-1]))]),
+                    np.concatenate([[0.0], np.cumsum(np.sin(heading[:-1]))])], 1) * road.seg
+    lo, hi = pts.min(0) - 12, pts.max(0) + 12
+    size = ((hi - lo) * scale).astype(int) + 1
+    im = Image.new('RGB', (int(size[0]), int(size[1])), (24, 26, 30))
+    d = ImageDraw.Draw(im)
+
+    def to(p):
+        return (float((p[0] - lo[0]) * scale), float((p[1] - lo[1]) * scale))
+
+    half = float(scene['road'].get('width', 4.0)) / 2
+    d.line([to(p) for p in pts[::2]], fill=(120, 120, 128), width=max(1, int(half * 2 * scale)))
+    d.line([to(p) for p in pts[::2]], fill=(220, 220, 90), width=1)
+
+    def place(at, x):
+        i = int(np.clip(at / road.seg, 0, road.n - 1))
+        h = heading[i]
+        return pts[i] + np.array([-math.sin(h), math.cos(h)]) * x
+
+    rr = RoadRenderer(scene)
+    for it in rr.items:
+        p = to(place(it['at'], it['x']))
+        d.ellipse([p[0] - 1.5, p[1] - 1.5, p[0] + 1.5, p[1] + 1.5], fill=(90, 170, 90))
+    for k, c in enumerate(cams):
+        a = float(c.get('at', 0.0))
+        p = place(a, float(c.get('x', 0.0)))
+        i = int(np.clip(a / road.seg, 0, road.n - 1))
+        h = heading[i] + math.radians(float(c.get('yaw', 0.0)))
+        q = p + np.array([math.cos(h), math.sin(h)]) * 5
+        d.line([to(p), to(q)], fill=(255, 120, 80), width=2)
+        d.text((to(p)[0] + 4, to(p)[1] - 4), str(k + 1), fill=(255, 255, 255))
+    im.save(path)

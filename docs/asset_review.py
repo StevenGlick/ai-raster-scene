@@ -130,6 +130,26 @@ def _sprite(name):
     return ('Characters' if name in CHARACTERS else 'Props', name)
 
 
+def _road_assets(part):
+    """What a road scene (road.py) uses: its surface, shoulder and ground textures, its roadside rows' props."""
+    road = part.get('road')
+    out = []
+    if isinstance(road, dict):
+        out += [('Textures', t) for t in _textures(road.get('surface', 'asphalt'))]
+        if isinstance(road.get('shoulder'), dict):
+            out += [('Textures', t) for t in _textures(road['shoulder'].get('texture', 'gravel'))]
+        g = road.get('ground', 'grass')
+        sides = g if isinstance(g, dict) and ('left' in g or 'right' in g) else {'left': g, 'right': g}
+        for side in sides.values():
+            for band in side if isinstance(side, list) else [side]:
+                tex = band.get('texture', 'grass') if isinstance(band, dict) and 'base' not in band else band
+                out += [('Textures', t) for t in _textures(tex)]
+    for row in part.get('roadside') or []:
+        types = row.get('type')
+        out += [_sprite(t) for t in (types if isinstance(types, list) else [types])]
+    return out
+
+
 def _placed(placements, defs):
     """Every prefab a list of placements puts down, nested ones included."""
     out = []
@@ -183,6 +203,7 @@ def usage():
                 found.append(('Skylines', s if isinstance(s, str) else s.get('type')))
             found += [('Sky objects', o.get('type', 'planet')) for o in part.get('sky_objects') or []]
             found += [_sprite(s.get('type')) for s in part.get('sprites') or []]
+            found += _road_assets(part)
             for spec in part.get('scatter') or []:
                 of = spec.get('of', 'stones')
                 found += [('Scatter sets', s) for s in (of if isinstance(of, list) else [of]) if s in assets.DEBRIS_SETS]
@@ -194,7 +215,8 @@ def usage():
                 if part.get('grime_decals', True):
                     found += [('Decals', d) for d in assets.GRIME_WALL_DECALS + assets.GRIME_FLOOR_DECALS]
             found += [('Decals', d.get('tex')) for d in part.get('decals') or []]
-            if part.get('contact_shadows', 1) and (part.get('sprites') or part.get('scatter')):
+            if part.get('contact_shadows', 1) and (part.get('sprites') or part.get('scatter')
+                                                   or part.get('roadside')):
                 found.append(('Decals', 'contact_shadow'))
             found += _post_entries(part.get('post'))
             if isinstance(part.get('palette'), str):
@@ -205,6 +227,8 @@ def usage():
                 found.append(('GUI themes', theme))
         for s in shots:
             found += [_sprite(sp.get('type')) for sp in s.get('extra_sprites') or []]
+            if isinstance(s.get('vehicle'), dict):
+                found.append(_sprite(s['vehicle'].get('type')))
             found += _post_entries(s.get('post'))
             found += _overlay_assets(s.get('overlays'))
         widgets = [n for sec, n in found if sec == 'GUI widgets']

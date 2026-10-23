@@ -1,0 +1,197 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    10,
+    0,
+    0
+   ],
+   [
+    26,
+    -0.55,
+    0.5
+   ],
+   [
+    30,
+    0.6,
+    0.6
+   ],
+   [
+    30,
+    -0.4,
+    -0.3
+   ],
+   [
+    120,
+    0.25,
+    0.4
+   ]
+  ],
+  "width": 1.7,
+  "surface": "mud",
+  "lines": false,
+  "rumble": false,
+  "edge": {
+   "ragged": 0.22,
+   "blend": 0.45
+  },
+  "ground": "jungle_floor",
+  "bands": 0.05,
+  "distance": 140
+ },
+ "camera": {
+  "at": 1.0,
+  "x": 0.0,
+  "height": 0.52,
+  "fov": 62,
+  "pitch": 0.02
+ },
+ "title": "The jungle trail - a muddy trail toward a ruined gateway",
+ "sky": "day",
+ "skyline": "jungle",
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 250,
+   "elevation": 55,
+   "intensity": 0.75,
+   "disc": false
+  }
+ ],
+ "ambient": [
+  0.42,
+  0.48,
+  0.4
+ ],
+ "fog": {
+  "color": [
+   0.55,
+   0.66,
+   0.5
+  ],
+  "density": 0.03
+ },
+ "roadside": [
+  {
+   "type": "kapok",
+   "density": 0.12,
+   "offset": [
+    2.5,
+    9.0
+   ],
+   "scale": [
+    6.0,
+    8.0
+   ],
+   "from": 9,
+   "seed": 1
+  },
+  {
+   "type": [
+    "palm",
+    "tree_fern",
+    "banana_plant",
+    "tree_fern"
+   ],
+   "density": 1.0,
+   "offset": [
+    0.8,
+    7.0
+   ],
+   "scale": [
+    1.6,
+    3.2
+   ],
+   "seed": 2
+  },
+  {
+   "type": [
+    "palm",
+    "kapok",
+    "tree_fern"
+   ],
+   "density": 0.6,
+   "offset": [
+    7.0,
+    15.0
+   ],
+   "scale": [
+    3.0,
+    6.0
+   ],
+   "seed": 3
+  },
+  {
+   "type": [
+    "monstera",
+    "fern",
+    "heliconia",
+    "fern",
+    "monstera"
+   ],
+   "density": 1.8,
+   "offset": [
+    0.0,
+    2.2
+   ],
+   "scale": [
+    0.4,
+    1.0
+   ],
+   "seed": 4
+  }
+ ],
+ "sprites": [
+  {
+   "type": "explorer",
+   "at": 8.0,
+   "x": 0.1,
+   "view": "back",
+   "id": "explorer"
+  },
+  {
+   "type": "stone_arch",
+   "at": 17.0,
+   "x": 0.0,
+   "scale": 3.2
+  },
+  {
+   "type": "stone_head",
+   "at": 15.5,
+   "x": -2.0
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": 0.0,
+   "height": 0.52,
+   "fov": 62,
+   "pitch": 0.02,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 0.8,
+     "radius": 2.4,
+     "spread": 0.6
+    },
+    {
+     "fx": "grade",
+     "saturation": 1.1,
+     "lift": [
+      0.01,
+      0.02,
+      0.0
+     ]
+    }
+   ]
+  }
+ ],
+ "supersample": 2
+}

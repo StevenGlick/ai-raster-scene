@@ -1754,6 +1754,69 @@ def check_lettering_pages(tmp):
     print('ok lettering (every style, signs, scene sprites) and pages (comic and storyboard)')
 
 
+def check_road():
+    """Road scenes (road.py): a bend to the right carries the road off to the right, a crest hides a prop behind
+    it and not one before it, a void floor leaves the sky under the road, a roof darkens it, a roll still frames
+    the shot, the same scene renders the same twice, and the linter knows the road's keys."""
+    sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+    import render as R
+    import road as RD
+
+    def scene(sections, **kw):
+        sc = {'resolution': [160, 100], 'sky': 'day', 'ambient': [0.6, 0.6, 0.6],
+              'road': {'sections': sections, 'width': 4, 'surface': {'base': 'concrete', 'tint': [1.6, 0.15, 0.15]},
+                       'rumble': False, 'lines': False, 'ground': {'base': 'grass', 'tint': [0.1, 0.6, 0.1]}},
+              'camera': {'at': 1.0, 'height': 0.8}}
+        for k, v in kw.items():
+            if k in ('road',):
+                sc['road'].update(v)
+            else:
+                sc[k] = v
+        return sc
+
+    def frame(sc, **cam):
+        rr = RD.RoadRenderer(sc)
+        return rr, rr.render(dict(sc['camera'], **cam))
+
+    # 1. a bend: the road's red, near the horizon, lies right of the middle for a right bend, left for a left one
+    def far_road_x(curve):
+        rr, img = frame(scene([[6, 0, 0], [120, curve, 0]]))
+        rows = img[52:56]
+        red = (rows[..., 0] > rows[..., 1] * 1.6) & (rows[..., 0] > 0.15)
+        return float(np.nonzero(red)[1].mean())
+    right, left = far_road_x(0.9), far_road_x(-0.9)
+    assert right > 85 > 75 > left, (right, left)
+
+    # 2. a crest hides what is behind it and not what is before it
+    hill = [[8, 0, 0], [10, 0, 1.6], [10, 0, -1.6], [60, 0, 0]]
+    _, bare = frame(scene(hill))
+    _, before = frame(scene(hill, sprites=[{'type': 'pine', 'at': 13, 'x': 0}]))
+    _, behind = frame(scene(hill, sprites=[{'type': 'pine', 'at': 30, 'x': 0, 'scale': 1.0}]))
+    assert np.abs(before - bare).max() > 0.1, 'a tree before the crest shows'
+    assert np.abs(behind - bare).max() < 1e-6, 'a short tree behind the crest is hidden'
+
+    # 3. a void floor: the sky goes on under the road, and has no depth
+    rr, img = frame(scene([[100, 0, 0]], road={'ground': 'void'}, sky='dream'))
+    assert np.isinf(rr.depth[56, 2]) and np.isfinite(rr.depth[56, 80]), 'the sky beside the road, the road below'
+
+    # 4. a roof: the road under it is darker
+    _, open_ = frame(scene([[100, 0, 0]]))
+    _, roofed = frame(scene([[100, 0, 0]], road={'roofs': [[0, 100, 0.1]]}))
+    assert roofed[70:].mean() < open_[70:].mean() * 0.6, 'under a roof only the lamps light the road'
+
+    # 5. a roll still fills the frame; a vehicle rides ahead; the same frame twice
+    sc = scene([[10, 0, 0], [80, 0.6, 0.5]], sprites=[{'type': 'palm', 'at': 12, 'x': 3}])
+    _, a = frame(sc, roll=8, vehicle={'type': 'sports_car', 'ahead': 2.6})
+    _, b = frame(sc, roll=8, vehicle={'type': 'sports_car', 'ahead': 2.6})
+    assert np.array_equal(a, b) and a.shape == (100, 160, 3) and a.min() >= 0 and a[:4].mean() > 0.05
+
+    # 6. the linter: a misspelt road key, a misspelt roadside key
+    warn = R.lint_scene({'road': {'sectons': []}, 'roadside': [{'typ': 'palm'}], 'camera': {'at': 0}})
+    assert any("'sectons'" in w and 'sections' in w for w in warn), warn
+    assert any("'typ'" in w for w in warn), warn
+    print('ok road scenes (bends, crests, a void floor, roofs, roll, a vehicle, the linter)')
+
+
 def check_docs():
     """The docs name assets, keys and counts by hand: fail as soon as they and the code disagree."""
     sys.path.insert(0, os.path.join(ROOT, 'scripts'))
@@ -1876,6 +1939,7 @@ def main():
         check_time_of_day()
         check_wireframes()
         check_objects()
+        check_road()
         check_lettering_pages(tmp)
         check_docs()
         gs = os.path.join(tmp, 'gui_post.json')
