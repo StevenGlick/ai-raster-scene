@@ -633,6 +633,8 @@ each. A page is a JSON file of rows of panels ([`examples/pages/`](examples/page
 
 ![A storyboard: the frontier town's saloon in six numbered panels, a note under each](docs/gallery/page_saloon.png)
 
+![A comic page: the kaiju comes in from the bay, the army on the quay, its breath - and something comes in over the water to meet it](docs/gallery/page_kaiju.png)
+
 ## GUI toolkit
 
 Speech bubbles anchored over characters, dialog panels, choice menus, HUDs, inventories and title cards, drawn in a hand-made pixel font over any shot.

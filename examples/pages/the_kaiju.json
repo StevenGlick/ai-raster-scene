@@ -1,0 +1,21 @@
+{
+ "title": "IT CAME FROM THE BAY",
+ "style": "comic",
+ "width": 1200,
+ "rows": [
+  {"height": 400, "panels": [
+    {"scene": "../kaiju_harbor.json", "shot": 1, "width": 2,
+     "caption": "Nobody believed the fishermen. Not until the lights went out along the waterfront."},
+    {"scene": "../kaiju_harbor.json", "shot": 2, "caption": "By midnight the army held the quay.",
+     "sfx": {"text": "BOOM", "x": 0.66, "y": 0.42, "color": "#ffb030"}}]},
+  {"height": 380, "panels": [
+    {"scene": "../kaiju_harbor.json", "shot": 5, "caption": "It did not even look at them."},
+    {"scene": "../kaiju_harbor.json", "shot": 3, "caption": "Then it breathed.", "caption_at": "bottom",
+     "sfx": {"text": "KRAKOOM", "x": 0.62, "y": 0.18, "color": "#8ee0ff"}}]},
+  {"height": 420, "panels": [
+    {"scene": "../kaiju_harbor.json", "shot": 6, "width": 2,
+     "caption": "And something else came in over the water to meet it."},
+    {"scene": "../strait_bridge.json", "shot": 5, "caption": "Three nights later it was seen at the strait.",
+     "caption_at": "bottom"}]}
+ ]
+}

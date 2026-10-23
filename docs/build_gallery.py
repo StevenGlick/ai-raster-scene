@@ -282,7 +282,7 @@ SHEETS = {'post_presets': 'post_presets', 'gui_themes': 'gui_themes', 'village_h
 # gallery image -> example whose --map layout check is shown
 MAPS = {'layout_map': 'garden_encounter'}
 # gallery image -> a page of panels in examples/pages/, laid out by scripts/pages.py
-PAGES = {'page_door': 'the_door', 'page_saloon': 'the_saloon'}
+PAGES = {'page_door': 'the_door', 'page_saloon': 'the_saloon', 'page_kaiju': 'the_kaiju'}
 SPECIAL = {'cast', 'catalog'}
 ALL = set(SHOTS) | set(SHEETS) | set(MAPS) | set(PAGES) | SPECIAL
 
