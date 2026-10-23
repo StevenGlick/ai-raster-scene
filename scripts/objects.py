@@ -39,7 +39,8 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel', 'ends', 'sail',
                   'band', 'lit', 'casts', 'teeth', 'spokes', 'goods', 'game', 'to', 'view', 'scene', 'shape',
                   'frame', 'edge', 'door', 'swing', 'show', 'crt', 'text', 'style', 'ground', 'smooth', 'setback',
-                  'antenna', 'pad', 'elevation', 'opacity', 'built', 'night', 'day', 'snowline', 'ridges', 'sag', 'crater', 'lava', 'cliff', 'deck', 'span', 'snow',
+                  'antenna', 'pad', 'elevation', 'opacity', 'built', 'night', 'day', 'snowline', 'ridges', 'sag',
+                  'crater', 'lava', 'cliff', 'deck', 'span', 'snow', 'roof',
                   'church'}
 
 
@@ -777,6 +778,10 @@ ROCKS = {
                             ramp('#5a5852', dark=0.35, light=1.4)],
                      mass=(1.4, 1.4, 0.8), chip=(0.4, 0.4, 0.3), key=(-0.4, 0.45, 0.8), shade=(0.24, 0.62),
                      crust=0.6, weed=0.45, up=0.45, pores=0.2, density=0.14),
+    'tropical': dict(ramps=[ramp('#6a6252', dark=0.3, light=1.45), ramp('#2e5a26', dark=0.35, light=1.4),
+                            ramp('#3e7a2a', dark=0.35, light=1.4)],
+                     mass=(1.2, 1.2, 0.8), chip=(0.35, 0.35, 0.25), key=(-0.4, 0.45, 0.8), shade=(0.28, 0.62),
+                     crust=0.25, weed=0.1, up=0.15, pores=0.0, density=0.14),
     'lava': dict(ramps=[LAVA, LAVA, LAVA], mass=(0.5, 0.5, 0.4), chip=(0.2, 0.2, 0.15), key=(-0.4, 0.45, 0.8),
                  shade=(0.5, 0.35), crust=0.6, weed=2.0, up=0.5, pores=0.0, cracks=0.9, density=0.14,
                  glow={0: 1.0, 1: 1.0, 2: 1.0}),
@@ -4015,6 +4020,7 @@ def village(pl):
             ang = rng.uniform(0, np.pi)
         L, W = rng.uniform(0.09, 0.15), rng.uniform(0.055, 0.075)
         roof = ('tile', 'tile', 'slate', 'thatch', 'red')[int(rng.integers(0, 5))]
+        roof = pl.get('roof') or roof                                # one cover for them all, if asked
         house = _cottage(L, W, rng.uniform(0.035, 0.05), rng.uniform(0.028, 0.04),
                          HOUSE_WALLS[int(rng.integers(0, len(HOUSE_WALLS)))], 'snow' if snow else roof,
                          int(rng.integers(0, 1 << 16)), lit=lit)

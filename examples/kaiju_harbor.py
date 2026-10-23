@@ -6,7 +6,7 @@ cells, each block's towers drawn floor by floor with their windows lit, a `city_
 `quay` along the `harbor_water`. Searchlight beams (`searchlight` objects) swing across it from the rooftops and
 helicopters hold it in theirs (`ray`), tanks fire up at it from the quay, the waterfront burns (`blaze`,
 `smoke_plume`), and the `kaiju_wading` throws its head back and roars, its plates glowing; from the air its breath
-(a `ray`) cuts into downtown, and a helicopter hangs eye to eye with it as it breathes. The last shot is another day: `time` golden - the city's windows dim and the
+(a `ray`) cuts into downtown, and a helicopter hangs eye to eye with it as it breathes; then a `giant_moth` comes in over the bay. The last shot is another day: `time` golden - the city's windows dim and the
 searchlights, marked for the night, gone - the monster ashore among the low buildings of the waterfront, `jet`s
 overhead.
 Run:  python kaiju_harbor.py  -> writes kaiju_harbor.json next to this file.
@@ -96,6 +96,8 @@ def kaiju_harbor():
                    {'x': 18.6, 'y': 15.0, 'type': 'jet', 'z': 0.9}, {'x': 19.4, 'y': 15.3, 'type': 'jet', 'z': 0.95},
                    {'x': 24.0, 'y': 17.0, 'type': 'smoke_plume'}, {'x': 18.2, 'y': 17.6, 'type': 'smoke_plume'},
                    {'x': 22.6, 'y': 20.4, 'type': 'tanks_firing'}]
+    moth = [{'x': 19.9, 'y': 22.25, 'z': 0.42, 'type': 'giant_moth'}]                 # the other one, flying in
+    moth_light = [{'x': 19.9, 'y': 22.4, 'z': 0.75, 'radius': 1.2, 'color': [0.7, 0.85, 1.0], 'intensity': 0.7}]
     return scene(
         g,
         title='The kaiju in the harbour - a city at night at landscape scale',
@@ -123,6 +125,8 @@ def kaiju_harbor():
              'overrides': {'time': 'golden', 'sprites': day_sprites,
                            'fog': {'color': [0.7, 0.66, 0.62], 'density': 0.03}}},
             {'x': 20.15, 'y': 23.55, 'look_at': [20.55, 22.6, 0.31], 'fov': 54, 'height': 0.3, 'post': [GLOW]},
+            {'x': 21.7, 'y': 25.0, 'look_at': [20.3, 22.5, 0.5], 'fov': 62, 'height': 0.05, 'post': [GLOW],
+             'overrides': {'sprites': sprites + moth, 'lights': lights + moth_light}},
         ],
         max_distance=48,
         supersample=2,

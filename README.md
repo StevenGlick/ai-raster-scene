@@ -69,7 +69,7 @@ Rows are y (south is down), columns are x, one cell is one unit, eye height is 0
 
 ## The gallery
 
-Seventy-seven example scenes in [`examples/`](examples/), every one a single JSON file you can open, change and render:
+Seventy-eight example scenes in [`examples/`](examples/), every one a single JSON file you can open, change and render:
 
 - **[Cities](#cities)** - [streets in the rain](#city-streets) · [the neon city](#the-neon-city) · [a night market](#the-night-market) · [a bar](#the-bar) · [the rooftops](#the-rooftops) · [a capsule hotel](#the-capsule-hotel) · [a village](#the-village) · [a frontier town](#the-frontier-town) · [a clockwork city](#the-clockwork-city)
 - **[Woods and weather](#woods-and-weather)** - [the woods at night](#the-woods-at-night) · [autumn](#autumn) · [the autumn garden](#the-autumn-garden) · [winter](#winter) · [fog and light](#fog-and-light) · [the palm house](#the-palm-house) · [the bayou](#the-bayou)
@@ -78,7 +78,7 @@ Seventy-seven example scenes in [`examples/`](examples/), every one a single JSO
 - **[Haunts and old stones](#haunts-and-old-stones)** - [the haunted house](#the-haunted-house) · [the castle and the chapel](#the-castle-and-the-chapel) · [encounters](#encounters)
 - **[Space and other worlds](#space-and-other-worlds)** - [stations and ships](#stations-and-ships) · [the Moon](#the-moon) · [Vector World](#vector-world) · [Doomed](#doomed)
 - **[Dreams and wonders](#dreams-and-wonders)** - [dreams](#dreams) · [the drowned library](#the-drowned-library) · [the hall of doors](#the-hall-of-doors) · [the sky islands](#the-sky-islands) · [the aurora palace](#the-aurora-palace) · [ask Claude](#ask-claude)
-- **[Landscape scale](#landscape-scale)** - [the kaiju in the harbour](#the-kaiju-in-the-harbour) · [the kaiju in the country](#the-kaiju-in-the-country) · [the volcano island](#the-volcano-island) · [the mesa desert](#the-mesa-desert) · [the winter valley](#the-winter-valley) · [the strait bridge](#the-strait-bridge) · [the giant valley](#the-giant-valley)
+- **[Landscape scale](#landscape-scale)** - [the kaiju in the harbour](#the-kaiju-in-the-harbour) · [the kaiju in the country](#the-kaiju-in-the-country) · [the volcano island](#the-volcano-island) · [the mesa desert](#the-mesa-desert) · [the winter valley](#the-winter-valley) · [the strait bridge](#the-strait-bridge) · [the archipelago](#the-archipelago) · [the giant valley](#the-giant-valley)
 - **[Pages](#pages)** - comics and storyboards, every panel a shot
 
 ## Cities
@@ -547,14 +547,15 @@ Shrink the world and the camera is a giant's: a map cell is about 100 m, the eye
 
 ### The kaiju in the harbour
 
-A city at night, and something enormous wading in from the bay. Every block is a `city_block` object, its towers drawn floor by floor with their windows lit; searchlights swing across the sky from the rooftops, helicopters hold the monster in their lamps, tanks fire up at it from the quay and the waterfront burns. From the air its breath cuts into downtown; the next day, at golden hour, it comes ashore.
+A city at night, and something enormous wading in from the bay. Every block is a `city_block` object, its towers drawn floor by floor with their windows lit; searchlights swing across the sky from the rooftops, helicopters hold the monster in their lamps, tanks fire up at it from the quay and the waterfront burns. From the air its breath cuts into downtown; a giant moth comes in over the bay to meet it; the next day, at golden hour, it comes ashore.
 
-![Eye to eye from a helicopter: its breath streams toward downtown, searchlights over the harbour](docs/gallery/kaiju_close.png)
+![The giant moth comes in over the bay, the kaiju roaring up at it under the searchlights](docs/gallery/kaiju_moth.png)
 
 | | |
 |---|---|
 | ![Something in the harbour: the kaiju wading in under the searchlights](docs/gallery/kaiju_bay.png) | ![From the quay, behind the tanks](docs/gallery/kaiju_quay.png) |
-| ![From the air: its breath cuts into downtown](docs/gallery/kaiju_breath.png) | ![The next day: ashore among the warehouses at golden hour](docs/gallery/kaiju_ashore.png) |
+| ![From the air: its breath cuts into downtown](docs/gallery/kaiju_breath.png) | ![Eye to eye from a helicopter: its breath streams toward downtown](docs/gallery/kaiju_close.png) |
+| ![The next day: ashore among the warehouses at golden hour](docs/gallery/kaiju_ashore.png) | |
 
 ### The kaiju in the country
 
@@ -602,6 +603,15 @@ A suspension bridge across a sea strait, two hundred metres tall at its towers, 
 |---|---|
 | ![Golden hour on the strait, a cargo ship under the bridge](docs/gallery/strait_golden.png) | ![From the water by the town quay](docs/gallery/strait_quay.png) |
 | ![From the air](docs/gallery/strait_above.png) | ![Dusk, the bridge's lamps lit](docs/gallery/strait_dusk.png) |
+
+### The archipelago
+
+Tropical islands in a blue sea: a high island with a jungle hill and a village of thatch on its shore, a smaller one beside it, a low atoll round its own lagoon - every one fringed with white sand and palms and ringed with reef in turquoise shallows.
+
+| | |
+|---|---|
+| ![From a boat, the high island across the blue](docs/gallery/archipelago_boat.png) | ![From the air: reefs and lagoons](docs/gallery/archipelago_above.png) |
+| ![From the atoll's beach across its lagoon](docs/gallery/archipelago_atoll.png) | ![Golden hour](docs/gallery/archipelago_golden.png) |
 
 ### The giant valley
 
@@ -680,7 +690,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Volumetric fog**: mist that lies low and drifts in banks, halos round every lamp, and beams of sun or moonlight through windows, doorways, standing stones and trees; sunlight finds its way into roofed rooms through their doorways, windows and skylights
 - **Reflections**: water, ice, wet streets and puddles mirror the lamps, windows and figures beyond them
 - **The 90s look**: 320x200 framebuffer, Bayer-dithered 256-colour palette, chunky nearest-neighbour upscale, optional scanlines and 2x supersampling
-- **Sprites**: 325 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 33-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
+- **Sprites**: 326 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 33-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
 - **Planar sprites**: a plant can stand as fixed planes in the world instead of a billboard - a cross of two, or a star of three that cuts the ground round it into sixths - so it has body as the camera moves; the low plants do by default, and a prefab can mix billboards and planes (a billboard palm trunk under a star of fronds)
 - **Layered forest edges**: give the walls of a jungle or a wood a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth; with `wander` the layers follow a natural, rounded line instead of the grid's square corners
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
@@ -705,7 +715,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Post-processing**: colour grading, bloom (from the whole frame, or only from what gives off light - neon, windows, flames, fireflies, a held lantern, the sun - so it can glow hard), depth of field that focuses on the shot's subject and leaves its colours alone, streaks (the twinkle of a star filter on the brightest lights, or the long blue lines of an anamorphic lens), a lens flare from a sun in the frame, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
 - **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
 - **Pixel art drawn in code**: the jungle, ruins and beach are built from shapes - leaves, stones, planks, blades of grass, carved glyphs - stamped into a height field, lit from one direction, and snapped onto hue-shifted colour ramps with dark edges on their shadow sides (`scripts/pixelart.py`), so they read as pixel art rather than noise. The held items go a step further: each is a small 3D model - capsules for finger bones, cylinders and boxes for a revolver - posed in a hand, rendered from the player's eye and painted onto the same ramps with an outline (`scripts/sculpt.py`), so the perspective is right: the barrel runs away into the view and you see the back of your own hand
-- **No assets to download**: all 234 textures, 325 props, 33 characters, 27 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
+- **No assets to download**: all 239 textures, 326 props, 33 characters, 27 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
 
 ![Character cast](docs/gallery/cast.png)
 

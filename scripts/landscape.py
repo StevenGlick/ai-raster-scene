@@ -320,6 +320,76 @@ def tex_frozen_lake(name):
     return np.clip(img, 0, 1)
 
 
+def tex_ocean(name):
+    """Deep tropical sea from high up: a saturated blue, a long swell in it, short whitecaps here and there."""
+    rng = _rng(name)
+    swell = smooth_noise(T, T, 5, rng)
+    v = 0.4 + 0.22 * swell + 0.08 * smooth_noise(T, T, 14, rng)
+    cap = (rng.random((T, T)) < 0.006) & (swell > 0.55)              # a whitecap, small and rare
+    v = np.where(cap, 0.9, v)
+    return dither(np.clip(v, 0, 1), ramp(['#0a2a5a', '#103a74', '#18508e', '#2468a6', '#3a86be', '#cfe6f4']), 0.5)
+
+
+def tex_lagoon(name):
+    """A lagoon from high up: clear turquoise over pale sand, ripples of light on the bottom, a darker patch of
+    weed or a coral head here and there; it reflects a little."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    v = 0.56 + 0.16 * smooth_noise(T, T, 4, rng) + 0.06 * np.sin((xx + yy * 0.6) * 0.6 + smooth_noise(T, T, 3, rng) * 6)
+    img = dither(np.clip(v, 0, 1), ramp(['#0e6a7a', '#168a96', '#22a8aa', '#3cc4bc', '#6ad8cc', '#b4ece0']), 0.5)
+    heads = smooth_noise(T, T, 9, rng) > 0.72
+    img[heads] = col('#3a6a5e')
+    return np.clip(img, 0, 1)
+
+
+def tex_reef_flat(name):
+    """A reef from high up, under a little water: heads and spurs of coral - brown, olive, a purple one - packed
+    together with channels of pale sand and turquoise between them."""
+    rng = _rng(name)
+    f1, f2, idx = _voronoi(22, rng)
+    img = tex_lagoon(name + '/water')
+    coral = (f2 - f1) > 1.6 + 2.2 * smooth_noise(T, T, 6, rng)
+    tones = [col(c) for c in ('#6a5a3a', '#5a6a3a', '#7a5a4a', '#5a4a6a', '#8a7a4a')]
+    pick = rng.integers(0, len(tones), 22)[idx]
+    shade = (0.75 + 0.3 * smooth_noise(T, T, 16, rng))[..., None]
+    for k, c in enumerate(tones):
+        sel = coral & (pick == k)
+        img[sel] = (c * shade)[sel]
+    return np.clip(img, 0, 1)
+
+
+def tex_white_sand(name):
+    """A beach of white coral sand from high up: bright, faintly rippled, wetter and darker in patches, a line of
+    wrack here and there."""
+    rng = _rng(name)
+    v = 0.72 + 0.12 * smooth_noise(T, T, 6, rng) - 0.1 * (smooth_noise(T, T, 3, rng) > 0.66)
+    img = dither(np.clip(v, 0, 1), ramp(['#a89a7a', '#c4b896', '#d8ceb0', '#e8e0c8', '#f2ecdc', '#fcf8f0']), 0.5)
+    img[rng.random((T, T)) < 0.01] = col('#8a7a5a')
+    return np.clip(img, 0, 1)
+
+
+def tex_palm_canopy(name):
+    """Coconut palms from high up: each crown a star of fronds, bright green on its lit side, pale sand and
+    shadow showing between them."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    img = tex_white_sand(name + '/sand') * 0.82
+    for _ in range(42):
+        cx, cy = rng.uniform(0, T), rng.uniform(0, T)
+        r = rng.uniform(4, 7)
+        dx = (xx - cx + T / 2) % T - T / 2
+        dy = (yy - cy + T / 2) % T - T / 2
+        d = np.hypot(dx, dy)
+        a = np.arctan2(dy, dx)
+        fronds = int(rng.integers(6, 9))
+        star = d < r * (0.45 + 0.55 * np.abs(np.cos(a * fronds / 2 + rng.uniform(0, 3))) ** 0.6)
+        img[star & (d < r)] = col('#2e5a1e')
+        lit = star & (d < r) & ((dx * -0.6 + dy * -0.8) > 0)
+        img[lit] = col('#5a8a2e')
+        img[(d < 1.2)] = col('#6a5a2a')                                  # the crown's heart
+    return np.clip(img, 0, 1)
+
+
 def _canopy(name, rmin, rmax, n, greens, light):
     """Woodland from high up: crowns packed close, each a round of its own green, lit on its upper left and in
     shade on the lower right, the gaps between them dark - wrapping, so the wood runs on from cell to cell."""
@@ -681,6 +751,60 @@ def spr_sailboat():
     return outline_sprite(rgba).astype(np.float32), np.zeros(rgba.shape[:2], np.float32)
 
 
+MOTH_WING = ramp('#c8742a', dark=0.35, light=1.3, warm=0.15)
+MOTH_BAND = ramp('#5a3418', dark=0.4, light=1.3)
+MOTH_SPOT = ramp(['#1a2a5a', '#2a4a8a', '#4a7ac0', '#8ab8f0', '#c8e4ff', '#f4fbff'])
+MOTH_FUR = ramp('#a8946a', dark=0.4, light=1.25)
+MOTH_EDGE = ramp(['#4a6a8a', '#6a9ac0', '#9acaf0', '#c8e8ff', '#e8f6ff', '#ffffff'])
+
+
+def spr_giant_moth():
+    """A giant moth, seen from in front and a little below as it flies at you: four wings spread - broad
+    forewings with a pale band and an eye-spot each, smaller rounded hindwings - their edges glowing a cold
+    blue-white; a furry body, feathery antennae, eyes that glow."""
+    rng = np.random.default_rng(7)
+    w, h = 160, 96
+    cv = Canvas(w, h, wrap=False)
+    cx = w / 2
+    for side in (-1, 1):
+        def m(pts, grow=0.0):
+            cxp, cyp = 30.0, 40.0                                # grown about the wing's middle, for the rim
+            return [(cx + side * (x + (x - cxp) * grow), y + (y - cyp) * grow) for x, y in pts]
+        hind = [(4, 44), (20, 50), (44, 62), (56, 78), (48, 90), (30, 88), (12, 72), (4, 58)]
+        fore = [(4, 40), (18, 22), (40, 8), (66, 2), (78, 6), (76, 18), (66, 34), (52, 46), (30, 52), (8, 50)]
+        cv.polygon(m(hind, 0.05), z=0.45, top=0.3, bevel=0.6, mat=4)                       # a rim of light
+        cv.polygon(m(hind), z=0.5, top=0.6, bevel=2.0, mat=0, tone=-0.08)                    # the hindwing
+        cv.polygon(m(fore, 0.04), z=0.75, top=0.3, bevel=0.6, mat=4)
+        cv.polygon(m(fore), z=0.8, top=0.7, bevel=2.4, mat=0)                                # the forewing
+        for (x0, y0), (x1, y1) in (((6, 40), (60, 6)), ((6, 42), (74, 14)), ((6, 44), (62, 36)), ((6, 46), (40, 50)),
+                                   ((6, 48), (28, 70)), ((6, 50), (46, 84)), ((6, 52), (52, 74))):
+            cv.stroke(m([(x0, y0), (x1, y1)]), 1.0, dome=0.5, mode='carve')                     # its veins, pressed in
+        cv.polygon(m([(22, 30), (46, 14), (70, 8), (72, 12), (50, 22), (28, 36)]), z=1.2, top=0.2, bevel=1.0,
+                   mat=0, tone=0.25)                                                          # a pale band
+        cv.polygon(m([(10, 44), (30, 44), (48, 40), (60, 32), (62, 36), (48, 46), (28, 50), (10, 48)]), z=1.15,
+                   top=0.2, bevel=1.0, mat=1, tone=-0.1)                                      # a dark band
+        for (sx, sy, r) in ((44, 30, 8.0), (34, 72, 5.5)):                                   # eye-spots, ringed
+            cv.ellipse(cx + side * sx, sy, r, r * 0.88, z=1.3, dome=0.4, mat=1, tone=-0.2)
+            cv.ellipse(cx + side * sx, sy, r * 0.72, r * 0.64, z=1.35, dome=0.4, mat=0, tone=0.35)
+            cv.ellipse(cx + side * sx, sy, r * 0.46, r * 0.42, z=1.45, dome=0.5, mat=2)
+        cv.stroke(m([(3, 18), (10, 8), (20, 2)]), 1.6, z=1.6, dome=0.4, mat=3)                # an antenna
+        for k in range(6):
+            x, y = 3 + k * 3, 18 - k * 3
+            cv.stroke(m([(x, y), (x + 3, y + 1.5)]), 0.8, z=1.6, dome=0.2, mat=3)              # its feathers
+    cv.ellipse(cx, 62, 6, 20, z=1.5, dome=1.1, mat=3, tone=-0.05)                             # the abdomen
+    for y in range(46, 82, 4):
+        cv.stroke([(cx - 5, y), (cx + 5, y)], 1.0, z=2.3, dome=0.1, mat=3, tone=-0.25, mode='max')   # its rings
+    cv.ellipse(cx, 36, 9, 11, z=1.8, dome=1.1, rough=0.22, rng=rng, mat=3, tone=0.08)         # the furry thorax
+    cv.ellipse(cx, 22, 7, 6, z=1.9, dome=1.0, rough=0.12, rng=rng, mat=3)                     # the head
+    for side in (-1, 1):
+        cv.ellipse(cx + side * 4.5, 21, 2.6, 2.4, z=2.3, dome=0.4, mat=2, tone=0.3)           # the eyes
+    rgba = cv.paint([MOTH_WING, MOTH_BAND, MOTH_SPOT, MOTH_FUR, MOTH_EDGE], cv.light(relief=1.1, cavity=0.3), dither=0.3)
+    em = np.zeros((h, w), np.float32)
+    em[(cv.mat == 2) & (cv.id > 0)] = 0.8
+    em[(cv.mat == 4) & (cv.id > 0)] = 1.0
+    return outline_sprite(rgba).astype(np.float32), em
+
+
 def _tanks(firing):
     """A column of four tanks, side on, facing left, olive drab on dark tracks, their guns raised toward something
     tall; `firing`: a flash at every muzzle."""
@@ -803,7 +927,9 @@ TEXTURES = {'city_street': lambda n: _street(n, False), 'city_street_lit': lambd
             'desert_road_ew': lambda n: (tex_desert_road(n), None), 'snow_fields': lambda n: (tex_snow_fields(n), None),
             'snow_fields_b': lambda n: (tex_snow_fields(n), None), 'snow_forest': lambda n: (tex_snow_forest(n), None),
             'frozen_lake': lambda n: (tex_frozen_lake(n), None), 'frozen_lake_b': lambda n: (tex_frozen_lake(n), None),
-            'frozen_lake_c': lambda n: (tex_frozen_lake(n), None)}
+            'frozen_lake_c': lambda n: (tex_frozen_lake(n), None), 'ocean': lambda n: (tex_ocean(n), None),
+            'lagoon': lambda n: (tex_lagoon(n), None), 'reef_flat': lambda n: (tex_reef_flat(n), None),
+            'white_sand': lambda n: (tex_white_sand(n), None), 'palm_canopy': lambda n: (tex_palm_canopy(n), None)}
 TEXTURE_NOISE = {'city_street': 0.15, 'city_street_lit': 0.15, 'harbor_water': 0.1, 'quay': 0.2, 'container_yard': 0.1,
                  'city_park': 1.0, 'farmland': 1.0, 'farmland_b': 1.0, 'farmland_c': 1.0, 'farmland_d': 1.0,
                  'farmland_e': 1.0, 'farmland_f': 1.0, 'pasture': 1.0, 'forest_canopy': 1.0, 'pine_canopy': 1.0,
@@ -811,20 +937,21 @@ TEXTURE_NOISE = {'city_street': 0.15, 'city_street_lit': 0.15, 'harbor_water': 0
                  'lava_flow': 0.0, 'black_sand': 0.6, 'desert_floor': 0.8, 'desert_floor_b': 0.8,
                  'desert_floor_c': 0.8, 'desert_road': 0.5, 'desert_road_ew': 0.5, 'snow_fields': 0.4,
                  'snow_fields_b': 0.4, 'snow_forest': 0.8, 'frozen_lake': 0.4, 'frozen_lake_b': 0.4,
-                 'frozen_lake_c': 0.4}                 # the country mottled in full, as soil and weather lie across it
+                 'frozen_lake_c': 0.4, 'ocean': 0.6, 'lagoon': 0.3, 'reef_flat': 0.5, 'white_sand': 0.5,
+                 'palm_canopy': 0.8}                 # the country mottled in full, as soil and weather lie across it
 TEXTURE_REFLECT = {'harbor_water': 0.35, 'river_water': 0.5, 'frozen_lake': 0.18, 'frozen_lake_b': 0.18,
-                   'frozen_lake_c': 0.18}
+                   'frozen_lake_c': 0.18, 'ocean': 0.12, 'lagoon': 0.1}
 SPRITES = {'kaiju': spr_kaiju, 'kaiju_roar': spr_kaiju_roar, 'kaiju_wading': spr_kaiju_wading, 'blaze': spr_blaze,
            'smoke_plume': spr_smoke_plume,
            'tanks': spr_tanks, 'tanks_firing': spr_tanks_firing, 'helicopter': spr_helicopter, 'jet': spr_jet,
            'pylon': spr_pylon, 'ash_plume': spr_ash_plume, 'cargo_ship': spr_cargo_ship, 'ferry': spr_ferry,
-           'sailboat': spr_sailboat}
+           'sailboat': spr_sailboat, 'giant_moth': spr_giant_moth}
 SPRITE_HEIGHT = {'kaiju': 0.62, 'kaiju_roar': 0.62, 'kaiju_wading': round(0.62 * (WADE + 2) / 126, 3), 'blaze': 0.24,
                  'smoke_plume': 1.2,
                  'tanks': 0.045,
                  'tanks_firing': 0.045, 'helicopter': 0.05, 'jet': 0.045, 'pylon': 0.55, 'ash_plume': 9.0,
-                 'cargo_ship': 0.5, 'ferry': 0.28, 'sailboat': 0.16}
+                 'cargo_ship': 0.5, 'ferry': 0.28, 'sailboat': 0.16, 'giant_moth': 0.72}
 PROP_DEFAULTS = {'blaze': {'blend': 'additive', 'shadow': False}, 'smoke_plume': {'opacity': 0.85, 'shadow': False},
                  'helicopter': {'shadow': False}, 'jet': {'shadow': False}, 'pylon': {'planes': 2},
-                 'ash_plume': {'opacity': 0.92, 'shadow': False}}
-NO_CONTACT_SHADOW = {'blaze', 'smoke_plume', 'helicopter', 'jet', 'ash_plume'}
+                 'ash_plume': {'opacity': 0.92, 'shadow': False}, 'giant_moth': {'shadow': False}}
+NO_CONTACT_SHADOW = {'blaze', 'smoke_plume', 'helicopter', 'jet', 'ash_plume', 'giant_moth'}
