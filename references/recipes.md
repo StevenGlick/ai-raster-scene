@@ -311,6 +311,47 @@ every unit down the `middle`, blue along a taxiway, red across the far end; an `
 skyline. The view is from the `cockpit` (the shot's vehicle), with `bloom` from the lights. See
 `examples/night_runway.py`.
 
+### A bayou by skiff
+
+The channel is the road (`swamp_water`, still, `ripple` 0.3), its banks `bog` and then the swamp's water; `bald_cypress`
+by density (hung with moss already - moss sprites set floating at a height read as clumps in the sky), `cypress_knees`,
+the `swamp` scatter, a row of `swamp_card_3` far out as a wall of trees, `fireflies` over the water (`side`
+`middle`), a heron and an alligator; a `stilt_shack` round the bend with a warm light, mirrored; your `boat_bow`
+and its lantern. A `dusk` sky, a sun just down, a close fog. See `examples/bayou_run.py`.
+
+### A camel caravan
+
+`sand` (tinted warm) for the track and the ground, the edge ragged and blended so there is no road but the
+caravan's; `sections` that swell up and down; the dunes beyond as a `hills` skyline in the sand's colour. A line of
+`camel`s ahead, two `pyramid`s on the horizon by the low sun (`sunset` sky, a `sun` sky object), and the camera a
+little to one side of the line so your own `camel_head` (the vehicle, `scale` 0.34) does not hide them. See
+`examples/camel_caravan.py`.
+
+### A candy road
+
+`peppermint` for the road with `rumble` strips of white and pink, `frosting` for the ground, and a river of chocolate
+as a band of `mud` tinted brown with a little `reflect` (0.15 - more and it mirrors the sky grey). `candy_cane`s
+every 5 either side (`flip` the right-hand ones, so the crooks lean over the road), `lollipop` trees and `gumdrop`s
+by density at every size, `gingerbread_house`s, the `dream` sky with a pink `hills` skyline; your car `tint`ed pink.
+See `examples/candy_road.py`.
+
+### A ghost train
+
+Indoors all the way: the track (`rail_track` 1 wide) through `sections` that twist hard, a floor of dark `planks`,
+the rooms as `walls` of `wallpaper` and `wallpaper_green` in `blocks` 3 long under a low `ceiling` of `wood_panel`
+(`light` 0, so only the ride's own lights show) and a close dark fog. `portrait`s on the walls at `z` 0.9,
+`cobweb`s high in the corners, `candelabra`s and `jack_o_lantern`s with their lights, a `skeleton` leaping out lit
+green, the `ghost` drifting over the rails (`opacity` 0.75), `bats` overhead, a `grandfather_clock`; your
+`ghost_car` as the vehicle with a dim purple light. See `examples/ghost_train.py`.
+
+### A blossom road in spring
+
+A narrow road of old asphalt (tinted pale, a slightly `ragged` edge), flooded paddies on one side (a broad band of
+`water`) and grass and fields on the other; `cherry_tree`s every 4.4 either side, set back 0.9 and not too big, or
+their crowns close over the road and hide everything; a `torii` over the road 10 ahead with the `snow_peak` behind
+it in line (`x` 0, so the gate frames it) and a thin fog (much more and the peak is lost). Petals are the `snow`
+post effect in pink (`"color": [1.0, 0.78, 0.86]`). A `dawn` sky. See `examples/blossom_road.py`.
+
 ### A highway at night, and a tunnel
 
 Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.

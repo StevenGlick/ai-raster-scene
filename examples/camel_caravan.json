@@ -1,0 +1,177 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    8,
+    0,
+    0.3
+   ],
+   [
+    30,
+    0.12,
+    1.6
+   ],
+   [
+    30,
+    -0.15,
+    -1.8
+   ],
+   [
+    40,
+    0.1,
+    1.2
+   ],
+   [
+    300,
+    -0.05,
+    -0.5
+   ]
+  ],
+  "width": 1.0,
+  "surface": {
+   "base": "sand",
+   "tint": [
+    1.0,
+    0.88,
+    0.7
+   ]
+  },
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "edge": {
+   "ragged": 0.4,
+   "blend": 0.8
+  },
+  "ground": {
+   "base": "sand",
+   "tint": [
+    1.0,
+    0.88,
+    0.7
+   ]
+  },
+  "distance": 300
+ },
+ "camera": {
+  "at": 1.0,
+  "x": 0.45,
+  "height": 0.85,
+  "fov": 62,
+  "pitch": 0.02
+ },
+ "title": "The camel caravan - riding in a caravan over the dunes at sunset, the pyramids on the horizon",
+ "sky": "sunset",
+ "skyline": {
+  "type": "hills",
+  "height": 1.4,
+  "color": [
+   0.62,
+   0.38,
+   0.26
+  ]
+ },
+ "sky_objects": [
+  {
+   "type": "sun",
+   "azimuth": 274,
+   "elevation": 5,
+   "size": 3.2
+  }
+ ],
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 274,
+   "elevation": 6,
+   "intensity": 0.9,
+   "color": [
+    1.0,
+    0.72,
+    0.46
+   ],
+   "disc": false
+  }
+ ],
+ "ambient": [
+  0.56,
+  0.44,
+  0.44
+ ],
+ "fog": {
+  "color": [
+   0.9,
+   0.62,
+   0.5
+  ],
+  "density": 0.004,
+  "sky_mix": 0.3
+ },
+ "sprites": [
+  {
+   "type": "camel",
+   "at": 4.0,
+   "x": 0.05
+  },
+  {
+   "type": "camel",
+   "at": 7.2,
+   "x": -0.08
+  },
+  {
+   "type": "camel",
+   "at": 10.5,
+   "x": 0.06
+  },
+  {
+   "type": "camel",
+   "at": 13.6,
+   "x": -0.04
+  },
+  {
+   "type": "camel",
+   "at": 16.8,
+   "x": 0.05
+  },
+  {
+   "type": "pyramid",
+   "at": 160,
+   "x": -28,
+   "scale": 26
+  },
+  {
+   "type": "pyramid",
+   "at": 190,
+   "x": 6,
+   "scale": 18
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": 0.45,
+   "height": 0.85,
+   "fov": 62,
+   "pitch": 0.02,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.7,
+     "radius": 2.2
+    }
+   ],
+   "vehicle": {
+    "type": "camel_head",
+    "ahead": 1.0,
+    "z": 0.38,
+    "scale": 0.34
+   }
+  }
+ ],
+ "supersample": 2
+}

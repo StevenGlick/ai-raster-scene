@@ -2332,6 +2332,316 @@ def spr_cockpit():
     return rgba, _tail_em(cv, [2, 3]) * 0.5
 
 
+# ------------------------------------------------------------------ the bayou and the dunes
+
+BOARDS = ramp('#6a5e4e', dark=0.4, light=1.6, warm=0.03)
+TIN = ramp('#8a5a3a', dark=0.4, light=1.6, warm=0.06)
+CAMEL = ramp('#c89a62', dark=0.4, light=1.35, warm=0.06)
+RUG = [ramp('#a8282a', dark=0.4, light=1.4), ramp('#2a3a8a', dark=0.4, light=1.5), ramp('#e0b040', dark=0.4, light=1.3)]
+ROBE = ramp('#e8e2d4', dark=0.45, light=1.2)
+SANDSTONE = ramp('#d8b07a', dark=0.4, light=1.3, warm=0.06)
+
+
+def spr_stilt_shack():
+    """A shack on stilts over the bayou: weathered boards under a rusted tin roof, a porch out front on its posts,
+    a window lit warm and a lantern by the door - the two of them glow. A landmark on a swamp's water."""
+    w, h = 64, 56
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (8, 20, 34, 48, 58):                                                   # the stilts
+        cv.box(x, 38, 2.4, 18, z=0.8, top=0.5, bevel=0.6, mat=0)
+    cv.box(4, 36, 58, 3, z=1.0, top=0.5, bevel=0.6, mat=0)                          # the porch's deck
+    cv.box(12, 14, 44, 23, z=1.2, top=0.6, bevel=1.4, mat=0)                        # the cabin
+    for y in range(16, 36, 3):                                                      # its boards
+        cv.stroke([(12, y), (56, y)], 0.5, mode='carve', z=0.3)
+    cv.polygon([(6, 16), (58, 16), (52, 4), (12, 4)], z=1.6, top=0.5, bevel=1.0, mat=1)            # the tin roof
+    for x in range(10, 58, 3):
+        cv.stroke([(x, 15.5), (x * 0.86 + 4.5, 4.5)], 0.5, mode='carve', z=0.25)
+    cv.box(18, 20, 9, 16, z=1.3, top=0.5, bevel=0.8, mat=2)                         # the door
+    cv.box(36, 21, 11, 8, z=1.3, top=0.4, bevel=0.6, mat=3)                         # the window, lit
+    cv.box(41, 21, 1, 8, z=1.4, top=0.2, bevel=0.2, mat=2)
+    cv.box(29.5, 21, 3, 4, z=1.5, top=0.4, bevel=0.4, mat=3)                        # the lantern
+    cv.stroke([(4, 30), (4, 36)], 0.8, z=1.1, dome=0.3, mat=0)                      # the porch rail
+    cv.stroke([(4, 30), (12, 30)], 0.8, z=1.1, dome=0.3, mat=0)
+    rgba, _ = _prop(cv, [BOARDS, TIN, ramp('#3a2e24', dark=0.45, light=1.6), ramp('#ffc870', dark=0.8, light=1.1)],
+                    relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [3])
+
+
+def spr_camel():
+    """A camel walking ahead in a caravan, seen from behind: its long legs and tail, the hump under a saddle
+    blanket in red and blue, a rider in a pale robe and a headcloth, the neck and head reaching on beyond."""
+    w, h = 36, 56
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.stroke([(24, 22), (27, 12), (26, 6)], 3.6, z=0.8, dome=0.7, mat=0)           # the neck, off to one side
+    cv.ellipse(26.5, 5, 3.4, 3.0, z=0.9, dome=0.8, mat=0)                           # its head, beyond
+    for x in (14.5, 21.5):                                                          # the far legs, between
+        cv.stroke([(x, 38), (x, 55)], 2.2, z=0.9, dome=0.6, mat=0)
+    for x in (9.5, 26.5):                                                           # the hind legs
+        cv.stroke([(x, 34), (x - 0.8 * (1 if x < 18 else -1), 45), (x, 56)], 3.6, z=1.1, dome=0.7,
+                  taper=(1.0, 0.7), mat=0)
+    cv.ellipse(18, 33, 11.5, 8.0, z=1.3, dome=0.9, mat=0)                           # the haunches, from behind
+    cv.stroke([(18, 36), (18.5, 45)], 1.2, z=1.6, dome=0.4, mat=0)                  # the tail
+    cv.polygon([(8, 20), (28, 20), (30, 31), (6, 31)], z=1.6, top=0.5, bevel=1.4, mat=1)          # the blanket
+    cv.box(6.4, 27, 23, 2.0, z=1.7, top=0.3, bevel=0.3, mat=2)                      # its stripe
+    cv.polygon([(12, 9), (24, 9), (25, 22), (11, 22)], z=1.9, top=0.6, bevel=2.0, mat=3)          # the rider's robe
+    cv.ellipse(18, 6.5, 3.4, 3.6, z=2.1, dome=0.9, mat=3)                           # the headcloth
+    cv.box(14.8, 5.2, 6.4, 1.2, z=2.2, top=0.2, bevel=0.2, mat=4)                   # its band
+    return _prop(cv, [CAMEL, RUG[0], RUG[1], ROBE, TRIM], relief=1.0, cavity=0.4, shadow=0.4)
+
+
+def spr_camel_head():
+    """Your own camel from the saddle: its long neck reaching away from you over the sand, the head at the end of
+    it with the ears up, the halter's rope back to your hands, a corner of the saddle blanket. A shot's `vehicle`
+    for a caravan: `"ahead": 1.0`, `"z"` up near the eye."""
+    w, h = 48, 48
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(0, 40), (12, 36), (36, 36), (48, 40), (48, 48), (0, 48)], z=1.0, top=0.5, bevel=1.4, mat=1)  # the blanket
+    cv.box(0, 42, 48, 2.2, z=1.1, top=0.3, bevel=0.3, mat=2)                        # its stripe
+    cv.stroke([(24, 42), (25, 28), (23, 15)], 12.0, z=1.6, dome=0.9, taper=(1.0, 0.55), mat=0)     # the neck
+    cv.ellipse(23, 10, 6.0, 6.6, z=1.9, dome=0.9, mat=0)                            # the head, from behind
+    for sgn in (-1, 1):
+        cv.ellipse(23 + sgn * 4.6, 4.2, 1.5, 2.4, z=2.0, dome=0.7, mat=0)           # the ears
+    cv.stroke([(21, 12), (14, 30), (10, 40)], 0.7, z=2.2, dome=0.3, mat=3)          # the halter rope
+    cv.stroke([(25, 12), (32, 30), (36, 40)], 0.7, z=2.2, dome=0.3, mat=3)
+    return _prop(cv, [CAMEL, RUG[0], RUG[2], ramp('#3a2a1e', dark=0.45, light=1.6)], relief=1.0, cavity=0.4,
+                 shadow=0.4)
+
+
+def spr_pyramid():
+    """A great pyramid far off across the desert: its faces of pale stone, the sunlit one and the shaded one, the
+    courses showing, the top a little broken. A billboard for the horizon, 20 tall at its own size."""
+    w, h = 96, 56
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(0, 56), (48, 3), (96, 56)], z=1.0, top=0.5, bevel=0.6, mat=0)
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    body = cv.id > 0
+    cv.tone[body & (xx > 48 + (yy - 3) * 0.12)] = -0.3                                  # the face in shade
+    for y in range(6, 56, 3):                                                       # the courses
+        cv.z[body & (np.abs(yy - y) < 0.5)] -= 0.3
+    return _prop(cv, [SANDSTONE], relief=1.0, cavity=0.4, shadow=0.4)
+
+
+# ------------------------------------------------------------------ the candy road
+
+CANE_RED = ramp('#e01e3a', dark=0.4, light=1.4)
+ICING = ramp('#fff6f8', dark=0.5, light=1.1)
+GINGER = ramp('#b8682e', dark=0.4, light=1.4, warm=0.06)
+GUM_C = [ramp('#ff4a8a', dark=0.45, light=1.3), ramp('#4ad0ff', dark=0.45, light=1.3, cool=0.05),
+         ramp('#a8f040', dark=0.45, light=1.3), ramp('#ffb020', dark=0.45, light=1.3, warm=0.05)]
+
+
+def tex_peppermint(name):
+    """A road of peppermint candy: broad stripes of red and white running slantwise across it, glossy, a little
+    melted at their edges, a glint of sugar here and there."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    band = ((xx + yy) // 16) % 2 == 0
+    wob = (fbm(T, rng, 8, 2) - 0.5) * 6
+    band = (((xx + yy + wob) // 16) % 2).astype(int) == 0
+    rgb = np.where(band[..., None], np.array([0.88, 0.12, 0.2], np.float32), np.array([0.97, 0.94, 0.94], np.float32))
+    rgb = rgb * (0.9 + 0.14 * fbm(T, rng, 4, 3))[..., None]
+    glint = rng.random((T, T)) < 0.01
+    rgb[glint] = [1.0, 1.0, 1.0]
+    return np.clip(rgb, 0, 1), None
+
+
+def tex_frosting(name):
+    """Pink frosting spread thick, for the ground of a candy land: soft swirls of icing and sprinkles of every
+    colour scattered over it."""
+    rng = _rng(name)
+    rgb = np.array([0.98, 0.7, 0.8], np.float32) * (0.86 + 0.2 * fbm(T, rng, 6, 3))[..., None]
+    swirl = np.abs(np.sin(fbm(T, rng, 3, 2) * 18)) < 0.12
+    rgb[swirl] *= 0.88
+    colours = np.array([[1.0, 0.95, 0.3], [0.3, 0.8, 1.0], [0.4, 0.95, 0.4], [1.0, 1.0, 1.0], [0.6, 0.3, 0.9]],
+                       np.float32)
+    for y, x in np.argwhere(rng.random((T, T)) < 0.03):
+        c = colours[rng.integers(0, len(colours))]
+        if rng.random() < 0.5:
+            rgb[y, x:x + 2] = c
+        else:
+            rgb[y:y + 2, x] = c
+    return np.clip(rgb, 0, 1), None
+
+
+def spr_candy_cane():
+    """A candy cane as tall as a lamp post, striped red and white round its stem, its crook bent over the road. Set
+    them in rows along a candy road."""
+    w, h = 24, 64
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    pts = [(8, 64), (8, 14)] + [(12 + 5.5 * np.cos(a), 14 - 5.5 * np.sin(a)) for a in np.linspace(np.pi, 0, 10)][1:] \
+        + [(17.5, 20)]
+    cv.stroke(pts, 5.2, z=1.2, dome=0.9, mat=0)                                     # the cane, white
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    cane = cv.id > 0
+    cv.mat[cane & ((((yy + xx * 0.8) // 4) % 2) == 0)] = 1                          # its red stripes, slantwise
+    return _prop(cv, [ICING, CANE_RED], relief=1.0, cavity=0.3, shadow=0.4)
+
+
+def spr_lollipop():
+    """A lollipop tree: a great swirled disc of candy in pink and white on a white stick, standing in the frosting."""
+    w, h = 40, 64
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(18.6, 30, 2.8, 34, z=1.0, top=0.6, bevel=1.0, mat=0)                     # the stick
+    cv.ellipse(20, 18, 16, 16, z=1.5, dome=0.6, mat=1)                              # the disc
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    r = np.hypot(xx - 20, yy - 18)
+    th = np.arctan2(yy - 18, xx - 20)
+    disc = (cv.id > 0) & (r < 16.5)
+    cv.mat[disc & ((((r * 0.55 + th * 1.6 / np.pi * 2) % 2) < 1))] = 2              # the swirl
+    return _prop(cv, [ICING, ramp('#ff5aa8', dark=0.45, light=1.3), ICING], relief=1.0, cavity=0.3, shadow=0.4)
+
+
+def _gumdrop(k):
+    w, h = 24, 20
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.ellipse(12, 15, 11, 14, z=1.4, dome=0.8, mat=0)                              # the drop, sugared
+    rgba, em = _prop(cv, [GUM_C[k]], relief=1.0, cavity=0.3, shadow=0.4)
+    rng = np.random.default_rng(80 + k)
+    sugar = (rng.random(rgba.shape[:2]) < 0.12) & (rgba[..., 3] > 0)
+    rgba[sugar, :3] = np.minimum(rgba[sugar, :3] * 1.3 + 0.15, 1.0)
+    return rgba, em
+
+
+def spr_gumdrop():
+    """A gumdrop the size of a hill, sugared all over: pink, or `variant` 1 blue, 2 green, 3 orange."""
+    return _gumdrop(0)
+
+
+def spr_gingerbread_house():
+    """A gingerbread house: walls of gingerbread piped with white icing, a roof thick with icing like snow and sweets
+    along its eaves, a candy-cane door frame, its windows lit warm."""
+    w, h = 64, 56
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(10, 26, 44, 30, z=1.0, top=0.6, bevel=1.6, mat=0)                        # the walls
+    cv.polygon([(4, 28), (60, 28), (32, 4)], z=1.4, top=0.6, bevel=1.6, mat=1)       # the roof, iced
+    for x in range(8, 58, 6):                                                       # sweets along the eaves
+        cv.ellipse(x, 28.5, 2.0, 2.0, z=1.7, dome=0.9, mat=3 + (x // 6) % 3)
+    cv.box(27, 38, 10, 18, z=1.2, top=0.5, bevel=1.0, mat=2)                        # the door frame
+    cv.box(29, 40, 6, 16, z=1.25, top=0.5, bevel=0.8, mat=0)                        # the door
+    for x0 in (14, 42):                                                             # the windows, lit
+        cv.box(x0, 34, 8, 8, z=1.2, top=0.4, bevel=0.6, mat=6)
+        cv.box(x0 - 1, 33, 10, 1.2, z=1.3, top=0.2, bevel=0.2, mat=1)              # icing over them
+        cv.box(x0 - 1, 42, 10, 1.2, z=1.3, top=0.2, bevel=0.2, mat=1)
+    for y in (48, 52):                                                              # piped icing on the walls
+        cv.stroke([(11, y), (26, y)], 0.8, z=1.2, dome=0.4, mat=1)
+        cv.stroke([(38, y), (53, y)], 0.8, z=1.2, dome=0.4, mat=1)
+    rgba, _ = _prop(cv, [GINGER, ICING, CANE_RED, GUM_C[0], GUM_C[1], GUM_C[2], ramp('#ffd080', dark=0.8, light=1.1)],
+                    relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [6])
+
+
+# ------------------------------------------------------------------ the ghost train
+
+BONE = ramp('#e8e2cc', dark=0.4, light=1.25)
+RIDE_CAR = ramp('#4a1a5a', dark=0.4, light=1.9)
+
+
+def spr_skeleton():
+    """A skeleton leaping out at a ghost train's riders: its skull grinning, the ribs, the arms flung up and the
+    bony fingers spread, one leg kicked up - pale bone that a green light makes glow."""
+    w, h = 32, 52
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.ellipse(16, 7, 5.0, 5.4, z=2.0, dome=0.9, mat=0)                             # the skull
+    cv.box(13, 11, 6, 3, z=1.9, top=0.5, bevel=0.6, mat=0)                          # the jaw
+    for x in (13.8, 18.2):                                                          # the eye sockets
+        cv.ellipse(x, 6.6, 1.5, 1.6, z=2.1, dome=0.2, mat=1)
+    cv.box(13.6, 11.6, 4.8, 0.8, z=2.0, top=0.2, bevel=0.1, mat=1)                  # the teeth's line
+    cv.stroke([(16, 14), (16, 32)], 1.6, z=1.6, dome=0.5, mat=0)                    # the spine
+    for k, y in enumerate(range(17, 28, 3)):                                        # the ribs
+        half = 6.0 - k * 0.6
+        cv.stroke([(16 - half, y + 1.5), (16, y), (16 + half, y + 1.5)], 1.0, z=1.8, dome=0.5, mat=0)
+    cv.stroke([(12, 32), (20, 32)], 2.0, z=1.7, dome=0.5, mat=0)                    # the pelvis
+    for s in (-1, 1):                                                               # the arms, flung up
+        cv.stroke([(16 + s * 6, 16), (16 + s * 11, 10), (16 + s * 13, 2)], 1.4, z=1.9, dome=0.5, mat=0)
+        for f in (-1.4, 0, 1.4):                                                    # the fingers, spread
+            cv.stroke([(16 + s * 13, 2.5), (16 + s * 13 + f, 0)], 0.6, z=2.0, dome=0.3, mat=0)
+    cv.stroke([(13, 33), (11, 42), (12, 51)], 1.6, z=1.6, dome=0.5, mat=0)          # a leg standing
+    cv.stroke([(19, 33), (25, 39), (28, 35)], 1.6, z=1.6, dome=0.5, mat=0)          # a leg kicked up
+    return _prop(cv, [BONE, ramp('#1a1418', dark=0.6, light=1.4)], relief=1.0, cavity=0.4, shadow=0.4)
+
+
+def spr_ghost_car():
+    """The front of your own car on a ghost train, from its seat: a dark purple cowl with a grinning skull on its
+    nose, its eyes lit red, and the padded lap bar across in front of you. A shot's `vehicle` for a dark ride."""
+    w, h = 64, 36
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(2, 36), (62, 36), (54, 10), (10, 10)], z=1.0, top=0.6, bevel=3.0, mat=0)          # the cowl
+    cv.ellipse(32, 14, 8.0, 7.4, z=1.8, dome=0.9, mat=1)                            # the skull on its nose
+    cv.box(27.5, 19, 9, 4, z=1.7, top=0.5, bevel=0.6, mat=1)                        # its jaw
+    for x in (28.6, 35.4):
+        cv.ellipse(x, 13.6, 2.0, 2.2, z=1.95, dome=0.4, mat=2)                      # its eyes, lit
+    cv.box(28.5, 20.6, 7, 0.8, z=1.8, top=0.2, bevel=0.1, mat=3)                    # its teeth's line
+    cv.stroke([(4, 30), (14, 26), (50, 26), (60, 30)], 3.6, z=2.4, dome=0.8, mat=4)  # the lap bar
+    rgba, _ = _prop(cv, [RIDE_CAR, BONE, ramp('#ff2010', dark=0.8, light=1.2), ramp('#1a1418', dark=0.6, light=1.4),
+                         ramp('#2a2a30', dark=0.5, light=1.9)], relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [2])
+
+
+# ------------------------------------------------------------------ the blossom road
+
+BLOSSOM = ramp('#f4a8c4', dark=0.5, light=1.25)
+BARK_C = ramp('#4a3436', dark=0.4, light=1.7)
+VERMILION = ramp('#d8401e', dark=0.4, light=1.4, warm=0.06)
+PEAK_SNOW = ramp('#eef2f8', dark=0.55, light=1.1, cool=0.04)
+
+
+def spr_cherry_tree():
+    """A cherry tree in full bloom: a dark trunk forking into spreading limbs, the crown a cloud of pink blossom, a
+    few petals drifting down under it. Line a road with them in spring."""
+    w, h = 80, 72
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    rng = np.random.default_rng(91)
+    cv.stroke([(40, 72), (39, 52), (36, 40)], 5.0, z=1.0, dome=0.8, taper=(1.0, 0.7), mat=1)       # the trunk
+    for pts in (((38, 46), (24, 34), (12, 28)), ((40, 44), (54, 32), (68, 28)), ((37, 42), (34, 26), (30, 16)),
+                ((40, 44), (46, 24), (52, 14))):
+        cv.stroke(pts, 2.4, z=1.1, dome=0.7, taper=(1.0, 0.5), mat=1)              # the limbs
+    for _ in range(46):                                                             # the blossom, in clouds
+        cx, cy = rng.normal(40, 15), rng.normal(26, 8)
+        cv.ellipse(cx, cy, rng.uniform(4, 8), rng.uniform(3, 6), z=1.6 + rng.random() * 0.6, dome=0.8, mat=0,
+                   rough=0.3, rng=rng)
+    rgba, em = _prop(cv, [BLOSSOM, BARK_C], relief=1.0, cavity=0.4, shadow=0.45)
+    for _ in range(14):                                                             # petals drifting down
+        y, x = int(rng.uniform(42, 70)), int(rng.uniform(12, 68))
+        if rgba[y, x, 3] == 0:
+            rgba[y, x] = [1.0, 0.78, 0.86, 1.0]
+    return rgba, em
+
+
+def spr_torii():
+    """A shrine gate standing over a road: two vermilion pillars on black feet, the lower beam through them, the top
+    beam over it curving up at its ends and capped in black, a plaque between the two. Stand it at `x` 0 across the
+    road; 3.6 tall at its own size."""
+    w, h = 96, 72
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (18, 70):
+        cv.box(x, 14, 8, 58, z=1.0, top=0.6, bevel=2.0, mat=0)                     # the pillars
+        cv.box(x - 1, 64, 10, 8, z=1.1, top=0.5, bevel=1.0, mat=1)                  # their black feet
+    cv.box(10, 22, 76, 5, z=1.3, top=0.5, bevel=1.0, mat=0)                         # the lower beam
+    xs = np.linspace(0, 96, 25)
+    curve = [(x, 9 - 5 * ((x - 48) / 48) ** 4) for x in xs]
+    cv.stroke(curve, 5.0, z=1.5, dome=0.6, mat=0)                                   # the top beam, curving up
+    cv.stroke([(x, y - 3.2) for x, y in curve], 2.4, z=1.7, dome=0.5, mat=1)        # its black cap
+    cv.box(44, 11, 8, 11, z=1.6, top=0.5, bevel=0.8, mat=1)                         # the plaque
+    cv.box(45.5, 12.5, 5, 8, z=1.7, top=0.3, bevel=0.4, mat=2)
+    return _prop(cv, [VERMILION, ramp('#1e1a1c', dark=0.5, light=2.0), ramp('#d8b040', dark=0.4, light=1.3)],
+                 relief=1.0, cavity=0.4, shadow=0.4)
+
+
+def spr_snow_peak():
+    """A lone volcano far off, its cone rising alone from the plain, snow down its upper slopes in streaks, the rest
+    blue with distance. A billboard for the horizon, 18 tall at its own size."""
+    w, h = 128, 48
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(0, 48), (50, 4), (78, 4), (128, 48)], z=1.0, top=0.4, bevel=0.6, mat=0)
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    body = cv.id > 0
+    n = _noise(h, w, 4, 95)
+    snowline = 18 + 7 * np.sin(xx * 0.45) * (n - 0.3) + 6 * n
+    cv.mat[body & (yy < snowline)] = 1                                              # the snow, in streaks
+    cv.tone[body & (xx > 64 + (yy - 4) * 0.1)] = -0.18                               # the far side in shade
+    return _prop(cv, [ramp('#6a82a8', dark=0.5, light=1.3, cool=0.08), PEAK_SNOW], relief=1.0, cavity=0.3, shadow=0.4)
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -2357,16 +2667,17 @@ TEXTURES.update({'tower_windows': lambda n: tex_tower_windows(n), 'tower_windows
                  'tulip_field': lambda n: tex_tulip_field(n),
                  'tulip_field_b': lambda n: tex_tulip_field(n, (0.96, 0.8, 0.12)),
                  'tulip_field_c': lambda n: tex_tulip_field(n, (0.96, 0.46, 0.7)),
-                 'tulip_field_d': lambda n: tex_tulip_field(n, (0.56, 0.24, 0.7))})
+                 'tulip_field_d': lambda n: tex_tulip_field(n, (0.56, 0.24, 0.7)),
+                 'peppermint': lambda n: tex_peppermint(n), 'frosting': lambda n: tex_frosting(n)})
 TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront': 0.4, 'shopfront_b': 0.4,
                       'shopfront_c': 0.4, 'coaster_track': 0.2, 'coaster_frame': 0.2, 'rail_track': 0.6,
                       'grandstand': 0.3, 'suspension_cables': 0.0, 'canal_house': 0.3, 'canal_house_b': 0.3,
                       'canal_house_c': 0.3, 'canal_footing': 0.4, 'piste': 0.15, 'ski_fence': 0.0, 'chairlift': 0.0,
                       'city_night': 0.0, 'light_lane': 0.0, 'tulip_field': 0.2, 'tulip_field_b': 0.2,
-                      'tulip_field_c': 0.2, 'tulip_field_d': 0.2})
+                      'tulip_field_c': 0.2, 'tulip_field_d': 0.2, 'peppermint': 0.1, 'frosting': 0.2})
 VARIANTS = {'traffic_light': (3, _traffic_light), 'car_compact': (4, _car_compact), 'car_sedan': (4, _car_sedan),
             'billboard': (3, _billboard), 'race_car': (4, _race_car), 'car_oncoming': (4, _car_oncoming),
-            'mooring_pole': (3, _mooring_pole), 'slalom_gate': (2, _slalom_gate)}
+            'mooring_pole': (3, _mooring_pole), 'slalom_gate': (2, _slalom_gate), 'gumdrop': (4, _gumdrop)}
 
 SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_sedan': spr_car_sedan,
            'box_truck': spr_box_truck, 'curve_sign': spr_curve_sign, 'billboard': spr_billboard,
@@ -2386,7 +2697,11 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'skier': spr_skier, 'ski_tips': spr_ski_tips, 'lift_tower': spr_lift_tower, 'moon_buggy': spr_moon_buggy,
            'loco_boiler': spr_loco_boiler, 'telegraph_pole': spr_telegraph_pole, 'windmill': spr_windmill,
            'cyclist': spr_cyclist, 'bike_bars': spr_bike_bars, 'runway_light': spr_runway_light,
-           'control_tower': spr_control_tower, 'airliner': spr_airliner, 'cockpit': spr_cockpit}
+           'control_tower': spr_control_tower, 'airliner': spr_airliner, 'cockpit': spr_cockpit,
+           'stilt_shack': spr_stilt_shack, 'camel': spr_camel, 'camel_head': spr_camel_head, 'pyramid': spr_pyramid,
+           'candy_cane': spr_candy_cane, 'lollipop': spr_lollipop, 'gumdrop': spr_gumdrop,
+           'gingerbread_house': spr_gingerbread_house, 'skeleton': spr_skeleton, 'ghost_car': spr_ghost_car,
+           'cherry_tree': spr_cherry_tree, 'torii': spr_torii, 'snow_peak': spr_snow_peak}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
@@ -2399,7 +2714,10 @@ SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'bo
                  'mooring_pole': 1.3, 'canal_bridge': 1.45, 'gondola': 0.85, 'washing_line': 0.6,
                  'slalom_gate': 0.62, 'skier': 0.5, 'ski_tips': 0.4, 'lift_tower': 3.0, 'moon_buggy': 0.55,
                  'loco_boiler': 0.6, 'telegraph_pole': 2.9, 'windmill': 4.0, 'cyclist': 0.6, 'bike_bars': 0.3,
-                 'runway_light': 0.08, 'control_tower': 8.0, 'airliner': 2.6, 'cockpit': 0.84}
+                 'runway_light': 0.08, 'control_tower': 8.0, 'airliner': 2.6, 'cockpit': 0.84,
+                 'stilt_shack': 2.2, 'camel': 0.8, 'camel_head': 0.5, 'pyramid': 20.0,
+                 'candy_cane': 1.8, 'lollipop': 2.4, 'gumdrop': 0.8, 'gingerbread_house': 2.0, 'skeleton': 0.75,
+                 'ghost_car': 0.4, 'cherry_tree': 3.2, 'torii': 3.6, 'snow_peak': 18.0}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
@@ -2411,4 +2729,7 @@ PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}
                  'ski_tips': {'shadow': False}, 'lift_tower': {'shadow': False}, 'moon_buggy': {'shadow': False},
                  'loco_boiler': {'shadow': False}, 'windmill': {'shadow': False}, 'bike_bars': {'shadow': False},
                  'runway_light': {'shadow': False, 'fullbright': True}, 'control_tower': {'shadow': False},
-                 'airliner': {'shadow': False}, 'cockpit': {'shadow': False}}
+                 'airliner': {'shadow': False}, 'cockpit': {'shadow': False}, 'stilt_shack': {'shadow': False},
+                 'camel_head': {'shadow': False}, 'pyramid': {'shadow': False},
+                 'gingerbread_house': {'shadow': False}, 'ghost_car': {'shadow': False},
+                 'torii': {'shadow': False}, 'snow_peak': {'shadow': False}}
