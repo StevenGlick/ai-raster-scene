@@ -198,6 +198,8 @@ SHOTS = {
     'road_ski': ('ski_run', 1),
     'road_sky_lane': ('sky_lane', 1),
     'road_moon': ('moon_drive', 1),
+    'road_tulips': ('tulip_ride', 1),
+    'road_runway': ('night_runway', 1),
     # where it started: the three concept drawings, made scenes (the drawings are in docs/origins)
     'storm_island': ('storm_island', 1),
     'storm_town': ('storm_island', 2),

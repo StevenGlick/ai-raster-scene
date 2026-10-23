@@ -1,0 +1,255 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    20,
+    0,
+    0
+   ],
+   [
+    60,
+    0.08,
+    0
+   ],
+   [
+    60,
+    -0.1,
+    0
+   ],
+   [
+    400,
+    0.04,
+    0
+   ]
+  ],
+  "width": 1.2,
+  "surface": {
+   "base": "asphalt",
+   "tint": [
+    0.85,
+    0.42,
+    0.36
+   ]
+  },
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "ground": {
+   "left": [
+    {
+     "width": 0.35,
+     "texture": "grass"
+    },
+    {
+     "width": 0.7,
+     "texture": "water"
+    },
+    {
+     "width": 0.35,
+     "texture": "grass"
+    },
+    {
+     "width": 2.6,
+     "texture": "tulip_field"
+    },
+    {
+     "width": 2.6,
+     "texture": "tulip_field_b"
+    },
+    {
+     "width": 2.6,
+     "texture": "tulip_field_c"
+    },
+    {
+     "width": 2.6,
+     "texture": "tulip_field_d"
+    },
+    {
+     "width": 2.6,
+     "texture": "tulip_field_b"
+    },
+    {
+     "width": 2.6,
+     "texture": "tulip_field"
+    },
+    {
+     "texture": "pasture"
+    }
+   ],
+   "right": [
+    {
+     "width": 0.35,
+     "texture": "grass"
+    },
+    {
+     "width": 0.7,
+     "texture": "water"
+    },
+    {
+     "width": 0.35,
+     "texture": "grass"
+    },
+    {
+     "width": 2.6,
+     "texture": "tulip_field_c"
+    },
+    {
+     "width": 2.6,
+     "texture": "tulip_field"
+    },
+    {
+     "width": 2.6,
+     "texture": "tulip_field_b"
+    },
+    {
+     "width": 2.6,
+     "texture": "tulip_field_d"
+    },
+    {
+     "width": 2.6,
+     "texture": "tulip_field_c"
+    },
+    {
+     "width": 2.6,
+     "texture": "tulip_field_b"
+    },
+    {
+     "texture": "pasture"
+    }
+   ]
+  },
+  "distance": 400
+ },
+ "camera": {
+  "at": 1.0,
+  "x": 0.0,
+  "height": 0.5,
+  "fov": 64,
+  "pitch": 0.04
+ },
+ "title": "The tulip ride - cycling a red path through the bulb fields in spring, windmills in the tulips",
+ "sky": "day",
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 232,
+   "elevation": 34,
+   "intensity": 0.9,
+   "color": [
+    1.0,
+    0.96,
+    0.88
+   ]
+  }
+ ],
+ "ambient": [
+  0.62,
+  0.64,
+  0.7
+ ],
+ "fog": {
+  "color": [
+   0.78,
+   0.84,
+   0.92
+  ],
+  "density": 0.004,
+  "sky_mix": 0.2
+ },
+ "roadside": [
+  {
+   "type": "reeds",
+   "density": 0.8,
+   "offset": [
+    0.3,
+    1.1
+   ],
+   "scale": [
+    0.3,
+    0.5
+   ],
+   "seed": 1
+  },
+  {
+   "type": "tree",
+   "side": "both",
+   "every": 2.2,
+   "offset": 18.5,
+   "scale": [
+    2.2,
+    2.8
+   ],
+   "seed": 2
+  }
+ ],
+ "sprites": [
+  {
+   "type": "windmill",
+   "at": 28,
+   "x": -11,
+   "scale": 4.5
+  },
+  {
+   "type": "windmill",
+   "at": 52,
+   "x": 15,
+   "scale": 5.0,
+   "flip": true
+  },
+  {
+   "type": "windmill",
+   "at": 17,
+   "x": 7.5,
+   "scale": 4.2
+  },
+  {
+   "type": "windmill",
+   "at": 120,
+   "x": -24,
+   "scale": 5.0
+  },
+  {
+   "type": "cyclist",
+   "at": 6.5,
+   "x": 0.2
+  },
+  {
+   "type": "cyclist",
+   "at": 14,
+   "x": -0.25,
+   "tint": [
+    1.2,
+    0.8,
+    0.8
+   ]
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": 0.0,
+   "height": 0.5,
+   "fov": 64,
+   "pitch": 0.04,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.5,
+     "radius": 2.0
+    }
+   ],
+   "vehicle": {
+    "type": "bike_bars",
+    "ahead": 0.8,
+    "z": 0.17,
+    "scale": 0.3
+   }
+  }
+ ],
+ "supersample": 2
+}

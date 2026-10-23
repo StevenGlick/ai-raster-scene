@@ -231,7 +231,7 @@ A road through a glass tube on the sea floor: `walls` of `viewport` (open glass 
 
 ### A viaduct by train
 
-The line (`rail_track`) between low parapets (`walls` of `stone` 0.42 high), the ground `void` either side and the valley far `below` in bands (woods, a river, pasture); telegraph poles and their wires along it, `steam` drifting back past the cab, a `golden` sky and a low sun. A wall can only run along the line, never across it - a tunnel ahead needs a portal prop, not a wall. See `examples/viaduct_train.py`.
+The line (`rail_track`) between low parapets (`walls` of `stone` 0.42 high), the ground `void` either side and the valley far `below` in bands (woods, a river, pasture); `telegraph_pole`s every 9 with a `power_lines` wall at their arms (`z` 2.35), the engine's boiler ahead (`loco_boiler` as the shot's vehicle, `ahead` 1.6) and `steam` rising from its chimney and drifting back over the cab in three puffs, each nearer, higher and fainter; a `golden` sky and a low sun. A wall can only run along the line, never across it - a tunnel ahead needs a portal prop, not a wall. See `examples/viaduct_train.py`.
 
 ### A jungle river by canoe
 
@@ -293,6 +293,23 @@ No road but the tracks: `regolith` for the road and the ground, `rover_tracks` d
 decals either side at every size; boulders and rocks tinted pale. The base ahead - `dome` (lit), `hab_module`s,
 `solar_array`s, a `lander` - an `astronaut` walking out; a `moon_buggy` as the vehicle. The `space` sky with the
 `earth` over the horizon, a low sun, no fog. See `examples/moon_drive.py`.
+
+### A bike ride through the bulb fields
+
+A narrow path of red asphalt (`asphalt` tinted, no lines), then either side a strip of grass, a ditch of `water`
+0.7 wide that mirrors the sky and the windmills, and the fields as ground bands 2.6 wide in turn - `tulip_field`,
+`_b`, `_c`, `_d` - whose rows close up into stripes of colour to the horizon, `pasture` beyond; `reeds` along the
+ditches, a row of trees far out every 2.2, `windmill`s in the fields (one near), two `cyclist`s ahead, and your
+`bike_bars` as the shot's vehicle (`ahead` 0.8, `z` 0.17). A `day` sky and a high sun. See `examples/tulip_ride.py`.
+
+### A runway at night
+
+The runway is the road, flat and straight: `concrete` 6 wide, a dashed centre line (`lanes` 2, `stripe` 4) and white
+`edges`, the threshold's bars a `zebra_crossing` decal 6 across. `runway_light`s every 1.5 down both edges, smaller
+every unit down the `middle`, blue along a taxiway, red across the far end; an `airliner` lifting off ahead (`z`
+1.0) with a light of its own, the `control_tower`, the terminal as a low wall of `tower_windows`, the `city`
+skyline. The view is from the `cockpit` (the shot's vehicle), with `bloom` from the lights. See
+`examples/night_runway.py`.
 
 ### A highway at night, and a tunnel
 

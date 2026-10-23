@@ -1646,7 +1646,6 @@ def spr_dark_castle():
 LACQUER = ramp('#1a1a22', dark=0.5, light=3.0, cool=0.1)
 NAVY = ramp('#24325e', dark=0.45, light=1.6, cool=0.06)
 STRAW = ramp('#e2c272', dark=0.45, light=1.3, warm=0.06)
-SKIN = ramp('#d8a07a', dark=0.45, light=1.3, warm=0.05)
 STONE_W = ramp('#dedad0', dark=0.45, light=1.25)
 CANAL_BRICK = ramp('#9a5a3e', dark=0.4, light=1.4, warm=0.06)
 POLE_C = [ramp('#c42a2a', dark=0.4, light=1.4), ramp('#2a4ac4', dark=0.4, light=1.5, cool=0.08),
@@ -1844,7 +1843,7 @@ def spr_gondola():
 
 JACKET = ramp('#d83a2a', dark=0.4, light=1.4)
 SKI_PANTS = ramp('#22283a', dark=0.45, light=1.9, cool=0.08)
-HELMET = ramp('#e8e8ec', dark=0.45, light=1.2)
+SKI_HELMET = ramp('#e8e8ec', dark=0.45, light=1.2)
 GATE_C = [ramp('#d82a22', dark=0.4, light=1.4), ramp('#2a52d8', dark=0.4, light=1.5, cool=0.08)]
 NET = np.array([1.0, 0.45, 0.08], np.float32)
 LIFT = ramp('#8a8e96', dark=0.4, light=1.6, cool=0.06)
@@ -1948,7 +1947,7 @@ def spr_skier():
     cv.stroke([(24, 15), (25, 24)], 3.0, z=1.9, dome=0.6, mat=0)
     cv.ellipse(15, 9, 5.0, 5.2, z=2.2, dome=0.9, mat=2)                              # the helmet
     cv.box(10, 9, 10, 1.6, z=2.3, top=0.2, bevel=0.2, mat=6)                        # the goggles' strap
-    return _prop(cv, [JACKET, SKI_PANTS, HELMET, TRIM, CHROME, ramp('#e8a020', dark=0.4, light=1.3),
+    return _prop(cv, [JACKET, SKI_PANTS, SKI_HELMET, TRIM, CHROME, ramp('#e8a020', dark=0.4, light=1.3),
                       ramp('#30c0e0', dark=0.4, light=1.3)], relief=1.0, cavity=0.4, shadow=0.4)
 
 
@@ -2094,6 +2093,245 @@ def spr_moon_buggy():
                       ramp('#c82a22', dark=0.4, light=1.4)], relief=1.0, cavity=0.4, shadow=0.45)
 
 
+# ------------------------------------------------------------------ the footplate
+
+LOCO = ramp('#1e4a30', dark=0.4, light=2.0, cool=0.04)
+POLE_W = ramp('#6a5038', dark=0.4, light=1.5, warm=0.05)
+
+
+def spr_loco_boiler():
+    """The view from a steam engine's footplate: the boiler running away ahead of you in green paint, brass bands
+    round it, the handrails along its sides, the dome on its back and the chimney at its far end over the
+    smokebox. A shot's `vehicle` for a train: set `steam` over the chimney, and more drifting back."""
+    w, h = 64, 48
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.stroke([(32, 50), (32, 16)], 44, z=7.0, dome=1.0, taper=(1.0, 0.32), mat=0)       # the boiler, round
+    body = cv.id > 0
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    half = 22 - 15 * np.clip((50 - yy) / 34, 0, 1)                                   # the boiler's half-width
+    u = (xx - 32) / half
+    cv.tone[body] = (0.34 * np.sqrt(np.clip(1 - ((u + 0.25) / 1.1) ** 2, 0, 1)) - 0.2)[body]   # round: lit on top
+    for t in (0.18, 0.5, 0.78):                                                       # brass bands, nearer apart
+        y = 48 - 34 * t ** 0.8                                                         # as they go away
+        cv.mat[body & (np.abs(yy - y - 0.0006 * (xx - 32) ** 2 * (1 - t)) < 0.4 + 0.4 * (1 - t))] = 1
+    for sgn in (-1, 1):                                                                # the handrails
+        rail = body & (np.abs((xx - 32) * sgn - (6.4 + (yy - 15) * 0.44)) < 0.6)
+        cv.mat[rail] = 1
+        cv.z[rail] += 0.8
+    cv.ellipse(32, 25, 4.6, 3.4, z=7.6, dome=0.9, mat=1)                              # the dome
+    cv.box(25.5, 11, 13, 5, z=4.0, top=0.6, bevel=1.4, mat=2)                         # the smokebox's top
+    cv.box(29.5, 3, 5, 9, z=5.0, top=0.7, bevel=1.0, mat=2)                           # the chimney
+    cv.ellipse(32, 3.2, 3.6, 1.4, z=5.4, dome=0.6, mat=2)                             # its cap
+    cv.box(0, 42, 9, 6, z=2.0, top=0.4, bevel=0.8, mat=2)                             # the cab's spectacle plate
+    cv.box(55, 42, 9, 6, z=2.0, top=0.4, bevel=0.8, mat=2)
+    return _prop(cv, [LOCO, BRASS, ramp('#1c1c20', dark=0.5, light=2.2)], relief=1.0, cavity=0.4, shadow=0.4)
+
+
+def spr_telegraph_pole():
+    """A telegraph pole of the railway age: a weathered wooden pole, three crossarms near its top, each with its
+    row of glass insulators. Stand them along a line every span with a `power_lines` wall at the arms."""
+    w, h = 24, 64
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(10.4, 2, 3.2, 62, z=1.0, top=0.6, bevel=1.4, mat=0)                        # the pole
+    for y in (6, 11, 16):                                                            # the crossarms
+        cv.box(1, y, 22, 2.2, z=1.3, top=0.5, bevel=0.6, mat=0)
+        for x in (2.5, 7, 17, 21.5):                                                  # their insulators
+            cv.ellipse(x, y - 1.0, 1.1, 1.3, z=1.6, dome=0.8, mat=1)
+    return _prop(cv, [POLE_W, ramp('#9ac8b8', dark=0.5, light=1.4, cool=0.08)], relief=1.0, cavity=0.4, shadow=0.4)
+
+
+# ------------------------------------------------------------------ the bulb fields
+
+SAIL = ramp('#d8d0c0', dark=0.45, light=1.25)
+THATCH = ramp('#6a5a46', dark=0.4, light=1.6, warm=0.04)
+MILL_BRICK = ramp('#8a4632', dark=0.4, light=1.4, warm=0.06)
+BIKE = ramp('#2a3a5a', dark=0.4, light=1.8, cool=0.06)
+WICKER = ramp('#b0844a', dark=0.4, light=1.4, warm=0.06)
+SKIN_B = ramp('#e0aa84', dark=0.45, light=1.3, warm=0.05)
+TULIP_C = [ramp('#e0242a', dark=0.4, light=1.4), ramp('#f4c81a', dark=0.4, light=1.3, warm=0.05)]
+
+
+def tex_tulip_field(name, petal=(0.88, 0.12, 0.14)):
+    """A field of tulips in flower, for the ground beside a road through the bulb fields: rows of blooms in one
+    colour (`petal`) four to a tile running along the road, their leaves and the dark soil between the rows. Seen
+    down the road the rows close up into a band of colour to the horizon."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    p = np.array(petal, np.float32)
+    rgb = np.array([0.22, 0.16, 0.1], np.float32) * (0.8 + 0.4 * fbm(T, rng, 8, 2))[..., None]     # the soil
+    lane = xx % 16
+    leaf = (lane >= 2) & (lane < 14)
+    rgb[leaf] = np.array([0.2, 0.42, 0.16], np.float32) * (0.75 + 0.5 * fbm(T, rng, 16, 2)[leaf])[:, None]
+    heads = (lane >= 3) & (lane < 13) & (vnoise(T, 32, rng) + 0.35 * rng.random((T, T)) > 0.62)
+    shade = 0.75 + 0.45 * fbm(T, rng, 32, 2)
+    rgb[heads] = p * shade[heads][:, None]
+    top = heads & (rng.random((T, T)) < 0.2)
+    rgb[top] = np.minimum(p * 1.35 + 0.12, 1.0)                                        # light on the petals
+    return np.clip(rgb, 0, 1), None
+
+
+def spr_windmill():
+    """A windmill of the low country: a brick base, the tapering thatched body with a stage round it, the cap and
+    four lattice sails set in an X. A landmark for the flat fields: stand it out in them, 4 tall at its own size."""
+    w, h = 72, 100
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(19, 100), (53, 100), (51, 84), (21, 84)], z=1.0, top=0.6, bevel=1.6, mat=2)       # the base
+    cv.box(33, 90, 6, 10, z=1.2, top=0.5, bevel=0.8, mat=4)                         # its door
+    cv.polygon([(22, 85), (50, 85), (42, 36), (30, 36)], z=1.2, top=0.8, bevel=4.0, mat=1)         # the body
+    for y in (52, 64, 76):                                                          # the thatch's courses
+        cv.stroke([(24 + (85 - y) * 0.16, y), (48 - (85 - y) * 0.16, y)], 0.6, mode='carve', z=0.3)
+    cv.box(31.6, 58, 3.4, 5, z=1.4, top=0.5, bevel=0.5, mat=4)                      # a window
+    cv.box(10, 70, 52, 2.6, z=1.6, top=0.4, bevel=0.6, mat=3)                       # the stage
+    for x in range(11, 62, 5):
+        cv.box(x, 66, 0.9, 4, z=1.6, top=0.3, bevel=0.2, mat=3)                     # its rail's posts
+    cv.box(10, 65.6, 52, 1.0, z=1.65, top=0.3, bevel=0.2, mat=3)                    # the rail
+    cv.ellipse(36, 34, 9, 6.5, z=1.6, dome=0.9, mat=1)                              # the cap
+    for ang in (38, 128, 218, 308):                                                 # the sails
+        a = np.radians(ang)
+        tip = (36 + np.cos(a) * 34, 34 + np.sin(a) * 34)
+        cv.stroke([(36, 34), tip], 1.2, z=2.0, dome=0.4, mat=3)                    # the stock
+        side = np.array([np.cos(a + np.pi / 2), np.sin(a + np.pi / 2)]) * 4.5
+        start = np.array([36 + np.cos(a) * 8, 34 + np.sin(a) * 8])
+        end = np.array(tip)
+        cv.stroke([tuple(start + side), tuple(end + side)], 0.8, z=1.95, dome=0.3, mat=0)   # the lattice's edge
+        for k in np.linspace(0, 1, 7):                                              # its bars
+            p0 = start + (end - start) * k
+            cv.stroke([tuple(p0), tuple(p0 + side)], 0.7, z=1.9, dome=0.3, mat=0)
+    cv.ellipse(36, 34, 2.2, 2.2, z=2.2, dome=0.8, mat=4)                            # the hub
+    return _prop(cv, [SAIL, THATCH, MILL_BRICK, ramp('#e8e4da', dark=0.45, light=1.2), TRIM], relief=1.0,
+                 cavity=0.4, shadow=0.4)
+
+
+def spr_cyclist():
+    """Someone cycling ahead of you on an upright bike, seen from behind: a coat and a scarf, the back wheel under
+    them and its mudguard, one knee up on the pedal."""
+    w, h = 24, 44
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(10.6, 30, 2.8, 14, z=1.0, top=0.6, bevel=1.0, mat=3)                     # the back wheel, edge on
+    cv.box(10.2, 28, 3.6, 3, z=1.1, top=0.5, bevel=0.6, mat=4)                      # the mudguard and its light
+    cv.box(7, 26, 10, 2.2, z=1.2, top=0.4, bevel=0.6, mat=3)                        # the carrier
+    cv.stroke([(9, 22), (8, 32), (9, 36)], 2.6, z=1.4, dome=0.7, mat=1)              # the legs, one up
+    cv.stroke([(15, 22), (16, 28)], 2.6, z=1.4, dome=0.7, mat=1)
+    cv.polygon([(6, 10), (18, 10), (19, 24), (5, 24)], z=1.7, top=0.7, bevel=2.0, mat=0)   # the coat
+    cv.box(8, 8.5, 8, 2.6, z=1.9, top=0.4, bevel=0.8, mat=5)                        # the scarf
+    cv.ellipse(12, 5.5, 3.4, 3.8, z=2.0, dome=0.9, mat=2)                           # the head
+    return _prop(cv, [ramp('#3a6a8a', dark=0.4, light=1.5), ramp('#2a2a32', dark=0.45, light=1.9), HAIR_D, TRIM,
+                      ramp('#e0302a', dark=0.5, light=1.3), ramp('#e8b020', dark=0.4, light=1.3)],
+                 relief=1.0, cavity=0.4, shadow=0.4)
+
+
+def spr_bike_bars():
+    """Your own bicycle from the saddle: the swept-back handlebars, your hands on the grips (the backs of them, a
+    thumb over each), a bell, and a wicker basket on the front with tulips in it. A shot's `vehicle` for a ride:
+    `"ahead": 0.8`, `"z"` up near the eye."""
+    w, h = 64, 34
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(20, 22), (44, 22), (42, 34), (22, 34)], z=1.0, top=0.6, bevel=1.6, mat=3)        # the basket
+    for x in range(22, 43, 3):
+        cv.stroke([(x, 23), (x + 0.4, 33)], 0.5, mode='carve', z=0.3)
+    for k in range(7):                                                              # tulips in it
+        x = 24 + k * 2.6 + (k % 2)
+        cv.stroke([(x, 22), (x + (k - 3) * 0.6, 14 + (k % 3))], 0.7, z=1.3, dome=0.3, mat=4)     # stems
+        cv.ellipse(x + (k - 3) * 0.6, 13 + (k % 3), 1.6, 2.0, z=1.6, dome=0.9, mat=5 + k % 2)   # heads
+    cv.stroke([(4, 20), (14, 16), (32, 15), (50, 16), (60, 20)], 2.2, z=2.0, dome=0.6, mat=0)   # the bars
+    cv.stroke([(32, 15), (32, 24)], 2.6, z=1.8, dome=0.6, mat=0)                    # the stem
+    cv.ellipse(39, 13.5, 2.0, 1.6, z=2.4, dome=0.9, mat=7)                          # the bell
+    for s in (-1, 1):                                                               # the hands on the grips
+        x = 32 + s * 24
+        cv.ellipse(x, 20.5, 5.4, 4.0, z=2.6, dome=0.9, mat=2)
+        cv.stroke([(x - s * 4, 18.5), (x - s * 7.5, 17.5)], 2.0, z=2.8, dome=0.8, mat=2)         # the thumb
+    return _prop(cv, [BIKE, BIKE, SKIN_B, WICKER, ramp('#3a7a2a', dark=0.4, light=1.5), TULIP_C[0], TULIP_C[1],
+                      CHROME], relief=1.0, cavity=0.4, shadow=0.4)
+
+
+# ------------------------------------------------------------------ the runway at night
+
+AIRLINER = ramp('#c8ccd4', dark=0.4, light=1.5, cool=0.06)
+
+
+def spr_runway_light():
+    """A runway's edge light: a squat glass lens on a short stalk, lit - tint it (white for the runway's edges,
+    blue for a taxiway, green at the threshold, red at its end). A row every unit or two down each edge."""
+    w, h = 8, 8
+    rgba = np.zeros((h, w, 4), np.float32)
+    em = np.zeros((h, w), np.float32)
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    lens = ((xx - 4) / 3.2) ** 2 + ((yy - 3.2) / 2.4) ** 2 < 1
+    stalk = (np.abs(xx - 4) < 1) & (yy > 4.5)
+    rgba[stalk] = [0.3, 0.3, 0.32, 1.0]
+    rgba[lens] = [1.0, 1.0, 1.0, 1.0]
+    em[lens] = 1.0
+    return rgba, em
+
+
+def spr_control_tower():
+    """An airport's control tower at night: a tall concrete shaft, the cab at its top glazed all round and lit
+    green-white, a red beacon on the roof, a few lit windows down the shaft."""
+    w, h = 36, 100
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(13, 100), (23, 100), (22, 26), (14, 26)], z=1.0, top=0.6, bevel=2.0, mat=0)      # the shaft
+    cv.polygon([(6, 16), (30, 16), (27, 26), (9, 26)], z=1.3, top=0.6, bevel=1.4, mat=1)        # the cab's glass
+    cv.box(4, 12, 28, 4, z=1.5, top=0.6, bevel=1.0, mat=0)                          # its roof
+    cv.box(8, 26, 20, 3, z=1.4, top=0.5, bevel=0.8, mat=0)                          # its floor
+    cv.box(16.5, 6, 3, 6, z=1.6, top=0.5, bevel=0.6, mat=0)                         # the mast
+    cv.ellipse(18, 5, 2.0, 2.0, z=1.8, dome=0.8, mat=2)                             # the beacon
+    for y in (40, 56, 72):
+        cv.box(16.6, y, 2.8, 3, z=1.1, top=0.3, bevel=0.3, mat=3)                   # a lit window or two
+    for x in range(10, 28, 4):                                                      # the cab's mullions
+        cv.stroke([(x, 16.5), (x + (x - 18) * 0.12, 25.5)], 0.6, z=1.4, dome=0.3, mat=0)
+    rgba, _ = _prop(cv, [ramp('#5a5a62', dark=0.4, light=1.6), ramp('#a8f0c8', dark=0.7, light=1.2),
+                         ramp('#ff3020', dark=0.7, light=1.2), ramp('#ffd890', dark=0.7, light=1.1)],
+                    relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [1, 2, 3])
+
+
+def spr_airliner():
+    """An airliner seen from behind as it lifts off the runway ahead of you at night: the fuselage's round tail end,
+    the fin rising over it, the wings swept back to their tips with the red and green lights, the engines under
+    them, the white strobe and the tail's light lit."""
+    w, h = 128, 56
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(62, 4), (66, 4), (68, 30), (60, 30)], z=1.2, top=0.6, bevel=1.4, mat=0)          # the fin
+    cv.polygon([(4, 34), (58, 30), (70, 30), (124, 34), (124, 36), (70, 38), (58, 38), (4, 36)], z=1.0,
+               top=0.5, bevel=1.0, mat=0)                                            # the wings
+    cv.polygon([(46, 26), (82, 26), (82, 29), (46, 29)], z=1.3, top=0.5, bevel=0.8, mat=0)        # the tailplane
+    cv.ellipse(64, 34, 7.5, 7.5, z=1.6, dome=0.9, mat=0)                            # the fuselage, end on
+    for x in (40, 88):                                                              # the engines
+        cv.ellipse(x, 41, 5.0, 4.6, z=1.4, dome=0.8, mat=1)
+        cv.ellipse(x, 41, 3.0, 2.8, z=1.5, dome=0.4, mat=2)
+    cv.ellipse(4, 35, 1.8, 1.8, z=1.8, dome=0.8, mat=3)                             # the port light, red
+    cv.ellipse(124, 35, 1.8, 1.8, z=1.8, dome=0.8, mat=4)                           # starboard, green
+    cv.ellipse(64, 4, 1.6, 1.6, z=1.8, dome=0.8, mat=5)                             # the fin's light
+    cv.ellipse(64, 27.5, 1.4, 1.4, z=1.9, dome=0.8, mat=5)                          # the tail cone's light
+    rgba, _ = _prop(cv, [AIRLINER, ramp('#8a8e98', dark=0.4, light=1.6), ramp('#2a2a32', dark=0.5, light=1.6),
+                         ramp('#ff3020', dark=0.7, light=1.2), ramp('#30ff70', dark=0.7, light=1.2),
+                         ramp('#ffffff', dark=0.8, light=1.0)], relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [3, 4, 5])
+
+
+def spr_cockpit():
+    """The cockpit of your own aircraft, from the left seat: the glareshield across the bottom of the view with the
+    instruments glowing under it, the windscreen's frame and its pillars round the view, the yoke's horns. A shot's
+    `vehicle`: `"ahead": 0.9`, `"z"` so the frame's top is out of the view."""
+    w, h = 96, 72
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(0, 56), (96, 56), (96, 72), (0, 72)], z=1.0, top=0.5, bevel=1.0, mat=0)          # the panel
+    cv.polygon([(0, 51), (96, 51), (96, 57), (0, 57)], z=1.6, top=0.5, bevel=1.2, mat=1)          # the glareshield
+    for x0 in (8, 26, 54, 72):                                                      # the screens, glowing
+        cv.box(x0, 59, 15, 9, z=1.2, top=0.3, bevel=0.6, mat=2)
+        cv.box(x0 + 2, 61, 11, 1.2, z=1.3, top=0.2, bevel=0.2, mat=3)
+        cv.box(x0 + 2, 64, 7, 1.2, z=1.3, top=0.2, bevel=0.2, mat=3)
+    cv.polygon([(0, 0), (10, 0), (15, 51), (0, 51)], z=1.4, top=0.5, bevel=1.4, mat=0)            # the pillars
+    cv.polygon([(96, 0), (86, 0), (81, 51), (96, 51)], z=1.4, top=0.5, bevel=1.4, mat=0)
+    cv.polygon([(0, 0), (96, 0), (96, 5), (0, 5)], z=1.4, top=0.5, bevel=1.0, mat=0)              # the frame's top
+    cv.stroke([(30, 72), (30, 66), (24, 64)], 2.4, z=2.0, dome=0.6, mat=0)          # the yoke's horns
+    cv.stroke([(30, 66), (36, 64)], 2.4, z=2.0, dome=0.6, mat=0)
+    rgba, _ = _prop(cv, [ramp('#22242a', dark=0.5, light=2.0), ramp('#18181c', dark=0.5, light=2.0),
+                         ramp('#0a2a3a', dark=0.6, light=1.3), ramp('#60f0a0', dark=0.7, light=1.1)],
+                    relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [2, 3]) * 0.5
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -2115,12 +2353,17 @@ TEXTURES.update({'tower_windows': lambda n: tex_tower_windows(n), 'tower_windows
                  'canal_house_c': lambda n: tex_canal_house(n, (0.84, 0.78, 0.64)),
                  'canal_footing': lambda n: tex_canal_footing(n), 'piste': lambda n: tex_piste(n),
                  'ski_fence': lambda n: tex_ski_fence(n), 'chairlift': lambda n: tex_chairlift(n),
-                 'city_night': lambda n: tex_city_night(n), 'light_lane': lambda n: tex_light_lane(n)})
+                 'city_night': lambda n: tex_city_night(n), 'light_lane': lambda n: tex_light_lane(n),
+                 'tulip_field': lambda n: tex_tulip_field(n),
+                 'tulip_field_b': lambda n: tex_tulip_field(n, (0.96, 0.8, 0.12)),
+                 'tulip_field_c': lambda n: tex_tulip_field(n, (0.96, 0.46, 0.7)),
+                 'tulip_field_d': lambda n: tex_tulip_field(n, (0.56, 0.24, 0.7))})
 TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront': 0.4, 'shopfront_b': 0.4,
                       'shopfront_c': 0.4, 'coaster_track': 0.2, 'coaster_frame': 0.2, 'rail_track': 0.6,
                       'grandstand': 0.3, 'suspension_cables': 0.0, 'canal_house': 0.3, 'canal_house_b': 0.3,
                       'canal_house_c': 0.3, 'canal_footing': 0.4, 'piste': 0.15, 'ski_fence': 0.0, 'chairlift': 0.0,
-                      'city_night': 0.0, 'light_lane': 0.0})
+                      'city_night': 0.0, 'light_lane': 0.0, 'tulip_field': 0.2, 'tulip_field_b': 0.2,
+                      'tulip_field_c': 0.2, 'tulip_field_d': 0.2})
 VARIANTS = {'traffic_light': (3, _traffic_light), 'car_compact': (4, _car_compact), 'car_sedan': (4, _car_sedan),
             'billboard': (3, _billboard), 'race_car': (4, _race_car), 'car_oncoming': (4, _car_oncoming),
             'mooring_pole': (3, _mooring_pole), 'slalom_gate': (2, _slalom_gate)}
@@ -2140,7 +2383,10 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'motel_sign': spr_motel_sign, 'gas_station': spr_gas_station, 'bridge_tower': spr_bridge_tower,
            'dark_castle': spr_dark_castle, 'mooring_pole': spr_mooring_pole, 'canal_bridge': spr_canal_bridge,
            'gondola': spr_gondola, 'washing_line': spr_washing_line, 'slalom_gate': spr_slalom_gate,
-           'skier': spr_skier, 'ski_tips': spr_ski_tips, 'lift_tower': spr_lift_tower, 'moon_buggy': spr_moon_buggy}
+           'skier': spr_skier, 'ski_tips': spr_ski_tips, 'lift_tower': spr_lift_tower, 'moon_buggy': spr_moon_buggy,
+           'loco_boiler': spr_loco_boiler, 'telegraph_pole': spr_telegraph_pole, 'windmill': spr_windmill,
+           'cyclist': spr_cyclist, 'bike_bars': spr_bike_bars, 'runway_light': spr_runway_light,
+           'control_tower': spr_control_tower, 'airliner': spr_airliner, 'cockpit': spr_cockpit}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
@@ -2151,7 +2397,9 @@ SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'bo
                  'mine_frame': 2.2, 'mine_cart': 0.38, 'starfighter': 0.4, 'race_car': 0.3, 'car_oncoming': 0.48,
                  'motel_sign': 4.2, 'gas_station': 2.6, 'bridge_tower': 10.0, 'dark_castle': 30.0,
                  'mooring_pole': 1.3, 'canal_bridge': 1.45, 'gondola': 0.85, 'washing_line': 0.6,
-                 'slalom_gate': 0.62, 'skier': 0.5, 'ski_tips': 0.4, 'lift_tower': 3.0, 'moon_buggy': 0.55}
+                 'slalom_gate': 0.62, 'skier': 0.5, 'ski_tips': 0.4, 'lift_tower': 3.0, 'moon_buggy': 0.55,
+                 'loco_boiler': 0.6, 'telegraph_pole': 2.9, 'windmill': 4.0, 'cyclist': 0.6, 'bike_bars': 0.3,
+                 'runway_light': 0.08, 'control_tower': 8.0, 'airliner': 2.6, 'cockpit': 0.84}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
@@ -2160,4 +2408,7 @@ PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}
                  'motel_sign': {'shadow': False}, 'gas_station': {'shadow': False}, 'bridge_tower': {'shadow': False},
                  'dark_castle': {'shadow': False}, 'canal_bridge': {'shadow': False}, 'gondola': {'shadow': False},
                  'mooring_pole': {'shadow': False}, 'washing_line': {'shadow': False, 'planes': 1},
-                 'ski_tips': {'shadow': False}, 'lift_tower': {'shadow': False}, 'moon_buggy': {'shadow': False}}
+                 'ski_tips': {'shadow': False}, 'lift_tower': {'shadow': False}, 'moon_buggy': {'shadow': False},
+                 'loco_boiler': {'shadow': False}, 'windmill': {'shadow': False}, 'bike_bars': {'shadow': False},
+                 'runway_light': {'shadow': False, 'fullbright': True}, 'control_tower': {'shadow': False},
+                 'airliner': {'shadow': False}, 'cockpit': {'shadow': False}}

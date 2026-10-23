@@ -152,6 +152,29 @@
    "every": 4,
    "offset": 0.25,
    "from": 3
+  },
+  {
+   "type": [
+    "bush",
+    "grass_tuft",
+    "bush",
+    "fern"
+   ],
+   "side": "left",
+   "density": 1.0,
+   "offset": [
+    0.6,
+    0.66
+   ],
+   "z": [
+    0.4,
+    7.0
+   ],
+   "scale": [
+    0.25,
+    0.7
+   ],
+   "seed": 4
   }
  ],
  "scatter": [

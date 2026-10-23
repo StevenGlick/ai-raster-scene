@@ -1754,6 +1754,32 @@ def check_lettering_pages(tmp):
     print('ok lettering (every style, signs, scene sprites) and pages (comic and storyboard)')
 
 
+def check_names():
+    """A kit is one module of drawings and the tables that list them: a second top-level constant or function of the
+    same name replaces the first for everything that used it - a colour, a helper - with no error. Fail on any
+    constant (an upper-case name) or function a script defines twice."""
+    import ast
+    problems = []
+    for path in sorted(glob.glob(os.path.join(ROOT, 'scripts', '*.py'))):
+        with open(path, encoding='utf-8') as f:
+            tree = ast.parse(f.read())
+        seen = {}
+        for node in tree.body:
+            if isinstance(node, (ast.FunctionDef, ast.ClassDef)):
+                names = [node.name]
+            elif isinstance(node, ast.Assign):
+                names = [t.id for t in node.targets if isinstance(t, ast.Name) and t.id.isupper()]
+            else:
+                continue
+            for n in names:
+                if n in seen:
+                    problems.append(f'{os.path.basename(path)}: {n} at line {seen[n]} and again at line {node.lineno}')
+                else:
+                    seen[n] = node.lineno
+    assert not problems, 'defined twice: ' + '; '.join(problems)
+    print('ok names (no script defines a constant or a function twice)')
+
+
 def check_road():
     """Road scenes (road.py): a bend to the right carries the road off to the right, a crest hides a prop behind
     it and not one before it, a void floor leaves the sky under the road, a roof darkens it, a roll still frames
@@ -1990,6 +2016,7 @@ def main():
         check_time_of_day()
         check_wireframes()
         check_objects()
+        check_names()
         check_road()
         check_lettering_pages(tmp)
         check_docs()

@@ -1,8 +1,8 @@
 """The mountain pass: a road scene (road.py) - a road cut into the side of a mountain, climbing through its bends
 with the valley far below.
 
-On the left the mountain rises sheer from the road (a `cliff_face` wall with a `ragged` top), marker posts and
-stones along its foot. On the right a steel `guard_rail` and then nothing - the ground there is `void`, and far
+On the left the mountain rises sheer from the road (a `cliff_face` wall with a `ragged` top), scrub clinging to its face (bushes and
+tufts set just off it at every height), marker posts and stones along its foot. On the right a steel `guard_rail` and then nothing - the ground there is `void`, and far
 below lies the valley (`below`, in bands along it: woods, a river, pasture, pine forest - the landscape textures, seen
 from the air at their own scale), its far side a wall of rock 240 units off with a
 `ragged` ridge, hazy with the distance. A goat on the verge, a car ahead, a sign before the bend. The second shot stops at the
@@ -35,7 +35,9 @@ def mountain_pass():
         ],
         'bands': 0.04, 'distance': 900,
     }
-    roadside = [{'type': 'reflector_post', 'side': 'left', 'every': 4, 'offset': 0.25, 'from': 3}]
+    roadside = [{'type': 'reflector_post', 'side': 'left', 'every': 4, 'offset': 0.25, 'from': 3},
+                {'type': ['bush', 'grass_tuft', 'bush', 'fern'], 'side': 'left', 'density': 1.0, 'offset': [0.6, 0.66],
+                 'z': [0.4, 7.0], 'scale': [0.25, 0.7], 'seed': 4}]                 # scrub clinging to the cliff
     scatter = [{'of': 'alpine', 'side': 'left', 'density': 1.2, 'offset': [0.05, 0.65], 'sizes': ['tiny', 'small'],
                 'seed': 1}]
     decals = [{'tex': 'wear', 'density': 0.03, 'size': [0.5, 0.9], 'seed': 1}]
