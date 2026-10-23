@@ -4122,6 +4122,125 @@ def spr_redwood_trunk():
                       ramp('#3a7a2e', dark=0.4, light=1.5)], relief=1.0, cavity=0.45, shadow=0.4)
 
 
+# ------------------------------------------------------------------ the canyon rapids
+
+def spr_raft_bow():
+    """Your raft from its back seat in the rapids: the fat red tubes running forward either side to the bow, a rope
+    along them, the two rafters in front of you in blue helmets and life vests, paddles dug in either side. A shot's
+    `vehicle` for white water: wide and low."""
+    w, h, c = 160, 56, 80
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(14, 56), (146, 56), (112, 18), (48, 18)], z=0.6, top=0.3, bevel=1.6, mat=1)    # the floor
+    for s in (-1, 1):                                                               # the tubes
+        cv.stroke([(c + 74 * s, 58), (c + 58 * s, 36), (c + 38 * s, 18)], 15, z=1.4, dome=1.0, taper=(1.0, 0.75),
+                  mat=0)
+    cv.stroke([(c - 40, 18), (c - 20, 11), (c, 9.5), (c + 20, 11), (c + 40, 18)], 11, z=1.4, dome=1.0, mat=0)  # bow
+    for s in (-1, 1):                                                               # the rope along them
+        cv.stroke([(c + 70 * s, 50), (c + 55 * s, 31), (c + 36 * s, 13)], 0.8, z=2.3, dome=0.3, mat=4)
+    cv.stroke([(c - 36, 13), (c - 18, 6.5), (c, 5.2), (c + 18, 6.5), (c + 36, 13)], 0.8, z=2.3, dome=0.3, mat=4)
+    for s in (-1, 1):                                                               # the two rafters
+        x = c + 22 * s
+        cv.box(x - 8, 28, 16, 18, z=2.0, top=0.8, bevel=3.0, mat=2)                 # life vest
+        cv.ellipse(x, 22, 6.5, 6, z=2.6, dome=1.0, mat=3)                           # helmet
+        cv.stroke([(x + 6 * s, 32), (x + 16 * s, 40), (x + 30 * s, 44)], 3.0, z=2.4, dome=0.6, mat=5)   # an arm
+        cv.stroke([(x + 4 * s, 20), (x + 26 * s, 50)], 1.6, z=2.8, dome=0.4, mat=6)  # the paddle's shaft
+        cv.polygon([(x + 24 * s, 48), (x + 30 * s, 47), (x + 33 * s, 56), (x + 26 * s, 57)], z=2.9, top=0.4,
+                   bevel=0.6, mat=7)                                                # its blade, dug in
+    return _prop(cv, [ramp('#c8302a', dark=0.4, light=1.4), ramp('#4a5a6a', dark=0.45, light=1.6),
+                      ramp('#f0a020', dark=0.4, light=1.3, warm=0.05), ramp('#2a6ad0', dark=0.4, light=1.4),
+                      ramp('#e8e0c8', dark=0.5, light=1.2), SKIN, ramp('#2a2a30', dark=0.5, light=2.0),
+                      ramp('#f0d020', dark=0.4, light=1.3)], relief=1.0, cavity=0.4, shadow=0.4)
+
+
+# ------------------------------------------------------------------ the asteroid field
+
+def _asteroid(k):
+    w, h = 48, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    rng = np.random.default_rng(40 + k)
+    cv.ellipse(24, 20, 20 - 2 * k, 16 - k, z=1.0, dome=2.2, rough=0.1, rng=rng, angle=float(rng.uniform(-30, 30)),
+               power=0.6, mat=0)                                                    # the lump
+    cv.ellipse(24 + rng.uniform(-7, 7), 20 + rng.uniform(-5, 5), 12, 10, z=1.0, dome=2.6, rough=0.1, rng=rng,
+               power=0.6, mat=0, mode='max')                                        # and another on it
+    for i in range(9):                                                              # craters
+        x, y, r = rng.uniform(10, 38), rng.uniform(8, 32), rng.uniform(1.5, 4.5)
+        cv.ellipse(x, y, r, r * 0.8, dome=0.5, mode='carve')
+        cv.ellipse(x - r * 0.3, y - r * 0.3, r * 0.5, r * 0.4, dome=0.15, mode='add')
+    cv.noise(0.25, cells=6, rng=rng)
+    return _prop(cv, [[ramp('#7a7468', dark=0.3, light=1.5), ramp('#6a5a4a', dark=0.3, light=1.5),
+                       ramp('#5a5e66', dark=0.3, light=1.5)][k]], relief=1.9, cavity=0.6, shadow=0.8)
+
+
+def spr_asteroid():
+    """An asteroid tumbling in space: a lumpy rock pocked with craters, hard-lit from one side and black on the other.
+    Grey, or `variant` 1 brown, 2 blue-grey (each its own shape). Hang them at every height and distance."""
+    return _asteroid(0)
+
+
+# ------------------------------------------------------------------ the lost valley
+
+def spr_sauropod():
+    """A long-necked dinosaur seen from the side, walking: the great body on four pillar legs, the long neck
+    reaching up and ahead to a small head, the long tail sweeping behind, its hide grey-green with a paler belly
+    and darker mottling. Huge: `scale` 8 or more."""
+    w, h = 160, 100
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    rng = np.random.default_rng(21)
+    for x in (112, 78):                                                             # the far legs, darker
+        cv.box(x, 60, 9, 37, z=0.8, top=0.7, bevel=3.0, mat=0, tone=-0.2)
+        cv.ellipse(x + 4.5, 96, 6.5, 3, z=0.9, dome=0.6, mat=0, tone=-0.2)
+    cv.stroke([(124, 52), (146, 60), (160, 70)], 14, z=1.0, dome=1.0, taper=(1.0, 0.15), mat=0)    # the tail
+    cv.ellipse(92, 54, 40, 21, z=1.2, dome=1.2, mat=0)                              # the body
+    cv.stroke([(62, 50), (44, 30), (30, 12), (24, 8)], 17, z=1.3, dome=1.0, taper=(1.0, 0.36), mat=0)   # the neck
+    cv.ellipse(19, 7, 7.5, 4.5, z=1.5, dome=0.9, angle=-8, mat=0)                  # the head
+    cv.ellipse(15, 6, 1.0, 1.0, z=1.7, dome=0.3, mat=0, tone=-0.5)                  # its eye
+    for x in (62, 98):                                                              # the near legs
+        cv.box(x, 62, 11, 35, z=1.4, top=0.8, bevel=3.5, mat=0)
+        cv.ellipse(x + 5.5, 96, 7.5, 3.4, z=1.5, dome=0.6, mat=0)                  # the feet
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    hide = (cv.id > 0) & (cv.mat == 0)
+    belly = np.clip((yy - 58) / 14, 0, 1) * (np.abs(xx - 92) < 34)
+    mottle = np.asarray(Image.fromarray((rng.random((h // 4 + 2, w // 4 + 2)) * 255).astype(np.uint8)).resize(
+        (w, h), Image.BICUBIC), np.float32) / 255
+    cv.tone[hide] += (0.16 * belly - 0.14 * (mottle > 0.62))[hide]
+    return _prop(cv, [ramp('#7a8270', dark=0.4, light=1.4)], relief=1.0, cavity=0.4, shadow=0.4)
+
+
+def spr_tyrannosaur():
+    """A great meat-eating dinosaur seen from the side, roaring: the huge head with its jaws wide and its teeth
+    bared, a heavy body on two massive legs, tiny arms, the tail held out straight behind for balance; dark olive
+    with stripes down its back. `scale` 4 or so."""
+    w, h = 120, 90
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.stroke([(84, 40), (104, 36), (120, 34)], 14, z=0.9, dome=1.0, taper=(1.0, 0.12), mat=0)     # the tail
+    cv.ellipse(76, 58, 9, 13, z=0.8, dome=1.0, mat=0, tone=-0.2)                    # the far thigh
+    cv.stroke([(78, 66), (80, 82)], 6, z=0.8, dome=0.8, mat=0, tone=-0.2)
+    for dx in (-8, -3, 2):                                                          # its toes
+        cv.stroke([(80, 82), (80 + dx, 88)], 2.6, z=0.8, dome=0.6, taper=(1.0, 0.5), mat=0, tone=-0.2)
+    cv.ellipse(66, 42, 28, 16, z=1.2, dome=1.2, angle=-12, mat=0)                   # the body
+    cv.ellipse(66, 56, 10, 15, z=1.4, dome=1.0, mat=0)                              # the near thigh
+    cv.stroke([(66, 66), (62, 82)], 7, z=1.4, dome=0.8, mat=0)
+    for dx in (-9, -4, 1):                                                          # its toes
+        cv.stroke([(62, 82), (62 + dx, 88)], 3.0, z=1.4, dome=0.6, taper=(1.0, 0.5), mat=0)
+    cv.stroke([(46, 36), (34, 28)], 13, z=1.3, dome=1.0, mat=0)                     # the neck
+    cv.polygon([(10, 16), (40, 14), (44, 24), (38, 28), (12, 25), (4, 22)], z=1.5, top=0.8, bevel=2.0, mat=0)  # skull
+    cv.polygon([(14, 30), (38, 28), (40, 34), (16, 40), (10, 38)], z=1.4, top=0.7, bevel=1.6, mat=0)  # the jaw, open
+    cv.polygon([(8, 24), (38, 27), (36, 31), (12, 32)], z=1.2, top=0.3, bevel=0.8, mat=1)          # the mouth
+    for x in range(10, 36, 4):                                                      # teeth, top and bottom
+        cv.polygon([(x, 24.5), (x + 2.4, 24.8), (x + 1.2, 28)], z=1.7, top=0.3, bevel=0.3, mat=2)
+        cv.polygon([(x + 2, 31.5), (x + 4.4, 31), (x + 3.2, 28.6)], z=1.7, top=0.3, bevel=0.3, mat=2)
+    cv.ellipse(30, 18, 1.6, 1.4, z=1.8, dome=0.4, mat=3)                            # its eye
+    cv.stroke([(27, 15.5), (34, 15)], 1.4, z=1.8, dome=0.5, mat=0, tone=0.1)        # the brow
+    cv.stroke([(48, 46), (44, 52), (41, 52)], 2.2, z=1.6, dome=0.5, mat=0)          # a tiny arm
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    hide = (cv.id > 0) & (cv.mat == 0)
+    stripes = (np.sin(xx * 0.5) > 0.4) & (yy < 40 + (xx - 60) * 0.1) & (yy > 18)
+    cv.tone[hide] -= (0.14 * stripes)[hide]
+    return _prop(cv, [ramp('#5e6440', dark=0.4, light=1.5), ramp('#5a1a1a', dark=0.5, light=1.6),
+                      ramp('#ece4cc', dark=0.5, light=1.15), ramp('#d8a020', dark=0.6, light=1.2)],
+                 relief=1.0, cavity=0.45, shadow=0.4)
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -4176,7 +4295,7 @@ VARIANTS = {'traffic_light': (3, _traffic_light), 'car_compact': (4, _car_compac
             'billboard': (3, _billboard), 'race_car': (4, _race_car), 'car_oncoming': (4, _car_oncoming),
             'mooring_pole': (3, _mooring_pole), 'slalom_gate': (2, _slalom_gate), 'gumdrop': (4, _gumdrop),
             'signal_light': (2, _signal_light), 'dragon': (3, _dragon), 'wrecked_car': (3, _wrecked_car),
-            'airship': (3, _airship)}
+            'airship': (3, _airship), 'asteroid': (3, _asteroid)}
 
 SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_sedan': spr_car_sedan,
            'box_truck': spr_box_truck, 'curve_sign': spr_curve_sign, 'billboard': spr_billboard,
@@ -4217,7 +4336,8 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'water_taxi': spr_water_taxi, 'floating_lantern': spr_floating_lantern,
            'rocket_pad': spr_rocket_pad, 'airship': spr_airship, 'airship_deck': spr_airship_deck,
            'island_falls': spr_island_falls, 'horse_neck': spr_horse_neck, 'castle_hill': spr_castle_hill,
-           'redwood_trunk': spr_redwood_trunk}
+           'redwood_trunk': spr_redwood_trunk, 'raft_bow': spr_raft_bow,
+           'asteroid': spr_asteroid, 'sauropod': spr_sauropod, 'tyrannosaur': spr_tyrannosaur}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
@@ -4244,7 +4364,8 @@ SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'bo
                  'dragon_neck': 0.24, 'dragon': 3.0, 'wrecked_car': 0.46, 'broken_overpass': 4.0,
                  'water_taxi': 0.42, 'floating_lantern': 0.22, 'rocket_pad': 20.0,
                  'airship': 3.0, 'airship_deck': 0.3, 'island_falls': 12.0, 'horse_neck': 0.22,
-                 'castle_hill': 12.0, 'redwood_trunk': 24.0}
+                 'castle_hill': 12.0, 'redwood_trunk': 24.0, 'raft_bow': 0.3, 'asteroid': 2.0, 'sauropod': 9.0,
+                 'tyrannosaur': 4.2}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
@@ -4277,4 +4398,6 @@ PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}
                  'rocket_pad': {'shadow': False, 'planes': 1}, 'airship': {'shadow': False, 'planes': 1},
                  'airship_deck': {'shadow': False}, 'island_falls': {'shadow': False, 'planes': 1},
                  'horse_neck': {'shadow': False}, 'castle_hill': {'shadow': False, 'planes': 1},
-                 'redwood_trunk': {'planes': 1}}
+                 'redwood_trunk': {'planes': 1}, 'raft_bow': {'shadow': False},
+                 'asteroid': {'shadow': False, 'planes': 1}, 'sauropod': {'planes': 1},
+                 'tyrannosaur': {'planes': 1}}

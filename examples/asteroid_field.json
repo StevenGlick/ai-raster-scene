@@ -1,0 +1,166 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    400,
+    0.04,
+    0.02
+   ]
+  ],
+  "width": 0.002,
+  "surface": "asphalt",
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "ground": "void",
+  "distance": 400
+ },
+ "camera": {
+  "at": 2.0,
+  "x": 0.0,
+  "height": 0.9,
+  "fov": 66,
+  "pitch": 0.04
+ },
+ "title": "The asteroid field - flying a starfighter through tumbling rocks, wingmen ahead, a ringed planet",
+ "sky": "space",
+ "sky_objects": [
+  {
+   "type": "ringed",
+   "azimuth": 262,
+   "elevation": 6,
+   "size": 16,
+   "color": [
+    0.76,
+    0.6,
+    0.5
+   ]
+  }
+ ],
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 330,
+   "elevation": 20,
+   "intensity": 1.1,
+   "color": [
+    1.0,
+    0.96,
+    0.9
+   ],
+   "disc": false
+  }
+ ],
+ "ambient": [
+  0.16,
+  0.16,
+  0.2
+ ],
+ "roadside": [
+  {
+   "type": "asteroid",
+   "side": "middle",
+   "density": 0.25,
+   "offset": [
+    -12.0,
+    12.0
+   ],
+   "z": [
+    -10.0,
+    10.0
+   ],
+   "scale": [
+    0.6,
+    3.0
+   ],
+   "from": 8,
+   "seed": 1
+  },
+  {
+   "type": "asteroid",
+   "density": 0.2,
+   "offset": [
+    2.0,
+    40.0
+   ],
+   "z": [
+    -20.0,
+    20.0
+   ],
+   "scale": [
+    1.0,
+    6.0
+   ],
+   "seed": 2
+  }
+ ],
+ "sprites": [
+  {
+   "type": "asteroid",
+   "variant": 1,
+   "at": 9,
+   "x": -4.5,
+   "z": 1.5,
+   "scale": 3.2
+  },
+  {
+   "type": "asteroid",
+   "variant": 2,
+   "at": 14,
+   "x": 5.0,
+   "z": -1.0,
+   "scale": 4.0,
+   "flip": true
+  },
+  {
+   "type": "asteroid",
+   "variant": 0,
+   "at": 6,
+   "x": 2.4,
+   "z": 2.2,
+   "scale": 1.1
+  },
+  {
+   "type": "starfighter",
+   "at": 8,
+   "x": -2.0,
+   "z": 1.0,
+   "scale": 0.4
+  },
+  {
+   "type": "starfighter",
+   "at": 10,
+   "x": 2.2,
+   "z": 0.5,
+   "scale": 0.4
+  }
+ ],
+ "shots": [
+  {
+   "at": 2.0,
+   "x": 0.0,
+   "height": 0.9,
+   "fov": 66,
+   "pitch": 0.04,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.8,
+     "radius": 2.2
+    }
+   ],
+   "vehicle": {
+    "type": "starfighter",
+    "ahead": 2.2,
+    "z": 0.35,
+    "scale": 0.4
+   }
+  }
+ ],
+ "supersample": 2
+}

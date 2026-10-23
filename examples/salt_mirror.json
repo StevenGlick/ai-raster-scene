@@ -1,0 +1,120 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    400,
+    0.0,
+    0
+   ]
+  ],
+  "width": 1.6,
+  "surface": "salt_flat",
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "wet": 0.85,
+  "ground": [
+   {
+    "texture": "salt_flat",
+    "reflect": 0.85
+   }
+  ],
+  "distance": 400
+ },
+ "camera": {
+  "at": 2.0,
+  "x": 0.0,
+  "height": 0.75,
+  "fov": 64,
+  "pitch": 0.06
+ },
+ "title": "The salt mirror - driving out over a salt flat after rain at sunset, the whole sky doubled in it",
+ "sky": "sunset",
+ "skyline": {
+  "type": "mountains",
+  "height": 1.1,
+  "color": [
+   0.42,
+   0.3,
+   0.42
+  ]
+ },
+ "sky_objects": [
+  {
+   "type": "sun",
+   "azimuth": 270,
+   "elevation": 3,
+   "size": 3.0
+  }
+ ],
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 270,
+   "elevation": 6,
+   "intensity": 0.8,
+   "color": [
+    1.0,
+    0.72,
+    0.5
+   ],
+   "disc": false
+  }
+ ],
+ "ambient": [
+  0.6,
+  0.5,
+  0.56
+ ],
+ "decals": [
+  {
+   "tex": "tyre_marks",
+   "density": 0.25,
+   "size": [
+    1.0,
+    1.4
+   ],
+   "side": "road",
+   "seed": 1
+  }
+ ],
+ "sprites": [
+  {
+   "type": "pickup_truck",
+   "at": 26,
+   "x": 1.4,
+   "scale": 0.5
+  },
+  {
+   "type": "explorer",
+   "at": 9,
+   "x": -2.2
+  }
+ ],
+ "shots": [
+  {
+   "at": 2.0,
+   "x": 0.0,
+   "height": 0.75,
+   "fov": 64,
+   "pitch": 0.06,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.6,
+     "radius": 2.2
+    }
+   ],
+   "vehicle": {
+    "type": "jeep",
+    "ahead": 2.6
+   }
+  }
+ ],
+ "supersample": 2
+}

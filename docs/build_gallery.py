@@ -235,6 +235,10 @@ SHOTS = {
     'road_market': ('market_ride', 1),
     'road_night_pass': ('night_pass', 1),
     'road_redwood': ('redwood_road', 1),
+    'road_rapids': ('canyon_rapids', 1),
+    'road_salt_mirror': ('salt_mirror', 1),
+    'road_asteroids': ('asteroid_field', 1),
+    'road_lost_valley': ('lost_valley', 1),
     # where it started: the three concept drawings, made scenes (the drawings are in docs/origins)
     'storm_island': ('storm_island', 1),
     'storm_town': ('storm_island', 2),

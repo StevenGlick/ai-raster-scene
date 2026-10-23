@@ -593,6 +593,37 @@ back in the wood (`density` 0.1 out to 16), ferns and `undergrowth` between; a h
 `light` 0.7) closes the sky; `light_shaft`s slant down through a green-gold `fog`. Your convertible from behind.
 See `examples/redwood_road.py`.
 
+### Rafting the canyon rapids
+
+The river is the road (`river_water`, `ripple` 0.8) dropping away section by section; rapids hardly mirror, so its
+`wet` is 0.1 (left at the water's own it was a smooth mirror of the walls); `foam` decals thick over it, two rows of
+them in different sizes, for the white water; `boulder`s in the stream (`side` middle) and on the gravel banks; the
+canyon run's walls (`slot_rock`, `sandstone`, paler rock behind). Your `raft_bow` as the shot's `vehicle` (`ahead`
+1.0, `z` 0.12, `scale` 0.28). See `examples/canyon_rapids.py`.
+
+### A salt flat after rain
+
+No road but your tracks: the `surface` and the `ground` are both `salt_flat`, the ground's band mirroring nearly all
+of the sky (`reflect` 0.85) and the surface the same (`wet` 0.85), `tyre_marks` down the middle; a `mountains`
+skyline, the sun on the horizon of a `sunset` sky. Anything standing on it is doubled - a figure out on the water, a
+truck far ahead, your jeep. See `examples/salt_mirror.py`.
+
+### An asteroid field
+
+The course is the road, too narrow to see, the `ground` `void` both sides so the `space` sky runs on below the
+horizon. `asteroid`s at every height and distance - a `roadside` row across the course (`side` middle, `z` spread,
+from a little way ahead) and another out to the sides, bigger - and a few big ones placed near; two `starfighter`s
+ahead as wingmen (out to the sides, or the rocks hide them); a `ringed` planet; a hard sun from the side and little
+ambient light. Your starfighter from behind as the shot's `vehicle`. See `examples/asteroid_field.py`.
+
+### A lost valley of dinosaurs
+
+A `dirt` track with ragged edges through `jungle_floor`; tree ferns and palms thick along it (back from the track a
+little) and ferns under them; `sauropod`s crossing far ahead at `scale` 9-11 (a thin `fog`: thicker, they fade to
+ghosts), a `tyrannosaur` at the jungle's edge near the track, `flip`ped to face it; the `erupting_volcano` far off and
+small; dark winged shapes high up (`crow` tinted, scaled up); a `golden` sky. Your jeep from behind. See
+`examples/lost_valley.py`.
+
 ### A highway at night, and a tunnel
 
 Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.
