@@ -21,8 +21,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 <!-- summary -->
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
-| Textures | 282 | 282 | 0 | 0 | 0 |
-| Props | 460 | 460 | 0 | 0 | 0 |
+| Textures | 283 | 283 | 0 | 0 | 0 |
+| Props | 463 | 463 | 0 | 0 | 0 |
 | Characters | 33 | 33 | 0 | 0 | 0 |
 | Decals | 42 | 42 | 0 | 0 | 0 |
 | Skies | 14 | 14 | 0 | 0 | 0 |
@@ -39,8 +39,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 18 | 18 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 156 | 156 | 0 | 0 | 0 |
-| **all** | **1178** | **1178** | **0** | **0** | **0** |
+| Example scenes | 163 | 163 | 0 | 0 | 0 |
+| **all** | **1189** | **1189** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -69,7 +69,7 @@ New scenes:
 - [x] Inside a mine, in the same wild west. Done: `gold_mine` - a tunnel timbered in 3D, `rails` and an `ore_cart`, lanterns, a prospector at a vein of gold, the portal in the hillside.
 - [x] Inside the jungle temple. Done: `temple_inside` - a passage of carved stone to the idol of the jaguar in a shaft of light, an explorer reaching for it, treasure.
 
-## Textures (282)
+## Textures (283)
 
 64x64 tiles, drawn in code. "glows" means the texture lights itself (windows, screens, runes), "see-through" that the map shows through its holes, "mirror" that floors made of it reflect.
 
@@ -84,7 +84,7 @@ New scenes:
 | `stone_dark` | good |  | cathedral_ruin, garden_encounter, gui_menus, gui_themes, gui_trade, haunted_house, hospital_garden, library_medium, mansion_library, post_presets, rainy_street, underworld_river, window_garden |  |
 | `stone_pale` | good |  | cathedral_ruin, chapel_graveyard, dream_world, garden_encounter, glass_chapel, gui_menus, hospital_garden, post_presets |  |
 | `castle` | good |  | canal_tunnel, castle_keep | Mortar grid is very regular; chip a few corners. |
-| `moss_stone` | good |  | autumn_lane, coast_lighthouse |  |
+| `moss_stone` | good |  | autumn_lane, coast_lighthouse, torii_path |  |
 | `menhir` | good |  | - | Drawn with the toolkit in basics.py: one weathered stone face - broad swells, rain runnels, long cracks, lichen rosettes - moss at its foot. |
 | `menhir_top` | good |  | - | Drawn with the toolkit in basics.py: the upper courses of a standing stone: greyer, more lichen, no moss. |
 | `slime_brick` | good |  | sewer_tunnels |  |
@@ -95,8 +95,8 @@ New scenes:
 | `concrete` | good |  | 23 scenes |  |
 | `marble` | good |  | cathedral_ruin, chapel_graveyard, dream_chess, dream_world, glass_chapel, gui_themes, gui_trade, library_medium, mansion_library, sky_road |  |
 | `marble_dark` | good |  | aquarium | Redrawn with the toolkit in basics.py: dark slabs with long, thin, continuous veins of white and grey drifting across them. |
-| `rock` | good |  | basalt_coast, castle_keep, coast_lighthouse, crystal_cave, doomed, fjord, forest_path, garden_encounter, gui_lantern, gui_menus, hospital_garden, moon_base, post_presets, tunnel_encounter, underground_waterway, underworld_river | Redrawn with the toolkit in basics.py: masses of every size, each a facet tilted to the light, split by crevices that wander, widen and close; finer cracks, grain. |
-| `rock_wet` | good |  | crystal_cave, gui_lantern, kelp_forest, sunken_temple, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: the same rock darker and blue-grey, with glints of water where the faces catch the light. |
+| `rock` | good |  | basalt_coast, castle_keep, coast_lighthouse, crystal_cave, doomed, fjord, fjord_voyage, forest_path, garden_encounter, gui_lantern, gui_menus, hospital_garden, moon_base, post_presets, tunnel_encounter, underground_waterway, underworld_river | Redrawn with the toolkit in basics.py: masses of every size, each a facet tilted to the light, split by crevices that wander, widen and close; finer cracks, grain. |
+| `rock_wet` | good |  | crystal_cave, fjord_voyage, gui_lantern, kelp_forest, sunken_temple, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: the same rock darker and blue-grey, with glints of water where the faces catch the light. |
 | `snow_rock` | good |  | - | Redrawn with the toolkit in basics.py: faceted rock with snow lying on the top of every mass, thick on the flats, and drifted in the crevices. |
 | `sky_wall` | good |  | dream_chess, dream_world, hall_of_doors |  |
 
@@ -187,21 +187,21 @@ New scenes:
 | `swamp_deep` | good |  | bayou | Drawn with the toolkit in swamp.py: grey trunks at four depths in the murk with curtains of Spanish moss between them. |
 | `hedge` | good |  | autumn_lane_road, garden_encounter, gui_menus, hospital_garden, post_presets | Redrawn with the toolkit in basics.py: small leaves packed in three depths, the face kept flat by the shears, thin patches darker. |
 | `grass` | good |  | 30 scenes | Redrawn with the toolkit in basics.py: blades stroked in clumps, dark at the roots and bright at the tips, yellow-green tufts, a daisy or two. |
-| `moss` | good |  | autumn_lane, enchanted_path, forest_path, redwood_road | Redrawn with the toolkit in forest.py: crowded cushions with fine bobbles, a stone showing here and there. |
-| `mud` | good |  | candy_road, jungle_river, jungle_trail, lantern_river, lost_valley, woodland_night |  |
+| `moss` | good |  | autumn_lane, bamboo_path, enchanted_path, forest_path, redwood_road, torii_path | Redrawn with the toolkit in forest.py: crowded cushions with fine bobbles, a stone showing here and there. |
+| `mud` | good |  | candy_road, jungle_river, jungle_trail, lantern_river, lost_valley, midnight_ride, woodland_night |  |
 | `bog` | good |  | bayou, bayou_run | Drawn with the toolkit in swamp.py: black peat with cushions of sphagnum in green and rust, standing puddles. |
-| `dirt` | good |  | autumn_lane, canyon_run, castle_keep, forest_path, haunted_house, hayride, lost_valley, night_fair, safari_drive, volcano_road | Redrawn with the toolkit in basics.py: soil broken into clods, pebbles, a root or two, darker damp patches. |
-| `gravel` | good |  | 23 scenes | Redrawn with the toolkit in basics.py: rounded pebbles in three stone colours, each lit on top with a shadow under it. |
+| `dirt` | good |  | autumn_lane, canyon_run, castle_keep, cattle_drive, forest_path, haunted_house, hayride, lost_valley, night_fair, safari_drive, volcano_road | Redrawn with the toolkit in basics.py: soil broken into clods, pebbles, a root or two, darker damp patches. |
+| `gravel` | good |  | 24 scenes | Redrawn with the toolkit in basics.py: rounded pebbles in three stone colours, each lit on top with a shadow under it. |
 | `sand` | good |  | camel_caravan, canyon_rapids, coast_lighthouse, desert_highway, desert_motel | Redrawn with the toolkit in basics.py: wind ripples with a lit face and a shaded lee, wandering, a shell fragment or two, dark grains. |
 | `snow` | good |  | aurora_palace, ice_road, pilgrim_path, ski_run, sled_run, sleigh_ride, winter_lake, winter_road, winter_woods | Redrawn with the toolkit in basics.py: drifts sculpted by the wind, their lee sides in blue shadow, faint ripples, glitter. |
 | `ice` | good | mirror 0.38 | ice_cave, winter_lake, winter_woods | Redrawn with the toolkit in basics.py: clear blue with gentle depth, straight fractures with a branch each and a dark side, strings of bubbles, frost. |
-| `water` | good | mirror 0.5 | 23 scenes | Redrawn with the toolkit in basics.py: a deep teal in slow swells and a broken net of light where the ripples gather it; kept dark, so reflections read. |
+| `water` | good | mirror 0.5 | 24 scenes | Redrawn with the toolkit in basics.py: a deep teal in slow swells and a broken net of light where the ripples gather it; kept dark, so reflections read. |
 | `swamp_water` | good | mirror 0.42 | bayou, bayou_run | Drawn with the toolkit in swamp.py: black-brown water with a skin of duckweed drifting in patches and a few floating leaves; mirror 0.42. |
 | `seabed` | good |  | aquarium, kelp_forest, kelp_run, neon_bar, sea_tunnel, sunken_temple | Drawn with the toolkit in sea.py: pale sand in gentle ripples, shell and pebble, and a broken net of caustic light over it. |
 | `water_surface` | good | glows | aquarium, kelp_run, neon_bar | Drawn with the toolkit in sea.py: the surface from below, rippled and glowing with a net of brighter lines; for an underwater roof. |
 | `reef_wall` | good |  | aquarium, neon_bar | Drawn with the toolkit in aquarium.py: lumps of live rock, patches of pink coralline, coral heads, algae tufts and polyps, dark crevices. |
 | `pine_needles` | good |  | forest_path, log_flume, redwood_road, woodland_night | Redrawn with the toolkit in forest.py: criss-crossed needle litter over dark soil, a few green needles, cones and twigs. |
-| `leaves_fallen` | good |  | autumn_lane, autumn_lane_road | Drawn with the toolkit in forest.py: leaves lying flat over dark earth, each its own colour - orange, gold, rust, brown, a few green - grass where they lie thin. |
+| `leaves_fallen` | good |  | autumn_lane, autumn_lane_road, bamboo_path, midnight_ride | Drawn with the toolkit in forest.py: leaves lying flat over dark earth, each its own colour - orange, gold, rust, brown, a few green - grass where they lie thin. |
 | `alien_ground` | good |  | alien_world | Redrawn with the toolkit in basics.py: violet dust drifting over teal grit, the edge broken grain by grain, crystal shards of pink, cyan and white. |
 | `regolith` | good |  | moon_base, moon_drive, red_planet | Drawn with the toolkit in moon.py: grey dust with craters - a rim lit toward the sun, a dark bowl - and thrown-out rocks. |
 | `alien_rock` | good | glows | alien_world | Redrawn with the toolkit in basics.py: dark violet masses, each a facet to the light, with a teal glow welling up in the crevices between them and spilling onto the faces (emissive). |
@@ -220,10 +220,10 @@ New scenes:
 | `tile_white` | good |  | capsule_hotel |  |
 | `tile_green` | good |  | - |  |
 | `cobble` | good |  | clockwork_city, enchanted_path, garden_encounter, gui_menus, hospital_garden, market_ride, night_canal, post_presets, rainy_street, storm_island, village_green, village_hours | Redrawn with the toolkit in basics.py: a Voronoi mosaic of 36 rounded stones a tile in grey and brown, dark grit and moss in the joints; the repeat no longer shows. |
-| `asphalt` | good |  | 33 scenes |  |
+| `asphalt` | good |  | 34 scenes |  |
 | `carpet` | good |  | castle_keep, chapel_graveyard, claude_study, gui_themes, gui_trade, haunted_house, library_medium, mansion_library |  |
 | `carpet_green` | good |  | - |  |
-| `flagstone` | good |  | canal_tunnel, castle_keep, cathedral_ruin, chapel_graveyard, claude_study, glass_chapel, haunted_house, market_ride, neon_street, night_canal, night_market, rain_alley |  |
+| `flagstone` | good |  | canal_tunnel, castle_keep, cathedral_ruin, chapel_graveyard, claude_study, glass_chapel, haunted_house, market_ride, neon_street, night_canal, night_market, rain_alley, torii_path |  |
 | `obsidian` | good | mirror 0.45 | dream_world, neon_bar, space_station |  |
 | `concrete_floor` | good |  | 85 scenes |  |
 | `rock_floor` | good |  | crystal_cave, doomed, gold_mine, gui_lantern, mine_ride, mountain_pass, night_pass, pilgrim_path, storm_coast, tunnel_encounter, underground_waterway, underworld_river | Redrawn with the toolkit in basics.py: flatter, smaller masses in brown with grit in the cracks. |
@@ -283,7 +283,7 @@ New scenes:
 
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
-| `jungle_leaves` | good |  | jungle_river, jungle_temple, temple_inside, tropical_beach | Drawn with the pixel-art toolkit. |
+| `jungle_leaves` | good |  | bamboo_path, jungle_river, jungle_temple, temple_inside, tropical_beach | Drawn with the pixel-art toolkit. |
 | `canopy` | good | glows | jungle_temple, redwood_road | Leaves at three depths - lit far ones, a middle layer, near silhouettes - with sky in the gaps. |
 | `canopy_top` | good |  | glow_jungle, jungle_temple, tropical_beach | Use as the top of jungle walls. |
 | `jungle_floor` | good |  | island_run, jungle_river, jungle_temple, jungle_trail, lost_valley, palm_house, temple_inside, volcano_road |  |
@@ -306,7 +306,7 @@ New scenes:
 | `pueblo_stone` | good |  | red_canyon | Drawn with the toolkit in desert.py: thin sandstone slabs laid in courses in a thick mud mortar, chinked with small stones. |
 | `pueblo_door` | good |  | red_canyon | Drawn with the toolkit in desert.py: the coursed stone with a T-shaped doorway, dark inside, poles laid over its head. |
 | `ruin_paving` | good |  | ancient_ruins, dark_road, jungle_temple, sunken_temple, temple_inside |  |
-| `dry_grass` | good |  | ancient_ruins, autumn_lane, autumn_lane_road, overgrown_highway, pilgrim_path, safari_drive | Fewer, larger clumps with more earth between them, so it is not busy at grazing angles. |
+| `dry_grass` | good |  | ancient_ruins, autumn_lane, autumn_lane_road, cattle_drive, lavender_ride, midnight_ride, overgrown_highway, pilgrim_path, safari_drive | Fewer, larger clumps with more earth between them, so it is not busy at grazing angles. |
 | `desert_wash` | good |  | canyon_run, close_encounter, desert_highway, desert_motel, ghost_town, gold_mine, high_noon, red_canyon, saloon | Drawn with the toolkit in desert.py: pale sand faintly rippled, washed-down pebbles, patches of crazed dried mud. |
 | `colonnade` | good | see-through | - | Flat when seen along its length: use `column` objects for a row you look down (the ruins' peristyle now is). |
 | `colonnade_top` | good | see-through | - |  |
@@ -319,8 +319,8 @@ New scenes:
 | `beach_sand` | good |  | coast_road, island_run, tropical_beach |  |
 | `wet_sand` | good | mirror 0.28 | coast_road, island_run, tropical_beach |  |
 | `shallows` | good | mirror 0.3 | canyon_run, island_run, jungle_temple, sky_islands, tropical_beach |  |
-| `sea` | good | mirror 0.45 | ancient_ruins, basalt_coast, high_seas, island_run, storm_coast, tropical_beach |  |
-| `bamboo` | good |  | tropical_beach | A node in each third of every pole, so they stagger from pole to pole instead of lining up across them. |
+| `sea` | good | mirror 0.45 | ancient_ruins, basalt_coast, ghost_ship, high_seas, island_run, storm_coast, tropical_beach |  |
+| `bamboo` | good |  | bamboo_path, tropical_beach | A node in each third of every pole, so they stagger from pole to pole instead of lining up across them. |
 | `thatch` | good |  | tropical_beach | Each row stands out over the one under it and shades its top, so the rows read. |
 
 ### Landscape scale
@@ -376,7 +376,7 @@ Walls along a road scene's road, and its see-through surfaces (highway.py).
 |---|---|---|---|---|
 | `guard_rail` | good | see-through | mountain_pass, night_pass, overgrown_highway, storm_coast, suspension_bridge | A galvanised W-beam on thin posts, see-through; drawn for a wall along a road (`tile` [1, 0.3]). |
 | `jersey_barrier` | good |  | grand_prix, rain_motorway | A concrete safety barrier: lit top, upright face, sloped foot, road dirt, a joint per block. |
-| `cliff_face` | good |  | mountain_pass, night_pass, storm_coast | Granite in tall blocks, each leaning its own way to the light, fine joints, a few ledges, lichen. First a cracked mosaic. |
+| `cliff_face` | good |  | fjord_voyage, ghost_ship, mountain_pass, night_pass, storm_coast | Granite in tall blocks, each leaning its own way to the light, fine joints, a few ledges, lichen. First a cracked mosaic. |
 | `power_lines` | good | see-through | close_encounter, desert_highway, desert_motel, storm_chase, viaduct_train | Three wires sagging between poles over one tile (see-through): a wall at the crossarms. |
 | `tower_windows` | good | glows | neon_avenue, neon_canal, neon_race, night_runway, sky_lane | A tower's face at night: windows four by four to a tile, some lit warm, cool or neon (glow). |
 | `tower_windows_b` | good | glows | neon_avenue, neon_canal, neon_race, sky_lane | The same, another layout of lit windows. |
@@ -417,6 +417,7 @@ Walls along a road scene's road, and its see-through surfaces (highway.py).
 | `timber_house` | good | see-through | market_ride | A half-timbered house's face, gable and all: cream plaster between dark oak posts, beams and braces, leaded windows, a box of flowers, a plank door; see-through round the gable, so a street of them in `blocks` one tile each has a skyline of gables. |
 | `timber_house_b` | good | see-through | market_ride | The same in ochre plaster. |
 | `timber_house_c` | good | see-through | market_ride | The same in rose plaster. |
+| `lavender_field` | good |  | lavender_ride | A field of lavender in flower: rounded rows of grey-green bushes under purple spikes, four to a tile along the road, pale dry earth between; they close into purple bands to the horizon. |
 
 ### Not yet sorted
 
@@ -434,7 +435,7 @@ Walls along a road scene's road, and its see-through surfaces (highway.py).
 | `glasshouse` | good | see-through | palm_house, ring_station | Drawn with the toolkit in glasshouse.py: white cast-iron uprights and transoms, a kick panel at the foot, open panes between (see-through). From outside, walls of it read as a cage: shoot a glasshouse from inside. |
 | `encaustic` | good | mirror 0.12 | palm_house | Encaustic tiles: a diamond in each square of terracotta, cream centres alternating black and blue, faint black joints. |
 
-## Props (460)
+## Props (463)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -500,21 +501,21 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
 | `boulder` | good | 0.55 tall | canyon_rapids, canyon_run, chapel_graveyard, island_run, kelp_forest, kelp_run, moon_drive, mountain_pass, pilgrim_path, red_planet, sunken_temple | Redrawn with the toolkit in forest.py: a settled rock with a lesser lobe and cracks, moss over its top, lichen spots. Drawn 4 ways (variants), one picked per placement. |
-| `bush` | good | 0.5 tall | cathedral_ruin, chapel_graveyard, coast_lighthouse, forest_path, lost_valley, mountain_pass, overgrown_highway, palm_house, redwood_road, window_garden, woodland_night | Redrawn with the toolkit in forest.py: leaf clusters on fanned twigs, lit on top, dark underneath. Drawn 4 ways (variants), one picked per placement. |
+| `bush` | good | 0.5 tall | cathedral_ruin, chapel_graveyard, coast_lighthouse, forest_path, lost_valley, mountain_pass, overgrown_highway, palm_house, redwood_road, torii_path, window_garden, woodland_night | Redrawn with the toolkit in forest.py: leaf clusters on fanned twigs, lit on top, dark underneath. Drawn 4 ways (variants), one picked per placement. |
 | `bush_autumn` | good | 0.5 tall | autumn_garden, autumn_lane | Drawn with the toolkit in forest.py: the bush in rust red and orange. Drawn 4 ways (variants), one picked per placement. |
 | `bush_snow` | good | 0.45 tall | winter_road, winter_woods | Drawn with the toolkit in forest.py: a lumpy cushion of snow, blue in its hollows, twigs poking up through it. |
 | `birch` | good | 3 tall | fjord, forest_path, overgrown_highway, palm_house, ring_station, sky_islands, village_green, village_hours, woodland_night | White trunk and a second stem banded with black, an airy crown of small leaves in drooping clumps. Drawn 3 ways (variants), one picked per placement. |
 | `birch_autumn` | good | 3 tall | autumn_lane, autumn_lane_road, hayride | Drawn with the toolkit in forest.py: the birch gone to gold, a few patches already orange. Drawn 3 ways (variants), one picked per placement. |
 | `birch_winter` | good | 3 tall | winter_woods | Drawn with the toolkit in forest.py: the white birch bare: branches reaching out with fine twigs weeping from them, snow on a few. |
-| `dead_tree` | good | 2.9 tall | chapel_graveyard, dark_road, enchanted_path, haunted_house, misty_moor, woodland_night | Redrawn with the toolkit in forest.py: a split trunk on a gnarled foot, bare limbs forking into twigs, grey peeling bark. Drawn 3 ways (variants), one picked per placement. |
-| `fern` | good | 0.42 tall | autumn_garden, autumn_lane, cathedral_ruin, chapel_graveyard, fjord, forest_path, jungle_river, jungle_temple, jungle_trail, lost_valley, misty_moor, mountain_pass, overgrown_highway, palm_house, redwood_road, temple_inside, tropical_beach, woodland_night | Redrawn: arching fronds from one crown. Drawn 3 ways (variants), one picked per placement. |
+| `dead_tree` | good | 2.9 tall | chapel_graveyard, dark_road, enchanted_path, haunted_house, midnight_ride, misty_moor, woodland_night | Redrawn with the toolkit in forest.py: a split trunk on a gnarled foot, bare limbs forking into twigs, grey peeling bark. Drawn 3 ways (variants), one picked per placement. |
+| `fern` | good | 0.42 tall | autumn_garden, autumn_lane, cathedral_ruin, chapel_graveyard, fjord, forest_path, jungle_river, jungle_temple, jungle_trail, lost_valley, misty_moor, mountain_pass, overgrown_highway, palm_house, redwood_road, temple_inside, torii_path, tropical_beach, woodland_night | Redrawn: arching fronds from one crown. Drawn 3 ways (variants), one picked per placement. |
 | `flowers` | good | 0.35 tall | blossom_road, fjord, garden_encounter, gui_menus, hospital_garden, mountain_pass, overgrown_highway, palm_house, post_presets, rainy_street, sky_islands, village_green, village_hours | Redrawn with the toolkit in basics.py: leaves and stems with blooms of four colours, five petals round a dark eye, at different heights. Drawn 3 ways (variants), one picked per placement. |
 | `grass_tuft` | good | 0.4 tall | 22 scenes | Redrawn: thin arching blades. Drawn 4 ways (variants), one picked per placement. |
 | `ivy_hang` | good | 0.8 tall, no shadow | cathedral_ruin, rainy_street |  |
 | `log` | good | 0.28 tall | cathedral_ruin, drowned_city, fjord, forest_path, tropical_beach, winter_lake, winter_woods, woodland_night | Redrawn with the toolkit in forest.py: bark in long ridges, a branch stub, moss along the top, a pale ringed end. Drawn 3 ways (variants), one picked per placement. |
 | `mushrooms` | good | 0.12 tall | autumn_garden, autumn_lane, autumn_lane_road, cathedral_ruin, chapel_graveyard, crystal_cave, enchanted_path, forest_path, jungle_temple, jungle_trail, overgrown_highway, redwood_road, woodland_night | Redrawn with the toolkit: a cluster of toadstools, domed caps on pale stems, the gills in shadow, white flecks on the red ones (one of them brown). Drawn 4 ways (variants), one picked per placement. |
 | `palm` | good | 3.2 tall | archipelago, coast_road, garden_encounter, gui_menus, high_seas, hospital_garden, island_run, jungle_river, jungle_trail, launch_day, lost_valley, palm_house, post_presets, synthwave_drive, tropical_beach, volcano_road | Redrawn with the pixel-art toolkit: a ringed trunk, arching ragged fronds, coconuts. Drawn 3 ways (variants), one picked per placement. |
-| `pine` | good | 3.4 tall | autumn_garden, autumn_lane, coast_lighthouse, enchanted_path, fjord, forest_path, giant_valley, kaiju_country, log_flume, ski_run, sky_islands, strait_bridge, woodland_night | Redrawn with the toolkit in forest.py: a spruce, tier on tier of drooping boughs with ragged hems over a straight trunk. Drawn 4 ways (variants), one picked per placement. |
+| `pine` | good | 3.4 tall | autumn_garden, autumn_lane, coast_lighthouse, enchanted_path, fjord, fjord_voyage, forest_path, giant_valley, kaiju_country, log_flume, ski_run, sky_islands, strait_bridge, torii_path, woodland_night | Redrawn with the toolkit in forest.py: a spruce, tier on tier of drooping boughs with ragged hems over a straight trunk. Drawn 4 ways (variants), one picked per placement. |
 | `reeds` | good | 0.8 tall | bayou_run, coast_lighthouse, jungle_river, launch_day, tulip_ride, winter_woods |  |
 | `bald_cypress` | good | 4.2 tall | bayou, bayou_run | Drawn with the toolkit in swamp.py: a fluted, buttressed foot, limbs under flat sprays of feathery leaves, moss hanging from every limb, knees round it. Drawn 3 ways (variants), one picked per placement. |
 | `spanish_moss` | good | 1.4 tall, no shadow | bayou | Drawn with the toolkit in swamp.py: a curtain of grey-green strands from a stub of branch, to hang with `z`. |
@@ -528,10 +529,10 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `tube_sponge` | good | 0.36 tall | aquarium, kelp_forest, neon_bar, sunken_temple | Drawn with the toolkit in aquarium.py: violet tubes from a shared base, each with its lip and dark open mouth. |
 | `reef_rock` | good | 0.6 tall | aquarium, neon_bar, sea_tunnel, sunken_temple | Drawn with the toolkit in aquarium.py: a mound of live rock in coralline and algae, with a sea fan, staghorn, a tube sponge and brain corals grown on it. |
 | `rocks` | good | 0.22 tall | 40 scenes | Redrawn faceted like the 3D boulders: a heap of half-sunk stones - one big, a middling one or two, small ones in front - their faces flat planes lit by the way they face, pebbles at their feet, lichen in spots, a crack across the big one; greys and browns. Drawn 6 ways (variants), one picked per placement. |
-| `snowy_pine` | good | 3.4 tall | aurora_palace, ski_run, sled_run, sleigh_ride, winter_lake, winter_road, winter_valley, winter_woods | Drawn with the toolkit in forest.py: the new spruce with snow lying in clumps along every tier's shoulders, crumbs on the hems and a small cap on the leader; dark needles between, so it still reads at a distance. Drawn 4 ways (variants), one picked per placement. |
+| `snowy_pine` | good | 3.4 tall | aurora_palace, fjord_voyage, ski_run, sled_run, sleigh_ride, winter_lake, winter_road, winter_valley, winter_woods | Drawn with the toolkit in forest.py: the new spruce with snow lying in clumps along every tier's shoulders, crumbs on the hems and a small cap on the leader; dark needles between, so it still reads at a distance. Drawn 4 ways (variants), one picked per placement. |
 | `boulder_snow` | good | 0.55 tall | ski_run, sled_run, winter_lake, winter_road, winter_woods | Drawn with the toolkit in forest.py: the boulder under a cushion of snow, deep where the top is flat and thin down the steep sides; in the `snow` scatter set. Drawn 4 ways (variants), one picked per placement. |
 | `stump` | good | 0.3 tall | forest_path, tropical_beach, woodland_night | Redrawn with the toolkit in forest.py: a pale ringed cut face, furrowed sides, roots, a cushion of moss. Drawn 3 ways (variants), one picked per placement. |
-| `tree` | good | 2.6 tall | dream_world, forest_path, garden_encounter, giant_valley, gui_menus, hospital_garden, kaiju_country, overgrown_highway, palm_house, post_presets, rain_motorway, ring_station, sky_islands, strait_bridge, tulip_ride, village_green, village_hours, woodland_night | Redrawn with the toolkit in forest.py: an oak with a furrowed trunk on a flared foot, limbs showing between lobes of crown lit from above. Drawn 3 ways (variants), one picked per placement. |
+| `tree` | good | 2.6 tall | dream_world, forest_path, garden_encounter, giant_valley, gui_menus, hospital_garden, kaiju_country, overgrown_highway, palm_house, post_presets, rain_motorway, ring_station, sky_islands, strait_bridge, torii_path, tulip_ride, village_green, village_hours, woodland_night | Redrawn with the toolkit in forest.py: an oak with a furrowed trunk on a flared foot, limbs showing between lobes of crown lit from above. Drawn 3 ways (variants), one picked per placement. |
 | `tree_autumn` | good | 2.6 tall | autumn_garden, autumn_lane, autumn_lane_road, hayride | Drawn with the toolkit in forest.py: the oak turned: orange and gold in patches cluster by cluster, a side going first, a little rust. Drawn 3 ways (variants), one picked per placement. |
 | `tree_winter` | good | 2.6 tall | winter_woods | Drawn with the toolkit in forest.py: a bare oak grown by recursive branching down to twigs, snow along every limb level enough to hold it. |
 | `glowshroom` | good | 0.16 tall, glows, no shadow | alien_world, crystal_cave, enchanted_path, glow_jungle | Redrawn with the toolkit in basics.py: domed caps freckled with paler spots over dark gills, pale stems; the caps glow. |
@@ -552,9 +553,9 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 |---|---|---|---|---|
 | `column` | good | 1 tall | sky_road | Redrawn: a fluted Doric column with capital and plinth. |
 | `fountain` | good | 0.9 tall | palm_house | Redrawn with the toolkit in basics.py: a moulded basin with water in it, a fluted pedestal and bowl, water spilling in arcs. |
-| `gravestone` | good | 0.6 tall | chapel_graveyard, haunted_house |  |
+| `gravestone` | good | 0.6 tall | chapel_graveyard, haunted_house, midnight_ride |  |
 | `stone_cap` | good | 0.44 tall | - | Drawn with the toolkit in basics.py: a slanted, chipped crown of stone with lichen, to set on a one-cell block so a standing stone has a weathered top. |
-| `grave_cross` | good | 0.55 tall | chapel_graveyard, haunted_house |  |
+| `grave_cross` | good | 0.55 tall | chapel_graveyard, haunted_house, midnight_ride |  |
 | `signpost` | good | 1.3 tall | coast_lighthouse |  |
 | `statue` | good | 1.5 tall | garden_encounter, gui_menus, hospital_garden, mansion_library, post_presets, sky_islands | Redrawn with the toolkit in basics.py: a draped woman in weathered marble raising a wreath, folds catching the light, on a moulded plinth with lichen. |
 | `monolith` | good | 2.2 tall | alien_world |  |
@@ -637,7 +638,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `food_cart` | good | 1 tall, glows | neon_rooftop, night_fair, night_market | Drawn with the toolkit in market.py: a teal cabinet on two wheels, a steel counter with a wok over a roaring burner, stock pots, bowls, a tin roof, a neon menu board and three bare bulbs. |
 | `fruit_stall` | good | 0.95 tall, glows | market_ride, night_fair, night_market | Drawn with the toolkit in market.py: crates stepped back in three tiers heaped with oranges, apples, limes, bananas and grapes, price cards, a green tarp with a bulb and coloured lights. |
 | `gadget_stall` | good | 0.95 tall, glows | night_fair, night_market | Drawn with the toolkit in market.py: glowing screens on a table in dark cloth, a pegboard of cables, headphones and boxes, a blue tarp with a neon sign along it. |
-| `red_lantern` | good | 0.16 tall, glows, no shadow | neon_street, night_market | Drawn with the toolkit in market.py: ribbed red paper glowing from inside, black bands, a gold tassel, a painted pseudo-letter. |
+| `red_lantern` | good | 0.16 tall, glows, no shadow | neon_street, night_market, torii_path | Drawn with the toolkit in market.py: ribbed red paper glowing from inside, black bands, a gold tassel, a painted pseudo-letter. |
 | `lantern_span` | good | 0.6 tall, glows, no shadow | neon_avenue, neon_canal, neon_rooftop, night_fair, night_market | Drawn with the toolkit in market.py: a sagging rope hung with big red lanterns, a card to sling across a lane. |
 | `neon_sign` | good | 1.5 tall, glows, aura | neon_avenue, neon_canal, neon_race, night_market, sky_lane | Drawn with the toolkit in market.py: a standing lightbox on a steel post, edged in pink tube and lettered top to bottom. |
 | `neon_cocktail` | good | 0.4 tall, glows, no shadow | neon_avenue, neon_bar, neon_canal, neon_race, sky_lane | Drawn with the toolkit in bar.py: a cocktail glass in pink tube with an olive on a stick in green; additive. |
@@ -680,7 +681,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `door_frame` | good | 1.1 tall | dream_chess, dream_world, salt_flat |  |
 | `floating_rock` | good | 1.6 tall, no shadow | airship_voyage, dream_world, rope_bridge, sky_islands, sky_road |  |
 | `koi` | good | 0.35 tall, no shadow | dream_chess, dream_world, drowned_library, hall_of_doors |  |
-| `orb` | good | 0.2 tall, glows, aura, no shadow | coast_lighthouse, dream_world, enchanted_path, space_trench, storm_island, strait_bridge, underworld_river |  |
+| `orb` | good | 0.2 tall, glows, aura, no shadow | coast_lighthouse, dream_world, enchanted_path, ghost_ship, midnight_ride, space_trench, storm_island, strait_bridge, underworld_river |  |
 | `pocket_watch` | good | 0.8 tall, no shadow | dream_world |  |
 | `sky_whale` | good | 2 tall, glows, no shadow | dream_world, drowned_library, salt_flat, sky_road |  |
 
@@ -712,11 +713,11 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `windpump` | good | 4.2 tall | ghost_town | Drawn with the toolkit in desert.py: a lattice tower of four splayed legs, cross-braced, a wheel of galvanised blades with its tail vane. |
 | `water_trough` | good | 0.4 tall | high_noon | Drawn with the toolkit in desert.py: grey boards on short legs, water near the brim. |
 | `wagon_wheel` | good | 0.55 tall | ghost_town, high_noon | Drawn with the toolkit in desert.py: an iron-shod rim, twelve spokes, a heavy hub. |
-| `cypress` | good | 4 tall | ancient_ruins, window_garden |  |
+| `cypress` | good | 4 tall | ancient_ruins, lavender_ride, window_garden |  |
 | `saguaro` | good | 3.2 tall | close_encounter, desert_highway, desert_motel, ghost_town, gold_mine, red_canyon | Drawn with the toolkit in desert.py: a ribbed column with two arms bending up, spines along the ribs, white blossoms on the crown. |
 | `prickly_pear` | good | 0.6 tall | canyon_run, desert_highway, ghost_town, gold_mine, red_canyon | Drawn with the toolkit in desert.py: oval pads growing out of one another, spines, magenta fruit along the top. Drawn 3 ways (variants), one picked per placement. |
 | `tumbleweed` | good | 0.45 tall | canyon_run, desert_highway, ghost_town, gold_mine, high_noon, red_canyon, saloon | Drawn with the toolkit in desert.py: a loose ball of wiry dry stems, the light coming through. Drawn 3 ways (variants), one picked per placement. |
-| `olive_tree` | good | 2.2 tall | ancient_ruins |  |
+| `olive_tree` | good | 2.2 tall | ancient_ruins, lavender_ride |  |
 | `poppies` | good | 0.24 tall | ancient_ruins | Drawn 3 ways (variants), one picked per placement. |
 | `dry_tuft` | good | 0.36 tall | ancient_ruins, autumn_lane_road, canyon_run, coast_road, desert_highway, ghost_town, gold_mine, island_run, night_highway, overgrown_highway, red_canyon, safari_drive, tropical_beach | Drawn 4 ways (variants), one picked per placement. |
 
@@ -741,7 +742,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `macaw` | good | 0.3 tall | jungle_river, jungle_temple, palm_house |  |
 | `goat` | good | 0.34 tall | ancient_ruins, fjord, mountain_pass | Redrawn with the toolkit in basics.py: compact and deep-bodied on short sturdy legs, a piebald coat, horns swept back, a beard, the tail flicked up. |
 | `crab` | good | 0.08 tall | coast_road, island_run, kelp_forest, kelp_run, sunken_temple, tropical_beach |  |
-| `seagull` | good | 0.14 tall, no shadow | airship_voyage, basalt_coast, fjord, high_seas, island_run, sky_islands, tropical_beach |  |
+| `seagull` | good | 0.14 tall, no shadow | airship_voyage, basalt_coast, fjord, fjord_voyage, high_seas, island_run, sky_islands, tropical_beach |  |
 | `heron` | good | 0.95 tall | bayou, bayou_run, jungle_river | Drawn with the toolkit in swamp.py: a grey heron: long legs, the neck in an S, a yellow dagger of a beak, the black crest. |
 | `deer` | good | 0.62 tall | forest_path, overgrown_highway, redwood_road, winter_woods | Drawn with the toolkit in forest.py: a deer side on: russet coat, pale belly and throat, slim legs, big ears, an antlered head up, a white tail. |
 | `black_cat` | good | 0.13 tall, glows | neon_rooftop | Drawn with the toolkit in rooftop.py: sitting with its back to you, ears up, its tail round its feet, one green eye catching the light. |
@@ -759,7 +760,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `sea_nettle` | good | 0.45 tall, glows, no shadow | aquarium | Drawn with the toolkit in aquarium.py: a golden bell striped rust to its scalloped rim, long maroon tentacles, four pale frilled arms twisting; half see-through. |
 | `moon_jelly` | good | 0.12 tall, glows, no shadow | aquarium, neon_bar, sea_tunnel | Drawn with the toolkit in aquarium.py: a clear saucer with the four lilac crescents in a ring, a fringe of short tentacles; additive and glowing. |
 | `bubbles` | good | 1.2 tall, no shadow | aquarium, kelp_forest, kelp_run, sunken_temple | Drawn with the toolkit in sea.py: a column of bubbles swelling as they rise, bright rings with a glint; additive. |
-| `crow` | good | 0.2 tall | autumn_lane, drowned_city, haunted_house, hayride, lost_valley, red_canyon, rope_bridge, village_green, village_hours | Drawn with the toolkit in village.py: glossy black with a blue sheen, the head up, a heavy beak. |
+| `crow` | good | 0.2 tall | autumn_lane, drowned_city, haunted_house, hayride, lost_valley, midnight_ride, red_canyon, rope_bridge, village_green, village_hours | Drawn with the toolkit in village.py: glossy black with a blue sheen, the head up, a heavy beak. |
 | `bats` | good | 0.6 tall, no shadow | ghost_train, haunted_house | Drawn with the toolkit in haunted.py: black bat silhouettes, wings spread or beating, at different sizes. |
 
 ### Cards and parts
@@ -843,10 +844,10 @@ What a road scene (road.py) needs that nothing else drew (highway.py): cars from
 | `jeep` | good | 0.62 tall, glows | canyon_run, ice_road, lost_valley, safari_drive, salt_mirror, volcano_road | An open-top four-by-four from behind: olive, a roll bar, two in it - the passenger under a bush hat (fair hair read as a lamp) - a spare wheel on the tailgate, mud up its back. |
 | `rally_car` | good | 0.48 tall, glows | canyon_run, volcano_road | A white hatchback in a blue livery from behind, a wing on its roof, mud flaps, mud sprayed up it. |
 | `dirt_bike` | good | 0.55 tall, glows | desert_highway | A dirt bike and its rider standing on the pegs, from behind: a red helmet, a dark jacket. |
-| `dust_cloud` | good | 0.62 tall | canyon_run | Dust thrown up behind a car: shaded puffs, lit on top (first a flat blob). Translucent by default (`opacity` 0.75). |
+| `dust_cloud` | good | 0.62 tall | canyon_run, cattle_drive | Dust thrown up behind a car: shaded puffs, lit on top (first a flat blob). Translucent by default (`opacity` 0.75). |
 | `speedboat` | good | 0.44 tall | island_run, neon_canal | A white speedboat from behind, a red stripe, the outboard churning white water; set a little into the water, a `wake` decal behind it. |
 | `narrowboat` | good | 0.9 tall | canal_boat | A canal boat's stern: green and red, the steerer at his brass tiller, the stove's chimney beyond. |
-| `boat_bow` | good | 0.42 tall, glows | bayou_run, canal_boat, drowned_city, ice_cave, jungle_river, lantern_river, night_canal, underworld_river | The bow of your own boat from inside it: gunwales running to the stem, floorboards, a lantern lit on a post. A shot's `vehicle`. |
+| `boat_bow` | good | 0.42 tall, glows | bayou_run, canal_boat, drowned_city, ghost_ship, ice_cave, jungle_river, lantern_river, night_canal, underworld_river | The bow of your own boat from inside it: gunwales running to the stem, floorboards, a lantern lit on a post. A shot's `vehicle`. |
 | `hover_car` | good | 0.36 tall, glows | neon_avenue, neon_canal, neon_race, sky_lane | A hover car from behind: a low dark wedge edged in cyan, a light bar, twin blue jets, floating on its own glow. |
 | `neon_bike` | good | 0.52 tall, glows | neon_race | A long low bike lined in pink light, its rider crouched in a white helmet with a band of light. |
 | `taxi` | good | 0.5 tall, glows | neon_avenue | A yellow taxi from behind, a chequered band, TAXI lit on its roof. |
@@ -860,7 +861,7 @@ What a road scene (road.py) needs that nothing else drew (highway.py): cars from
 | `motel_sign` | good | 4.2 tall, glows | desert_motel | MOTEL in pink neon on an arrow board, a star at its tip, VACANCY lit green on a panel under it, on a tall pole; its tubes glow. |
 | `gas_station` | good | 2.6 tall, glows | desert_motel | A gas station seen across its forecourt: a canopy lit white underneath over two red pumps, the shop's window lit behind, a price board on a pole. |
 | `bridge_tower` | good | 10 tall, glows | hill_street, suspension_bridge | A suspension bridge's tower spanning the road: two tall legs in red paint stepping in as they rise, joined by portal beams; 10 tall, its legs 7 apart - a row of them every span, `suspension_cables` walls between. |
-| `dark_castle` | good | 30 tall, glows | dark_road, dragon_flight | Black towers and spires on a crag, a curtain wall between them, a few windows lit red: a billboard for the far end of a fantasy road. Close enough, and under a thin fog, or it is lost. |
+| `dark_castle` | good | 30 tall, glows | dark_road, dragon_flight, midnight_ride | Black towers and spires on a crag, a curtain wall between them, a few windows lit red: a billboard for the far end of a fantasy road. Close enough, and under a thin fog, or it is lost. |
 | `mooring_pole` | good | 1.3 tall | night_canal | A mooring pole striped round like a barber's pole with a gilt knob on top, weed where it meets the water: red, or `variant` 1 blue, 2 green. In twos and threes off the houses. |
 | `canal_bridge` | good | 1.45 tall | night_canal | A bridge humped over a canal, seen from the water: one brick arch ringed in pale stone, the parapet capped in the same stone, the opening open so you pass under it. |
 | `gondola` | good | 0.85 tall | night_canal | A gondola from behind: the black lacquered hull, the gondolier on the stern in a striped shirt and a straw hat, his long oar down into the water. |
@@ -889,18 +890,18 @@ What a road scene (road.py) needs that nothing else drew (highway.py): cars from
 | `gingerbread_house` | good | 2 tall, glows | candy_road | A gingerbread house: piped icing on its walls, a roof thick with icing, sweets along the eaves, a candy-cane door frame, its windows lit. |
 | `skeleton` | good | 0.75 tall | ghost_train | A skeleton leaping out at a ghost train's riders: the skull grinning, the ribs, arms flung up with the fingers spread, one leg kicked up. Light it green. |
 | `cherry_tree` | good | 3.2 tall | blossom_road, lantern_river | A cherry tree in full bloom: a dark trunk and limbs under a cloud of pink blossom, a few petals falling. 3.2 tall; set back from a road and not too big, or the crowns close over it. |
-| `torii` | good | 3.6 tall | blossom_road, lantern_river | A vermilion shrine gate to stand over a road: two pillars on black feet, the lower beam through them, the top beam curving up at its ends and capped in black, a plaque between. 3.6 tall. |
+| `torii` | good | 3.6 tall | blossom_road, lantern_river, torii_path | A vermilion shrine gate to stand over a road: two pillars on black feet, the lower beam through them, the top beam curving up at its ends and capped in black, a plaque between. 3.6 tall. |
 | `snow_peak` | good | 18 tall | blossom_road, pilgrim_path | A lone volcano for the horizon, snow streaking its upper slopes, the rest blue with distance. 18 tall; a thick fog loses it. |
 | `ghost_car` | good | 0.4 tall, glows | ghost_train | Your own ghost-train car from its seat: a purple cowl with a skull on its nose, its eyes lit red, the lap bar. A shot's `vehicle`; it needs a dim light of its own in the dark. |
 | `tornado` | good | 30 tall | red_planet, storm_chase | A tornado: the funnel dropping from its cloud base, twisting in bands and snaking down to a rope in a skirt of dust. 30 tall; the first funnel's tip was too thin to reach the ground and it floated. |
 | `barn` | good | 2.4 tall | close_encounter, hayride, storm_chase | A red barn with a gambrel roof, white trim and braced doors, a hay door in the gable, a tin silo beside it. |
 | `pickup_truck` | good | 0.62 tall, glows | salt_mirror, storm_chase | A storm chasers' pickup from behind: the tailgate, gear strapped in the bed, a mast of instruments on the cab's roof, its tail lights lit. |
 | `mini_sub` | good | 0.5 tall, glows | kelp_run | A little research sub from behind: an orange hull, its glass dome with the pilot in it, the ducted propeller and side thrusters, a red tail light. |
-| `light_shaft` | good | 8 tall, glows | kelp_run, redwood_road | A shaft of sunlight slanting down through water, brightest at the top, soft-edged; drawn `additive`. 8 tall. |
+| `light_shaft` | good | 8 tall, glows | bamboo_path, kelp_run, redwood_road | A shaft of sunlight slanting down through water, brightest at the top, soft-edged; drawn `additive`. 8 tall. |
 | `dog_team` | good | 0.4 tall | sled_run | Three pairs of huskies running away up a trail on their gangline, each its own coat, red harness, tails curled; the lead pair farthest. A few units ahead of the camera: the team you drive (the sled's own frame, drawn as a vehicle, fell out of view below them - dropped). |
 | `log_cabin` | good | 1.8 tall, glows | sled_run, sleigh_ride | A log cabin in the snow: round logs crossing at the corners, a roof deep in snow, a stone chimney, its windows lit warm. |
 | `porthole` | good | 1 tall | kelp_run | Your own submarine's viewport from inside: a bolted brass ring round the view, dark steel beyond. A shot's `vehicle`, close and big enough to frame the view. |
-| `galleon` | good | 4 tall, glows | high_seas | A galleon from astern: the stern castle in dark wood and gilt, the stern windows lit, lanterns, the rudder; three masts of square sails with their yards, pennants. The first sails merged into one white cloud until the masts and yards were drawn over them. |
+| `galleon` | good | 4 tall, glows | ghost_ship, high_seas | A galleon from astern: the stern castle in dark wood and gilt, the stern windows lit, lanterns, the rudder; three masts of square sails with their yards, pennants. The first sails merged into one white cloud until the masts and yards were drawn over them. |
 | `sea_fort` | good | 4 tall | high_seas | A stone fort on its rock in the sea: a crenellated curtain wall with gun ports, a round tower. |
 | `bowsprit` | good | 0.75 tall | high_seas | Your own ship's bow from the deck: the rail, the bowsprit running out and up, a jib on its stays off to starboard. A shot's `vehicle`; drawn first with the jib in the middle, it hid the view. |
 | `acacia` | good | 2.4 tall | safari_drive | An acacia: a thin forked trunk, the crown spread flat like a parasol. 2.4 tall. |
@@ -909,9 +910,9 @@ What a road scene (road.py) needs that nothing else drew (highway.py): cars from
 | `zebra` | good | 0.5 tall | safari_drive | A zebra side on, grazing, striped, its head down to the grass. |
 | `flying_saucer` | good | 1.6 tall, glows | close_encounter | A flying saucer seen from below: the hull's wide disc, a ring of rim lights, the dome glowing, the port underneath blazing. |
 | `tractor_beam` | good | 4 tall, glows | close_encounter | A cone of pale green light let down from a saucer to the ground, brightest at its walls and foot; drawn `additive`. Stand it tall enough to reach the saucer's port. |
-| `cow` | good | 0.5 tall | close_encounter | A dairy cow side on, black patches on white. |
+| `cow` | good | 0.5 tall | cattle_drive, close_encounter | A dairy cow side on, black patches on white. |
 | `ferris_wheel` | good | 6 tall, glows | log_flume, night_fair | A big wheel at a fair at night: rim and spokes outlined in bulbs, red and blue cars hanging round it, the A-frame legs, the hub lit. 6 tall. |
-| `horse` | good | 0.6 tall | high_noon | A saddled horse side on at a hitching rail, its reins round the rail. The first drawing - short body, neck straight up - read as a camel. |
+| `horse` | good | 0.6 tall | cattle_drive, high_noon | A saddled horse side on at a hitching rail, its reins round the rail. The first drawing - short body, neck straight up - read as a camel. |
 | `lighthouse_tower` | good | 7 tall, glows | storm_coast | A lighthouse on its rock: the tower in red and white bands, the gallery, the lantern room blazing, a keeper's cottage at its foot with a window lit. 7 tall. |
 | `lighthouse_beam` | good | 1.6 tall, glows | storm_coast | A lighthouse's beam: a long wedge of pale light from its point, rain caught in it; drawn `additive`. Far off and thin it was lost: big, near and thrown across the view. |
 | `carousel` | good | 2.2 tall, glows | night_fair | A carousel at night: a striped canopy on its centre pole fringed with bulbs, horses on their poles, glowing warm. |
@@ -936,14 +937,17 @@ What a road scene (road.py) needs that nothing else drew (highway.py): cars from
 | `rocket_pad` | good | 20 tall, glows | launch_day | A rocket on its launch pad, ready: white, two boosters, black bands, fins; the steel service tower beside it with its arms across and its lights lit, vapour round its foot, the pad and its flame trench. For the horizon, `fullbright` under floodlights. |
 | `airship` | good | 3 tall, glows | airship_voyage | An airship under way from the side: the long seamed envelope with two bands round it, fins at its tail, the brass-trimmed gondola slung under it, windows lit, a propeller. Cream, rust red or slate blue by `variant`. |
 | `airship_deck` | good | 0.3 tall | airship_voyage | The bow of your own airship's gondola from its deck: the planks to the prow, a brass rail on both sides, the rigging rising out of view, a pennant. A shot's `vehicle`, wide and low. |
-| `island_falls` | good | 12 tall | airship_voyage | A ribbon of water off a floating island's edge, in streaks, spreading as it falls and breaking into spray. The tall `waterfall` stood under an island read as a slab of glass. |
-| `horse_neck` | good | 0.22 tall | market_ride | Your horse from the saddle: the shoulders and neck, the dark mane along its crest, the ears pricked and the forelock, the bridle, the reins. A shot's `vehicle`. The first neck was a narrow column: it has shoulders now. |
+| `island_falls` | good | 12 tall | airship_voyage, fjord_voyage | A ribbon of water off a floating island's edge, in streaks, spreading as it falls and breaking into spray. The tall `waterfall` stood under an island read as a slab of glass. |
+| `horse_neck` | good | 0.22 tall | cattle_drive, market_ride, midnight_ride | Your horse from the saddle: the shoulders and neck, the dark mane along its crest, the ears pricked and the forelock, the bridle, the reins. A shot's `vehicle`. The first neck was a narrow column: it has shoulders now. |
 | `castle_hill` | good | 12 tall | market_ride | A fairy-tale castle on its green hill on a bright day: pale stone walls with battlements round a tall keep, round towers under blue pointed roofs, red pennants, the gate. |
 | `redwood_trunk` | good | 24 tall | redwood_road | A giant redwood's trunk: red-brown bark in deep ridges, round and shaded, its foot flaring over the roots with moss and ferns, running up out of the view. Its first foot flared so wide the trunks read as hills. |
 | `raft_bow` | good | 0.3 tall | canyon_rapids | Your raft from its back seat: the fat red tubes running forward to the bow, a rope along them, the two in front in blue helmets (white ones read as faces turned back at you) and life vests, paddles dug in. A shot's `vehicle`. |
 | `asteroid` | good | 2 tall | asteroid_field | A lumpy rock pocked with craters, for space: grey, brown or blue-grey by `variant`, each its own shape. The first outlines wobbled into starfish. |
 | `sauropod` | good | 9 tall | lost_valley | A long-necked dinosaur from the side, walking: the great body on four pillar legs, the neck up to a small head, the long tail; grey-green, mottled, a paler belly. Its first legs merged into a table. |
 | `tyrannosaur` | good | 4.2 tall | lost_valley | A great meat-eating dinosaur from the side, roaring: jaws wide and teeth bared, tiny arms, the tail held out straight; dark olive with stripes. Its first feet stood on a toy's plinth. |
+| `longship_bow` | good | 0.3 tall | fjord_voyage | A longship from its deck, looking forward: the planks, round shields painted red, yellow and blue along both rails, the prow rising tall and curling into a carved dragon's head. A shot's `vehicle`. Its head was first cut off at the top edge. |
+| `bamboo_stalks` | good | 9 tall | bamboo_path | A clump of living bamboo: tall green stalks ringed at their nodes, leaning a little, sprays of narrow leaves up high. (The `bamboo` texture is dry poles, for a fence.) |
+| `scooter_bars` | good | 0.24 tall, glows | lavender_ride | Your scooter from its seat: chrome handlebars, black grips, two round mirrors on stalks, the headlamp in its mint-green cowl. A shot's `vehicle`. |
 
 ### The spooky island
 
@@ -995,7 +999,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `guard` | good | garden_encounter, gui_menus, post_presets, rain_alley, rainy_street |  |
 | `nurse` | good | ghost_corridor, gui_hud |  |
 | `spiritualist` | good | cathedral_ruin, chapel_graveyard, gui_themes, gui_trade, library_medium, mansion_library |  |
-| `ghost` | good | chapel_graveyard, garden_encounter, ghost_corridor, ghost_town, ghost_train, gui_hud, gui_menus, haunted_house, post_presets, saloon, woodland_night |  |
+| `ghost` | good | chapel_graveyard, garden_encounter, ghost_corridor, ghost_town, ghost_train, gui_hud, gui_menus, haunted_house, midnight_ride, post_presets, saloon, woodland_night |  |
 | `hybrid` | good | gui_lantern, sewer_tunnels, tunnel_encounter |  |
 | `soldier` | good | castle_keep, doomed |  |
 | `knight` | good | castle_keep, dark_road, market_ride, misty_moor, village_green, village_hours |  |
@@ -1013,9 +1017,9 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `castaway` | good | tropical_beach |  |
 | `diver` | good | aquarium, kelp_forest, sunken_temple | A brass diving helmet with a round faceplate and an air hose, a canvas suit, a weight belt, heavy boots. |
 | `runner` | good | neon_bar, neon_rooftop, neon_street, night_market | A cyberpunk: dark hair with a pink streak, a lit cyan visor, a black jacket striped in neon. |
-| `samurai` | good | autumn_garden, night_market | A street samurai: topknot, glowing red visor, a long black coat lined in crimson over a grey shirt and a gold belt, a sword slung across the back with its hilt over the shoulder, one chrome arm; back view. |
+| `samurai` | good | autumn_garden, bamboo_path, night_market | A street samurai: topknot, glowing red visor, a long black coat lined in crimson over a grey shirt and a gold belt, a sword slung across the back with its hilt over the shoulder, one chrome arm; back view. |
 | `hacker` | good | capsule_hotel, neon_bar | Hood up in deep violet, cyan goggles glowing in the shadow of it, a deck held in both hands with a green screen, cargo trousers, white sneakers on lit pink soles; back view. |
-| `cowboy` | good | ghost_town, high_noon, neon_bar, night_market, red_canyon, saloon | A wide-brimmed hat, moustache, red bandana, a vest over a tan shirt, a gun belt, jeans and boots; for the canyon. |
+| `cowboy` | good | cattle_drive, ghost_town, high_noon, neon_bar, night_market, red_canyon, saloon | A wide-brimmed hat, moustache, red bandana, a vest over a tan shirt, a gun belt, jeans and boots; for the canyon. |
 | `witch` | good | aurora_palace, autumn_lane, enchanted_path, neon_bar | A crooked pointed hat banded in purple, green skin, glowing yellow eyes, a robe, a lit lantern at her side. |
 | `farmer` | good | fjord, market_ride, palm_house | A straw hat, plaid shirt and blue overalls, a pitchfork taller than him. |
 | `pirate` | good | bayou | A gold-edged tricorn, an eye patch and beard, a red coat with gold buttons, a cutlass. |
@@ -1050,7 +1054,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `cobweb` | good | bunker_lab, castle_keep, temple_inside |  |
 | `rune_mark` | good | enchanted_path |  |
 | `drain` | good | bunker_lab, neon_street, night_market, rainy_street, sewer_tunnels |  |
-| `contact_shadow` | good | 153 scenes |  |
+| `contact_shadow` | good | 160 scenes |  |
 | `pad_marking` | good | moon_base, orbital_hangar | A painted landing ring with an H and a dashed outer ring, worn in patches. |
 | `rover_tracks` | good | moon_base, moon_drive, red_planet | Drawn with the toolkit in moon.py: two tracks of chevron treads pressed into dust. |
 | `hazard_stripe` | good | orbital_hangar | A band of yellow and black diagonal stripes, worn through in places. |
@@ -1099,18 +1103,18 @@ Marks lying on a road scene's road and verges (`decals`, highway.py).
 
 | sky | status | used in | notes |
 |---|---|---|---|
-| `night` | good | 44 scenes |  |
+| `night` | good | 46 scenes |  |
 | `dusk` | good | autumn_garden, autumn_lane, bayou_run, coast_lighthouse, launch_day, misty_moor, night_runway, rain_motorway |  |
 | `storm` | good | coast_lighthouse, kelp_run, rain_alley, rainy_street, storm_chase, storm_coast, storm_island | Could use darker cloud masses. |
-| `day` | good | 40 scenes |  |
+| `day` | good | 41 scenes |  |
 | `overcast` | good | doomed, winter_woods |  |
 | `blood` | good | dark_road, volcano_road |  |
 | `space` | good | asteroid_field, moon_base, moon_drive, orbital_hangar, ring_station, space_station, space_trench |  |
 | `alien` | good | alien_world |  |
 | `dream` | good | candy_road, dream_chess, dream_world, drowned_library, hall_of_doors, rope_bridge, salt_flat, sky_road |  |
-| `sunset` | good | basalt_coast, bayou, camel_caravan, clockwork_city, coast_road, dragon_flight, drowned_city, fjord, ghost_town, gold_mine, hayride, red_canyon, safari_drive, salt_flat, salt_mirror, tropical_beach |  |
-| `golden` | good | ancient_ruins, autumn_garden, autumn_lane, autumn_lane_road, bayou, high_seas, kaiju_harbor, lost_valley, mesa_desert, overgrown_highway, red_planet, sky_islands, strait_bridge, viaduct_train, woodland_night |  |
-| `dawn` | good | airship_voyage, balloon_flight, blossom_road, canal_boat, forest_path, giant_valley, suspension_bridge | New: just after sunrise - night going off the top of the sky, rose through the middle, peach at the horizon, clouds lit pink; `"time": "dawn"` picks it. |
+| `sunset` | good | basalt_coast, bayou, camel_caravan, cattle_drive, clockwork_city, coast_road, dragon_flight, drowned_city, fjord, ghost_town, gold_mine, hayride, red_canyon, safari_drive, salt_flat, salt_mirror, tropical_beach |  |
+| `golden` | good | ancient_ruins, autumn_garden, autumn_lane, autumn_lane_road, bayou, high_seas, kaiju_harbor, lavender_ride, lost_valley, mesa_desert, overgrown_highway, red_planet, sky_islands, strait_bridge, torii_path, viaduct_train, woodland_night |  |
+| `dawn` | good | airship_voyage, balloon_flight, blossom_road, canal_boat, fjord_voyage, forest_path, giant_valley, suspension_bridge | New: just after sunrise - night going off the top of the sky, rose through the middle, peach at the horizon, clouds lit pink; `"time": "dawn"` picks it. |
 | `vector` | good | synthwave_drive, vector_world | Black to violet with a magenta glow at the horizon and a few stars; pair it with a striped sun. |
 | `aurora` | good | aurora_palace, ice_road, sled_run, winter_valley | A clear arctic night with the aurora across it, no two stretches alike: a curtain of green rays of every width and height fringed pink, a pleated teal ribbon, red-tipped rays to the west, a faint high arc; brightest due north; they glow. |
 
@@ -1118,8 +1122,8 @@ Marks lying on a road scene's road and verges (`decals`, highway.py).
 
 | skyline | status | used in | notes |
 |---|---|---|---|
-| `mountains` | good | 21 scenes |  |
-| `hills` | good | camel_caravan, candy_road, desert_motel, grand_prix, kaiju_country, misty_moor, roller_coaster, safari_drive, strait_bridge |  |
+| `mountains` | good | 23 scenes |  |
+| `hills` | good | camel_caravan, candy_road, desert_motel, grand_prix, kaiju_country, lavender_ride, misty_moor, roller_coaster, safari_drive, strait_bridge |  |
 | `treeline` | good | chapel_graveyard, forest_path |  |
 | `city` | good | kaiju_harbor, neon_avenue, neon_canal, neon_race, neon_rooftop, neon_street, night_highway, night_market, night_runway, overgrown_highway, rain_motorway, sky_lane, suspension_bridge | Window grid is regular; vary building tops (spires, water towers). |
 | `islands` | good | ancient_ruins, archipelago, basalt_coast, coast_road, high_seas, island_run, tropical_beach | Flat-topped and lopsided with a low strip of beach either side, so an island and its reflection read as land on the water, not a saucer. |
@@ -1131,9 +1135,9 @@ Marks lying on a road scene's road and verges (`decals`, highway.py).
 |---|---|---|---|
 | `planet` | good | - |  |
 | `ringed` | good | alien_world, asteroid_field, orbital_hangar, ring_station, space_station, space_trench |  |
-| `moon` | good | alien_world, desert_motel, dream_chess, dream_world, drowned_library, enchanted_path, lantern_river, night_canal, orbital_hangar, red_planet, sleigh_ride, space_station, winter_road |  |
+| `moon` | good | alien_world, desert_motel, dream_chess, dream_world, drowned_library, enchanted_path, ghost_ship, lantern_river, midnight_ride, night_canal, orbital_hangar, red_planet, sleigh_ride, space_station, winter_road |  |
 | `earth` | good | moon_base, moon_drive | Oceans, green and desert continents and cloud from noise mapped onto the sphere, polar ice, a blue limb; the night side dark. |
-| `sun` | good | airship_voyage, balloon_flight, camel_caravan, dragon_flight, drowned_city, orbital_hangar, ring_station, safari_drive, salt_mirror, space_station |  |
+| `sun` | good | airship_voyage, balloon_flight, camel_caravan, cattle_drive, dragon_flight, drowned_city, orbital_hangar, ring_station, safari_drive, salt_mirror, space_station |  |
 | `eye` | good | dream_world |  |
 | `clock` | good | dream_chess | A cream face in a dark rim, twelve ticks, two hands set by `time`, its bottom running like wax (`melt`). |
 
@@ -1390,7 +1394,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `mono` | good | - |  |
 | `bone` | good | - |  |
 
-## Example scenes (156)
+## Example scenes (163)
 
 The environments, judged on their gallery images and shots.
 
@@ -1589,11 +1593,18 @@ The environments, judged on their gallery images and shots.
 | `canyon_rapids` | good | 1 | road_rapids | New: a road scene by raft down white water through a red rock canyon - foam over the rocks, boulders splitting the current. At the water's own shine the rapids were a smooth mirror of the walls: they hardly mirror now. |
 | `lost_valley` | good | 1 | road_lost_valley | New: a road scene in a valley the world forgot - a jungle track by jeep, long-necked dinosaurs crossing ahead, a tyrannosaur roaring out of the ferns beside it, a volcano beyond. In thicker haze the long-necks were ghosts. |
 | `salt_mirror` | good | 1 | road_salt_mirror | New: a road scene on a salt flat after rain - driving out at sunset over a sheet of water that doubles the whole sky, the mountains on their reflections, a figure standing out on the mirror. Made from what the kits had. |
+| `bamboo_path` | good | 1 | road_bamboo | New: a road scene in a bamboo grove - walking a path between walls of green stalks closing overhead, a samurai walking ahead. The nearest stalks were fat as trunks, and where the path bent they hid him. |
+| `cattle_drive` | good | 1 | road_cattle | New: a road scene on the open range at sunset - riding with the herd across the prairie, dust rising, cowboys alongside, the buttes red. Made from what the kits had; the dairy cows tinted brown read as range cattle. |
+| `fjord_voyage` | good | 1 | road_fjord | New: a road scene by longship up a fjord at a misty dawn - sheer cliffs with falls pouring down them, pines on the ledges, the dragon prow ahead. The cliffs first stood so close the sky was a slit; under an overcast sky it was all one grey. |
+| `ghost_ship` | good | 1 | road_ghost_ship | New: a road scene on a haunted sea - rowing out of a cove at midnight toward a ghost ship, the galleon tinted pale green, half see-through and lit from within. Made from what the kits had; smaller and only lit by its own light it was a toy in the dark. |
+| `lavender_ride` | good | 1 | road_lavender | New: a road scene on a summer afternoon in the south - a scooter down a lane between fields of lavender in flower, a line of cypresses, the light going golden. |
+| `midnight_ride` | good | 1 | road_midnight | New: a road scene on a haunted night - riding a horse down a lane through a dead wood under the full moon, gravestones, ghost lights, a pale figure by the lane, the dark castle at its end. Made from what the kits had; the wisps keep their own violet (a tint leaves glow alone). |
+| `torii_path` | good | 1 | road_torii | New: a road scene on a mountain shrine's path - walking up through a tunnel of red torii gates set one behind another, lanterns lit at their feet. Made from what the kits had: the gates in a close row over the path. |
 
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
-- **2026-10-23, the roads loop.** Eight hours on road scenes while the user rested: verges scattered and roads marked (`scatter` and `decals` for roads); walls along the road (rails, cliffs, canyons, streets of buildings in `blocks`), ceilings, land far `below` a drop; reflections (water, wet streets, puddles: the sky, the props and the walls mirrored); vehicles that carry a light or lay a wake; see-through road surfaces. Road furniture, off-road vehicles, boats, the neon city's cars and facades, a coaster, a mine, a starfighter, race cars and a grandstand; the traffic and the billboard drawn a few ways; an oncoming car, a motel sign, a gas station; a suspension bridge's towers and cables, a dark castle; canal houses, a gondola, mooring poles, a humped bridge, washing; a ski run's piste, net, chairlift, gates, skier and ski tips; a lane of light over a city at night, a moon buggy, craters; a steam engine's boiler from the footplate, telegraph poles; tulip fields, a windmill, a cyclist, handlebars; runway lights, a control tower, an airliner, a cockpit; a shack on stilts, a camel and your own camel's head, a pyramid; peppermint, frosting, candy canes, lollipops, gumdrops, a gingerbread house; a skeleton and a ghost-train car; cherry trees, a shrine gate, a lone snowy peak; wheat, a tornado, a barn, a pickup; a mini sub, light shafts, a porthole; a dog team, a log cabin; a galleon, a sea fort, a bowsprit; acacias, giraffes, elephants, zebras; a flying saucer, its beam, a cow; a big wheel, a carousel; false fronts, a horse; a lighthouse and its beam; an erupting volcano; a metro tunnel and station, a signal, a cab; ruined towers; a log boat; prayer flags, a stupa; a balloon basket; a tractor and a hay wagon, a sleigh and its horse, a Christmas tree; painted townhouses and a tram; a dragon to ride and dragons on the wing; wrecked cars and a broken overpass; a water taxi; a floating lantern; a rocket on its pad; airships, an airship's deck and falls off a floating island; half-timbered houses, a horse from the saddle and a castle on its hill; a giant redwood; a raft; an asteroid; dinosaurs; glowing road surfaces and ground bands of `void`; the `speed` post effect. Sixty-nine new road scenes: mountain_pass, canyon_run, island_run, canal_boat, neon_race, neon_avenue, roller_coaster, synthwave_drive, desert_highway, winter_road, mine_ride, space_trench, grand_prix, ice_road, desert_motel, sea_tunnel, viaduct_train, jungle_river, autumn_lane_road, rain_motorway, suspension_bridge, dark_road, rope_bridge, underworld_river, night_canal, ski_run, sky_lane, moon_drive, tulip_ride, night_runway, bayou_run, camel_caravan, candy_road, ghost_train, blossom_road, storm_chase, kelp_run, ring_station, sled_run, high_seas, safari_drive, close_encounter, night_fair, high_noon, storm_coast, volcano_road, metro_ride, drowned_city, log_flume, pilgrim_path, balloon_flight, hayride, sleigh_ride, hill_street, red_planet, ice_cave, dragon_flight, overgrown_highway, neon_canal, lantern_river, launch_day, airship_voyage, market_ride, night_pass, redwood_road, canyon_rapids, salt_mirror, asteroid_field, lost_valley. The night runway now takes off at nightfall (at full night it was a dark band under the cockpit). The viaduct is now seen from the footplate; scrub clings to the mountain pass's cliff.
+- **2026-10-23, the roads loop.** Eight hours on road scenes while the user rested: verges scattered and roads marked (`scatter` and `decals` for roads); walls along the road (rails, cliffs, canyons, streets of buildings in `blocks`), ceilings, land far `below` a drop; reflections (water, wet streets, puddles: the sky, the props and the walls mirrored); vehicles that carry a light or lay a wake; see-through road surfaces. Road furniture, off-road vehicles, boats, the neon city's cars and facades, a coaster, a mine, a starfighter, race cars and a grandstand; the traffic and the billboard drawn a few ways; an oncoming car, a motel sign, a gas station; a suspension bridge's towers and cables, a dark castle; canal houses, a gondola, mooring poles, a humped bridge, washing; a ski run's piste, net, chairlift, gates, skier and ski tips; a lane of light over a city at night, a moon buggy, craters; a steam engine's boiler from the footplate, telegraph poles; tulip fields, a windmill, a cyclist, handlebars; runway lights, a control tower, an airliner, a cockpit; a shack on stilts, a camel and your own camel's head, a pyramid; peppermint, frosting, candy canes, lollipops, gumdrops, a gingerbread house; a skeleton and a ghost-train car; cherry trees, a shrine gate, a lone snowy peak; wheat, a tornado, a barn, a pickup; a mini sub, light shafts, a porthole; a dog team, a log cabin; a galleon, a sea fort, a bowsprit; acacias, giraffes, elephants, zebras; a flying saucer, its beam, a cow; a big wheel, a carousel; false fronts, a horse; a lighthouse and its beam; an erupting volcano; a metro tunnel and station, a signal, a cab; ruined towers; a log boat; prayer flags, a stupa; a balloon basket; a tractor and a hay wagon, a sleigh and its horse, a Christmas tree; painted townhouses and a tram; a dragon to ride and dragons on the wing; wrecked cars and a broken overpass; a water taxi; a floating lantern; a rocket on its pad; airships, an airship's deck and falls off a floating island; half-timbered houses, a horse from the saddle and a castle on its hill; a giant redwood; a raft; an asteroid; dinosaurs; a longship's deck and prow; living bamboo; lavender fields and a scooter's handlebars; glowing road surfaces and ground bands of `void`; the `speed` post effect. Seventy-six new road scenes: mountain_pass, canyon_run, island_run, canal_boat, neon_race, neon_avenue, roller_coaster, synthwave_drive, desert_highway, winter_road, mine_ride, space_trench, grand_prix, ice_road, desert_motel, sea_tunnel, viaduct_train, jungle_river, autumn_lane_road, rain_motorway, suspension_bridge, dark_road, rope_bridge, underworld_river, night_canal, ski_run, sky_lane, moon_drive, tulip_ride, night_runway, bayou_run, camel_caravan, candy_road, ghost_train, blossom_road, storm_chase, kelp_run, ring_station, sled_run, high_seas, safari_drive, close_encounter, night_fair, high_noon, storm_coast, volcano_road, metro_ride, drowned_city, log_flume, pilgrim_path, balloon_flight, hayride, sleigh_ride, hill_street, red_planet, ice_cave, dragon_flight, overgrown_highway, neon_canal, lantern_river, launch_day, airship_voyage, market_ride, night_pass, redwood_road, canyon_rapids, salt_mirror, asteroid_field, lost_valley, midnight_ride, fjord_voyage, torii_path, bamboo_path, lavender_ride, ghost_ship, cattle_drive. The night runway now takes off at nightfall (at full night it was a dark band under the cockpit). The viaduct is now seen from the footplate; scrub clings to the mountain pass's cliff.
 - **2026-10-23, road scenes.** The user's idea: a second renderer, the road of an 80s arcade racer - a scene with a `road` instead of a `map` (scripts/road.py): segments that bend and rise, projected from the camera outward so a crest hides what is beyond, the bands, lanes, kerbs and shoulders, the ground in bands or `void`, props along it by spacing or density (`roadside`), lamps and headlights, `roofs` for tunnels, a shot's `vehicle`, `roll` with the vehicle level; finished by the same post, GUI and palette (render.finish_world, render.make_renderer). The `highway` kit: `sports_car`, `car_compact`, `car_sedan`, `box_truck`, `curve_sign`, `billboard`, `checkpoint`, `traffic_cone`, `tunnel_ring`, `tunnel_portal`. Scenes `coast_road`, `night_highway`, `forest_path`, `jungle_trail`, `enchanted_path` and `sky_road`.
 - **2026-10-23, where it started.** The user's idea: the three drawings this project began from - concept art Claude drew out of plain shapes in a chat, for a game - made into scenes and set beside them in the README (the drawings are in `docs/origins`). `scripts/spooky.py`: `vault_arch`, `broken_casement`, `tattered_curtain`, `rose_bush`, `robed_statue`, `wall_lamp`, `iron_cabinet`, `punt` and `storm_cloud`; decals `glass_shards` and `sigil`. Scenes `storm_island` (landscape scale: a hill and its house, the town on the shore, a plateau of buildings, the lighthouse, a storm), `window_garden` (the garden through a broken casement) and `canal_tunnel` (a boat moored under a brick vault, and a shot from it).
 - **2026-10-22, the landscapes loop.** The user's three hours: the kaiju redrawn where it was wrong (the jaw hinged into the neck, no gap; the legs under the hips so the belly shows whole; thin surf), the mountains' points rounded into crowns (and `top` for mesas). New: the `cable` object, country roads (`road_ew`, `road_ns`, `road_x`), and a volcano from the mountain - `crater`, `lava` flows, rock kinds `volcanic` and `lava`, textures `lava_field`, `lava_flow`, `black_sand`, the `ash_plume`; buttes from the mountain (`cliff`) and the desert's ground (`desert_floor` in three layouts, `desert_road`). New scenes `kaiju_country`, `volcano_island` and `mesa_desert`; a fifth kaiju_harbor shot, eye to eye with the monster. Then: winter (`snow_fields`, `snow_forest`, `frozen_lake`; a `village` takes `lit` and `snow`), the `bridge` object (`suspension`, `stone`), ships (`cargo_ship`, `ferry`, `sailboat`); scenes `winter_valley` and `strait_bridge`; a stone bridge by giant_valley's village. Last: the tropics (`ocean`, `lagoon`, `reef_flat`, `white_sand`, `palm_canopy`, rock `tropical`, a village's `roof`) and the `archipelago`; a rival for the kaiju, the `giant_moth`.

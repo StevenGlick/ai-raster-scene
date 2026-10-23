@@ -1,0 +1,199 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    20,
+    0,
+    0
+   ],
+   [
+    60,
+    0.15,
+    0
+   ],
+   [
+    60,
+    -0.2,
+    0
+   ],
+   [
+    300,
+    0.06,
+    0
+   ]
+  ],
+  "width": 9.0,
+  "surface": {
+   "base": "water",
+   "tint": [
+    0.6,
+    0.72,
+    0.8
+   ]
+  },
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "ripple": 0.3,
+  "ground": [
+   {
+    "width": 0.5,
+    "texture": "rock_wet"
+   },
+   {
+    "texture": "rock"
+   }
+  ],
+  "walls": [
+   {
+    "side": "both",
+    "offset": 1.0,
+    "height": 26,
+    "texture": "cliff_face",
+    "tile": 6,
+    "ragged": 10,
+    "seed": 1
+   },
+   {
+    "side": "both",
+    "offset": 16,
+    "height": 60,
+    "texture": "cliff_face",
+    "tile": 12,
+    "ragged": 20,
+    "seed": 2
+   }
+  ],
+  "distance": 260
+ },
+ "camera": {
+  "at": 1.0,
+  "x": 0.0,
+  "height": 0.7,
+  "fov": 64,
+  "pitch": 0.1
+ },
+ "title": "The fjord voyage - by longship up a fjord on a misty morning, waterfalls pouring down the cliffs",
+ "sky": "dawn",
+ "skyline": {
+  "type": "mountains",
+  "height": 1.6,
+  "color": [
+   0.84,
+   0.86,
+   0.9
+  ]
+ },
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 268,
+   "elevation": 14,
+   "intensity": 0.8,
+   "color": [
+    1.0,
+    0.84,
+    0.66
+   ]
+  }
+ ],
+ "ambient": [
+  0.6,
+  0.64,
+  0.7
+ ],
+ "fog": {
+  "color": [
+   0.9,
+   0.82,
+   0.76
+  ],
+  "density": 0.018
+ },
+ "roadside": [
+  {
+   "type": [
+    "snowy_pine",
+    "pine",
+    "pine"
+   ],
+   "density": 0.25,
+   "offset": [
+    0.7,
+    0.95
+   ],
+   "z": [
+    2.0,
+    20.0
+   ],
+   "scale": [
+    1.2,
+    2.4
+   ],
+   "seed": 1
+  }
+ ],
+ "sprites": [
+  {
+   "type": "island_falls",
+   "at": 18,
+   "x": -5.4,
+   "scale": 22
+  },
+  {
+   "type": "island_falls",
+   "at": 32,
+   "x": 5.4,
+   "scale": 24
+  },
+  {
+   "type": "island_falls",
+   "at": 56,
+   "x": -5.4,
+   "scale": 24
+  },
+  {
+   "type": "seagull",
+   "at": 9,
+   "x": -1.0,
+   "z": 2.0,
+   "scale": 0.3
+  },
+  {
+   "type": "seagull",
+   "at": 12,
+   "x": 1.5,
+   "z": 2.6,
+   "scale": 0.28,
+   "flip": true
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": 0.0,
+   "height": 0.7,
+   "fov": 64,
+   "pitch": 0.1,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.5,
+     "radius": 2.2
+    }
+   ],
+   "vehicle": {
+    "type": "longship_bow",
+    "ahead": 0.8,
+    "z": 0.38,
+    "scale": 0.28
+   }
+  }
+ ],
+ "supersample": 2
+}

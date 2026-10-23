@@ -1,0 +1,161 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    300,
+    0.02,
+    0
+   ]
+  ],
+  "width": 4.0,
+  "surface": "sea",
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "ripple": 0.2,
+  "ground": "sea",
+  "walls": [
+   {
+    "side": "both",
+    "offset": 1.0,
+    "height": 5,
+    "texture": "cliff_face",
+    "tile": 3.5,
+    "ragged": 3,
+    "to": 14,
+    "seed": 3
+   }
+  ],
+  "distance": 260
+ },
+ "camera": {
+  "at": 1.0,
+  "x": 0.0,
+  "height": 0.5,
+  "fov": 64,
+  "pitch": 0.08
+ },
+ "title": "The ghost ship - rowing out of a cove at midnight toward a ship that should not be there",
+ "sky": "night",
+ "sky_objects": [
+  {
+   "type": "moon",
+   "azimuth": 278,
+   "elevation": 16,
+   "size": 3.0
+  }
+ ],
+ "ambient": [
+  0.16,
+  0.2,
+  0.28
+ ],
+ "fog": {
+  "color": [
+   0.14,
+   0.22,
+   0.24
+  ],
+  "density": 0.03
+ },
+ "roadside": [
+  {
+   "type": "orb",
+   "side": "middle",
+   "density": 0.1,
+   "offset": [
+    -6.0,
+    6.0
+   ],
+   "z": [
+    0.1,
+    0.5
+   ],
+   "scale": [
+    0.1,
+    0.18
+   ],
+   "from": 4,
+   "seed": 1
+  }
+ ],
+ "sprites": [
+  {
+   "type": "galleon",
+   "at": 21,
+   "x": 0.8,
+   "z": -0.3,
+   "scale": 6.5,
+   "tint": [
+    0.6,
+    1.0,
+    0.8
+   ],
+   "opacity": 0.6,
+   "fullbright": true,
+   "light": {
+    "color": [
+     0.6,
+     1.0,
+     0.8
+    ],
+    "radius": 7.0,
+    "intensity": 1.0,
+    "z": 1.5
+   }
+  },
+  {
+   "type": "galleon",
+   "at": 60,
+   "x": -9,
+   "z": -0.3,
+   "scale": 4.5,
+   "tint": [
+    0.6,
+    1.0,
+    0.8
+   ],
+   "opacity": 0.35,
+   "flip": true
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": 0.0,
+   "height": 0.5,
+   "fov": 64,
+   "pitch": 0.08,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.9,
+     "radius": 2.4
+    }
+   ],
+   "vehicle": {
+    "type": "boat_bow",
+    "ahead": 1.25,
+    "z": -0.1,
+    "scale": 0.5,
+    "light": {
+     "color": [
+      1.0,
+      0.76,
+      0.45
+     ],
+     "radius": 2.0,
+     "intensity": 0.8,
+     "z": 0.5,
+     "at": 0.1
+    }
+   }
+  }
+ ],
+ "supersample": 2
+}

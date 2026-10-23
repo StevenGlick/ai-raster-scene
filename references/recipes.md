@@ -624,6 +624,61 @@ ghosts), a `tyrannosaur` at the jungle's edge near the track, `flip`ped to face 
 small; dark winged shapes high up (`crow` tinted, scaled up); a `golden` sky. Your jeep from behind. See
 `examples/lost_valley.py`.
 
+### A midnight ride
+
+A `mud` lane with ragged edges between `leaves_fallen` and `dry_grass`; `dead_tree`s crowding both sides,
+gravestones and crosses among them near the lane; `orb`s as will-o'-wisps at every height, a few with a violet
+`light` (a tint leaves their glow its own colour); the `ghost` by the lane; crows; the `dark_castle` at the end; a big
+moon and a cold blue `fog`. Your `horse_neck` as the shot's `vehicle`, carrying a lantern's warm `light`. See
+`examples/midnight_ride.py`.
+
+### A longship up a fjord
+
+The fjord is the road (`width` 9, `water` tinted cold), a strip of `rock_wet` at the cliffs' feet; the cliffs are
+`cliff_face` walls 26 high and ragged, a unit out from the water, taller ones far behind (closer, the sky was a slit);
+`island_falls` pouring down their faces (the tall `waterfall` is too wide to hang off a cliff in a fjord: it reads as
+a slab), pines on the ledges (`z` spread up the cliffs), gulls; a `dawn` sky with the sun low down the fjord and a
+warm mist (under `overcast` it was all one grey). Your `longship_bow` as the shot's `vehicle`. See
+`examples/fjord_voyage.py`.
+
+### A tunnel of torii gates
+
+A `flagstone` path climbing gently (`moss_stone` at its edges, `moss` beyond); `torii` in a `roadside` row over
+the path (`side` middle, `every` 0.9, `scale` 2.2), so close they make a tunnel of red; small `red_lantern`s at their
+feet, a warm `light` in each; pines crowding the slope behind them; a low `golden` sun. On foot. See
+`examples/torii_path.py`.
+
+### A path through a bamboo grove
+
+A `gravel` path between low fences of the dry `bamboo` texture (walls 0.45 high at its edges); `bamboo_stalks`
+crowding both sides at `scale` 8-11 - a dense row from a few units ahead (nearer they are fat as trunks) and another
+farther back - so the grove closes over the path; a high `ceiling` of `jungle_leaves`, lit, for the canopy; a
+green-gold `fog`; the `samurai` walking away ahead (where the path bends the stalks hide him: it runs straight
+first). See `examples/bamboo_path.py`.
+
+### A scooter through the lavender
+
+A narrow lane (`asphalt` tinted pale, no lines) with dry verges, then `lavender_field` to the horizon (its rows run
+along the road and close into purple bands); `cypress`es in a line along one side, `olive_tree`s out in the fields;
+low blue `hills`, a `golden` sky. Your `scooter_bars` as the shot's `vehicle` (`ahead` 0.7, `z` 0.33, `scale`
+0.24: the mirrors just under the horizon). See `examples/lavender_ride.py`.
+
+### A ghost ship at midnight
+
+The sea is the road and the ground (`sea`, `ripple` 0.2); a cove's rocks close either side (`cliff_face` walls,
+low and ragged, `to` 14 so it opens out ahead); the `galleon` tinted ghost green, half see-through (`opacity` 0.6)
+and `fullbright` - lit from within, so it glows pale in the dark - with a green `light`, `scale` 6.5 at 21 (smaller
+it was a toy in the cove's mouth), another fainter farther off; `orb`s floating on the water; a big moon, a cold
+`fog`. Your `boat_bow` and its lantern. See `examples/ghost_ship.py`.
+
+### A cattle drive
+
+No road but the trail the herd has beaten (`dirt`, wide, its edges ragged and blending into `dry_grass`); `cow`s
+tinted brown for range cattle, a dense `roadside` row on the trail itself (`side` middle, from a few units ahead)
+and a thinner one out to both sides; `dust_cloud`s half see-through over the herd; `cowboy`s on `horse`s out on
+the flanks; red buttes as a `mountains` skyline, a `sunset` sky. Your `horse_neck` as the shot's `vehicle`. See
+`examples/cattle_drive.py`.
+
 ### A highway at night, and a tunnel
 
 Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.

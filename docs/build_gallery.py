@@ -239,6 +239,13 @@ SHOTS = {
     'road_salt_mirror': ('salt_mirror', 1),
     'road_asteroids': ('asteroid_field', 1),
     'road_lost_valley': ('lost_valley', 1),
+    'road_midnight': ('midnight_ride', 1),
+    'road_fjord': ('fjord_voyage', 1),
+    'road_torii': ('torii_path', 1),
+    'road_bamboo': ('bamboo_path', 1),
+    'road_lavender': ('lavender_ride', 1),
+    'road_ghost_ship': ('ghost_ship', 1),
+    'road_cattle': ('cattle_drive', 1),
     # where it started: the three concept drawings, made scenes (the drawings are in docs/origins)
     'storm_island': ('storm_island', 1),
     'storm_town': ('storm_island', 2),

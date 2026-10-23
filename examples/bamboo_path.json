@@ -1,0 +1,167 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    24,
+    0,
+    0.1
+   ],
+   [
+    30,
+    -0.2,
+    0.2
+   ],
+   [
+    30,
+    0.25,
+    0.1
+   ],
+   [
+    200,
+    -0.05,
+    0
+   ]
+  ],
+  "width": 1.4,
+  "surface": "gravel",
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "ground": [
+   {
+    "width": 0.3,
+    "texture": "moss"
+   },
+   {
+    "texture": "leaves_fallen"
+   }
+  ],
+  "walls": [
+   {
+    "side": "both",
+    "offset": 0.1,
+    "height": 0.45,
+    "texture": "bamboo",
+    "tile": [
+     1.2,
+     0.45
+    ]
+   }
+  ],
+  "ceiling": {
+   "height": 9,
+   "texture": "jungle_leaves",
+   "tile": 3.0,
+   "light": 0.7
+  },
+  "distance": 120
+ },
+ "camera": {
+  "at": 1.0,
+  "x": 0.0,
+  "height": 0.55,
+  "fov": 62,
+  "pitch": 0.12
+ },
+ "title": "The bamboo path - walking a path through a bamboo grove, the light coming down green, a samurai ahead",
+ "sky": "day",
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 290,
+   "elevation": 50,
+   "intensity": 0.6,
+   "color": [
+    1.0,
+    0.96,
+    0.82
+   ]
+  }
+ ],
+ "ambient": [
+  0.52,
+  0.58,
+  0.46
+ ],
+ "fog": {
+  "color": [
+   0.62,
+   0.72,
+   0.5
+  ],
+  "density": 0.04
+ },
+ "roadside": [
+  {
+   "type": "bamboo_stalks",
+   "density": 1.4,
+   "offset": [
+    0.35,
+    1.2
+   ],
+   "scale": [
+    8,
+    11
+   ],
+   "from": 3.5,
+   "seed": 1
+  },
+  {
+   "type": "bamboo_stalks",
+   "density": 1.2,
+   "offset": [
+    1.2,
+    6.0
+   ],
+   "scale": [
+    8,
+    11
+   ],
+   "seed": 2
+  }
+ ],
+ "sprites": [
+  {
+   "type": "samurai",
+   "at": 5.5,
+   "x": -0.05,
+   "view": "back"
+  },
+  {
+   "type": "light_shaft",
+   "at": 7,
+   "x": -0.4,
+   "scale": 8,
+   "opacity": 0.5
+  },
+  {
+   "type": "light_shaft",
+   "at": 12,
+   "x": 0.4,
+   "scale": 8,
+   "opacity": 0.45
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": 0.0,
+   "height": 0.55,
+   "fov": 62,
+   "pitch": 0.12,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.7,
+     "radius": 2.4
+    }
+   ]
+  }
+ ],
+ "supersample": 2
+}

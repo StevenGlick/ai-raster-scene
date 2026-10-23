@@ -4241,6 +4241,107 @@ def spr_tyrannosaur():
                  relief=1.0, cavity=0.45, shadow=0.4)
 
 
+# ------------------------------------------------------------------ the fjord voyage
+
+def spr_longship_bow():
+    """A longship from its deck, looking forward: the planks running to the bow, round shields painted red, yellow
+    and blue hung along both rails, and the prow rising tall at the front and curling up into a carved dragon's head.
+    A shot's `vehicle` for a voyage up a fjord: wide and low."""
+    w, h, c = 160, 64, 80
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(0, 64), (160, 64), (94, 26), (66, 26)], z=0.6, top=0.4, bevel=2.0, mat=0)        # the deck
+    for x in range(0, 161, 12):
+        cv.stroke([(x, 64), (c + (x - c) * 0.18, 26)], 0.5, dome=0.3, mode='carve')                  # its planks
+    for s in (-1, 1):
+        cv.stroke([(c + 82 * s, 62), (c + 15 * s, 24)], 4.6, z=1.4, dome=0.7, taper=(1.0, 0.5), mat=1)  # the rails
+        for k, t in enumerate(np.linspace(0.06, 0.82, 7)):                         # shields along them
+            x = c + s * (82 - 67 * t)
+            y = 62 - 38 * t - 3
+            r = 8.5 * (1 - 0.72 * t)
+            cv.ellipse(x, y, r, r, z=1.8, dome=0.6, mat=3 + (k + (s > 0)) % 3)
+            cv.ellipse(x, y, r * 0.28, r * 0.28, z=2.2, dome=0.8, mat=6)            # the boss
+    cv.stroke([(c, 27), (c - 1.5, 19), (c, 12), (c + 4, 7.5)], 4.4, z=1.6, dome=0.8, taper=(1.0, 0.6), mat=1)  # prow
+    cv.polygon([(c + 2.5, 5.5), (c + 11, 3.5), (c + 13, 7), (c + 9, 10), (c + 4, 10)], z=1.8, top=0.6, bevel=0.8,
+               mat=1)                                                               # the dragon's head
+    cv.stroke([(c + 3.5, 5.5), (c + 1, 2), (c + 3, 0.8)], 1.2, z=1.9, dome=0.4, mat=1)   # its crest
+    return _prop(cv, [ramp('#7a5a3a', dark=0.4, light=1.45, warm=0.05), ramp('#4a3220', dark=0.45, light=1.6),
+                      CHROME, ramp('#b8302a', dark=0.4, light=1.4), ramp('#e0b030', dark=0.4, light=1.3),
+                      ramp('#2a5a9a', dark=0.4, light=1.4), CHROME], relief=1.0, cavity=0.4, shadow=0.4)
+
+
+# ------------------------------------------------------------------ the bamboo path
+
+def spr_bamboo_stalks():
+    """A clump of living bamboo: tall green stalks, leaning a little, ringed at their nodes, sprays of narrow leaves
+    off the upper ones. Crowd them along a path, `scale` 8 or more, for a grove that closes over it."""
+    w, h = 48, 220
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    rng = np.random.default_rng(31)
+    stalks = []
+    for k in range(7):
+        x0 = 4 + k * 6.5 + rng.uniform(-1.5, 1.5)
+        lean = rng.uniform(-6, 6)
+        wd = rng.uniform(2.6, 4.0)
+        stalks.append((x0, lean, wd))
+        cv.stroke([(x0, 220), (x0 + lean, 0)], wd, z=1.0 + 0.1 * k, dome=0.8, mat=0,
+                  tone=float(rng.uniform(-0.12, 0.08)))                            # a stalk
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    nodes = (cv.id > 0) & (cv.mat == 0) & ((yy % 15) < 1.2)
+    cv.tone[nodes] -= 0.22                                                          # the rings at its nodes
+    for x0, lean, wd in stalks:                                                     # leaf sprays up high
+        for y in rng.uniform(4, 110, 4):
+            x = x0 + lean * (1 - y / 220)
+            for a in (-1, 1):
+                if rng.random() < 0.7:
+                    cv.leaf(x, y, x + a * rng.uniform(8, 14), y + rng.uniform(2, 8), 3.0, z=2.0, dome=0.5,
+                            rib=0.3, mat=1, tone=float(rng.uniform(-0.12, 0.1)))
+    return _prop(cv, [ramp('#7aa83a', dark=0.4, light=1.4), ramp('#4a8a2a', dark=0.4, light=1.5)],
+                 relief=1.0, cavity=0.4, shadow=0.4)
+
+
+# ------------------------------------------------------------------ the lavender ride
+
+def tex_lavender_field(name):
+    """A field of lavender in flower, for the ground beside a road in the south: rounded rows of bushes, grey-green
+    under purple spikes, four to a tile running along the road, pale dry earth between. Seen down the road the rows
+    close up into purple bands to the horizon."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    rgb = np.array([0.72, 0.62, 0.46], np.float32) * (0.82 + 0.3 * fbm(T, rng, 8, 2))[..., None]   # dry earth
+    lane = xx % 16
+    across = np.abs(lane - 7.5) / 6.5                                               # a rounded row
+    bush = across < 1
+    rgb[bush] = np.array([0.42, 0.5, 0.38], np.float32) * (0.75 + 0.4 * fbm(T, rng, 16, 2)[bush])[:, None]
+    spikes = bush & (across < 0.9) & (vnoise(T, 32, rng) + 0.4 * rng.random((T, T)) > 0.5 + 0.2 * across)
+    shade = 0.7 + 0.4 * fbm(T, rng, 32, 2) + 0.15 * (1 - across)
+    rgb[spikes] = np.array([0.56, 0.42, 0.78], np.float32) * shade[spikes][:, None]
+    tip = spikes & (rng.random((T, T)) < 0.2)
+    rgb[tip] = [0.74, 0.62, 0.92]                                                   # light on the flowers
+    return np.clip(rgb, 0, 1), None
+
+
+def spr_scooter_bars():
+    """Your scooter from its seat: the handlebars across the view with their grips and two round mirrors on stalks,
+    the little round headlamp in its cowl, the mint-green leg shield's top curving away below. A shot's `vehicle` for
+    a summer ride: wide and low."""
+    w, h, c = 160, 48, 80
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.ellipse(c, 52, 34, 22, z=1.0, dome=1.0, mat=0)                               # the leg shield's top
+    cv.ellipse(c, 30, 13, 9, z=1.4, dome=1.0, mat=0)                                # the headset cowl
+    cv.ellipse(c, 25, 6, 4.5, z=1.8, dome=0.6, mat=1)                               # the headlamp's chrome rim
+    cv.ellipse(c, 25, 4.5, 3.3, z=2.0, dome=0.4, mat=2)                             # its glass
+    for s in (-1, 1):
+        cv.stroke([(c + 10 * s, 32), (c + 40 * s, 30), (c + 60 * s, 33)], 4.0, z=1.6, dome=0.7, mat=1)   # the bars
+        cv.stroke([(c + 58 * s, 33), (c + 76 * s, 36)], 6.5, z=1.9, dome=0.9, mat=3)                    # the grips
+        cv.stroke([(c + 34 * s, 30), (c + 42 * s, 12)], 1.6, z=1.8, dome=0.4, mat=1)                    # mirror stalks
+        cv.ellipse(c + 43 * s, 9, 6, 5, z=2.0, dome=0.7, mat=1)
+        cv.ellipse(c + 43 * s, 9, 4.6, 3.8, z=2.2, dome=0.3, mat=4)                  # the mirror's glass
+    rgba, _ = _prop(cv, [ramp('#8ad0b0', dark=0.45, light=1.25), CHROME, ramp('#fff4d0', dark=0.8, light=1.05),
+                         ramp('#2a2a30', dark=0.5, light=2.0), ramp('#9ab0c8', dark=0.5, light=1.4, cool=0.1)],
+                    relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [2]) * 0.6
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -4280,7 +4381,8 @@ TEXTURES.update({'tower_windows': lambda n: tex_tower_windows(n), 'tower_windows
                  'townhouse_c': lambda n: tex_townhouse(n, (0.9, 0.78, 0.56)),
                  'timber_house': lambda n: tex_timber_house(n),
                  'timber_house_b': lambda n: tex_timber_house(n, (0.88, 0.74, 0.5)),
-                 'timber_house_c': lambda n: tex_timber_house(n, (0.9, 0.74, 0.7))})
+                 'timber_house_c': lambda n: tex_timber_house(n, (0.9, 0.74, 0.7)),
+                 'lavender_field': lambda n: tex_lavender_field(n)})
 TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront': 0.4, 'shopfront_b': 0.4,
                       'shopfront_c': 0.4, 'coaster_track': 0.2, 'coaster_frame': 0.2, 'rail_track': 0.6,
                       'grandstand': 0.3, 'suspension_cables': 0.0, 'canal_house': 0.3, 'canal_house_b': 0.3,
@@ -4290,7 +4392,7 @@ TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront':
                       'wheat_field': 0.3, 'western_front': 0.4, 'western_front_b': 0.4, 'western_front_c': 0.4,
                       'tunnel_cables': 0.6, 'metro_tiles': 0.2, 'ruined_tower': 0.5, 'ruined_tower_b': 0.5,
                       'townhouse': 0.3, 'townhouse_b': 0.3, 'townhouse_c': 0.3,
-                      'timber_house': 0.3, 'timber_house_b': 0.3, 'timber_house_c': 0.3})
+                      'timber_house': 0.3, 'timber_house_b': 0.3, 'timber_house_c': 0.3, 'lavender_field': 0.2})
 VARIANTS = {'traffic_light': (3, _traffic_light), 'car_compact': (4, _car_compact), 'car_sedan': (4, _car_sedan),
             'billboard': (3, _billboard), 'race_car': (4, _race_car), 'car_oncoming': (4, _car_oncoming),
             'mooring_pole': (3, _mooring_pole), 'slalom_gate': (2, _slalom_gate), 'gumdrop': (4, _gumdrop),
@@ -4337,7 +4439,9 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'rocket_pad': spr_rocket_pad, 'airship': spr_airship, 'airship_deck': spr_airship_deck,
            'island_falls': spr_island_falls, 'horse_neck': spr_horse_neck, 'castle_hill': spr_castle_hill,
            'redwood_trunk': spr_redwood_trunk, 'raft_bow': spr_raft_bow,
-           'asteroid': spr_asteroid, 'sauropod': spr_sauropod, 'tyrannosaur': spr_tyrannosaur}
+           'asteroid': spr_asteroid, 'sauropod': spr_sauropod, 'tyrannosaur': spr_tyrannosaur,
+           'longship_bow': spr_longship_bow, 'bamboo_stalks': spr_bamboo_stalks,
+           'scooter_bars': spr_scooter_bars}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
@@ -4365,7 +4469,7 @@ SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'bo
                  'water_taxi': 0.42, 'floating_lantern': 0.22, 'rocket_pad': 20.0,
                  'airship': 3.0, 'airship_deck': 0.3, 'island_falls': 12.0, 'horse_neck': 0.22,
                  'castle_hill': 12.0, 'redwood_trunk': 24.0, 'raft_bow': 0.3, 'asteroid': 2.0, 'sauropod': 9.0,
-                 'tyrannosaur': 4.2}
+                 'tyrannosaur': 4.2, 'longship_bow': 0.3, 'bamboo_stalks': 9.0, 'scooter_bars': 0.24}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
@@ -4400,4 +4504,5 @@ PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}
                  'horse_neck': {'shadow': False}, 'castle_hill': {'shadow': False, 'planes': 1},
                  'redwood_trunk': {'planes': 1}, 'raft_bow': {'shadow': False},
                  'asteroid': {'shadow': False, 'planes': 1}, 'sauropod': {'planes': 1},
-                 'tyrannosaur': {'planes': 1}}
+                 'tyrannosaur': {'planes': 1}, 'longship_bow': {'shadow': False},
+                 'bamboo_stalks': {'planes': 1}, 'scooter_bars': {'shadow': False}}
