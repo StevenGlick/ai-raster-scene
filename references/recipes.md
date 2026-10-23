@@ -477,6 +477,41 @@ The balloon's way is a road too narrow to see (`width` 0.002) over `void` ground
 spread of `z` (-12 to 8) and a few placed near, the sun low in a `dawn` sky; the `basket_rim` as the vehicle (`ahead`
 0.6, `z` 0.3) under a camera pitched a little down. See `examples/balloon_flight.py`.
 
+### A hayride and a sleigh ride
+
+A hayride: a dirt farm lane at dusk, `pumpkin`s thick in the fields either side (density 2.2), `jack_o_lantern`s
+along the verges with their glow, `scarecrow`s, autumn trees and a `barn`, crows; the `tractor` 5 ahead, the
+`hay_wagon` as the vehicle, the camera up on the bales (`height` 0.68). See `examples/hayride.py`.
+
+A sleigh ride: a lane of packed `snow` at night, `log_cabin`s along both sides with warm lights, `christmas_tree`s
+between them, `lamp_post`s, snowy pines behind, the moon, the `snow` post effect; the `sleigh_horse` as the vehicle
+(`ahead` 1.2, `z` 0.14) with a lamp's light. See `examples/sleigh_ride.py`.
+
+### A steep city street by the bay
+
+The street drops away in its `sections` (5.5 down over 20) with a dark `centre` for the cable's slot; a pavement
+(`concrete_floor`) and then `harbor_water` either side, hidden behind the townhouses (`walls` in `blocks` of
+`townhouse`, `_b`, `_c`) until they end at the shore (`to`) - then the street runs on across the bay to the
+`bridge_tower`s in a thick fog. A `tram` going down, cars parked at the kerbs (start them a few units past the
+camera), street lamps. Stand the camera at the brow of the hill (`pitch` about 0): looking down the slope itself
+it reads flat. See `examples/hill_street.py`.
+
+### A drive on a red planet
+
+The Moon's kit, recoloured: `regolith` tinted rust for the track and the ground, `rover_tracks` down the middle (not
+the `crater` decals - grey bowls on red dust read as puddles), boulders and rocks tinted; a `tornado` tinted orange,
+scaled down and half see-through is a dust devil; mesas as a red `mountains` skyline, two small `moon`s, a `golden`
+sky turned orange by a dusty `fog` (`sky_mix` 0.6); `dome`s, a `lander`, a `moon_buggy` ahead. See
+`examples/red_planet.py`.
+
+### An ice cave by boat
+
+The river is the road (`water` tinted glacier blue), its banks `ice_floor`; the cave's `walls` of `ice_block` and
+`frost_wall` in `blocks` under a low `ceiling` of `ice` with its `light` up at 1.0 - the daylight through the ice
+makes the whole cave glow; a pale blue fog and a high blue ambient (darker, it read as a dungeon); `icicles` along
+the walls' tops (`z` just under the ceiling), `ice_spire`s and `ice_shards` on the banks; your `boat_bow`. See
+`examples/ice_cave.py`.
+
 ### A highway at night, and a tunnel
 
 Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.

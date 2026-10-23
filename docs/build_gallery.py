@@ -221,6 +221,11 @@ SHOTS = {
     'road_flume': ('log_flume', 1),
     'road_pilgrims': ('pilgrim_path', 1),
     'road_balloon': ('balloon_flight', 1),
+    'road_hayride': ('hayride', 1),
+    'road_sleigh': ('sleigh_ride', 1),
+    'road_hill_street': ('hill_street', 1),
+    'road_red_planet': ('red_planet', 1),
+    'road_ice_cave': ('ice_cave', 1),
     # where it started: the three concept drawings, made scenes (the drawings are in docs/origins)
     'storm_island': ('storm_island', 1),
     'storm_town': ('storm_island', 2),

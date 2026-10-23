@@ -3451,6 +3451,163 @@ def spr_basket_rim():
                       CHROME, ramp('#d8c8a8', dark=0.45, light=1.25)], relief=1.0, cavity=0.4, shadow=0.4)
 
 
+# ------------------------------------------------------------------ the hayride and the sleigh
+
+TRACTOR_RED = ramp('#c42a22', dark=0.4, light=1.4)
+SLEIGH_RED = ramp('#a8201e', dark=0.4, light=1.5)
+
+
+def spr_tractor():
+    """An old red tractor seen from behind, towing you down a farm lane: the two great rear wheels with their tread,
+    the driver on the seat between their fenders in a cap, the exhaust stack smoking, the hitch."""
+    w, h = 56, 44
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.stroke([(37, 4), (37, 16)], 2.0, z=0.9, dome=0.5, mat=3)                     # the exhaust stack
+    cv.box(18, 14, 20, 14, z=1.0, top=0.6, bevel=1.8, mat=0)                        # the body beyond
+    for x in (9, 47):                                                               # the rear wheels
+        cv.ellipse(x, 30, 9, 13.5, z=1.3, dome=0.8, mat=1)
+        for y in range(19, 43, 3):
+            cv.stroke([(x - 7, y), (x + 7, y + 1)], 0.8, mode='carve', z=0.4)        # the tread
+        cv.ellipse(x, 30, 3.6, 5.0, z=1.5, dome=0.5, mat=0)                         # the hub
+        cv.stroke([(x - 9, 17), (x, 14), (x + 9, 17)], 2.4, z=1.6, dome=0.5, mat=0)  # the fender
+    cv.box(22, 18, 12, 10, z=1.7, top=0.6, bevel=1.6, mat=2)                        # the driver's back
+    cv.ellipse(28, 15, 3.2, 3.4, z=1.9, dome=0.9, mat=4)                            # his head
+    cv.box(24.4, 11, 7.2, 2.6, z=2.0, top=0.4, bevel=0.6, mat=5)                    # his cap
+    cv.box(25, 36, 6, 4, z=1.1, top=0.5, bevel=0.6, mat=3)                          # the hitch
+    return _prop(cv, [TRACTOR_RED, TYRE, ramp('#3a5a8a', dark=0.4, light=1.5), TRIM, HAIR_D,
+                      ramp('#e8b020', dark=0.4, light=1.3)], relief=1.0, cavity=0.4, shadow=0.45)
+
+
+def spr_hay_wagon():
+    """The back of a hay wagon you ride on, from your seat on a bale: straw bales along both sides, loose straw on
+    the boards between, the wagon's front rail and the tractor's tow bar beyond. A shot's `vehicle`, with a
+    `tractor` a little ahead of it."""
+    w, h = 80, 36
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(14, 36), (66, 36), (56, 10), (24, 10)], z=0.8, top=0.4, bevel=1.0, mat=1)          # the boards
+    for x in range(18, 64, 3):
+        cv.stroke([(x, 36), (40 + (x - 40) * 0.6, 10)], 0.4, mode='carve', z=0.2)
+    for s in (-1, 1):                                                               # the bales along the sides
+        for k, (y, half) in enumerate(((30, 14), (18, 10))):
+            x = 40 + s * (26 - k * 6)
+            cv.box(x - half / 2, y - 6, half, 9 - k * 2, z=1.3, top=0.6, bevel=1.6, mat=0)
+            cv.stroke([(x - half / 2, y - 3), (x + half / 2, y - 3)], 0.5, z=1.35, dome=0.3, mat=2)   # the twine
+    cv.stroke([(24, 10), (56, 10)], 1.6, z=1.4, dome=0.5, mat=3)                    # the front rail
+    cv.stroke([(40, 10), (40, 2)], 1.4, z=1.2, dome=0.5, mat=3)                     # the tow bar
+    rng = np.random.default_rng(131)
+    for _ in range(20):                                                             # loose straw
+        x, y = rng.uniform(20, 60), rng.uniform(14, 34)
+        cv.stroke([(x, y), (x + rng.uniform(-3, 3), y + rng.uniform(-1, 1))], 0.5, z=0.9, dome=0.3, mat=0)
+    return _prop(cv, [ramp('#d8b860', dark=0.45, light=1.3, warm=0.05), ramp('#7a5a3a', dark=0.4, light=1.5),
+                      ramp('#a83a2a', dark=0.4, light=1.4), ramp('#5a4030', dark=0.4, light=1.6)],
+                 relief=1.0, cavity=0.4, shadow=0.4)
+
+
+def spr_sleigh_horse():
+    """Your own horse-drawn sleigh from its seat: the curved red dash before you with a lamp on it, the reins running
+    forward to the horse's back - its rump, the harness hung with bells, the tail - and its ears pricked up beyond.
+    A shot's `vehicle` for a sleigh ride."""
+    w, h = 64, 48
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.stroke([(32, 15), (32, 6)], 6.0, z=0.9, dome=0.8, taper=(1.0, 0.7), mat=0)    # the neck, reaching on
+    cv.ellipse(32, 4.6, 3.2, 3.0, z=0.95, dome=0.9, mat=0)                          # the head beyond it
+    for e in (-1, 1):
+        cv.stroke([(32 + e * 1.8, 2.6), (32 + e * 2.6, 0.2)], 1.2, z=1.0, dome=0.5, taper=(1.0, 0.3), mat=0)   # ears
+    cv.stroke([(32, 3), (32, 13)], 1.6, z=0.98, dome=0.4, mat=1)                    # the mane
+    cv.ellipse(32, 22, 11.5, 9, z=1.0, dome=0.9, mat=0)                             # the rump
+    cv.stroke([(32, 14), (32, 30)], 0.8, mode='carve', z=0.5)                       # its crease
+    cv.stroke([(32, 27), (32.5, 37)], 2.8, z=1.15, dome=0.6, taper=(1.0, 0.6), mat=1)   # the tail
+    cv.stroke([(25, 13), (32, 11), (39, 13)], 2.0, z=1.2, dome=0.5, mat=2)          # the collar
+    cv.stroke([(21, 19), (32, 16), (43, 19)], 1.2, z=1.2, dome=0.5, mat=2)          # the harness
+    for x in (24, 28, 32, 36, 40):                                                  # its bells
+        cv.ellipse(x, 17.5 + abs(x - 32) * 0.18, 1.0, 1.0, z=1.3, dome=0.8, mat=3)
+    cv.stroke([(27, 12), (14, 40)], 0.6, z=1.4, dome=0.3, mat=2)                    # the reins
+    cv.stroke([(37, 12), (50, 40)], 0.6, z=1.4, dome=0.3, mat=2)
+    cv.polygon([(0, 48), (64, 48), (60, 36), (50, 31), (14, 31), (4, 36)], z=1.6, top=0.6, bevel=2.0, mat=4)   # the dash
+    cv.stroke([(4, 36), (14, 31), (50, 31), (60, 36)], 1.4, z=1.8, dome=0.5, mat=3)  # its gilt rail
+    cv.box(53, 25, 4, 6, z=1.9, top=0.5, bevel=0.6, mat=5)                          # the lamp, lit
+    rgba, _ = _prop(cv, [ramp('#4a3020', dark=0.4, light=1.6, warm=0.04), ramp('#2a1e18', dark=0.5, light=1.8),
+                         ramp('#1e1a18', dark=0.5, light=1.9), GILT, SLEIGH_RED, ramp('#ffd080', dark=0.8, light=1.1)],
+                    relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [5])
+
+
+def spr_christmas_tree():
+    """A fir dressed for the winter feast: snow on its boughs, strings of small lights in warm colours, a star on top.
+    Its lights and star glow."""
+    w, h = 40, 64
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    rng = np.random.default_rng(141)
+    cv.box(18, 56, 4, 8, z=0.9, top=0.5, bevel=0.6, mat=1)                          # the trunk
+    for k, (y, half) in enumerate(((50, 17), (40, 14), (30, 11), (20, 8), (11, 5))):   # the tiers
+        cv.polygon([(20 - half, y + 6), (20 + half, y + 6), (20, y - 8)], z=1.2 + k * 0.05, top=0.6, bevel=1.6, mat=0)
+        cv.stroke([(20 - half + 1, y + 5), (20 + half - 1, y + 5)], 1.0, z=1.4, dome=0.5, mat=2)   # snow on the bough
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    tree = (cv.id > 0) & (cv.mat == 0)
+    lights = tree & (rng.random((h, w)) < 0.07)
+    cv.mat[lights] = 3 + (rng.random(lights.sum()) < 0.5).astype(int)
+    cv.ellipse(20, 3.2, 2.6, 2.6, z=1.6, dome=0.8, mat=5)                           # the star
+    rgba, _ = _prop(cv, [ramp('#1e4a2a', dark=0.4, light=1.6), ramp('#4a3020', dark=0.4, light=1.6),
+                         ramp('#eef2f6', dark=0.55, light=1.1), ramp('#ffc040', dark=0.8, light=1.1),
+                         ramp('#ff5a4a', dark=0.8, light=1.1), ramp('#ffe880', dark=0.85, light=1.05)],
+                    relief=1.0, cavity=0.4, shadow=0.4, outline=True)
+    return rgba, _tail_em(cv, [3, 4, 5])
+
+
+# ------------------------------------------------------------------ the hill street
+
+TRAM_RED = ramp('#a8282a', dark=0.4, light=1.45)
+
+
+def tex_townhouse(name, paint=(0.72, 0.62, 0.8)):
+    """A painted townhouse's face on a steep city street, for walls in `blocks`: clapboard in a pastel (`paint`), a
+    bay window on each floor with white trim, a cornice along the top floor; two floors to a tile."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    p = np.array(paint, np.float32)
+    rgb = p * (0.84 + 0.22 * fbm(T, rng, 6, 2))[..., None]
+    rgb[(yy % 4) == 3] *= 0.82                                                      # the clapboard
+    trim = np.array([0.94, 0.93, 0.9], np.float32)
+    for fy in (0, 32):
+        bay = (yy >= fy + 6) & (yy < fy + 26) & (xx >= 14) & (xx < 50)
+        rgb[bay] = p * 1.08
+        for x0 in (17, 29, 41):                                                     # the bay's windows
+            win = (yy >= fy + 9) & (yy < fy + 22) & (xx >= x0) & (xx < x0 + 7)
+            lit = rng.random() < 0.3
+            rgb[win] = [0.95, 0.82, 0.55] if lit else [0.16, 0.18, 0.24]
+            rgb[win & (yy < fy + 12) & (xx < x0 + 3)] = [0.42, 0.46, 0.55] if not lit else [1.0, 0.92, 0.7]
+        edge = bay & ((yy == fy + 6) | (yy == fy + 25) | (xx == 14) | (xx == 49))
+        rgb[edge] = trim
+        rgb[(yy >= fy + 26) & (yy < fy + 28) & (xx >= 13) & (xx < 51)] = trim * 0.85
+    cornice = (yy >= 0) & (yy < 3)
+    rgb[cornice] = trim * 0.9
+    rgb[(yy == 3)] *= 0.6
+    return np.clip(rgb, 0, 1), None
+
+
+def spr_tram():
+    """A city cable tram seen from behind as it climbs the hill ahead of you: its red and cream body, the open
+    platform at the back with people standing on it holding the poles, the roof's rail, a lamp."""
+    w, h = 44, 48
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(4, 6, 36, 4, z=1.2, top=0.6, bevel=1.0, mat=0)                           # the roof
+    cv.box(6, 10, 32, 30, z=1.0, top=0.6, bevel=1.4, mat=1)                         # the body's end
+    cv.box(6, 10, 32, 6, z=1.05, top=0.4, bevel=0.6, mat=0)                         # the red band at the top
+    for x in (9, 35):                                                               # the poles
+        cv.box(x - 0.8, 16, 1.6, 24, z=1.3, top=0.4, bevel=0.3, mat=3)
+    for k, x in enumerate((14, 22, 30)):                                            # people on the platform
+        cv.box(x - 3, 21, 6, 13, z=1.4, top=0.6, bevel=1.2, mat=4 + k % 2)
+        cv.ellipse(x, 18.5, 2.4, 2.6, z=1.6, dome=0.9, mat=6)
+    cv.box(4, 38, 36, 3, z=1.2, top=0.5, bevel=0.6, mat=0)                          # the step
+    cv.box(8, 41, 6, 7, z=0.9, top=0.5, bevel=1.0, mat=7)                           # the trucks
+    cv.box(30, 41, 6, 7, z=0.9, top=0.5, bevel=1.0, mat=7)
+    cv.ellipse(22, 13, 2.0, 1.8, z=1.4, dome=0.8, mat=2)                            # the lamp
+    rgba, _ = _prop(cv, [TRAM_RED, ramp('#e8dcc0', dark=0.45, light=1.2), ramp('#ffd080', dark=0.8, light=1.1),
+                         CHROME, ramp('#3a5a8a', dark=0.4, light=1.5), ramp('#6a4a3a', dark=0.4, light=1.5), HAIR_D,
+                         TRIM], relief=1.0, cavity=0.4, shadow=0.45)
+    return rgba, _tail_em(cv, [2])
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -3483,7 +3640,10 @@ TEXTURES.update({'tower_windows': lambda n: tex_tower_windows(n), 'tower_windows
                  'western_front_c': lambda n: tex_western_front(n, (0.46, 0.52, 0.56)),
                  'tunnel_cables': lambda n: tex_tunnel_cables(n), 'metro_tiles': lambda n: tex_metro_tiles(n),
                  'ruined_tower': lambda n: tex_ruined_tower(n),
-                 'ruined_tower_b': lambda n: tex_ruined_tower(n, (0.62, 0.52, 0.44))})
+                 'ruined_tower_b': lambda n: tex_ruined_tower(n, (0.62, 0.52, 0.44)),
+                 'townhouse': lambda n: tex_townhouse(n),
+                 'townhouse_b': lambda n: tex_townhouse(n, (0.62, 0.78, 0.74)),
+                 'townhouse_c': lambda n: tex_townhouse(n, (0.9, 0.78, 0.56))})
 TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront': 0.4, 'shopfront_b': 0.4,
                       'shopfront_c': 0.4, 'coaster_track': 0.2, 'coaster_frame': 0.2, 'rail_track': 0.6,
                       'grandstand': 0.3, 'suspension_cables': 0.0, 'canal_house': 0.3, 'canal_house_b': 0.3,
@@ -3491,7 +3651,8 @@ TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront':
                       'city_night': 0.0, 'light_lane': 0.0, 'tulip_field': 0.2, 'tulip_field_b': 0.2,
                       'tulip_field_c': 0.2, 'tulip_field_d': 0.2, 'peppermint': 0.1, 'frosting': 0.2,
                       'wheat_field': 0.3, 'western_front': 0.4, 'western_front_b': 0.4, 'western_front_c': 0.4,
-                      'tunnel_cables': 0.6, 'metro_tiles': 0.2, 'ruined_tower': 0.5, 'ruined_tower_b': 0.5})
+                      'tunnel_cables': 0.6, 'metro_tiles': 0.2, 'ruined_tower': 0.5, 'ruined_tower_b': 0.5,
+                      'townhouse': 0.3, 'townhouse_b': 0.3, 'townhouse_c': 0.3})
 VARIANTS = {'traffic_light': (3, _traffic_light), 'car_compact': (4, _car_compact), 'car_sedan': (4, _car_sedan),
             'billboard': (3, _billboard), 'race_car': (4, _race_car), 'car_oncoming': (4, _car_oncoming),
             'mooring_pole': (3, _mooring_pole), 'slalom_gate': (2, _slalom_gate), 'gumdrop': (4, _gumdrop),
@@ -3529,7 +3690,8 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'lighthouse_tower': spr_lighthouse_tower, 'lighthouse_beam': spr_lighthouse_beam,
            'erupting_volcano': spr_erupting_volcano, 'signal_light': spr_signal_light, 'metro_cab': spr_metro_cab,
            'log_boat': spr_log_boat, 'prayer_flags': spr_prayer_flags, 'stupa': spr_stupa,
-           'basket_rim': spr_basket_rim}
+           'basket_rim': spr_basket_rim, 'tractor': spr_tractor, 'hay_wagon': spr_hay_wagon,
+           'sleigh_horse': spr_sleigh_horse, 'christmas_tree': spr_christmas_tree, 'tram': spr_tram}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
@@ -3551,7 +3713,8 @@ SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'bo
                  'bowsprit': 0.75, 'acacia': 2.4, 'giraffe': 1.8, 'elephant': 1.1, 'zebra': 0.5,
                  'flying_saucer': 1.6, 'tractor_beam': 4.0, 'cow': 0.5, 'ferris_wheel': 6.0, 'carousel': 2.2, 'horse': 0.6, 'lighthouse_tower': 7.0,
                  'lighthouse_beam': 1.6, 'erupting_volcano': 25.0, 'signal_light': 0.5,
-                 'metro_cab': 1.0, 'log_boat': 0.4, 'prayer_flags': 0.4, 'stupa': 2.4, 'basket_rim': 0.4}
+                 'metro_cab': 1.0, 'log_boat': 0.4, 'prayer_flags': 0.4, 'stupa': 2.4, 'basket_rim': 0.4, 'tractor': 0.75,
+                 'hay_wagon': 0.4, 'sleigh_horse': 0.5, 'christmas_tree': 1.6, 'tram': 0.8}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
@@ -3576,4 +3739,4 @@ PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}
                  'lighthouse_beam': {'shadow': False, 'blend': 'additive'}, 'erupting_volcano': {'shadow': False},
                  'signal_light': {'shadow': False}, 'metro_cab': {'shadow': False},
                  'log_boat': {'shadow': False}, 'prayer_flags': {'shadow': False, 'planes': 1},
-                 'basket_rim': {'shadow': False}}
+                 'basket_rim': {'shadow': False}, 'hay_wagon': {'shadow': False}, 'sleigh_horse': {'shadow': False}}

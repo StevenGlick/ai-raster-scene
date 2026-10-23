@@ -1,0 +1,237 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    14,
+    0,
+    0
+   ],
+   [
+    40,
+    0.15,
+    0.6
+   ],
+   [
+    40,
+    -0.2,
+    -0.5
+   ],
+   [
+    300,
+    0.05,
+    0.3
+   ]
+  ],
+  "width": 1.6,
+  "surface": {
+   "base": "regolith",
+   "tint": [
+    1.15,
+    0.62,
+    0.42
+   ]
+  },
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "edge": {
+   "ragged": 0.3,
+   "blend": 0.8
+  },
+  "ground": {
+   "base": "regolith",
+   "tint": [
+    1.15,
+    0.62,
+    0.42
+   ]
+  },
+  "distance": 300
+ },
+ "camera": {
+  "at": 1.0,
+  "x": 0.0,
+  "height": 0.6,
+  "fov": 62,
+  "pitch": 0.06
+ },
+ "title": "The red planet - following a buggy across a rust-red plain, a dust devil, two moons in the sky",
+ "sky": "golden",
+ "skyline": {
+  "type": "mountains",
+  "height": 1.3,
+  "color": [
+   0.62,
+   0.32,
+   0.24
+  ]
+ },
+ "sky_objects": [
+  {
+   "type": "moon",
+   "azimuth": 262,
+   "elevation": 24,
+   "size": 1.4
+  },
+  {
+   "type": "moon",
+   "azimuth": 282,
+   "elevation": 16,
+   "size": 0.9
+  }
+ ],
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 230,
+   "elevation": 30,
+   "intensity": 0.9,
+   "color": [
+    1.0,
+    0.86,
+    0.72
+   ]
+  }
+ ],
+ "ambient": [
+  0.62,
+  0.48,
+  0.42
+ ],
+ "fog": {
+  "color": [
+   0.86,
+   0.56,
+   0.38
+  ],
+  "density": 0.006,
+  "sky_mix": 0.6
+ },
+ "roadside": [
+  {
+   "type": "boulder",
+   "density": 0.1,
+   "offset": [
+    0.8,
+    20.0
+   ],
+   "scale": [
+    0.3,
+    1.4
+   ],
+   "tint": [
+    1.0,
+    0.6,
+    0.45
+   ],
+   "seed": 1
+  }
+ ],
+ "scatter": [
+  {
+   "of": "rocks",
+   "density": 0.5,
+   "offset": [
+    0.0,
+    6.0
+   ],
+   "tint": [
+    1.0,
+    0.6,
+    0.45
+   ],
+   "seed": 2
+  }
+ ],
+ "decals": [
+  {
+   "tex": "rover_tracks",
+   "density": 0.5,
+   "size": [
+    1.2,
+    1.4
+   ],
+   "side": "road",
+   "seed": 1
+  }
+ ],
+ "sprites": [
+  {
+   "type": "moon_buggy",
+   "at": 4.5,
+   "x": 0.0
+  },
+  {
+   "type": "tornado",
+   "at": 70,
+   "x": -24,
+   "scale": 16,
+   "tint": [
+    1.2,
+    0.7,
+    0.5
+   ],
+   "opacity": 0.5
+  },
+  {
+   "type": "dome",
+   "at": 60,
+   "x": 6,
+   "scale": 3.0,
+   "tint": [
+    1.0,
+    0.9,
+    0.8
+   ],
+   "light": {
+    "color": [
+     0.8,
+     1.0,
+     0.8
+    ],
+    "radius": 4.0,
+    "intensity": 0.5,
+    "z": 1.0
+   }
+  },
+  {
+   "type": "dome",
+   "at": 64,
+   "x": 10,
+   "scale": 2.2,
+   "tint": [
+    1.0,
+    0.9,
+    0.8
+   ]
+  },
+  {
+   "type": "lander",
+   "at": 54,
+   "x": -6,
+   "scale": 2.4
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": 0.0,
+   "height": 0.6,
+   "fov": 62,
+   "pitch": 0.06,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.5,
+     "radius": 2.0
+    }
+   ]
+  }
+ ],
+ "supersample": 2
+}
