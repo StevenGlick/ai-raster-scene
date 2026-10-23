@@ -1,0 +1,282 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    12,
+    0,
+    0
+   ],
+   [
+    30,
+    0.16,
+    0
+   ],
+   [
+    30,
+    -0.2,
+    0
+   ],
+   [
+    200,
+    0.08,
+    0
+   ]
+  ],
+  "width": 2.6,
+  "surface": {
+   "base": "water",
+   "tint": [
+    0.42,
+    0.48,
+    0.6
+   ]
+  },
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "ripple": 0.35,
+  "ground": {
+   "left": [
+    {
+     "width": 1.1,
+     "texture": "flagstone"
+    },
+    {
+     "texture": "cobble"
+    }
+   ],
+   "right": "water"
+  },
+  "walls": [
+   {
+    "side": "right",
+    "offset": 0.0,
+    "height": 0.32,
+    "texture": "canal_footing",
+    "tile": [
+     1.2,
+     0.32
+    ]
+   },
+   {
+    "side": "right",
+    "offset": 0.0,
+    "z": 0.32,
+    "height": 3.2,
+    "ragged": 1.0,
+    "texture": [
+     "canal_house",
+     "canal_house_b",
+     "canal_house_c",
+     "canal_house"
+    ],
+    "tile": [
+     1.6,
+     1.6
+    ],
+    "blocks": 1.6,
+    "seed": 2
+   },
+   {
+    "side": "left",
+    "offset": 1.1,
+    "height": 3.4,
+    "ragged": 1.0,
+    "texture": [
+     "canal_house",
+     "canal_house_c",
+     "canal_house_b",
+     "canal_house"
+    ],
+    "tile": [
+     1.6,
+     1.6
+    ],
+    "blocks": 1.6,
+    "seed": 3
+   }
+  ],
+  "distance": 140
+ },
+ "camera": {
+  "at": 1.0,
+  "x": 0.0,
+  "height": 0.5,
+  "fov": 62,
+  "pitch": 0.06
+ },
+ "title": "The night canal - by boat down a canal between old houses at night, a gondola ahead, bridges over it",
+ "sky": "night",
+ "sky_objects": [
+  {
+   "type": "moon",
+   "azimuth": 266,
+   "elevation": 19,
+   "size": 2.8
+  }
+ ],
+ "lights": [
+  {
+   "type": "moon",
+   "azimuth": 266,
+   "elevation": 30,
+   "intensity": 0.35,
+   "disc": false
+  }
+ ],
+ "ambient": [
+  0.3,
+  0.32,
+  0.44
+ ],
+ "fog": {
+  "color": [
+   0.1,
+   0.12,
+   0.2
+  ],
+  "density": 0.018
+ },
+ "roadside": [
+  {
+   "type": "lamp_post",
+   "side": "left",
+   "every": 7,
+   "offset": 0.2,
+   "from": 3,
+   "scale": 0.8,
+   "light": {
+    "color": [
+     1.0,
+     0.72,
+     0.42
+    ],
+    "radius": 2.8,
+    "intensity": 1.2,
+    "z": 1.2,
+    "x": 0.1
+   }
+  },
+  {
+   "type": "wall_lamp",
+   "side": "right",
+   "every": 9,
+   "offset": 0.05,
+   "from": 6,
+   "z": 1.3,
+   "flip": true,
+   "light": {
+    "color": [
+     1.0,
+     0.72,
+     0.42
+    ],
+    "radius": 2.6,
+    "intensity": 1.1,
+    "z": 1.4,
+    "x": 0.25
+   }
+  },
+  {
+   "type": "mooring_pole",
+   "side": "right",
+   "every": 5.5,
+   "offset": -0.35,
+   "from": 4,
+   "seed": 1
+  },
+  {
+   "type": "mooring_pole",
+   "side": "right",
+   "every": 5.5,
+   "offset": -0.55,
+   "from": 4.3,
+   "seed": 2
+  }
+ ],
+ "sprites": [
+  {
+   "type": "gondola",
+   "at": 6.0,
+   "x": 0.3,
+   "light": {
+    "color": [
+     1.0,
+     0.72,
+     0.42
+    ],
+    "radius": 1.8,
+    "intensity": 0.8,
+    "z": 0.7
+   }
+  },
+  {
+   "type": "canal_bridge",
+   "at": 14,
+   "x": -0.55,
+   "scale": 1.05
+  },
+  {
+   "type": "canal_bridge",
+   "at": 38,
+   "x": -0.55,
+   "scale": 1.05
+  },
+  {
+   "type": "washing_line",
+   "at": 12,
+   "x": -0.4,
+   "z": 2.4,
+   "scale": 1.4
+  },
+  {
+   "type": "washing_line",
+   "at": 27,
+   "x": -0.5,
+   "z": 2.6,
+   "scale": 1.4,
+   "flip": true
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": 0.0,
+   "height": 0.5,
+   "fov": 62,
+   "pitch": 0.06,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.4,
+     "spread": 0.5
+    }
+   ],
+   "vehicle": {
+    "type": "boat_bow",
+    "ahead": 1.25,
+    "z": -0.1,
+    "scale": 0.5,
+    "light": {
+     "color": [
+      1.0,
+      0.72,
+      0.42
+     ],
+     "radius": 2.4,
+     "intensity": 1.0,
+     "z": 0.5,
+     "at": 0.1
+    }
+   }
+  }
+ ],
+ "supersample": 2
+}

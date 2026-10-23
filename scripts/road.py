@@ -161,7 +161,7 @@ class RoadRenderer:
         e = spec.get('edge') or {}
         self.ragged = float(e.get('ragged', 0.0))        # how far the edge wanders, in units
         self.blend = float(e.get('blend', 0.0))          # how wide a band the road and the ground mix in
-        self.surface = assets.get_texture(spec.get('surface', 'asphalt'))[0]
+        self.surface, self.surface_em = assets.get_texture(spec.get('surface', 'asphalt'))[:2]   # a lane of light glows
         surf = spec.get('surface', 'asphalt')
         surf = surf.get('base') if isinstance(surf, dict) else surf
         self.surface_alpha = assets.get_alpha(surf)            # a see-through road: a coaster's rails and ties
@@ -947,6 +947,8 @@ class RoadRenderer:
         on = edge_in < 0
         lift = np.broadcast_to(np.where(band, 1 + self.bands / 2, 1 - self.bands / 2), X.shape)
         out[on] = self.surface[tv[on], tu[on]] * lift[on][:, None]
+        if self.surface_em is not None:
+            lightk[on] = self.surface_em[tv[on], tu[on]][:, None] * self.surface[tv[on], tu[on]] * 1.6
         roofed = np.zeros(len(along), bool)
         for a0, a1, _ in self.roofs:
             roofed |= (along >= a0) & (along < a1)

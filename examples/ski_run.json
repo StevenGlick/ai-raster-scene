@@ -1,0 +1,325 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    4,
+    0,
+    -1.2
+   ],
+   [
+    26,
+    0.3,
+    -9
+   ],
+   [
+    24,
+    -0.35,
+    -8
+   ],
+   [
+    30,
+    0.25,
+    -10
+   ],
+   [
+    40,
+    -0.1,
+    -6
+   ],
+   [
+    60,
+    0,
+    -1
+   ],
+   [
+    300,
+    0.05,
+    30
+   ]
+  ],
+  "width": 4.0,
+  "surface": {
+   "base": "piste",
+   "tint": [
+    0.9,
+    0.94,
+    1.0
+   ]
+  },
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "edge": {
+   "ragged": 0.2,
+   "blend": 0.5
+  },
+  "ground": [
+   {
+    "width": 1.6,
+    "texture": "snow"
+   },
+   {
+    "texture": "snow_forest",
+    "tile": 3
+   }
+  ],
+  "walls": [
+   {
+    "side": "both",
+    "offset": 0.3,
+    "height": 0.45,
+    "texture": "ski_fence",
+    "tile": [
+     1.2,
+     0.45
+    ]
+   },
+   {
+    "side": "right",
+    "offset": 4.0,
+    "z": 1.45,
+    "height": 1.6,
+    "texture": "chairlift",
+    "tile": [
+     4,
+     1.6
+    ]
+   },
+   {
+    "side": "right",
+    "offset": 5.5,
+    "z": 1.45,
+    "height": 1.6,
+    "texture": "chairlift",
+    "tile": [
+     4.6,
+     1.6
+    ]
+   }
+  ],
+  "distance": 400
+ },
+ "camera": {
+  "at": 1.0,
+  "x": 0.0,
+  "height": 0.55,
+  "fov": 66,
+  "pitch": -0.25
+ },
+ "title": "The ski run - down a groomed run on a bright day, slalom gates, a skier ahead, the chairlift beside it",
+ "sky": "day",
+ "skyline": {
+  "type": "mountains",
+  "height": 1.6,
+  "color": [
+   0.78,
+   0.84,
+   0.94
+  ]
+ },
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 238,
+   "elevation": 32,
+   "intensity": 0.9,
+   "color": [
+    1.0,
+    0.97,
+    0.92
+   ]
+  }
+ ],
+ "ambient": [
+  0.66,
+  0.7,
+  0.8
+ ],
+ "fog": {
+  "color": [
+   0.86,
+   0.9,
+   0.98
+  ],
+  "density": 0.004,
+  "sky_mix": 0.2
+ },
+ "roadside": [
+  {
+   "type": "snowy_pine",
+   "density": 1.6,
+   "offset": [
+    0.9,
+    5.0
+   ],
+   "scale": [
+    1.2,
+    2.4
+   ],
+   "seed": 1
+  },
+  {
+   "type": [
+    "snowy_pine",
+    "pine"
+   ],
+   "density": 0.9,
+   "offset": [
+    5.0,
+    14.0
+   ],
+   "scale": [
+    1.8,
+    3.0
+   ],
+   "seed": 3
+  },
+  {
+   "type": "lift_tower",
+   "side": "right",
+   "every": 12,
+   "offset": 4.75,
+   "from": 6
+  }
+ ],
+ "scatter": [
+  {
+   "of": "snow",
+   "density": 0.4,
+   "offset": [
+    0.6,
+    6.0
+   ],
+   "seed": 2
+  }
+ ],
+ "sprites": [
+  {
+   "type": "slalom_gate",
+   "at": 5,
+   "x": -0.9,
+   "variant": 0
+  },
+  {
+   "type": "slalom_gate",
+   "at": 11,
+   "x": 0.9,
+   "variant": 1
+  },
+  {
+   "type": "slalom_gate",
+   "at": 17,
+   "x": -0.9,
+   "variant": 0
+  },
+  {
+   "type": "slalom_gate",
+   "at": 23,
+   "x": 0.9,
+   "variant": 1
+  },
+  {
+   "type": "slalom_gate",
+   "at": 29,
+   "x": -0.9,
+   "variant": 0
+  },
+  {
+   "type": "slalom_gate",
+   "at": 35,
+   "x": 0.9,
+   "variant": 1
+  },
+  {
+   "type": "slalom_gate",
+   "at": 41,
+   "x": -0.9,
+   "variant": 0
+  },
+  {
+   "type": "slalom_gate",
+   "at": 47,
+   "x": 0.9,
+   "variant": 1
+  },
+  {
+   "type": "slalom_gate",
+   "at": 53,
+   "x": -0.9,
+   "variant": 0
+  },
+  {
+   "type": "slalom_gate",
+   "at": 59,
+   "x": 0.9,
+   "variant": 1
+  },
+  {
+   "type": "slalom_gate",
+   "at": 65,
+   "x": -0.9,
+   "variant": 0
+  },
+  {
+   "type": "slalom_gate",
+   "at": 71,
+   "x": 0.9,
+   "variant": 1
+  },
+  {
+   "type": "slalom_gate",
+   "at": 77,
+   "x": -0.9,
+   "variant": 0
+  },
+  {
+   "type": "slalom_gate",
+   "at": 83,
+   "x": 0.9,
+   "variant": 1
+  },
+  {
+   "type": "skier",
+   "at": 7.5,
+   "x": 0.35
+  },
+  {
+   "type": "skier",
+   "at": 22,
+   "x": -0.6,
+   "tint": [
+    0.5,
+    0.7,
+    1.2
+   ]
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": 0.0,
+   "height": 0.55,
+   "fov": 66,
+   "pitch": -0.25,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.5,
+     "radius": 2.0
+    }
+   ],
+   "vehicle": {
+    "type": "ski_tips",
+    "ahead": 0.85,
+    "z": 0.3,
+    "scale": 0.24
+   }
+  }
+ ],
+ "supersample": 2
+}

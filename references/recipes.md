@@ -261,6 +261,39 @@ The road is the bridge: `planks` 1.1 wide, its `sections` sagging in the middle 
 
 A dark river (`water` tinted black-green) between banks of bones, the cavern's `walls` of `stone_dark` with a `ragged` top under a high `ceiling` of `rock` (`light` 0.35, so the walls still show); robed statues every 8 with a `brazier` at each one's feet and its fire's light - the water mirrors the flames - green wisps over it (`orb`s, `additive`, `fullbright`, tinted), a `stone_arch` spanning the river with braziers either side; your ferry's `boat_bow` and its lantern. See `examples/underworld_river.py`.
 
+### A canal at night between old houses
+
+The canal is the road (`water` tinted dark, `ripple` 0.35); a quay along one side (`flagstone`), the houses rising
+straight from the water on the other: `walls` in `blocks` 1.6 long with a `ragged` top, a list of faces
+(`canal_house`, `_b`, `_c`: plaster worn to the brick, a few windows lit) on a low wall of `canal_footing`. Striped
+`mooring_pole`s off the houses in pairs, `wall_lamp`s and `lamp_post`s with their lights, two `canal_bridge`s
+across, `washing_line`s strung over the water at `z` 2.4, a `gondola` ahead with its lamp, the moon over the roofs;
+everything lit is doubled in the water. Your own `boat_bow` as the shot's vehicle. See `examples/night_canal.py`.
+
+### A ski run
+
+The run is the road: `piste` falling in steep `sections` that bend, then levelling out into a valley so the land
+fills the view under the peaks (a run that only falls shows haze where the land drops away). Deep `snow`, then
+`snow_forest` (`tile` 3) beyond; the orange safety net as see-through `walls` of `ski_fence`; the chairlift as two
+`chairlift` walls at `z` 1.45 on `lift_tower`s; `snowy_pine`s by density. Red and blue `slalom_gate`s turn and turn
+about down the course (`variant`), a `skier` ahead; `ski_tips` as the vehicle (`ahead` 0.85, `z` 0.3, `scale`
+0.24) under a camera pitched down the slope (`pitch` -0.25). See `examples/ski_run.py`.
+
+### A lane of light in the sky
+
+The road is a `light_lane` (2 wide: a line of light at each edge and down the middle, chevrons between - it glows,
+and it is see-through), the ground `void`, the city at night far `below` (`city_night`, `depth` 20, `tile` 10).
+Towers stand either side as `walls` from `z` -20, `tower_windows` in `blocks` with `gaps` 0.45 so the city shows
+between them, a farther rank taller still; neon signs hung out from them, hover cars in the lane and the lanes
+above and below, yours as the shot's vehicle; `speed` 0.35 streaks it all past. See `examples/sky_lane.py`.
+
+### A drive on the Moon
+
+No road but the tracks: `regolith` for the road and the ground, `rover_tracks` decals down the middle and `crater`
+decals either side at every size; boulders and rocks tinted pale. The base ahead - `dome` (lit), `hab_module`s,
+`solar_array`s, a `lander` - an `astronaut` walking out; a `moon_buggy` as the vehicle. The `space` sky with the
+`earth` over the horizon, a low sun, no fog. See `examples/moon_drive.py`.
+
 ### A highway at night, and a tunnel
 
 Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.

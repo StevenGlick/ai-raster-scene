@@ -194,6 +194,10 @@ SHOTS = {
     'road_dark': ('dark_road', 1),
     'road_rope_bridge': ('rope_bridge', 1),
     'road_underworld': ('underworld_river', 1),
+    'road_canal_night': ('night_canal', 1),
+    'road_ski': ('ski_run', 1),
+    'road_sky_lane': ('sky_lane', 1),
+    'road_moon': ('moon_drive', 1),
     # where it started: the three concept drawings, made scenes (the drawings are in docs/origins)
     'storm_island': ('storm_island', 1),
     'storm_town': ('storm_island', 2),

@@ -1641,6 +1641,459 @@ def spr_dark_castle():
     return rgba, em
 
 
+# ------------------------------------------------------------------ the canal at night
+
+LACQUER = ramp('#1a1a22', dark=0.5, light=3.0, cool=0.1)
+NAVY = ramp('#24325e', dark=0.45, light=1.6, cool=0.06)
+STRAW = ramp('#e2c272', dark=0.45, light=1.3, warm=0.06)
+SKIN = ramp('#d8a07a', dark=0.45, light=1.3, warm=0.05)
+STONE_W = ramp('#dedad0', dark=0.45, light=1.25)
+CANAL_BRICK = ramp('#9a5a3e', dark=0.4, light=1.4, warm=0.06)
+POLE_C = [ramp('#c42a2a', dark=0.4, light=1.4), ramp('#2a4ac4', dark=0.4, light=1.5, cool=0.08),
+          ramp('#2a8a4a', dark=0.4, light=1.5)]
+
+
+def tex_canal_house(name, plaster=(0.78, 0.58, 0.38)):
+    """An old house's face over a canal at night, for a wall of houses along the water: plaster (`plaster`)
+    worn through to the brick in patches, a pale string course at each floor, four windows across and two floors
+    up to a tile, each with a stone sill and green shutters - a few lit warm behind their curtains, most dark,
+    some shuttered. Its lit windows glow."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    p = np.array(plaster, np.float32)
+    rgb = p * (0.8 + 0.32 * fbm(T, rng, 6, 3))[..., None]
+    worn = fbm(T, rng, 5, 2) > 0.64                                     # the plaster worn through to brick
+    course = ((yy // 3) % 2) * 3
+    bk = np.array([0.5, 0.27, 0.2], np.float32) * (0.8 + 0.3 * (((xx + course) // 6) % 2))[..., None]
+    bk[(yy % 3) == 2] *= 0.6
+    rgb[worn] = bk[worn]
+    rgb[(yy % 32) >= 30] = p * 1.12                                     # the string course at each floor
+    rgb[(yy % 32) == 29] *= 0.55                                        # its shadow
+    em = np.zeros((T, T), np.float32)
+    shutter = np.array([0.18, 0.34, 0.24], np.float32)
+    for gy in range(2):
+        for gx in range(4):
+            y0, x0 = gy * 32 + 9, gx * 16 + 5
+            win = (yy >= y0) & (yy < y0 + 15) & (xx >= x0) & (xx < x0 + 6)
+            win &= ~((yy < y0 + 2) & ((xx == x0) | (xx == x0 + 5)))          # its round top
+            sill = (yy >= y0 + 15) & (yy < y0 + 17) & (xx >= x0 - 1) & (xx < x0 + 7)
+            rgb[sill] = [0.88, 0.86, 0.8]
+            rgb[(yy == y0 + 17) & (xx >= x0 - 1) & (xx < x0 + 7)] *= 0.5
+            roll = rng.random()
+            if roll < 0.32:                                                     # lit, a curtain half drawn
+                c = np.array([1.0, 0.74, 0.4], np.float32) * rng.uniform(0.75, 1.0)
+                rgb[win] = c
+                em[win] = 0.9
+                cur = win & (xx >= x0 + (4 if rng.random() < 0.5 else 0)) & (xx < x0 + (6 if rng.random() < 0.5 else 2))
+                rgb[cur] = c * [0.85, 0.5, 0.35]
+                em[cur] = 0.5
+                rgb[win & (xx == x0 + 3)] *= 0.55                                 # the mullion
+                em[win & (xx == x0 + 3)] *= 0.5
+            else:
+                rgb[win] = [0.05, 0.06, 0.09]
+                rgb[win & (yy < y0 + 5) & (xx < x0 + 2)] = [0.2, 0.22, 0.3]     # the sky caught in the glass
+            if roll > 0.82:                                                     # shuttered
+                rgb[win] = shutter * (0.8 + 0.4 * ((yy[win] - y0) % 2))[:, None]
+                em[win] = 0.0
+            else:                                                               # the shutters open, either side
+                for sx in (x0 - 3, x0 + 6):
+                    sh = (yy >= y0) & (yy < y0 + 15) & (xx >= sx) & (xx < sx + 3)
+                    rgb[sh] = shutter * (0.75 + 0.35 * ((yy[sh] - y0) % 2))[:, None]
+    return np.clip(rgb, 0, 1), em
+
+
+def tex_canal_footing(name):
+    """The foot of a house where it stands in a canal: courses of pale stone, the waterline's band of green-black
+    weed at the bottom and wet streaks running up from it."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    rgb = np.array([0.74, 0.72, 0.66], np.float32) * (0.78 + 0.3 * fbm(T, rng, 6, 3))[..., None]
+    rgb[(yy % 16) == 15] *= 0.5                                          # the courses
+    rgb[((xx + (yy // 16) * 11) % 24 == 0)] *= 0.55                      # the joints
+    weed = yy > 40 + 6 * vnoise(T, 8, rng)
+    rgb[weed] = np.array([0.1, 0.16, 0.1], np.float32) * (0.7 + 0.6 * fbm(T, rng, 8, 2)[weed])[:, None]
+    streak = (yy > 20) & (vnoise(T, 16, rng) > 0.62) & ~weed
+    rgb[streak] *= 0.62
+    return np.clip(rgb, 0, 1), None
+
+
+def _mooring_pole(k):
+    w, h = 8, 64
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(2.4, 6, 3.2, 58, z=1.0, top=0.5, bevel=1.4, mat=0)                       # the pole
+    for y in range(8, 56, 7):                                                      # its spiral stripes
+        cv.stroke([(2.2, y + 3.5), (5.8, y)], 2.2, z=1.25, dome=0.4, mat=1)
+    cv.ellipse(4, 5, 2.6, 2.2, z=1.4, dome=0.8, mat=2)                              # the gilt knob
+    cv.box(2.0, 56, 4.0, 8, z=1.1, top=0.5, bevel=1.0, mat=3)                       # wet and weedy at the water
+    return _prop(cv, [STONE_W, POLE_C[k], BRASS, ramp('#2a3a26', dark=0.5, light=1.6)], relief=1.0, cavity=0.4,
+                 shadow=0.4)
+
+
+def spr_mooring_pole():
+    """A mooring pole standing in a canal, striped round like a barber's pole with a gilt knob on top, weed where it
+    meets the water (three ways: `variant` 0 red, 1 blue, 2 green). Stand them in twos and threes off the houses."""
+    return _mooring_pole(0)
+
+
+def spr_canal_bridge():
+    """A bridge humped over a canal, seen from the water: one arch of brick ringed in pale stone, its parapet
+    capped in the same stone and rising to the middle, the arch's opening open (you go under it). Stand it across
+    the canal with `"x": 0`, wide enough to reach both banks."""
+    w, h = 112, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    xs = np.arange(w) + 0.5
+    top = 12 - 8 * np.sin(np.clip(xs / w, 0, 1) * np.pi)                           # the deck humps to the middle
+    pts = [(0, 40)] + [(x, top[i]) for i, x in enumerate(xs[::4])] + [(w, top[-1]), (w, 40)]
+    cv.polygon(pts, z=1.0, top=0.4, bevel=0.6, mat=0)                               # the brick body
+    for y in range(4, 40, 3):                                                      # its courses
+        cv.stroke([(0, y), (w, y)], 0.5, mode='carve', z=0.2)
+    cv.stroke([(x, top[i * 4] + 1.2) for i, x in enumerate(xs[::4])], 2.6, z=1.4, dome=0.5, mat=1)   # the coping
+    cx, span, rise = 56, 34, 25                                                     # the arch
+    t = np.linspace(0, np.pi, 40)
+    ring = [(cx - np.cos(a) * (span + 2.5), 40 - np.sin(a) * (rise + 2.5)) for a in t]
+    cv.stroke(ring, 4.0, z=1.3, dome=0.4, mat=1)                                    # its ring of stone
+    for a in t[2:-2:3]:                                                            # the voussoirs' joints
+        r0, r1 = (span + 0.6, rise + 0.6), (span + 4.4, rise + 4.4)
+        cv.stroke([(cx - np.cos(a) * r0[0], 40 - np.sin(a) * r0[1]), (cx - np.cos(a) * r1[0], 40 - np.sin(a) * r1[1])],
+                  0.6, mode='carve', z=0.3)
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    hole = ((xx - cx) / span) ** 2 + ((yy - 40) / rise) ** 2 < 1.0
+    cv.id[hole] = 0                                                                 # the opening, open
+    rgba, em = _prop(cv, [CANAL_BRICK, STONE_W], relief=1.0, cavity=0.5, shadow=0.4)
+    yi, xi = np.mgrid[0:h, 0:w]
+    brick = (cv.mat == 0) & (cv.id > 0)
+    shift = (yi // 3) % 2 * 3
+    mortar = ((yi % 3) == 2) | (((xi + shift) % 6) == 0)
+    each = np.sin(((yi // 3) * 37 + (xi + shift) // 6) * 12.9898) * 43758.5453 % 1.0      # each brick its own
+    rgba[brick, :3] *= np.where(mortar, 0.62, 0.84 + 0.26 * each)[brick][:, None]
+    return rgba, em
+
+
+LAUNDRY = [ramp('#e8e6e0', dark=0.45, light=1.2), ramp('#6a9ad0', dark=0.4, light=1.4, cool=0.06),
+           ramp('#c84a3a', dark=0.4, light=1.4), ramp('#e8c040', dark=0.4, light=1.3, warm=0.05),
+           ramp('#5aa070', dark=0.4, light=1.4), ramp('#d890b0', dark=0.4, light=1.3)]
+
+
+def spr_washing_line():
+    """A line of washing slung across a canal or a lane between the houses: sheets, shirts, trousers, towels and
+    socks pegged along a sagging line. A long card to hang across the way at `z` 2 or so (`side` middle)."""
+    w, h = 192, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    rng = np.random.default_rng(71)
+
+    def sag(x):
+        return 2 + 40 * (x / w) * (1 - x / w)
+    x, k = 8.0, 0
+    paint = rng.permutation(len(LAUNDRY))
+    while x < w - 16:
+        kind = rng.choice(['sheet', 'shirt', 'trousers', 'towel', 'socks'], p=[0.22, 0.32, 0.2, 0.16, 0.1])
+        m = 1 + int(paint[k % len(paint)])                                  # the colours taken in turn
+        k += 1
+        y = sag(x) + 0.5
+        if kind == 'sheet':
+            ww, hh = 20, 17 + rng.uniform(-2, 2)
+            cv.polygon([(x, y), (x + ww, sag(x + ww) + 0.5), (x + ww - 1, y + hh + 1), (x + ww / 2, y + hh - 1),
+                        (x + 1, y + hh + 1)], z=1.0, top=0.5, bevel=1.4, mat=m)
+        elif kind == 'shirt':
+            ww = 14
+            cv.polygon([(x, y), (x + ww, y), (x + ww, y + 5), (x + ww - 3, y + 4), (x + ww - 3, y + 13),
+                        (x + 3, y + 13), (x + 3, y + 4), (x, y + 5)], z=1.0, top=0.6, bevel=1.2, mat=m)
+        elif kind == 'trousers':
+            ww = 10
+            cv.polygon([(x, y), (x + ww, y), (x + ww, y + 17), (x + 6, y + 17), (x + 5, y + 6), (x + 4, y + 17),
+                        (x, y + 17)], z=1.0, top=0.6, bevel=1.0, mat=m)
+        elif kind == 'towel':
+            ww = 11
+            cv.box(x, y, ww, 13, z=1.0, top=0.5, bevel=1.0, mat=m)
+            cv.box(x, y + 10, ww, 1.2, z=1.05, top=0.2, bevel=0.2, mat=1 + (m % len(LAUNDRY)))
+        else:
+            ww = 9
+            for sx in (x, x + 5):
+                cv.polygon([(sx, y), (sx + 3, y), (sx + 3, y + 6), (sx + 4.5, y + 7.5), (sx + 1, y + 7.5)], z=1.0,
+                           top=0.5, bevel=0.6, mat=m)
+        x += ww + float(rng.uniform(2, 6))
+    cv.stroke([(t, sag(t)) for t in np.linspace(0, w, 48)], 1.0, z=2.0, dome=0.3, mat=0)      # the line
+    return _prop(cv, [ramp('#3a3530', dark=0.5, light=1.6)] + LAUNDRY, relief=1.0, cavity=0.4, shadow=0.4)
+
+
+def spr_gondola():
+    """A gondola seen from behind, going ahead of you down a canal: its black lacquered hull and the stern rising
+    to a curl, the gondolier standing on the stern in a striped shirt and a straw hat, leaning on his long oar."""
+    w, h = 40, 64
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(6, 52), (34, 52), (30, 62), (10, 62)], z=1.0, top=0.6, bevel=2.0, mat=0)        # the hull
+    cv.stroke([(20, 54), (20, 44), (21.5, 38), (19, 35)], 3.2, z=1.3, dome=0.6, taper=(1.0, 0.6), mat=0)  # the stern
+    cv.box(9, 50, 22, 3, z=1.2, top=0.3, bevel=0.6, mat=6)                        # the gilt rail
+    cv.box(15, 34, 4.2, 16, z=1.5, top=0.6, bevel=1.0, mat=3)                     # his legs, black
+    cv.box(21, 34, 4.2, 16, z=1.5, top=0.6, bevel=1.0, mat=3)
+    cv.box(14, 18, 12, 17, z=1.8, top=0.7, bevel=2.0, mat=1)                      # his shirt
+    for y in (20.5, 24, 27.5, 31):                                                 # its navy stripes
+        cv.box(14, y, 12, 1.6, z=1.85, top=0.3, bevel=0.2, mat=2)
+    cv.ellipse(20, 14, 3.4, 3.6, z=2.0, dome=0.9, mat=4)                           # his head
+    cv.ellipse(20, 11, 7.0, 1.5, z=2.2, dome=0.3, mat=5)                           # the hat's brim
+    cv.box(16.2, 7, 7.6, 4.4, z=2.3, top=0.5, bevel=0.8, mat=5)                    # its crown
+    cv.box(16.2, 9.6, 7.6, 1.4, z=2.35, top=0.2, bevel=0.2, mat=2)                 # the ribbon
+    cv.stroke([(26, 20), (31, 25)], 2.6, z=1.9, dome=0.6, mat=1)                   # his arms, on the oar
+    cv.stroke([(14, 22), (24, 27)], 2.6, z=2.0, dome=0.6, mat=1)
+    cv.stroke([(22, 6), (38, 63)], 1.6, z=2.1, dome=0.5, mat=7)                    # the oar, down into the water
+    return _prop(cv, [LACQUER, WHITE, NAVY, ramp('#1e1e24', dark=0.5, light=2.0), SKIN, STRAW, BRASS, WOOD],
+                 relief=1.0, cavity=0.4, shadow=0.4)
+
+
+# ------------------------------------------------------------------ the ski run
+
+JACKET = ramp('#d83a2a', dark=0.4, light=1.4)
+SKI_PANTS = ramp('#22283a', dark=0.45, light=1.9, cool=0.08)
+HELMET = ramp('#e8e8ec', dark=0.45, light=1.2)
+GATE_C = [ramp('#d82a22', dark=0.4, light=1.4), ramp('#2a52d8', dark=0.4, light=1.5, cool=0.08)]
+NET = np.array([1.0, 0.45, 0.08], np.float32)
+LIFT = ramp('#8a8e96', dark=0.4, light=1.6, cool=0.06)
+
+
+def tex_piste(name):
+    """Groomed snow on a ski run: the corduroy a groomer leaves, ridges running down the slope (along a road),
+    blue-white in their troughs, the seam between two passes, a glint of ice here and there."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    rgb = np.array([0.9, 0.93, 0.98], np.float32) * (0.9 + 0.12 * fbm(T, rng, 4, 3))[..., None]
+    rgb *= np.array([1.0, 0.98, 0.95, 0.9, 0.88, 0.92, 0.96, 0.99], np.float32)[xx % 8][..., None]   # the ridges
+    rgb[(xx % 8) == 4] *= [0.9, 0.94, 1.0]                                          # blue in the troughs
+    rgb[(xx == 0) | (xx == 63)] *= 0.86                                             # the seam
+    glint = rng.random((T, T)) < 0.008
+    rgb[glint] = [1.0, 1.0, 1.0]
+    return np.clip(rgb, 0, 1), None
+
+
+def tex_ski_fence(name):
+    """The orange safety net along a ski run, for a wall at the piste's edge: a diamond mesh of orange cord
+    stretched between posts, its top edge banded, see-through between the cords. One post to a tile."""
+    yy, xx = np.mgrid[0:T, 0:T]
+    mesh = (((xx + yy) % 8) == 0) | (((xx - yy) % 8) == 0)
+    band = (yy < 4) | ((yy >= 56) & (yy < 58))
+    post = xx < 2
+    rgb = np.zeros((T, T, 3), np.float32) + NET * (0.85 + 0.15 * (yy < 32))[..., None]
+    rgb[band] = NET * 1.05
+    rgb[post] = [0.25, 0.3, 0.4]
+    alpha = (mesh | band | post).astype(np.float32)
+    alpha[yy >= 58] = 0.0                                                           # a gap to the snow
+    alpha[post] = 1.0
+    return np.clip(rgb, 0, 1), None, alpha
+
+
+def tex_chairlift(name):
+    """A chairlift's cable and its chairs, for a wall high over a ski run (`z` up near the towers' arms): the
+    cable along the top, one chair to a tile hanging from it, two skiers riding in most, their skis dangling;
+    see-through between. Give it `"tile": [4, 1.6]` - a chair every four units."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    rgb = np.zeros((T, T, 3), np.float32) + [0.2, 0.2, 0.22]
+    a = np.zeros((T, T), np.float32)
+    a[(yy >= 2) & (yy < 4)] = 1.0                                                   # the cable
+    cx = 32
+    hang = (np.abs(xx - cx) < 1) & (yy >= 4) & (yy < 44)
+    seat = (yy >= 44) & (yy < 47) & (np.abs(xx - cx) < 7)
+    back = (yy >= 32) & (yy < 46) & (np.abs(xx - (cx + 6)) < 1)
+    foot = (yy >= 54) & (yy < 56) & (np.abs(xx - cx) < 6)
+    bar = (yy >= 36) & (yy < 38) & (np.abs(xx - cx) < 7)
+    for m in (hang, seat, back, foot, bar):
+        a[m] = 1.0
+    rgb[seat | back] = [0.25, 0.32, 0.5]
+    if rng.random() < 0.85:                                                         # two riding
+        for k, (dx, c) in enumerate(((-4, [0.85, 0.25, 0.2]), (2, [0.2, 0.5, 0.8]))):
+            body = (yy >= 34) & (yy < 45) & (np.abs(xx - cx - dx) < 2.5)
+            head = ((xx - cx - dx) ** 2 + (yy - 31) ** 2) < 7
+            legs = (yy >= 45) & (yy < 54) & (np.abs(xx - cx - dx + 2 - (yy - 45) * 0.15) < 1.5)
+            ski = (np.abs((yy - 54) - (xx - cx - dx + 6) * 0.25) < 0.8) & (np.abs(xx - cx - dx) < 7)
+            rgb[body] = c
+            rgb[head] = [0.9, 0.9, 0.92] if k else [0.15, 0.15, 0.18]
+            rgb[legs] = [0.15, 0.17, 0.22]
+            rgb[ski] = [0.9, 0.6, 0.1]
+            for m in (body, head, legs, ski):
+                a[m] = 1.0
+    return np.clip(rgb, 0, 1), None, a
+
+
+def _slalom_gate(k):
+    w, h = 24, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (2, 20):
+        cv.box(x, 2, 2.4, 38, z=1.0, top=0.5, bevel=0.8, mat=0)                    # the poles
+        cv.ellipse(x + 1.2, 2, 1.6, 1.2, z=1.2, dome=0.6, mat=0)
+    cv.polygon([(3, 5), (21, 5), (21, 21), (3, 21)], z=0.9, top=0.4, bevel=0.6, mat=1)    # the panel
+    cv.box(3, 11.5, 18, 2.6, z=0.95, top=0.2, bevel=0.2, mat=2)                     # its white stripe
+    return _prop(cv, [GATE_C[k], GATE_C[k], WHITE], relief=1.0, cavity=0.3, shadow=0.4)
+
+
+def spr_slalom_gate():
+    """A slalom gate on a ski run: a panel stretched between two poles stuck in the snow, a white stripe across
+    it (two ways: `variant` 0 red, 1 blue - set them down the course turn and turn about)."""
+    return _slalom_gate(0)
+
+
+def spr_skier():
+    """A skier seen from behind, going down a run ahead of you: crouched over the skis in a red jacket and dark
+    salopettes, a white helmet with the goggles' strap round it, the poles tucked back under the arms."""
+    w, h = 30, 46
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.stroke([(7, 25), (1.5, 45)], 1.0, z=1.0, dome=0.3, mat=4)                     # the poles, back to the snow
+    cv.stroke([(23, 25), (28.5, 45)], 1.0, z=1.0, dome=0.3, mat=4)
+    cv.box(8, 42, 5, 4, z=1.1, top=0.3, bevel=0.4, mat=5)                           # the skis' tails
+    cv.box(17, 42, 5, 4, z=1.1, top=0.3, bevel=0.4, mat=5)
+    cv.box(8.5, 36, 4.5, 7, z=1.3, top=0.5, bevel=0.8, mat=3)                       # the boots
+    cv.box(17, 36, 4.5, 7, z=1.3, top=0.5, bevel=0.8, mat=3)
+    cv.polygon([(7, 25), (23, 25), (22, 37), (17, 37), (15, 30), (13, 37), (8, 37)], z=1.5, top=0.6, bevel=1.4,
+               mat=1)                                                               # the salopettes, knees bent
+    cv.polygon([(5, 13), (25, 13), (24, 27), (6, 27)], z=1.8, top=0.7, bevel=2.2, mat=0)   # the jacket
+    cv.stroke([(6, 15), (5, 24)], 3.0, z=1.9, dome=0.6, mat=0)                       # the arms
+    cv.stroke([(24, 15), (25, 24)], 3.0, z=1.9, dome=0.6, mat=0)
+    cv.ellipse(15, 9, 5.0, 5.2, z=2.2, dome=0.9, mat=2)                              # the helmet
+    cv.box(10, 9, 10, 1.6, z=2.3, top=0.2, bevel=0.2, mat=6)                        # the goggles' strap
+    return _prop(cv, [JACKET, SKI_PANTS, HELMET, TRIM, CHROME, ramp('#e8a020', dark=0.4, light=1.3),
+                      ramp('#30c0e0', dark=0.4, light=1.3)], relief=1.0, cavity=0.4, shadow=0.4)
+
+
+def spr_ski_tips():
+    """Your own skis, from the skier's eye: the two skis running ahead from your boots and curling up at their
+    tips, a stripe down each. A shot's `vehicle` for a ski run: `"ahead": 0.9`, `"z": -0.3` or so."""
+    w, h = 64, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for s in (-1, 1):
+        x0 = 32 + s * 16
+        tip = 32 + s * 10
+        cv.polygon([(x0 - 6, 40), (x0 + 6, 40), (tip + 3, 7), (tip - 3, 7)], z=1.0, top=0.4,
+                   bevel=1.0, mat=0)                                                # the ski
+        cv.stroke([(x0, 40), (tip, 8)], 1.4, z=1.15, dome=0.3, mat=1)               # its stripe
+        cv.ellipse(tip, 6.5, 3.4, 2.6, z=1.5, dome=0.5, mat=0)                       # the tip, curled up
+        cv.stroke([(tip - 2.2, 5.6), (tip + 2.2, 5.6)], 0.8, z=1.7, dome=0.3, mat=2)   # its edge catching the light
+        cv.box(x0 - 7, 31, 14, 9, z=1.6, top=0.6, bevel=1.6, mat=3)                 # the boot's toe
+        cv.box(x0 - 7, 34, 14, 1.4, z=1.7, top=0.2, bevel=0.2, mat=4)               # a buckle
+    return _prop(cv, [ramp('#1e2028', dark=0.5, light=2.4), ramp('#f07a1a', dark=0.4, light=1.3),
+                      ramp('#e8e8ee', dark=0.5, light=1.2), ramp('#3a3e48', dark=0.45, light=1.8), CHROME],
+                 relief=1.0, cavity=0.4, shadow=0.4)
+
+
+def spr_lift_tower():
+    """A chairlift's tower: a steel column on a footing, at its head a crossarm with the wheels the cables ride on
+    either end. Stand them along a ski run under a pair of `chairlift` walls, its arms reaching both."""
+    w, h = 44, 64
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(18, 58, 8, 6, z=0.9, top=0.5, bevel=1.0, mat=1)                          # the footing
+    cv.polygon([(19, 60), (25, 60), (24, 6), (20, 6)], z=1.2, top=0.6, bevel=1.4, mat=0)   # the column
+    cv.box(1, 4, 42, 3.4, z=1.4, top=0.5, bevel=0.8, mat=0)                         # the crossarm
+    for x in (2, 36):
+        cv.box(x, 6.5, 6, 2.6, z=1.5, top=0.4, bevel=0.6, mat=2)                    # the wheel trains
+        for wx in (x + 1, x + 4):
+            cv.ellipse(wx + 0.5, 9.4, 1.3, 1.3, z=1.6, dome=0.6, mat=2)
+    cv.stroke([(22, 7), (14, 14)], 1.0, z=1.3, dome=0.3, mat=0)                      # a brace or two
+    cv.stroke([(22, 7), (30, 14)], 1.0, z=1.3, dome=0.3, mat=0)
+    return _prop(cv, [LIFT, ramp('#9a968c', dark=0.45, light=1.4), TRIM], relief=1.0, cavity=0.4, shadow=0.4)
+
+
+# ------------------------------------------------------------------ the sky lane and the Moon
+
+def tex_city_night(name):
+    """A city at night seen from far above, for the land `below` a road in the sky: a grid of avenues lit sodium
+    orange with cars' lights along them, narrower streets between, the dark roofs of the blocks pricked with lit
+    windows and here and there a sign in pink or cyan; a park or two. Its lights glow."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    rgb = np.zeros((T, T, 3), np.float32) + [0.05, 0.05, 0.08]
+    rgb *= (0.7 + 0.6 * fbm(T, rng, 8, 2))[..., None]
+    em = np.zeros((T, T), np.float32)
+    park = (vnoise(T, 4, rng) > 0.72) & ((xx % 16) > 2) & ((yy % 16) > 2)
+    rgb[park] = [0.04, 0.08, 0.05]
+    lit = (rng.random((T, T)) < 0.06) & ~park & ((xx % 16) > 2) & ((yy % 16) > 2)
+    rgb[lit] = np.array(LIT, np.float32)[rng.integers(0, 5, lit.sum())] * rng.uniform(0.5, 1.0, (lit.sum(), 1))
+    em[lit] = 0.8
+    street = ((xx % 8) == 0) | ((yy % 8) == 0)
+    rgb[street & ~park] = [0.42, 0.26, 0.1]
+    em[street & ~park] = 0.45
+    avenue = ((xx % 16) < 2) | ((yy % 16) < 2)
+    rgb[avenue] = [0.95, 0.6, 0.22]
+    em[avenue] = 0.9
+    cars = avenue & (rng.random((T, T)) < 0.18)
+    rgb[cars] = np.where((rng.random(cars.sum()) < 0.5)[:, None], [1.0, 0.95, 0.85], [1.0, 0.18, 0.12])
+    em[cars] = 1.0
+    signs = (rng.random((T, T)) < 0.004) & ~avenue
+    for y, x in np.argwhere(signs):
+        c = [1.0, 0.3, 0.75] if rng.random() < 0.5 else [0.3, 0.95, 1.0]
+        rgb[y:y + 2, x:x + 3] = c
+        em[y:y + 2, x:x + 3] = 1.0
+    return np.clip(rgb, 0, 1), em
+
+
+def tex_light_lane(name):
+    """A lane of light for flying traffic, for a road's `surface` in the sky: lines of cyan light a unit apart down
+    its length and chevrons in magenta between them pointing the way, see-through between, so the city shows far
+    below. A road surface tiles a unit to a texture, so a lane 2 wide has a line at each edge and one down its
+    middle, a chevron either side. All of it glows."""
+    yy, xx = np.mgrid[0:T, 0:T]
+    rgb = np.zeros((T, T, 3), np.float32) + [0.3, 0.95, 1.0]
+    line = (xx < 2) | (xx > 61)
+    v = (yy % 32).astype(np.float32)
+    off = np.abs(xx - 31.5)
+    chev = (np.abs(off * 0.8 - (v - 6)) < 1.3) & (off > 3) & (off < 18)
+    rgb[chev] = [1.0, 0.3, 0.8]
+    a = (line | chev).astype(np.float32)
+    return rgb, a.copy(), a
+
+
+def dec_crater():
+    """A crater in the Moon's dust: a bowl, its wall toward the sun lit and the other in shadow, a raised rim, the
+    ejecta thrown out round it in a paler blanket fading into the dust. Stamp it a few units across beside a road."""
+    h = w = 48
+    yy, xx = _grid(h, w)
+    n = _noise(h, w, 6, 31)
+    r = np.hypot(xx - 24, yy - 24) / 14.0 + (n - 0.5) * 0.12
+    bowl, rim, blanket = r < 0.86, (r >= 0.86) & (r < 1.06), (r >= 1.06) & (r < 1.7)
+    rgb = np.zeros((h, w, 3), np.float32) + [0.5, 0.5, 0.5]
+    lit = np.clip((xx - 24) / 14.0, -1, 1)                                          # the sun from the left: the far
+    rgb[bowl] = (np.array([0.4, 0.4, 0.41]) * (0.18 + 0.95 * ((lit[bowl] + 1) / 2) ** 1.5)[:, None])   # wall lit
+    rgb[rim] = np.array([0.66, 0.66, 0.66]) * (0.85 + 0.3 * n[rim])[:, None]
+    rgb[blanket] = np.array([0.6, 0.6, 0.6]) * (0.85 + 0.3 * n[blanket])[:, None]
+    alpha = bowl * 0.95 + rim * 0.9 + blanket * np.clip((1.7 - r) / 0.64, 0, 1) * 0.55
+    return _decal(rgb, alpha)
+
+
+MOON_SUIT = ramp('#e2e2e0', dark=0.45, light=1.2)
+FOIL_G = ramp('#d8a840', dark=0.4, light=1.4, warm=0.08)
+
+
+def spr_moon_buggy():
+    """A moon buggy seen from behind, driving on ahead of you: two astronauts side by side in white suits, the
+    life-support packs on their backs and their helmets' gold visors catching the light at the sides, on a
+    skeletal chassis between wire-mesh wheels under their fenders; the dish antenna on its mast at the front like
+    an open umbrella, a gold-foiled box at the back."""
+    w, h = 60, 48
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.stroke([(9, 4), (11, 30)], 1.0, z=0.9, dome=0.4, mat=4)                      # the dish's mast, front left
+    cv.ellipse(8, 4, 8.0, 2.8, z=1.0, dome=0.45, angle=-8, mat=5)                   # the dish, open
+    for a in np.linspace(-1, 1, 5):                                                 # its ribs
+        cv.stroke([(8, 2.4), (8 + a * 7.5, 5.0 - abs(a) * 1.2)], 0.5, z=1.15, dome=0.3, mat=4)
+    for x in (5, 55):                                                                # the rear wheels
+        cv.box(x - 4.5, 30, 9, 18, z=1.2, top=0.6, bevel=1.6, mat=3)
+        for y in range(32, 47, 3):
+            cv.box(x - 4.5, y, 9, 0.8, z=1.3, top=0.2, bevel=0.2, mat=4)
+        cv.stroke([(x - 5.5, 31), (x - 3, 27.5), (x + 3, 27.5), (x + 5.5, 31)], 1.5, z=1.5, dome=0.4, mat=1)
+    cv.box(8, 32, 44, 5, z=1.0, top=0.6, bevel=1.0, mat=4)                           # the chassis
+    cv.box(21, 35, 18, 8, z=1.1, top=0.6, bevel=1.0, mat=5)                          # the gold box
+    for k, x in enumerate((19, 41)):                                                 # the astronauts
+        cv.box(x - 9, 19, 18, 15, z=1.5, top=0.7, bevel=2.6, mat=0)                  # the suit's back, shoulders
+        cv.stroke([(x - 8.5, 21), (x - 9.5, 31)], 3.2, z=1.6, dome=0.7, mat=0)        # the arms
+        cv.stroke([(x + 8.5, 21), (x + 9.5, 31)], 3.2, z=1.6, dome=0.7, mat=0)
+        if k == 0:
+            cv.stroke([(x - 8.5, 23), (x - 9.3, 30)], 1.2, z=1.75, dome=0.3, mat=6)   # the commander's red stripes
+            cv.stroke([(x + 8.5, 23), (x + 9.3, 30)], 1.2, z=1.75, dome=0.3, mat=6)
+        cv.box(x - 6, 16, 12, 16, z=2.0, top=0.6, bevel=1.6, mat=1)                  # the pack
+        cv.box(x - 6, 22.5, 12, 1.0, z=2.05, top=0.2, bevel=0.2, mat=4)              # its seam
+        cv.stroke([(x - 4.5, 16.2), (x + 4.5, 16.2)], 1.6, z=2.1, dome=0.4, mat=4)    # the helmet's neck ring
+        cv.ellipse(x, 10.5, 5.6, 5.4, z=2.4, dome=0.95, mat=0)                       # the helmet
+        cv.stroke([(x - 5.2, 9), (x - 5.4, 13)], 1.2, z=2.45, dome=0.3, mat=5)        # the visor, gold at its edge
+        cv.stroke([(x + 5.2, 9), (x + 5.4, 13)], 1.2, z=2.45, dome=0.3, mat=5)
+    return _prop(cv, [MOON_SUIT, ramp('#c8c8c4', dark=0.45, light=1.3), CHROME, TYRE, TRIM, FOIL_G,
+                      ramp('#c82a22', dark=0.4, light=1.4)], relief=1.0, cavity=0.4, shadow=0.45)
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -1649,19 +2102,28 @@ DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies 
 DECALS = {'oil_stain': dec_oil_stain, 'tyre_marks': dec_tyre_marks, 'road_patch': dec_road_patch,
           'pothole': dec_pothole, 'leaf_litter': dec_leaf_litter, 'manhole': dec_manhole,
           'lane_arrow': dec_lane_arrow, 'zebra_crossing': dec_zebra_crossing, 'sand_drift': dec_sand_drift,
-          'pebbles': dec_pebbles, 'start_line': dec_start_line, 'wake': dec_wake}
+          'pebbles': dec_pebbles, 'start_line': dec_start_line, 'wake': dec_wake, 'crater': dec_crater}
 TEXTURES.update({'tower_windows': lambda n: tex_tower_windows(n), 'tower_windows_b': lambda n: tex_tower_windows(n),
                  'shopfront': lambda n: tex_shopfront(n),
                  'shopfront_b': lambda n: tex_shopfront(n, (0.25, 0.95, 1.0)),
                  'shopfront_c': lambda n: tex_shopfront(n, (1.0, 0.7, 0.2)),
                  'coaster_track': lambda n: tex_coaster_track(n), 'coaster_frame': lambda n: tex_coaster_frame(n),
                  'rail_track': lambda n: tex_rail_track(n), 'grandstand': lambda n: tex_grandstand(n),
-                 'suspension_cables': lambda n: tex_suspension_cables(n)})
+                 'suspension_cables': lambda n: tex_suspension_cables(n),
+                 'canal_house': lambda n: tex_canal_house(n),
+                 'canal_house_b': lambda n: tex_canal_house(n, (0.74, 0.44, 0.4)),
+                 'canal_house_c': lambda n: tex_canal_house(n, (0.84, 0.78, 0.64)),
+                 'canal_footing': lambda n: tex_canal_footing(n), 'piste': lambda n: tex_piste(n),
+                 'ski_fence': lambda n: tex_ski_fence(n), 'chairlift': lambda n: tex_chairlift(n),
+                 'city_night': lambda n: tex_city_night(n), 'light_lane': lambda n: tex_light_lane(n)})
 TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront': 0.4, 'shopfront_b': 0.4,
                       'shopfront_c': 0.4, 'coaster_track': 0.2, 'coaster_frame': 0.2, 'rail_track': 0.6,
-                      'grandstand': 0.3, 'suspension_cables': 0.0})
+                      'grandstand': 0.3, 'suspension_cables': 0.0, 'canal_house': 0.3, 'canal_house_b': 0.3,
+                      'canal_house_c': 0.3, 'canal_footing': 0.4, 'piste': 0.15, 'ski_fence': 0.0, 'chairlift': 0.0,
+                      'city_night': 0.0, 'light_lane': 0.0})
 VARIANTS = {'traffic_light': (3, _traffic_light), 'car_compact': (4, _car_compact), 'car_sedan': (4, _car_sedan),
-            'billboard': (3, _billboard), 'race_car': (4, _race_car), 'car_oncoming': (4, _car_oncoming)}
+            'billboard': (3, _billboard), 'race_car': (4, _race_car), 'car_oncoming': (4, _car_oncoming),
+            'mooring_pole': (3, _mooring_pole), 'slalom_gate': (2, _slalom_gate)}
 
 SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_sedan': spr_car_sedan,
            'box_truck': spr_box_truck, 'curve_sign': spr_curve_sign, 'billboard': spr_billboard,
@@ -1676,7 +2138,9 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'coaster_car': spr_coaster_car, 'mine_frame': spr_mine_frame, 'mine_cart': spr_mine_cart,
            'starfighter': spr_starfighter, 'race_car': spr_race_car, 'car_oncoming': spr_car_oncoming,
            'motel_sign': spr_motel_sign, 'gas_station': spr_gas_station, 'bridge_tower': spr_bridge_tower,
-           'dark_castle': spr_dark_castle}
+           'dark_castle': spr_dark_castle, 'mooring_pole': spr_mooring_pole, 'canal_bridge': spr_canal_bridge,
+           'gondola': spr_gondola, 'washing_line': spr_washing_line, 'slalom_gate': spr_slalom_gate,
+           'skier': spr_skier, 'ski_tips': spr_ski_tips, 'lift_tower': spr_lift_tower, 'moon_buggy': spr_moon_buggy}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
@@ -1685,11 +2149,15 @@ SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'bo
                  'jeep': 0.62, 'rally_car': 0.48, 'dirt_bike': 0.55, 'dust_cloud': 0.62, 'speedboat': 0.44,
                  'narrowboat': 0.9, 'boat_bow': 0.42, 'hover_car': 0.36, 'neon_bike': 0.52, 'taxi': 0.5, 'brick_ring': 3.25, 'coaster_car': 0.55,
                  'mine_frame': 2.2, 'mine_cart': 0.38, 'starfighter': 0.4, 'race_car': 0.3, 'car_oncoming': 0.48,
-                 'motel_sign': 4.2, 'gas_station': 2.6, 'bridge_tower': 10.0, 'dark_castle': 30.0}
+                 'motel_sign': 4.2, 'gas_station': 2.6, 'bridge_tower': 10.0, 'dark_castle': 30.0,
+                 'mooring_pole': 1.3, 'canal_bridge': 1.45, 'gondola': 0.85, 'washing_line': 0.6,
+                 'slalom_gate': 0.62, 'skier': 0.5, 'ski_tips': 0.4, 'lift_tower': 3.0, 'moon_buggy': 0.55}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
                  'speedboat': {'shadow': False}, 'narrowboat': {'shadow': False}, 'boat_bow': {'shadow': False},
                  'brick_ring': {'shadow': False}, 'mine_frame': {'shadow': False}, 'starfighter': {'shadow': False},
                  'motel_sign': {'shadow': False}, 'gas_station': {'shadow': False}, 'bridge_tower': {'shadow': False},
-                 'dark_castle': {'shadow': False}}
+                 'dark_castle': {'shadow': False}, 'canal_bridge': {'shadow': False}, 'gondola': {'shadow': False},
+                 'mooring_pole': {'shadow': False}, 'washing_line': {'shadow': False, 'planes': 1},
+                 'ski_tips': {'shadow': False}, 'lift_tower': {'shadow': False}, 'moon_buggy': {'shadow': False}}
