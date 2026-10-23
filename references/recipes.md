@@ -352,6 +352,38 @@ their crowns close over the road and hide everything; a `torii` over the road 10
 it in line (`x` 0, so the gate frames it) and a thin fog (much more and the peak is lost). Petals are the `snow`
 post effect in pink (`"color": [1.0, 0.78, 0.86]`). A `dawn` sky. See `examples/blossom_road.py`.
 
+### A storm chase on the plains
+
+Two lanes dead straight over gentle swells (`sections` that only rise and fall), a `centre` line in yellow and a
+`gravel` shoulder; grass, then `wheat_field` (`tile` 1.5) to the horizon; `telegraph_pole`s every 9 with a
+`power_lines` wall at their arms. The `tornado` out in the fields ahead and to one side (`at` 110, `scale` 46), a
+`barn`, a few `hay_bale`s; the `storm` sky with a low sun under it; the `lightning` post effect (`amount` 0.18, the
+bolt placed with `x`). The `pickup_truck` as the vehicle. See `examples/storm_chase.py`.
+
+### A submarine through a kelp forest
+
+No road: `seabed` for the road and the ground, the edge blended away (`blend` 1); the surface overhead is a `ceiling`
+of `water_surface` (it glows) at height 9, the murk a close teal fog. `kelp` by density, `light_shaft`s in the
+`middle` by density, the `seabed` scatter; a `mini_sub` ahead with a light and `bubbles`, a `fish_school`, a
+`sea_turtle`, a `reef_shark`, an `anchor`, a `wreck_mast`; marine snow as the `snow` effect, pale and faint, and the
+`porthole` as the vehicle. Draw the road far (`distance` 300) under a dark sky - where the ceiling and the floor
+stop, a sliver of sky shows between them. See `examples/kelp_run.py`.
+
+### A ring station in space
+
+The inside of a ring habitat: `sections` that each rise more than the last (0.4, 1.3, 2.2 ... over 10 units) so
+the land climbs ahead and on up into the sky until it fills it. Fields, a river and forest either side in ground
+bands, then a band of `void` - the floor ends at the rim - with see-through `walls` of `glasshouse` along the edge,
+so space shows past them: the `space` sky, a `ringed` planet and the sun as sky objects. Trees by density, a car
+ahead, your own as the vehicle. See `examples/ring_station.py`.
+
+### A dog sled under the aurora
+
+The trail is the road (`snow` tinted cold, 1 wide, the edge blended into the drifts, `tyre_marks` decals for the
+runners' ruts); deep `snow` either side, `snowy_pine`s by density, the `snow` scatter; a `log_cabin` by the trail
+with a warm light and `steam` from its chimney. The `aurora` sky, a moon's light, a thin cold fog. The `dog_team`
+2.7 ahead of the camera (`scale` 0.55) is the team you drive. See `examples/sled_run.py`.
+
 ### A highway at night, and a tunnel
 
 Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.

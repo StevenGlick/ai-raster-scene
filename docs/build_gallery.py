@@ -205,6 +205,10 @@ SHOTS = {
     'road_candy': ('candy_road', 1),
     'road_ghost_train': ('ghost_train', 1),
     'road_blossom': ('blossom_road', 1),
+    'road_storm_chase': ('storm_chase', 1),
+    'road_kelp': ('kelp_run', 1),
+    'road_ring': ('ring_station', 1),
+    'road_sled': ('sled_run', 1),
     # where it started: the three concept drawings, made scenes (the drawings are in docs/origins)
     'storm_island': ('storm_island', 1),
     'storm_town': ('storm_island', 2),

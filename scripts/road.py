@@ -174,7 +174,8 @@ class RoadRenderer:
         self.sides = {k: _side_spec(sides.get(k, 'grass')) for k in ('left', 'right')}
         for bands in self.sides.values():
             for b in bands or []:
-                assets.get_texture(b[1])
+                if b[1] != 'void':
+                    assets.get_texture(b[1])
         self.ambient = _col(scene.get('ambient'), (0.55, 0.55, 0.6))
         self.suns = [L for L in scene.get('lights', []) if L.get('type') in ('sun', 'moon')]
         fog = scene.get('fog') or {}
@@ -562,7 +563,7 @@ class RoadRenderer:
         img = np.zeros((H, W, 3), np.float32)
         emis = np.zeros((H, W, 3), np.float32)
         depth = np.full((H, W), np.inf, np.float32)
-        void = self.sides['left'] is None or self.sides['right'] is None
+        void = any(b is None or b[-1][1] == 'void' for b in self.sides.values())     # a side ends in nothing
         self._sky(img, emis, cam, W, H, focal, horizon, mid, below=void)
         self._sky_img, self._sky_emis = img.copy(), emis.copy()          # what the water mirrors
         self._refl = np.zeros((H, W), np.float32)                         # how mirror-like each pixel's ground is
@@ -996,7 +997,9 @@ class RoadRenderer:
             lo = 0.0
             for hi, spec, tint, rk, own, tile in bands:
                 b = m & (past >= lo) & (past < hi)
-                if b.any():
+                if b.any() and spec == 'void':                         # the ground ends: nothing beyond
+                    void |= b
+                elif b.any():
                     tex = assets.get_texture(spec)[0]
                     em = assets.get_texture(spec)[1]
                     bv, bu = (tv[b], tu[b]) if tile == 1.0 else (      # a band's own `tile`: a big pattern

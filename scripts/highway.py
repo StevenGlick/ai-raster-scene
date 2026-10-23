@@ -941,7 +941,6 @@ RALLY = ramp('#e8e4dc', dark=0.45, light=1.25)
 RALLY_BLUE = ramp('#1e48a8', dark=0.35, light=1.6, cool=0.08)
 LEATHER = ramp('#2a2a30', dark=0.5, light=2.2)
 HELMET = ramp('#d8301e', dark=0.35, light=1.6, warm=0.05)
-DUST = (0.72, 0.6, 0.46)
 
 
 def spr_jeep():
@@ -2642,6 +2641,215 @@ def spr_snow_peak():
     return _prop(cv, [ramp('#6a82a8', dark=0.5, light=1.3, cool=0.08), PEAK_SNOW], relief=1.0, cavity=0.3, shadow=0.4)
 
 
+# ------------------------------------------------------------------ the storm chase
+
+BARN_RED = ramp('#a8281e', dark=0.4, light=1.4, warm=0.04)
+PICKUP = ramp('#d8d4c8', dark=0.4, light=1.3)
+
+
+def tex_wheat_field(name):
+    """A field of ripe wheat, for the ground beside a road across the plains: gold ears packed close in rows along
+    the road, darker between them, a few stalks bent over by the wind."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    rgb = np.array([0.82, 0.66, 0.3], np.float32) * (0.78 + 0.36 * fbm(T, rng, 8, 3))[..., None]
+    rgb[(xx % 8) < 2] *= 0.68                                                       # between the rows
+    ears = rng.random((T, T)) < 0.22
+    rgb[ears] = np.minimum(rgb[ears] * 1.22 + 0.04, 1.0)
+    flat = vnoise(T, 6, rng) > 0.74                                                 # bent over by the wind
+    rgb[flat] *= [1.08, 1.04, 0.92]
+    return np.clip(rgb, 0, 1), None
+
+
+def spr_tornado():
+    """A tornado on the plains: the funnel dropping out of the cloud base, wide at the top and twisting down to a
+    rope where it touches the ground, debris whirling round its foot in a dark skirt. A billboard far out in the
+    fields, 30 tall at its own size."""
+    w, h = 64, 96
+    rgba = np.zeros((h, w, 4), np.float32)
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    n = _noise(h, w, 6, 71)
+    t = yy / h
+    centre = 32 + 6 * np.sin(t * 5.0) * t                                           # it snakes as it comes down
+    half = 4.5 + 24 * (1 - t) ** 2.2
+    body = np.abs(xx - centre) < half * (0.85 + 0.3 * n)
+    band = np.sin((yy * 0.9 - (xx - centre) * 1.6 / (half + 1) * 3)) * 0.5 + 0.5        # the twist's bands
+    shade = 0.55 + 0.25 * band + 0.25 * (xx < centre)                               # lit on the left
+    rgba[body, :3] = (np.array([0.42, 0.44, 0.48]) * shade[body][:, None] * (0.85 + 0.3 * n[body])[:, None])
+    rgba[body, 3] = np.clip(0.7 + 0.3 * (1 - t[body]), 0, 1)
+    base = (yy < 14 + 6 * n) & (np.abs(xx - 32) < 31 * (0.75 + 0.35 * n))          # the cloud base it drops from
+    a = np.clip((31 - np.abs(xx - 32)) / 14, 0, 1) * np.clip((14 + 6 * n - yy) / 6, 0, 1)
+    rgba[base, :3] = np.array([0.3, 0.32, 0.36]) * (0.8 + 0.4 * n[base])[:, None]
+    rgba[base, 3] = np.maximum(rgba[base, 3], a[base])
+    skirt = (yy > h - 26) & (np.abs(xx - centre) < (yy - (h - 26)) * 1.1 + 5) & (n > 0.22)
+    rgba[skirt, :3] = np.array([0.36, 0.32, 0.28]) * (0.8 + 0.4 * n[skirt])[:, None]  # dust and debris whirling
+    rgba[skirt, 3] = np.maximum(rgba[skirt, 3], 0.55 + 0.35 * np.clip((yy[skirt] - (h - 26)) / 26, 0, 1))
+    return rgba, np.zeros((h, w), np.float32)
+
+
+def spr_barn():
+    """A red barn on the plains: the gambrel roof's two pitches, white trim, the big doors crossed with white
+    braces, a hay door up in the gable, and a tin grain silo beside it with its domed cap."""
+    w, h = 80, 56
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(60, 8, 14, 48, z=1.0, top=0.6, bevel=3.0, mat=2)                         # the silo
+    cv.ellipse(67, 8, 7.4, 4.4, z=1.3, dome=0.9, mat=2)                             # its cap
+    for y in range(14, 56, 5):
+        cv.stroke([(60, y), (74, y)], 0.5, mode='carve', z=0.3)
+    cv.polygon([(4, 56), (56, 56), (56, 26), (46, 14), (30, 6), (14, 14), (4, 26)], z=1.2, top=0.6, bevel=1.6,
+               mat=0)                                                               # the barn
+    cv.stroke([(3, 26), (14, 14), (30, 5.5), (46, 14), (57, 26)], 1.6, z=1.6, dome=0.5, mat=1)   # the roof's trim
+    cv.box(18, 34, 24, 22, z=1.3, top=0.5, bevel=1.0, mat=1)                        # the doors' frame
+    cv.box(19.5, 35.5, 21, 20.5, z=1.35, top=0.5, bevel=0.8, mat=0)
+    cv.stroke([(19.5, 35.5), (40.5, 56)], 1.2, z=1.5, dome=0.4, mat=1)              # the braces
+    cv.stroke([(40.5, 35.5), (19.5, 56)], 1.2, z=1.5, dome=0.4, mat=1)
+    cv.box(25, 17, 10, 9, z=1.3, top=0.5, bevel=0.8, mat=3)                         # the hay door
+    return _prop(cv, [BARN_RED, WHITE, CHROME, ramp('#3a2a20', dark=0.45, light=1.6)], relief=1.0, cavity=0.4,
+                 shadow=0.4)
+
+
+def spr_pickup_truck():
+    """A storm chasers' pickup seen from behind, racing ahead of you: a pale truck, its tailgate and bumper, the
+    bed with gear strapped in it, a mast of weather instruments on the cab's roof, the tail lights lit."""
+    w, h = 48, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(22.6, 0, 1.6, 12, z=1.3, top=0.4, bevel=0.4, mat=3)                      # the instrument mast
+    cv.box(17, 1, 12, 1.4, z=1.4, top=0.3, bevel=0.3, mat=3)
+    cv.ellipse(18, 1.6, 1.8, 1.2, z=1.5, dome=0.7, mat=3)                           # the cups of the anemometer
+    cv.ellipse(28, 1.6, 1.8, 1.2, z=1.5, dome=0.7, mat=3)
+    cv.box(10, 10, 28, 9, z=1.0, top=0.6, bevel=1.6, mat=0)                         # the cab
+    cv.box(12, 11.5, 24, 6, z=1.1, top=0.3, bevel=0.6, mat=4)                       # its back window
+    cv.box(3, 19, 42, 15, z=1.2, top=0.6, bevel=1.6, mat=0)                         # the bed and tailgate
+    cv.box(6, 17, 36, 4, z=1.3, top=0.5, bevel=0.8, mat=5)                          # gear strapped in the bed
+    for x in (3.5, 40.5):                                                           # the tail lights
+        cv.box(x, 21, 4, 7, z=1.4, top=0.4, bevel=0.6, mat=1)
+    cv.box(2, 33, 44, 3, z=1.3, top=0.5, bevel=0.8, mat=3)                          # the bumper
+    cv.box(19, 26, 10, 4, z=1.35, top=0.3, bevel=0.4, mat=2)                        # the plate
+    for x in (4, 36):
+        cv.box(x, 33, 8, 7, z=0.8, top=0.6, bevel=1.4, mat=6)                       # the tyres
+    return _prop(cv, [PICKUP, TAIL, PLATE, CHROME, GLASS, ramp('#3a5a3a', dark=0.4, light=1.5), TYRE],
+                 em=_tail_em(cv, [1]), relief=1.0, cavity=0.4, shadow=0.45)
+
+
+# ------------------------------------------------------------------ the kelp run
+
+SUB_ORANGE = ramp('#f07a1a', dark=0.4, light=1.35, warm=0.06)
+
+
+def spr_mini_sub():
+    """A little research submarine seen from behind as it noses on ahead of you through the water: an orange hull,
+    its glass dome over the pilot, a ducted propeller at the stern, a thruster either side, its lamps lit forward
+    and a red light at its tail."""
+    w, h = 48, 36
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.ellipse(24, 18, 15, 12, z=1.2, dome=0.9, mat=0)                              # the hull, end on
+    cv.ellipse(24, 8, 8, 6, z=1.6, dome=0.9, mat=1)                                 # the dome
+    cv.ellipse(24, 7, 3.0, 3.2, z=1.9, dome=0.8, mat=4)                             # the pilot's head in it
+    for x in (6, 42):                                                               # the side thrusters
+        cv.ellipse(x, 22, 5.0, 4.0, z=1.3, dome=0.8, mat=2)
+        cv.ellipse(x, 22, 2.6, 2.0, z=1.4, dome=0.3, mat=3)
+    cv.ellipse(24, 22, 7.0, 6.6, z=1.6, dome=0.5, mat=2)                            # the propeller's duct
+    cv.ellipse(24, 22, 4.6, 4.4, z=1.65, dome=0.2, mat=3)
+    for a in (0, 2.1, 4.2):                                                         # the blades
+        cv.stroke([(24, 22), (24 + np.cos(a) * 4.2, 22 + np.sin(a) * 4.2)], 1.2, z=1.7, dome=0.4, mat=2)
+    cv.box(22.5, 28.5, 3, 2.4, z=1.8, top=0.4, bevel=0.4, mat=5)                    # the tail light
+    cv.box(14, 30, 20, 3, z=1.1, top=0.5, bevel=0.8, mat=2)                         # the skids
+    rgba, _ = _prop(cv, [SUB_ORANGE, GLASS, CHROME, TRIM, HAIR_D, TAIL], relief=1.0, cavity=0.4, shadow=0.45)
+    return rgba, _tail_em(cv, [5])
+
+
+def spr_light_shaft():
+    """A shaft of sunlight slanting down through the water from the surface, brightest at the top and fading as
+    it goes down, soft at its edges. Drawn `additive` - set them standing about a sea floor, tall."""
+    w, h = 24, 96
+    rgba = np.zeros((h, w, 4), np.float32)
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    lean = (yy / h) * 6                                                             # it slants a little
+    d = np.abs(xx - 12 + lean - 3) / (5 + yy / h * 4)
+    a = np.clip(1 - d, 0, 1) ** 1.5 * (1 - yy / h) ** 1.2
+    rgba[..., :3] = [0.75, 0.95, 1.0]
+    rgba[..., 3] = a
+    return rgba, a * 0.6
+
+
+def spr_porthole():
+    """The rim of your own submarine's viewport, from inside: a thick brass ring round the view, bolted, the
+    hull's dark steel at the corners outside it. A shot's `vehicle`, close and big, so the ring frames the view."""
+    w, h = 96, 64
+    rgba = np.zeros((h, w, 4), np.float32)
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    r = np.hypot((xx - 48) / 47, (yy - 32) / 31)
+    hull = r > 1.0
+    ring = (r > 0.86) & (r <= 1.0)
+    rgba[hull, :3] = [0.1, 0.11, 0.13]
+    rgba[hull, 3] = 1.0
+    ang = np.arctan2(yy - 32, xx - 48)
+    lit = 0.6 + 0.4 * np.cos(ang + 2.2)                                             # the light on the ring
+    rgba[ring, :3] = np.array([0.66, 0.5, 0.24])[None, :] * lit[ring][:, None]
+    rgba[ring, 3] = 1.0
+    rgba[ring & (np.abs(r - 0.93) < 0.012)] = [0.36, 0.27, 0.13, 1.0]                # its groove
+    for k in range(12):                                                             # its bolts
+        a = k * np.pi / 6
+        bx, by = 48 + np.cos(a) * 47 * 0.93, 32 + np.sin(a) * 31 * 0.93
+        bolt = (xx - bx) ** 2 + (yy - by) ** 2 < 2.2
+        rgba[bolt, :3] = [0.9, 0.78, 0.5]
+    return rgba, np.zeros((h, w), np.float32)
+
+
+# ------------------------------------------------------------------ the sled run
+
+HUSKY = ramp('#8a8c94', dark=0.4, light=1.7, cool=0.04)
+HUSKY_W = ramp('#ecebe6', dark=0.5, light=1.15)
+HARNESS = ramp('#d8302a', dark=0.4, light=1.4)
+LOGS = ramp('#7a5434', dark=0.4, light=1.5, warm=0.05)
+
+
+def spr_dog_team():
+    """A team of sled dogs running away from you up the trail: three pairs of huskies in red harness on the
+    gangline, each in its own coat - grey, black, brown - white legs, tails curled up, the lead pair farthest and
+    smallest. Stand it a few units ahead of the camera for the team you drive."""
+    w, h = 48, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.stroke([(24, 40), (24, 6)], 0.8, z=0.9, dome=0.3, mat=2)                     # the gangline
+    for k, (y, s) in enumerate(((10, 0.55), (21, 0.75), (33, 1.0))):               # pairs, far to near
+        for side in (-1, 1):
+            x = 24 + side * 7.5 * s
+            coat = (0, 3, 4, 0, 3, 4)[k * 2 + (side > 0)]                            # each dog its own coat
+            for lx in (-2.6, 2.6):                                                  # the legs, running
+                cv.stroke([(x + lx * s, y + 2 * s), (x + lx * s * 1.3, y + 7 * s)], 1.4 * s, z=1.0, dome=0.5,
+                          mat=1)
+            cv.ellipse(x, y, 4.6 * s, 3.6 * s, z=1.3, dome=0.9, mat=coat)           # the back, from behind
+            cv.ellipse(x, y - 3.4 * s, 2.4 * s, 2.0 * s, z=1.4, dome=0.9, mat=coat)  # the head beyond
+            for e in (-1, 1):
+                cv.ellipse(x + e * 1.4 * s, y - 5.0 * s, 0.7 * s, 1.1 * s, z=1.45, dome=0.6, mat=coat)   # ears
+            cv.stroke([(x, y - 0.5 * s), (x + side * 1.5 * s, y - 2.6 * s)], 1.6 * s, z=1.5, dome=0.7,
+                      mat=1)                                                        # the tail, curled up
+            cv.stroke([(x - 3.6 * s, y + 0.4 * s), (x + 3.6 * s, y + 0.4 * s)], 0.9 * s, z=1.45, dome=0.3,
+                      mat=2)                                                        # the harness
+            cv.stroke([(x, y + 0.4 * s), (24, y + 2.2 * s)], 0.6, z=1.2, dome=0.3, mat=2)   # its tug line
+    return _prop(cv, [HUSKY, HUSKY_W, HARNESS, ramp('#2a2a30', dark=0.5, light=2.0),
+                      ramp('#9a6a3e', dark=0.4, light=1.5, warm=0.05)], relief=1.0, cavity=0.4, shadow=0.45)
+
+
+def spr_log_cabin():
+    """A log cabin in the snow: walls of round logs with their ends crossing at the corners, a roof deep in snow,
+    a stone chimney smoking, its windows lit warm."""
+    w, h = 64, 52
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(46, 6, 7, 22, z=1.0, top=0.6, bevel=1.0, mat=3)                          # the chimney
+    cv.box(8, 26, 48, 26, z=1.0, top=0.6, bevel=1.2, mat=0)                         # the walls
+    for y in range(27, 52, 3):                                                      # the logs, round
+        cv.stroke([(6, y + 1), (58, y + 1)], 2.6, z=1.2, dome=0.8, mat=0)
+    cv.polygon([(2, 28), (62, 28), (50, 12), (14, 12)], z=1.6, top=0.6, bevel=1.4, mat=1)          # the roof, snowed
+    cv.box(28, 36, 9, 16, z=1.3, top=0.5, bevel=0.8, mat=4)                         # the door
+    for x0 in (13, 42):
+        cv.box(x0, 34, 9, 8, z=1.3, top=0.4, bevel=0.6, mat=5)                      # the windows, lit
+    rgba, _ = _prop(cv, [LOGS, ramp('#eef2f6', dark=0.55, light=1.1), ramp('#7a7a80', dark=0.4, light=1.5),
+                         ramp('#8a8a90', dark=0.4, light=1.5), ramp('#3a2a1e', dark=0.45, light=1.6),
+                         ramp('#ffc870', dark=0.8, light=1.1)], relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [5])
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -2668,13 +2876,15 @@ TEXTURES.update({'tower_windows': lambda n: tex_tower_windows(n), 'tower_windows
                  'tulip_field_b': lambda n: tex_tulip_field(n, (0.96, 0.8, 0.12)),
                  'tulip_field_c': lambda n: tex_tulip_field(n, (0.96, 0.46, 0.7)),
                  'tulip_field_d': lambda n: tex_tulip_field(n, (0.56, 0.24, 0.7)),
-                 'peppermint': lambda n: tex_peppermint(n), 'frosting': lambda n: tex_frosting(n)})
+                 'peppermint': lambda n: tex_peppermint(n), 'frosting': lambda n: tex_frosting(n),
+                 'wheat_field': lambda n: tex_wheat_field(n)})
 TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront': 0.4, 'shopfront_b': 0.4,
                       'shopfront_c': 0.4, 'coaster_track': 0.2, 'coaster_frame': 0.2, 'rail_track': 0.6,
                       'grandstand': 0.3, 'suspension_cables': 0.0, 'canal_house': 0.3, 'canal_house_b': 0.3,
                       'canal_house_c': 0.3, 'canal_footing': 0.4, 'piste': 0.15, 'ski_fence': 0.0, 'chairlift': 0.0,
                       'city_night': 0.0, 'light_lane': 0.0, 'tulip_field': 0.2, 'tulip_field_b': 0.2,
-                      'tulip_field_c': 0.2, 'tulip_field_d': 0.2, 'peppermint': 0.1, 'frosting': 0.2})
+                      'tulip_field_c': 0.2, 'tulip_field_d': 0.2, 'peppermint': 0.1, 'frosting': 0.2,
+                      'wheat_field': 0.3})
 VARIANTS = {'traffic_light': (3, _traffic_light), 'car_compact': (4, _car_compact), 'car_sedan': (4, _car_sedan),
             'billboard': (3, _billboard), 'race_car': (4, _race_car), 'car_oncoming': (4, _car_oncoming),
             'mooring_pole': (3, _mooring_pole), 'slalom_gate': (2, _slalom_gate), 'gumdrop': (4, _gumdrop)}
@@ -2701,7 +2911,10 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'stilt_shack': spr_stilt_shack, 'camel': spr_camel, 'camel_head': spr_camel_head, 'pyramid': spr_pyramid,
            'candy_cane': spr_candy_cane, 'lollipop': spr_lollipop, 'gumdrop': spr_gumdrop,
            'gingerbread_house': spr_gingerbread_house, 'skeleton': spr_skeleton, 'ghost_car': spr_ghost_car,
-           'cherry_tree': spr_cherry_tree, 'torii': spr_torii, 'snow_peak': spr_snow_peak}
+           'cherry_tree': spr_cherry_tree, 'torii': spr_torii, 'snow_peak': spr_snow_peak, 'tornado': spr_tornado,
+           'barn': spr_barn, 'pickup_truck': spr_pickup_truck, 'mini_sub': spr_mini_sub,
+           'light_shaft': spr_light_shaft, 'porthole': spr_porthole, 'dog_team': spr_dog_team,
+           'log_cabin': spr_log_cabin}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
@@ -2717,7 +2930,9 @@ SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'bo
                  'runway_light': 0.08, 'control_tower': 8.0, 'airliner': 2.6, 'cockpit': 0.84,
                  'stilt_shack': 2.2, 'camel': 0.8, 'camel_head': 0.5, 'pyramid': 20.0,
                  'candy_cane': 1.8, 'lollipop': 2.4, 'gumdrop': 0.8, 'gingerbread_house': 2.0, 'skeleton': 0.75,
-                 'ghost_car': 0.4, 'cherry_tree': 3.2, 'torii': 3.6, 'snow_peak': 18.0}
+                 'ghost_car': 0.4, 'cherry_tree': 3.2, 'torii': 3.6, 'snow_peak': 18.0,
+                 'tornado': 30.0, 'barn': 2.4, 'pickup_truck': 0.62, 'mini_sub': 0.5, 'light_shaft': 8.0,
+                 'porthole': 1.0, 'dog_team': 0.4, 'log_cabin': 1.8}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
@@ -2732,4 +2947,7 @@ PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}
                  'airliner': {'shadow': False}, 'cockpit': {'shadow': False}, 'stilt_shack': {'shadow': False},
                  'camel_head': {'shadow': False}, 'pyramid': {'shadow': False},
                  'gingerbread_house': {'shadow': False}, 'ghost_car': {'shadow': False},
-                 'torii': {'shadow': False}, 'snow_peak': {'shadow': False}}
+                 'torii': {'shadow': False}, 'snow_peak': {'shadow': False}, 'tornado': {'shadow': False},
+                 'barn': {'shadow': False}, 'mini_sub': {'shadow': False},
+                 'light_shaft': {'shadow': False, 'blend': 'additive'}, 'porthole': {'shadow': False},
+                 'dog_team': {'shadow': False}, 'log_cabin': {'shadow': False}}
