@@ -2482,6 +2482,12 @@ def lint_scene(scene):
     if isinstance(scene.get('road'), dict):
         import road
         check(scene['road'], road.ROAD_KEYS, 'road')
+        for i, wl in enumerate(scene['road'].get('walls') or []):
+            check(wl, road.WALL_KEYS, f'road wall {i + 1}')
+        ceil = scene['road'].get('ceiling') or []
+        for i, c in enumerate([ceil] if isinstance(ceil, dict) else ceil):
+            check(c, road.CEILING_KEYS, f'road ceiling {i + 1}')
+        check(scene['road'].get('below'), road.BELOW_KEYS, 'road below')
         for i, row in enumerate(scene.get('roadside') or []):
             check(row, road.ROADSIDE_KEYS, f'roadside {i + 1}')
         for i, row in enumerate(scene.get('scatter') or []):

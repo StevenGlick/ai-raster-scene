@@ -144,6 +144,12 @@ def _road_assets(part):
             for band in side if isinstance(side, list) else [side]:
                 tex = band.get('texture', 'grass') if isinstance(band, dict) and 'base' not in band else band
                 out += [('Textures', t) for t in _textures(tex)]
+        ceil = road.get('ceiling') or []
+        built = list(road.get('walls') or []) + ([ceil] if isinstance(ceil, dict) else list(ceil))
+        if road.get('below'):
+            built.append(road['below'])
+        for b in built:                                 # walls along it, ceilings over it, the land below it
+            out += [('Textures', t) for t in _textures(b.get('texture', 'concrete'))]
     for row in part.get('roadside') or []:
         types = row.get('type')
         out += [_sprite(t) for t in (types if isinstance(types, list) else [types])]

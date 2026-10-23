@@ -23,7 +23,10 @@ import world as WD
 
 # the keys a road and a roadside row take (render.lint_scene checks them; a road camera's are in render.SHOT_KEYS)
 ROAD_KEYS = {'sections', 'width', 'surface', 'lanes', 'lines', 'edges', 'centre', 'rumble', 'shoulder', 'ground',
-             'stripe', 'bands', 'segment', 'distance', 'edge', 'roofs'}
+             'stripe', 'bands', 'segment', 'distance', 'edge', 'roofs', 'walls', 'ceiling', 'below'}
+WALL_KEYS = {'side', 'offset', 'height', 'texture', 'from', 'to', 'z', 'tile', 'light', 'ragged', 'seed'}
+CEILING_KEYS = {'from', 'to', 'height', 'texture', 'tile', 'light'}
+BELOW_KEYS = {'depth', 'texture', 'tile', 'haze'}
 ROADSIDE_KEYS = {'type', 'every', 'density', 'side', 'offset', 'scale', 'jitter', 'from', 'to', 'flip', 'z', 'tint',
                  'light', 'seed', 'variant', 'view', 'opacity', 'blend', 'fullbright', 'shadow', 'clear'}
 SCATTER_KEYS = {'of', 'density', 'side', 'offset', 'from', 'to', 'sizes', 'clump', 'scale', 'seed', 'clear', 'tint'}
@@ -166,6 +169,31 @@ class RoadRenderer:
         self.fog_d = float(fog.get('density', 0.0)) if fog else 0.0
         self.roofs = [(float(r[0]), float(r[1]), float(r[2]) if len(r) > 2 else 0.2)
                       for r in spec.get('roofs', [])]
+        self.walls = []
+        for n, wl in enumerate(spec.get('walls') or []):
+            tex = wl.get('texture', 'concrete')
+            tile = wl.get('tile', 1.0)
+            self.walls.append({'sides': {'both': (-1, 1), 'left': (-1,), 'right': (1,)}[wl.get('side', 'both')],
+                               'offset': float(wl.get('offset', 0.5)), 'height': float(wl.get('height', 1.0)),
+                               'z': float(wl.get('z', 0.0)),
+                               'tile': (float(tile[0]), float(tile[1])) if isinstance(tile, list) else
+                                       (float(tile), float(tile)),
+                               'ragged': float(wl.get('ragged', 0.0)), 'seed': int(wl.get('seed', n)),
+                               'from': float(wl.get('from', 0.0)), 'to': float(wl.get('to', 1e9)),
+                               'tex': assets.get_texture(tex), 'alpha': assets.get_alpha(tex.get('base') if
+                                                                                         isinstance(tex, dict) else tex),
+                               'light': float(wl.get('light', 1.0))})
+        ceil = spec.get('ceiling') or []
+        self.ceilings = []
+        for c in [ceil] if isinstance(ceil, dict) else ceil:
+            self.ceilings.append({'from': float(c.get('from', 0.0)), 'to': float(c.get('to', 1e9)),
+                                  'height': float(c.get('height', 2.5)), 'tile': float(c.get('tile', 1.0)),
+                                  'tex': assets.get_texture(c.get('texture', 'concrete'))})
+            self.roofs.append((self.ceilings[-1]['from'], self.ceilings[-1]['to'], float(c.get('light', 0.2))))
+        b = spec.get('below')
+        self.below = None if not b else {'depth': float(b.get('depth', 30.0)), 'tile': float(b.get('tile', 1.0)),
+                                         'bands': _side_spec(b.get('texture', 'grass')),
+                                         'haze': float(b.get('haze', 1.0))}
         cs = scene.get('contact_shadows', 0.55)
         self.shadow = 0.0 if cs is False else 0.55 if cs is True else float(cs)
         self._skies = {}
@@ -494,17 +522,213 @@ class RoadRenderer:
         img = np.zeros((H, W, 3), np.float32)
         emis = np.zeros((H, W, 3), np.float32)
         depth = np.full((H, W), np.inf, np.float32)
-        void = self.sides['left'] is None and self.sides['right'] is None
+        void = self.sides['left'] is None or self.sides['right'] is None
         self._sky(img, emis, cam, W, H, focal, horizon, mid, below=void)
         if not void:                           # beyond the farthest segment, the land lost in the haze
             far = np.arange(H) + 0.5 >= horizon
             haze = self.fog_c if self.fog_c is not None else self._ground_colour_far()
             img[far] = haze
         self.frame_lamps = self.lamps + self._headlights(cam, at, camx)
+        if self.below:
+            self._below(img, depth, P, at, camy, camx, focal, horizon, mid, W, H)
         self._ground(img, emis, depth, P, at, camx, focal, mid, W, H)
+        for c in self.ceilings:
+            self._ceiling(img, emis, depth, P, c, at, camy, camx, focal, horizon, mid, W, H)
+        for wl in self.walls:
+            self._wall(img, emis, depth, P, wl, at, camy, camx, focal, horizon, mid, W, H)
         self._props(img, emis, depth, P, cam, at, camy, camx, focal, horizon, mid, W, H)
         self._focal, self._horizon, self._mid, self._camy = focal, horizon, mid, camy
         return img, emis, depth
+
+    def _light_wall(self, sgn):
+        """The light on a wall along one side of the road (sgn -1 left, 1 right), facing across it: the ambient,
+        and the sun or moon by how squarely it faces the wall (the road runs along azimuth 270)."""
+        L = self.ambient.copy()
+        for s in self.suns:
+            el = math.radians(float(s.get('elevation', 30)))
+            d = math.radians(float(s.get('azimuth', 270)) - 270)
+            kind = s['type']
+            c = _col(s.get('color'), (1, 0.94, 0.82) if kind == 'sun' else (0.55, 0.65, 0.95))
+            face = -sgn * math.sin(d) * math.cos(el)              # the wall's normal points back across the road
+            L = L + c * float(s.get('intensity', 0.85 if kind == 'sun' else 0.4)) * max(0.0, face) * 1.15
+        return L
+
+    def _roof_k(self, along):
+        """How much of the sky's light reaches each place along the road (1 in the open, less under a roof)."""
+        k = np.ones(np.shape(along), np.float32)
+        for a0, a1, f in self.roofs:
+            k = np.where((along >= a0) & (along < a1), k * f, k)
+        return k
+
+    def _wall(self, img, emis, depth, P, wl, at, camy, camx, focal, horizon, mid, W, H):
+        """A wall along the road: on each segment a strip standing `offset` out from the road's edge, `height`
+        tall from `z` over the road (its top wandering by `ragged`) - a guard rail, a fence, a cliff, a row of
+        buildings. Each strip is filled column by column, each column projected from its own distance (1/z runs
+        straight across the screen); textured from its foot up by how far along and how high (`tile` units to
+        the texture, or [along, up]), lit by the sun on its face, the lamps near it and its own glow, fogged, and
+        drawn where it is nearer than what is there (a see-through texture leaves its holes)."""
+        tex, em = wl['tex']
+        alpha = wl['alpha']
+        tu_k, tv_k = TEX / wl['tile'][0], TEX / wl['tile'][1]
+        seg = self.road.seg
+        field = WD.noise_field() if wl['ragged'] else None
+        k_far = np.nonzero(P['z2'] > NEAR)[0]
+        for sgn in wl['sides']:
+            xo = sgn * (self.half + wl['offset'])
+            flat = self._light_wall(sgn) * wl['light']
+            for k in k_far[::-1]:
+                a0 = P['idx'][k] * seg
+                if a0 + seg <= wl['from'] or a0 >= wl['to']:
+                    continue
+                zn, zf = P['zc1'][k], P['z2'][k]
+                Xn = mid + focal / zn * (P['xc1'][k] + xo - camx)
+                Xf = mid + focal / zf * (P['xf'][k] + xo - camx)
+                c0, c1 = max(0, int(math.ceil(min(Xn, Xf) - 0.5))), min(W, int(math.ceil(max(Xn, Xf) - 0.5)))
+                if c1 <= c0:
+                    continue
+                t = np.clip((np.arange(c0, c1) + 0.5 - Xn) / (Xf - Xn), 0, 1) if abs(Xf - Xn) > 1e-6 \
+                    else np.zeros(c1 - c0)
+                z = 1 / ((1 - t) / zn + t / zf)
+                along = at + z
+                base = P['yc1'][k] + (P['y2'][k] - P['yc1'][k]) * (z - zn) / max(zf - zn, 1e-9) + wl['z']
+                h = np.full(c1 - c0, wl['height'])
+                if field is not None:                 # the top wanders, the same at a place every render
+                    h = np.maximum(0.0, h + wl['ragged'] * (2 * WD.sample_noise(
+                        field, along / max(36.0, 12 * wl['ragged']),
+                        np.full_like(along, 0.13 + 0.29 * wl['seed'] + 0.5 * (sgn > 0))) - 1))
+                ybot = horizon - focal / z * (base - camy)
+                ytop = horizon - focal / z * (base + h - camy)
+                r0, r1 = max(0, int(math.floor(ytop.min()))), min(H, int(math.ceil(ybot.max())))
+                if r1 <= r0:
+                    continue
+                hy = (camy + (horizon - (np.arange(r0, r1)[:, None] + 0.5)) * (z / focal)[None, :]) - base[None, :]
+                in_a = (along >= wl['from']) & (along < wl['to'])
+                m = (hy >= 0) & (hy < h[None, :]) & in_a[None, :] & (depth[r0:r1, c0:c1] > z[None, :])
+                if not m.any():
+                    continue
+                ri, ci = np.nonzero(m)
+                tu = (along[ci] * tu_k).astype(int) % TEX
+                tv = (TEX - 1 - (hy[ri, ci] * tv_k).astype(int)) % TEX
+                if alpha is not None:
+                    keep = alpha[tv, tu] > 0.5
+                    ri, ci, tu, tv = ri[keep], ci[keep], tu[keep], tv[keep]
+                    if not len(ri):
+                        continue
+                rgb = tex[tv, tu]
+                zc = z[ci]
+                L = flat[None, :] * self._roof_k(along[ci])[:, None]
+                for lamp in self.frame_lamps:
+                    if abs(lamp['at'] - (a0 + seg / 2)) > lamp['r'] + seg:
+                        continue
+                    d = np.sqrt((along[ci] - lamp['at']) ** 2 + (xo - lamp['x']) ** 2 +
+                                (wl['z'] + hy[ri, ci] - lamp['z']) ** 2)
+                    L = L + (np.clip(1 - d / lamp['r'], 0, 1) ** 2)[:, None] * lamp['c']
+                col = rgb * L
+                glow = np.zeros_like(col)
+                if em is not None:
+                    glow = em[tv, tu][:, None] * rgb * 1.6
+                    col = col + glow
+                if self.fog_c is not None and self.fog_d > 0:
+                    fg = np.exp(-self.fog_d * zc)[:, None]
+                    col = col * fg + self.fog_c * (1 - fg)
+                    glow = glow * fg
+                img[r0 + ri, c0 + ci] = col
+                emis[r0 + ri, c0 + ci] = glow
+                depth[r0 + ri, c0 + ci] = zc
+
+    def _ceiling(self, img, emis, depth, P, c, at, camy, camx, focal, horizon, mid, W, H):
+        """A ceiling over a stretch of road, `height` over it and following its rises: filled as the road is,
+        from the camera outward - a nearer segment's ceiling hides the rows a farther one's would take - lit only by
+        what light gets under it and the lamps, fogged."""
+        tex, em = c['tex']
+        top = -1.0                                   # the lowest row the nearer ceiling reaches down to
+        rows, ks = [], []
+        for k in range(len(P['idx'])):
+            if P['z2'][k] <= NEAR:
+                continue
+            a0 = P['idx'][k] * self.road.seg
+            if a0 + self.road.seg <= c['from'] or a0 >= c['to']:
+                continue
+            Yn = horizon - P['s1'][k] * (P['yc1'][k] + c['height'] - camy)
+            Yf = horizon - P['s2'][k] * (P['y2'][k] + c['height'] - camy)
+            if Yf <= Yn:                             # a ceiling below the eye is not seen from under it
+                continue
+            r0, r1 = max(0, int(math.ceil(max(Yn, top) - 0.5))), min(H, int(math.ceil(Yf - 0.5)))
+            if r1 > r0:
+                rows.append(np.arange(r0, r1))
+                ks.append(np.full(r1 - r0, k))
+            top = max(top, Yf)
+        if not rows:
+            return
+        rows, ks = np.concatenate(rows), np.concatenate(ks)
+        Yn = horizon - P['s1'][ks] * (P['yc1'][ks] + c['height'] - camy)
+        Yf = horizon - P['s2'][ks] * (P['y2'][ks] + c['height'] - camy)
+        t = np.clip((rows + 0.5 - Yn) / np.maximum(Yf - Yn, 1e-6), 0, 1)       # 0 at the near edge, 1 at the far
+        z = 1 / (1 / P['zc1'][ks] + (1 / P['z2'][ks] - 1 / P['zc1'][ks]) * t)
+        tau = (z - P['zc1'][ks]) / np.maximum(P['z2'][ks] - P['zc1'][ks], 1e-9)
+        xw = P['xc1'][ks] + (P['xf'][ks] - P['xc1'][ks]) * tau
+        along = at + z
+        X = camx + (np.arange(W)[None, :] + 0.5 - mid) * (z / focal)[:, None] - xw[:, None]
+        tu = (X * TEX / c['tile']).astype(int) % TEX
+        tv = np.repeat(((along * TEX / c['tile']).astype(int) % TEX)[:, None], W, 1)
+        rgb = tex[tv, tu]
+        L = np.broadcast_to((self._light_flat() * self._roof_k(along)[:, None])[:, None, :], rgb.shape).copy()
+        for lamp in self.frame_lamps:
+            near = np.abs(along - lamp['at']) < lamp['r']
+            if not near.any():
+                continue
+            rr = np.nonzero(near)[0]
+            d = np.sqrt((along[rr, None] - lamp['at']) ** 2 + (X[rr] - lamp['x']) ** 2 + (c['height'] - lamp['z']) ** 2)
+            L[rr] += (np.clip(1 - d / lamp['r'], 0, 1) ** 2)[..., None] * lamp['c']
+        col = rgb * L
+        glow = np.zeros_like(col) if em is None else em[tv, tu][..., None] * rgb * 1.6
+        col = col + glow
+        if self.fog_c is not None and self.fog_d > 0:
+            fg = np.exp(-self.fog_d * z)[:, None, None]
+            col = col * fg + self.fog_c * (1 - fg)
+            glow = glow * fg
+        m = depth[rows] > z[:, None]
+        ri, ci = np.nonzero(m)
+        img[rows[ri], ci] = col[ri, ci]
+        emis[rows[ri], ci] = glow[ri, ci]
+        depth[rows[ri], ci] = z[ri]
+
+    def _below(self, img, depth, P, at, camy, camx, focal, horizon, mid, W, H):
+        """The land far below a road with a drop beside it (`below`): a flat plane `depth` under the road's
+        start, seen past its edge on a `void` side - a valley floor - lit as open ground, fogged by its distance."""
+        b = self.below
+        r0 = int(math.floor(horizon + 0.5))
+        if r0 >= H:
+            return
+        rows = np.arange(max(0, r0), H)
+        dy = rows + 0.5 - horizon
+        z = focal * (camy + b['depth']) / np.maximum(dy, 1e-3)
+        ok = z < 6000
+        rows, z = rows[ok], z[ok]
+        # the plane bends with the road, as the ground does: the road's middle at each distance
+        zs = np.concatenate([P['zc1'][:1], P['z2']])
+        xs = np.concatenate([P['xc1'][:1], P['xf']])
+        xw = np.interp(z, zs, xs)
+        X = camx + (np.arange(W)[None, :] + 0.5 - mid) * (z / focal)[:, None] - xw[:, None]
+        along = at + z
+        tu = (X * TEX / b['tile']).astype(int) % TEX
+        tv = np.repeat(((along * TEX / b['tile']).astype(int) % TEX)[:, None], W, 1)
+        past = np.abs(X) - self.half                 # out from the road's edge: the valley in bands along it
+        col = np.zeros(X.shape + (3,), np.float32)
+        lo = 0.0
+        for hi, spec, tint in b['bands']:
+            m = (past < hi) & (past >= lo) if lo > 0 else past < hi
+            if m.any():
+                col[m] = assets.get_texture(spec)[0][tv[m], tu[m]] * tint
+            lo = hi
+        col = col * self._light_flat()
+        if self.fog_c is not None and self.fog_d > 0:           # `haze` thins the air down there (or thickens it)
+            fg = np.exp(-self.fog_d * b['haze'] * z)[:, None, None]
+            col = col * fg + self.fog_c * (1 - fg)
+        m = np.isinf(depth[rows])
+        ri, ci = np.nonzero(m)
+        img[rows[ri], ci] = col[ri, ci]
+        depth[rows[ri], ci] = z[ri]
 
     def _ground_colour_far(self):
         bands = self.sides['left'] or self.sides['right']
@@ -919,6 +1143,11 @@ def draw_map(scene, cams, path, scale=4):
         return pts[i] + np.array([-math.sin(h), math.cos(h)]) * x
 
     rr = RoadRenderer(scene)
+    for wl in rr.walls:                                 # the walls along it, as lines
+        for sgn in wl['sides']:
+            ii = [i for i in range(0, road.n, 2) if wl['from'] <= i * road.seg < wl['to']]
+            if len(ii) > 1:
+                d.line([to(place(i * road.seg, sgn * (half + wl['offset']))) for i in ii], fill=(170, 150, 120), width=2)
     for it in rr.items:
         p = to(place(it['at'], it['x']))
         d.ellipse([p[0] - 1.5, p[1] - 1.5, p[0] + 1.5, p[1] + 1.5], fill=(90, 170, 90))

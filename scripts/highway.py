@@ -8,6 +8,7 @@ from PIL import Image, ImageDraw
 
 from biomes import _prop
 from pixelart import Canvas, ramp
+from texlib import T, _rng, col, fbm, vnoise
 
 RED = ramp('#c41e2a', dark=0.32, light=1.5, warm=0.1)
 TAIL = ramp(['#5a0c0c', '#9a160e', '#e0301a', '#ff6436', '#ff9c68', '#ffd2b4'])      # a lamp's red, lit
@@ -315,6 +316,203 @@ def spr_trash():
     return _prop(cv, [PAPER, CAN, BOTTLE], relief=1.0, cavity=0.4, shadow=0.4)
 
 
+# ------------------------------------------------------------------ road furniture
+
+AMBER = ramp('#f0a020', dark=0.5, light=1.4, warm=0.05)
+STEEL = ramp('#8a9098', dark=0.4, light=1.6, cool=0.08)
+SIGN_GREEN = (0.06, 0.38, 0.2)
+
+
+def spr_reflector_post():
+    """A marker post at the side of a road: white, a black band near its top with an amber reflector set in it,
+    which catches the headlights - one every few units along a country road's verge."""
+    w, h = 6, 22
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(1, 1, 4, 21, z=1.0, top=0.6, bevel=0.8, mat=0)
+    cv.box(1, 3, 4, 4.5, z=1.05, top=0.6, bevel=0.5, mat=1)                      # the black band
+    cv.box(2, 4, 2, 2.5, z=1.2, top=0.3, bevel=0.2, mat=2)                       # the reflector
+    rgba, _ = _prop(cv, [WHITE, TRIM, AMBER], relief=0.8, cavity=0.3, shadow=0.35)
+    return rgba, _tail_em(cv, [2]) * 0.55
+
+
+def spr_highway_lamp():
+    """A highway's street lamp: a tall steel pole, its arm curving out over the road to a long lamp head whose
+    underside glows. The arm reaches right: `flip` the row so those on the right reach back over the road. Give the
+    row a `light` hung out under the head (`x` about 1.2, `z` 3.4)."""
+    w, h = 36, 72
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(3, 10, 3.6, 62, z=1.0, top=0.5, bevel=1.0, mat=0)                       # the pole
+    cv.box(2, 66, 5.6, 6, z=1.1, top=0.5, bevel=1.0, mat=0)                        # its foot
+    cv.stroke([(4.8, 12), (6.5, 6), (12, 3.2), (22, 3.4)], 1.8, z=1.2, dome=0.5, mat=0)   # the arm
+    cv.box(20, 2, 14, 4.2, z=1.3, top=0.6, bevel=1.2, mat=0)                       # the head
+    cv.box(21, 5, 12, 1.6, z=1.4, top=0.2, bevel=0.3, mat=1)                       # its lamp, underneath
+    rgba, _ = _prop(cv, [STEEL, ramp('#ffc070', dark=0.7, light=1.2, warm=0.1)], relief=0.9, cavity=0.35,
+                    shadow=0.4)
+    return rgba, _tail_em(cv, [1])
+
+
+def _road_sign(text_lines, arrow, w, h):
+    """A motorway sign: green, a white border, white lettering, an arrow."""
+    import lettering
+    rgba = np.zeros((h, w, 4), np.float32)
+    rgba[..., :3] = SIGN_GREEN
+    rgba[..., 3] = 1.0
+    rgba[:2, :, :3] = rgba[-2:, :, :3] = rgba[:, :2, :3] = rgba[:, -2:, :3] = 0.92
+    rgba[:2, :, :3] = rgba[:2, :, :3]
+    y = 5
+    for t in text_lines:
+        m = lettering.mask(t, 1, False)
+        mh, mw = m.shape
+        x = 5
+        rgba[y:y + mh, x:x + mw][m] = [0.95, 0.95, 0.93, 1.0]
+        y += mh + 3
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    ax, ay = w - 11, h - 8                                             # the arrow, pointing ahead (or ahead right)
+    if arrow == 'up':
+        head = (yy >= ay - 9) & (yy < ay - 3) & (np.abs(xx - ax) <= (yy - (ay - 9)) * 0.9)
+        shaft = (np.abs(xx - ax) < 1.5) & (yy >= ay - 4) & (yy < ay + 4)
+    else:
+        u, v = (xx - ax + yy - ay) / 1.414, (xx - ax - (yy - ay)) / 1.414
+        head = (v >= 2) & (v < 8) & (np.abs(u) <= (8 - v) * 0.9)
+        shaft = (np.abs(u) < 1.5) & (v > -6) & (v < 3)
+    rgba[head | shaft, :3] = 0.95
+    return rgba
+
+
+def spr_sign_gantry():
+    """A gantry over a motorway: a steel truss on two lattice legs, two green signs hung from it - the city ahead,
+    the airport off to the right - white lettering, arrows. Stand it at `x` 0, scaled to the road: it is 3.2 tall
+    and spans about seven units, its legs outside a three-lane road."""
+    w, h = 160, 72
+    rgba = np.zeros((h, w, 4), np.float32)
+    yy, xx = np.mgrid[0:h, 0:w]
+    for x0 in (2, 151):                                                # the legs, lattice
+        leg = (xx >= x0) & (xx < x0 + 7) & (yy >= 6)
+        web = leg & (((xx - x0 + yy) % 8 < 2) | ((x0 + 6 - xx + yy) % 8 < 2) | (xx == x0) | (xx == x0 + 6))
+        rgba[web, :3] = [0.55, 0.57, 0.6]
+        rgba[web, 3] = 1.0
+    truss = (yy >= 6) & (yy < 15) & (xx >= 2) & (xx < 158)
+    tw = truss & ((yy == 6) | (yy == 14) | ((xx + yy) % 9 < 2) | ((xx - yy) % 9 < 2))
+    rgba[tw, :3] = [0.58, 0.6, 0.63]
+    rgba[tw, 3] = 1.0
+    for (x0, lines, arrow) in ((18, ['CITY', 'CENTRE'], 'up'), (86, ['AIRPORT', 'EXIT 12'], 'right')):
+        sign = _road_sign(lines, arrow, 56, 32)
+        rgba[15:47, x0:x0 + 56] = sign
+    return rgba, np.zeros((h, w), np.float32)
+
+
+def spr_speed_sign():
+    """A speed limit sign: a white disc in a red ring, 80 in black, on a grey post."""
+    import lettering
+    w, h = 20, 36
+    rgba = np.zeros((h, w, 4), np.float32)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32) + 0.5
+    r = np.hypot(xx - 10, yy - 10)
+    post = (np.abs(xx - 10) < 1.3) & (yy > 18)
+    rgba[post, :3] = [0.55, 0.56, 0.58]
+    rgba[post & (xx > 10), :3] = [0.4, 0.41, 0.43]
+    rgba[r < 9.5, :3] = [0.85, 0.12, 0.1]
+    rgba[r < 7.2, :3] = [0.95, 0.95, 0.93]
+    rgba[(r < 9.5) | post, 3] = 1.0
+    m = lettering.mask('80', 1, False)
+    mh, mw = m.shape
+    y0, x0 = 10 - mh // 2, 10 - mw // 2
+    rgba[y0:y0 + mh, x0:x0 + mw][m, :3] = 0.08
+    return rgba, np.zeros((h, w), np.float32)
+
+
+def _traffic_light(k):
+    w, h = 12, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(4.6, 20, 2.8, 20, z=1.0, top=0.5, bevel=0.8, mat=0)                     # the pole
+    cv.box(1.5, 1, 9, 21, z=1.3, top=0.6, bevel=1.4, mat=1)                        # the housing
+    for i, y in enumerate((5.5, 11, 16.5)):
+        cv.box(3.6, y - 1, 4.8, 2.0, z=1.6, top=0.4, bevel=0.5, mat=1)             # the hoods
+        cv.ellipse(6, y + 1.6, 2.3, 2.3, z=1.5, dome=0.4, mat=2 + i)
+    lit = [ramp('#ff3020', dark=0.7, light=1.3), ramp('#ffb020', dark=0.7, light=1.3),
+           ramp('#30ff80', dark=0.7, light=1.3)]
+    dim = [ramp('#3a0e0c', dark=0.6, light=1.4), ramp('#3a2a0a', dark=0.6, light=1.4),
+           ramp('#0c3018', dark=0.6, light=1.4)]
+    lamps = [lit[i] if i == k else dim[i] for i in range(3)]
+    rgba, _ = _prop(cv, [STEEL, ramp('#202224', dark=0.5, light=2.2)] + lamps, relief=0.9, cavity=0.35, shadow=0.4)
+    return rgba, _tail_em(cv, [2 + k])
+
+
+def spr_traffic_light():
+    """A traffic light on its pole: three lamps under their hoods, one lit - red (drawn three ways: `variant` 0 red,
+    1 amber, 2 green)."""
+    return _traffic_light(0)
+
+
+def spr_tyre_stack():
+    """A stack of old tyres, every other one with a band of white paint round it - a crash barrier at the side of
+    a race track."""
+    w, h = 16, 18
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for i, y in enumerate((13.2, 9.0, 4.8, 0.6)):
+        cv.ellipse(8, y + 2.1, 7.4, 2.3, z=1.0 + 0.03 * i, dome=0.9, mat=0)        # a tyre, side on: its tread
+        if i % 2 == 0:
+            cv.box(1.4, y + 1.2, 13.2, 1.8, z=1.4 + 0.03 * i, top=0.3, bevel=0.5, mat=1)
+        for x in (3.5, 6.5, 9.5, 12.5):                                          # the tread's blocks
+            cv.stroke([(x, y + 0.6), (x, y + 3.6)], 0.5, dome=0.3, mode='carve')
+    return _prop(cv, [RUBBER, WHITE], relief=1.1, cavity=0.5, shadow=0.45)
+
+
+def spr_road_barrier():
+    """A road-works barrier: a plank striped red and white on two legs, an amber lamp on top, lit."""
+    w, h = 28, 18
+    rgba = np.zeros((h, w, 4), np.float32)
+    yy, xx = np.mgrid[0:h, 0:w]
+    plank = (yy >= 6) & (yy < 11) & (xx >= 1) & (xx < 27)
+    rgba[plank, :3] = np.where((((xx + yy) // 4) % 2 == 0)[plank][:, None], [0.85, 0.14, 0.1], [0.94, 0.94, 0.92])
+    rgba[plank & (yy == 10), :3] *= 0.75
+    for x0 in (4, 22):
+        leg = (xx >= x0) & (xx < x0 + 2) & (yy >= 11)
+        rgba[leg, :3] = [0.3, 0.3, 0.32]
+        rgba[plank | leg, 3] = 1.0
+    lamp = (np.hypot(xx - 6.5, yy - 3.5) < 2.6)
+    rgba[lamp, :3] = [1.0, 0.7, 0.2]
+    rgba[lamp, 3] = 1.0
+    em = lamp.astype(np.float32)
+    return rgba, em
+
+
+def spr_start_lights():
+    """The start lights over a race track: a black panel of five columns of red lamps, all lit, slung between two
+    poles. Stand it at `x` 0 over the start line: 3 tall, twice as wide."""
+    w, h = 96, 48
+    rgba = np.zeros((h, w, 4), np.float32)
+    em = np.zeros((h, w), np.float32)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32) + 0.5
+    for x0 in (2, 90):
+        pole = (xx >= x0) & (xx < x0 + 4)
+        rgba[pole, :3] = [0.5, 0.52, 0.55]
+        rgba[pole & (xx >= x0 + 2.5), :3] = [0.36, 0.37, 0.4]
+        rgba[pole, 3] = 1.0
+    panel = (xx >= 14) & (xx < 82) & (yy >= 4) & (yy < 24)
+    rgba[panel, :3] = [0.06, 0.06, 0.07]
+    rgba[panel, 3] = 1.0
+    bar = (yy >= 8) & (yy < 11) & (((xx >= 6) & (xx < 14)) | ((xx >= 82) & (xx < 90)))
+    rgba[bar, :3] = [0.45, 0.46, 0.5]
+    rgba[bar, 3] = 1.0
+    for i in range(5):
+        for y in (10, 18):
+            lamp = np.hypot(xx - (23 + i * 12.5), yy - y) < 3.6
+            rgba[lamp, :3] = [1.0, 0.16, 0.1]
+            em[lamp] = 1.0
+    return rgba, em
+
+
+def dec_start_line():
+    """A start line across a race track: a band of black and white squares, two rows deep. Lay it at `x` 0 with a
+    `size` of the road's width."""
+    h, w = 12, 96
+    yy, xx = _grid(h, w)
+    chq = ((xx // 6).astype(int) + (yy // 6).astype(int)) % 2 == 0
+    rgb = np.where(chq[..., None], 0.92, 0.06).astype(np.float32) * np.ones(3, np.float32)
+    return _decal(rgb, np.full((h, w), 0.95, np.float32))
+
+
 # ------------------------------------------------------------------ marks on the road (decals)
 
 def _noise(h, w, cell, seed):
@@ -490,6 +688,104 @@ def dec_pebbles():
     return _decal(rgb, a)
 
 
+# ------------------------------------------------------------------ walls along a road (textures, 64 px)
+
+def tex_guard_rail(name):
+    """A steel guard rail, for a wall along a road: a galvanised W-beam - two ridges catching the light, a groove
+    between - bolted to a thin post, nothing else (see-through). Its post is at the tile's middle and its beam
+    along the top third: `"tile": [1, 0.3]` on a wall 0.3 high puts a post every unit."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    rgb = np.zeros((T, T, 3), np.float32)
+    beam = (yy >= 8) & (yy < 27)
+    post = (xx >= 30) & (xx < 34) & (yy >= 27)
+    prof = np.array([0.42, 0.55, 0.74, 0.86, 0.8, 0.7, 0.58, 0.44, 0.36, 0.48, 0.66, 0.84, 0.8, 0.7, 0.58, 0.46,
+                     0.4, 0.34, 0.3], np.float32)                     # the W, top to bottom: ridge, groove, ridge
+    rgb[beam] = (prof[yy[beam] - 8][:, None] * np.array([0.9, 0.93, 0.97], np.float32) *
+                 (0.94 + 0.1 * rng.random(beam.sum()))[:, None])
+    rgb[post] = np.where((xx[post] == 30)[:, None], [0.56, 0.58, 0.6], [0.34, 0.35, 0.37])
+    bolts = ((xx == 31) | (xx == 32)) & ((yy == 12) | (yy == 21))
+    rgb[bolts] = [0.2, 0.2, 0.21]
+    refl = (xx >= 30) & (xx < 34) & (yy >= 15) & (yy < 18)           # a reflector on the post's bolt plate
+    rgb[refl] = [0.95, 0.62, 0.16]
+    return np.clip(rgb, 0, 1), None, (beam | post).astype(np.float32)
+
+
+def tex_jersey_barrier(name):
+    """A concrete safety barrier, for a wall along a road or down its middle: the narrow top catching the light,
+    the upright face, the sloped foot, dirt splashed up from the road; a joint at each block's end
+    (`"tile": [1.3, 0.27]` on a wall 0.27 high)."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T].astype(np.float32)
+    shade = np.select([yy < 7, yy < 40, yy < 56], [1.12, 0.9, 1.0], 0.72)
+    base = col('#a8a49a') * (0.86 + 0.2 * fbm(T, rng, 6, 3))[..., None]
+    rgb = base * shade[..., None]
+    rgb *= (1 - 0.3 * np.clip((yy - 44) / 20, 0, 1) * (0.6 + 0.4 * vnoise(T, 10, rng)))[..., None]   # road dirt
+    rgb[(yy >= 6) & (yy < 8)] *= 0.8
+    rgb[(yy >= 39) & (yy < 41)] *= 0.86
+    rgb[(xx < 1.5) | (xx >= 63)] *= 0.55                                   # the joint
+    return np.clip(rgb, 0, 1), None
+
+
+def _voronoi(rng, n, sx=1.0, sy=1.0):
+    """Tileable cells over the texture: per pixel the distance to the nearest of n points and to the next (for
+    cracks), and the nearest one's index. `sx`, `sy` stretch them."""
+    pts = rng.random((n, 2)) * T
+    yy, xx = np.mgrid[0:T, 0:T].astype(np.float32) + 0.5
+    best = np.full((T, T), 1e9, np.float32)
+    second = np.full((T, T), 1e9, np.float32)
+    idx = np.zeros((T, T), np.int32)
+    for i, (px, py) in enumerate(pts):
+        for ox in (-T, 0, T):
+            for oy in (-T, 0, T):
+                d = np.hypot((xx - px - ox) / sx, (yy - py - oy) / sy)
+                closer = d < best
+                second = np.where(closer, best, np.minimum(second, d))
+                idx = np.where(closer, i, idx)
+                best = np.where(closer, d, best)
+    return best, second, idx
+
+
+def tex_cliff_face(name):
+    """A face of grey granite, for a mountain's cliffs along a road: tall blocks split along their joints, each
+    leaning its own way to the light, dark cracks between, streaks where water runs down, lichen in patches.
+    Tile it 3 or 4 units."""
+    rng = _rng(name)
+    n = 8
+    best, second, idx = _voronoi(rng, n, sx=0.42, sy=2.4)
+    yy, xx = np.mgrid[0:T, 0:T].astype(np.float32)
+    cx = np.array([np.median(xx[idx == i]) if (idx == i).any() else 0 for i in range(n)], np.float32)
+    dx = (xx - cx[idx] + T / 2) % T - T / 2                                          # across its own block
+    lean = (rng.random(n) * 2 - 1)[idx]                                             # each block faces its own way
+    tone = (rng.random(n) * 0.24 - 0.1)[idx] + lean * dx * 0.012
+    rgb = col('#7c7a74') * (0.86 + tone + 0.16 * fbm(T, rng, 8, 4))[..., None]
+    rgb *= (1 - 0.55 * np.clip(1 - (second - best) / 1.1, 0, 1))[..., None]          # the joints
+    ledge = (np.abs((yy + 9 * vnoise(T, 3, rng)) % 32 - 20) < 0.8) & (vnoise(T, 6, rng) > 0.45)
+    rgb[ledge] *= 0.72                                                                # sheets split across it
+    streak = (vnoise(T, 16, rng) > 0.62) * np.clip(1 - yy / 64, 0.2, 1)               # water stains down it
+    rgb *= (1 - 0.22 * streak * (vnoise(T, 4, rng) > 0.4))[..., None]
+    lichen = fbm(T, rng, 5, 3) > 0.8
+    rgb[lichen] = rgb[lichen] * 0.75 + col('#a8aa80') * 0.25
+    return np.clip(rgb, 0, 1), None
+
+
+def tex_power_lines(name):
+    """Power lines for a wall along a road at the poles' crossarms: three wires sagging between the poles, nothing
+    else (see-through). Each wire sags over the width of the tile, so give the wall `"tile": [d, 1]` and stand the
+    poles every d units from 0 (`"every": d, "from": 0`)."""
+    yy, xx = np.mgrid[0:T, 0:T].astype(np.float32)
+    sag = 7 * (1 - ((xx + 0.5) / 32 - 1) ** 2)
+    a = np.zeros((T, T), np.float32)
+    for y0 in (5, 18, 31):
+        a = np.maximum(a, (np.abs(yy - (y0 + sag)) < 0.9).astype(np.float32))
+    rgb = np.zeros((T, T, 3), np.float32) + [0.07, 0.07, 0.08]
+    return rgb, None, a
+
+
+TEXTURES = {'guard_rail': lambda n: tex_guard_rail(n), 'jersey_barrier': lambda n: tex_jersey_barrier(n),
+            'cliff_face': lambda n: tex_cliff_face(n), 'power_lines': lambda n: tex_power_lines(n)}
+TEXTURE_NOISE = {'guard_rail': 0.3, 'jersey_barrier': 1.0, 'cliff_face': 1.0, 'power_lines': 0.0}
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -498,15 +794,21 @@ DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies 
 DECALS = {'oil_stain': dec_oil_stain, 'tyre_marks': dec_tyre_marks, 'road_patch': dec_road_patch,
           'pothole': dec_pothole, 'leaf_litter': dec_leaf_litter, 'manhole': dec_manhole,
           'lane_arrow': dec_lane_arrow, 'zebra_crossing': dec_zebra_crossing, 'sand_drift': dec_sand_drift,
-          'pebbles': dec_pebbles}
+          'pebbles': dec_pebbles, 'start_line': dec_start_line}
+VARIANTS = {'traffic_light': (3, _traffic_light)}
 
 SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_sedan': spr_car_sedan,
            'box_truck': spr_box_truck, 'curve_sign': spr_curve_sign, 'billboard': spr_billboard,
            'checkpoint': spr_checkpoint, 'traffic_cone': spr_traffic_cone, 'tunnel_ring': spr_tunnel_ring,
            'tunnel_portal': spr_tunnel_portal, 'trash_bag': spr_trash_bag, 'old_tyre': spr_old_tyre,
-           'trash': spr_trash}
+           'trash': spr_trash, 'reflector_post': spr_reflector_post, 'highway_lamp': spr_highway_lamp,
+           'sign_gantry': spr_sign_gantry, 'speed_sign': spr_speed_sign, 'traffic_light': spr_traffic_light,
+           'tyre_stack': spr_tyre_stack, 'road_barrier': spr_road_barrier, 'start_lights': spr_start_lights}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
-                 'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05}
+                 'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
+                 'reflector_post': 0.34, 'highway_lamp': 3.6, 'sign_gantry': 3.2, 'speed_sign': 0.95,
+                 'traffic_light': 1.5, 'tyre_stack': 0.32, 'road_barrier': 0.36, 'start_lights': 3.0}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
-                 'tunnel_portal': {'shadow': False}}
+                 'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
+                 'start_lights': {'shadow': False}}

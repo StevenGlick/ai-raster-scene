@@ -1827,7 +1827,28 @@ def check_road():
     _, marked = frame(scene([[200, 0, 0]], decals=[{'tex': 'manhole', 'at': 4, 'x': 0, 'size': 1.5}]))
     diff = np.abs(marked - plain).max(-1)
     assert diff[70:, 60:100].max() > 0.1 and diff[:50].max() < 1e-6, 'the manhole lies on the road ahead'
-    print('ok road scenes (bends, crests, a void floor, roofs, roll, a vehicle, the linter, scatter, decals)')
+
+    # 8. a wall beside the road stands in front of the sky and the ground beyond it, and is hidden by nothing
+    #    nearer; a see-through one (a guard rail) leaves its holes; a ceiling covers the sky; land lies below a drop
+    rr, open_ = frame(scene([[100, 0, 0]]))
+    d0 = rr.depth.copy()
+    walled = scene([[100, 0, 0]], road={'walls': [{'side': 'left', 'offset': 1.0, 'height': 3, 'texture': 'brick'}]})
+    rr, img = frame(walled)
+    assert np.isfinite(rr.depth[10, 2]) and np.isinf(rr.depth[10, 150]), 'the wall rises on the left, the sky right'
+    assert np.abs(img[:, 100:] - open_[:, 100:]).max() < 1e-6, 'nothing changes on the right'
+
+    def covered(texture):
+        r, _ = frame(scene([[100, 0, 0]], road={'walls': [{'side': 'left', 'offset': 0.2, 'height': 0.3,
+                                                           'texture': texture, 'tile': [1, 0.3]}]}))
+        return int((r.depth != d0).sum())
+    assert 0 < covered('guard_rail') < covered('concrete') * 0.8, 'the ground shows through a rail'
+    rr, img = frame(scene([[100, 0, 0]], road={'ceiling': {'height': 2.0, 'texture': 'concrete'}}))
+    assert np.isfinite(rr.depth[:40]).all(), 'a ceiling over the road hides the sky'
+    rr, img = frame(scene([[100, 0, 0]], road={'ground': {'left': 'grass', 'right': 'void'},
+                                               'below': {'depth': 20, 'texture': 'farmland', 'tile': 20}}))
+    assert np.isfinite(rr.depth[60, 155]) and rr.depth[60, 155] > 20, 'past the edge, the land far below'
+    print('ok road scenes (bends, crests, a void floor, roofs, roll, a vehicle, the linter, scatter, decals, walls, '
+          'ceilings, a drop)')
 
 
 def check_docs():
