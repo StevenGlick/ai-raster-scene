@@ -1,0 +1,194 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    10,
+    0,
+    0
+   ],
+   [
+    24,
+    0.6,
+    -1.5
+   ],
+   [
+    20,
+    -0.8,
+    -2.0
+   ],
+   [
+    24,
+    0.7,
+    -1.0
+   ],
+   [
+    20,
+    -0.5,
+    0.6
+   ],
+   [
+    200,
+    0.3,
+    -1.0
+   ]
+  ],
+  "width": 1.4,
+  "surface": "rail_track",
+  "lines": false,
+  "rumble": false,
+  "bands": 0.02,
+  "ground": [
+   {
+    "width": 0.25,
+    "texture": "gravel"
+   },
+   {
+    "texture": "rock_floor"
+   }
+  ],
+  "walls": [
+   {
+    "side": "both",
+    "offset": 0.5,
+    "height": 3.0,
+    "texture": [
+     "mine_rock",
+     "mine_rock_vein",
+     "mine_rock_gold"
+    ],
+    "tile": 1.5,
+    "blocks": 3.0,
+    "seed": 1
+   }
+  ],
+  "ceiling": {
+   "height": 2.6,
+   "texture": "mine_rock",
+   "tile": 1.5,
+   "light": 0.3
+  },
+  "distance": 140
+ },
+ "camera": {
+  "at": 15.0,
+  "x": 0.0,
+  "height": 0.6,
+  "fov": 66,
+  "pitch": 0.04
+ },
+ "title": "The mine ride - a runaway mine cart down the rails through a gold mine",
+ "sky": "night",
+ "ambient": [
+  0.3,
+  0.26,
+  0.22
+ ],
+ "fog": {
+  "color": [
+   0.1,
+   0.07,
+   0.05
+  ],
+  "density": 0.035
+ },
+ "roadside": [
+  {
+   "type": "mine_frame",
+   "side": "middle",
+   "every": 2.2,
+   "offset": 0.0,
+   "from": 1.0,
+   "scale": 2.6,
+   "light": {
+    "color": [
+     1.0,
+     0.72,
+     0.38
+    ],
+    "radius": 3.2,
+    "intensity": 1.6,
+    "z": 1.8,
+    "x": 0.0
+   }
+  },
+  {
+   "type": "crystal",
+   "density": 0.05,
+   "offset": [
+    0.1,
+    0.4
+   ],
+   "scale": [
+    0.3,
+    0.6
+   ],
+   "seed": 2,
+   "light": {
+    "color": [
+     0.4,
+     0.8,
+     1.0
+    ],
+    "radius": 1.4,
+    "intensity": 0.7,
+    "z": 0.3
+   }
+  }
+ ],
+ "scatter": [
+  {
+   "of": [
+    "rocks",
+    "rocks",
+    "ore_heap"
+   ],
+   "density": 0.6,
+   "offset": [
+    0.0,
+    0.45
+   ],
+   "sizes": [
+    "tiny",
+    "small"
+   ],
+   "seed": 3
+  }
+ ],
+ "sprites": [
+  {
+   "type": "pick_shovel",
+   "at": 19.5,
+   "x": -1.05
+  }
+ ],
+ "shots": [
+  {
+   "at": 15.0,
+   "x": 0.0,
+   "height": 0.6,
+   "fov": 66,
+   "pitch": 0.04,
+   "roll": 6,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.3,
+     "radius": 2.2,
+     "spread": 0.5
+    }
+   ],
+   "vehicle": {
+    "type": "mine_cart",
+    "ahead": 1.6,
+    "scale": 0.42
+   }
+  }
+ ],
+ "supersample": 2
+}

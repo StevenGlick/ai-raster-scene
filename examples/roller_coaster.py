@@ -38,7 +38,7 @@ def roller_coaster():
         road,
         title='The roller coaster - at the top of the lift hill, the big drop falling away below',
         sky='day',
-        skyline='city',
+        skyline='hills',
         lights=[{'type': 'sun', 'azimuth': 250, 'elevation': 40, 'intensity': 0.85}],
         ambient=[0.6, 0.62, 0.68],
         fog={'color': [0.72, 0.8, 0.9], 'density': 0.004},

@@ -1,0 +1,158 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    20,
+    0,
+    0
+   ],
+   [
+    80,
+    0.3,
+    0.6
+   ],
+   [
+    80,
+    -0.35,
+    -0.6
+   ],
+   [
+    400,
+    0.2,
+    0
+   ]
+  ],
+  "width": 4.2,
+  "lanes": 3,
+  "surface": {
+   "base": "asphalt",
+   "tint": [
+    0.22,
+    0.18,
+    0.3
+   ]
+  },
+  "lines": "#ff4ad8",
+  "edges": "#40f0ff",
+  "rumble": {
+   "width": 0.3,
+   "colors": [
+    "#ff4ad8",
+    "#3a1a6a"
+   ]
+  },
+  "ground": {
+   "base": "vector_grid",
+   "tint": [
+    1.0,
+    0.32,
+    0.9
+   ]
+  },
+  "bands": 0.06,
+  "distance": 300
+ },
+ "camera": {
+  "at": 2.0,
+  "x": 0.0,
+  "height": 0.75,
+  "fov": 64,
+  "pitch": 0.1
+ },
+ "title": "The synthwave drive - the red convertible across a grid of light toward a striped sun",
+ "sky": "vector",
+ "skyline": "mountains",
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 270,
+   "elevation": 10,
+   "intensity": 0.3,
+   "disc_style": "stripes",
+   "disc_size": 9,
+   "disc_color": [
+    1.0,
+    0.4,
+    0.7
+   ]
+  }
+ ],
+ "ambient": [
+  0.42,
+  0.3,
+  0.5
+ ],
+ "roadside": [
+  {
+   "type": [
+    "palm",
+    "palm_lean"
+   ],
+   "every": 8,
+   "offset": [
+    1.2,
+    2.0
+   ],
+   "scale": [
+    3.0,
+    3.8
+   ],
+   "flip": true,
+   "tint": [
+    0.08,
+    0.04,
+    0.12
+   ]
+  }
+ ],
+ "shots": [
+  {
+   "at": 2.0,
+   "x": 0.0,
+   "height": 0.75,
+   "fov": 64,
+   "pitch": 0.1,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 2.0,
+     "radius": 2.6,
+     "spread": 0.6
+    }
+   ],
+   "vehicle": {
+    "type": "sports_car",
+    "ahead": 2.6
+   }
+  },
+  {
+   "at": 60.0,
+   "x": 0.0,
+   "height": 0.75,
+   "fov": 64,
+   "pitch": 0.1,
+   "roll": 7,
+   "yaw": 4,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 2.0,
+     "radius": 2.6,
+     "spread": 0.6
+    }
+   ],
+   "vehicle": {
+    "type": "sports_car",
+    "ahead": 2.6
+   }
+  }
+ ],
+ "supersample": 2
+}

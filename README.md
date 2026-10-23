@@ -14,14 +14,15 @@ It ships as a Claude skill and works as Claude's retro imagination: ask for a pi
 
 ## What's new
 
-- **[Road scenes](#road-scenes)** - a second renderer: the road of an 80s arcade racer, its bends and crests drawn segment by segment, props scaled along it - a coast road at sunset behind the wheel, a highway at night through a tunnel, a forest path, a jungle trail, an enchanted wood and a road across the clouds. The same post effects, GUI and palette finish it.
+- **[Road scenes](#road-scenes)** - a second renderer: the road of an 80s arcade racer, its bends and crests drawn segment by segment, props scaled along it, finished by the same post effects, GUI and palette - now with walls along it, water that mirrors and land far below: a neon city race on a wet street, a synthwave drive, a grand prix start, a mountain pass, a canyon off the road, a desert highway, a winter night, a boat across a bay and down a canal, a roller coaster, a mine cart and a space trench - besides the coast road at sunset, the night highway, the paths through a forest, a jungle and an enchanted wood, and a road across the clouds.
 - **[Where it started](#where-it-started)** - the three drawings this project grew from, made of plain shapes in a chat, beside the same three places rendered now: a storm over an island town, a garden through a broken window, a boat waiting in a canal tunnel.
 - **[Landscape scale](#landscape-scale)** - shrink the world and the camera is a giant's: a kaiju wading into a harbour city at night and a giant moth coming in over the bay to meet it, a volcano erupting over an island, buttes and mesas on a red plain, a winter valley under the aurora, a suspension bridge over a sea strait, a tropical archipelago.
 - **[Comic mode](#comic-mode)** - lay shots of any scenes out as a comic page or a storyboard. *It came from the bay* tells the kaiju's night in six panels.
 
 | | |
 |---|---|
-| ![Behind the wheel on the coast road at sunset](docs/gallery/road_coast.png) | ![A road of marble across the clouds](docs/gallery/road_sky.png) |
+| ![Racing a hover car through the neon city, the wet street mirroring it all](docs/gallery/road_neon_race.png) | ![The synthwave drive toward a striped sun](docs/gallery/road_synthwave.png) |
+| ![A speedboat across a tropical bay, the island mirrored](docs/gallery/road_island.png) | ![At the top of the roller coaster's drop](docs/gallery/road_coaster_drop.png) |
 | ![The giant moth comes in over the bay, the kaiju roaring up at it](docs/gallery/kaiju_moth.png) | ![A volcano erupting over a harbour town at night](docs/gallery/island_eruption.png) |
 | ![Down the highway into the mesa desert at golden hour](docs/gallery/desert_road.png) | ![A village under snow, the aurora over the white peak](docs/gallery/winter_street.png) |
 
@@ -112,7 +113,7 @@ Eighty-seven example scenes in [`examples/`](examples/), every one a single JSON
 - **[Space and other worlds](#space-and-other-worlds)** - [stations and ships](#stations-and-ships) · [the Moon](#the-moon) · [Vector World](#vector-world) · [Doomed](#doomed)
 - **[Dreams and wonders](#dreams-and-wonders)** - [dreams](#dreams) · [the drowned library](#the-drowned-library) · [the hall of doors](#the-hall-of-doors) · [the sky islands](#the-sky-islands) · [the aurora palace](#the-aurora-palace) · [ask Claude](#ask-claude)
 - **[Landscape scale](#landscape-scale)** - [the kaiju in the harbour](#the-kaiju-in-the-harbour) · [the kaiju in the country](#the-kaiju-in-the-country) · [the volcano island](#the-volcano-island) · [the mesa desert](#the-mesa-desert) · [the winter valley](#the-winter-valley) · [the strait bridge](#the-strait-bridge) · [the archipelago](#the-archipelago) · [the giant valley](#the-giant-valley)
-- **[Road scenes](#road-scenes)** - the coast road · the night highway · the forest path · the jungle trail · the enchanted path · the sky road · the mountain pass · the canyon run · the island run · the canal boat · the neon race · the neon avenue · the roller coaster
+- **[Road scenes](#road-scenes)** - the coast road · the night highway · the forest path · the jungle trail · the enchanted path · the sky road · the mountain pass · the canyon run · the island run · the canal boat · the neon race · the neon avenue · the roller coaster · the synthwave drive · the desert highway · the winter road · the mine ride · the space trench · the grand prix
 - **[Comic mode](#comic-mode)** - comics and storyboards, every panel a shot
 
 ## Cities
@@ -658,21 +659,45 @@ A river valley at dawn as a giant would see it: the river winding through water 
 
 ## Road scenes
 
-The road of an 80s arcade racer, as a second renderer: a scene with a `road` instead of a `map` is a run of short segments, each bending and rising a little from the last, projected onto the screen from the camera outward, so a crest hides what lies beyond it; every few segments the road and the ground shift a shade - the bands that read as speed - and the props along it are scaled by distance and hidden behind the crests in front of them. The sky, the light, the post effects, the GUI and the palette are the same as every other picture's. It is not only for racing: any way stretching ahead - a path through a wood, a trail into the jungle, a road across the clouds.
+The road of an 80s arcade racer, as a second renderer: a scene with a `road` instead of a `map` is a run of short segments, each bending and rising a little from the last, projected onto the screen from the camera outward, so a crest hides what lies beyond it; every few segments the road and the ground shift a shade - the bands that read as speed - and the props along it are scaled by distance and hidden behind the crests in front of them. The sky, the light, the post effects, the GUI and the palette are the same as every other picture's. It is not only for racing: any way stretching ahead - a path through a wood, a trail into the jungle, a road across the clouds - and anything that runs along one: a boat over a bay or down a canal, a roller coaster, a mine cart, a fighter down a trench.
+
+Walls stand along the road without a break - guard rails, cliffs, canyon walls, streets of buildings each its own height - and a ceiling closes a tunnel; land can lie far below a drop; water and wet streets mirror the sky and everything standing on them; the verges are scattered with tufts, stones and litter in drifts, and the road is marked with cracks, oil, skid marks, crossings.
 
 ![The coast road at sunset, from behind the wheel: palms, a chequered checkpoint over the road, the sea beside it, the time and the score over it all](docs/gallery/road_coast.png)
 
+### Racing
+
 | | |
 |---|---|
-| ![Under the checkpoint, the world leaning into the bend and the car level](docs/gallery/road_checkpoint.png) | ![A highway at night under sodium lamps, tail lights ahead, a tunnel in the hill](docs/gallery/road_night.png) |
-| ![In the tunnel, its lamps in a line down its roof, the city at the far end](docs/gallery/road_tunnel.png) | ![A forest path on a misty morning, someone walking it ahead](docs/gallery/road_forest.png) |
-| ![A jungle trail toward a ruined arch, an explorer ahead](docs/gallery/road_jungle.png) | ![A cobbled path through a glowing wood under two moons, a witch with her lantern](docs/gallery/road_enchanted.png) |
-| ![A road of marble across a sea of cloud, arches over it, a sky whale beside it](docs/gallery/road_sky.png) | ![A mountain pass: the cliff rising sheer on one side, a guard rail on the other and the valley far below](docs/gallery/road_mountain.png) |
-| ![At the rail on the mountain pass, the valley's river and pastures far below, its far side hazy with distance](docs/gallery/road_valley.png) | ![Off the road in a jeep through a red rock canyon, a rally car ahead in its dust](docs/gallery/road_canyon.png) |
+| ![Under the checkpoint, the world leaning into the bend and the car level](docs/gallery/road_checkpoint.png) | ![The synthwave drive: the red convertible on a road of light across a magenta grid toward a striped sun](docs/gallery/road_synthwave.png) |
+| ![Racing a hover car through the neon city at night, the wet street mirroring every window and sign](docs/gallery/road_neon_race.png) | ![Leaning into a bend in the neon race, the towers tilting](docs/gallery/road_neon_lean.png) |
+| ![On the grid at a grand prix, five red lights lit over the track, the field ahead, the grandstands full](docs/gallery/road_grand_prix.png) | ![The grid from the side of the track, the start lights and the field down the straight](docs/gallery/road_grand_prix_side.png) |
+| ![A highway at night under sodium lamps, tail lights ahead, a tunnel in the hill](docs/gallery/road_night.png) | ![In the tunnel, its lamps in a line down its roof, the city at the far end](docs/gallery/road_tunnel.png) |
+| ![Riding a motorbike down a desert highway at noon, buttes in the haze, power lines along it](docs/gallery/road_desert.png) | ![From a crest on the desert highway, the road dropping out of sight and rising again beyond](docs/gallery/road_desert_crest.png) |
+| ![A mountain road at night after snow, snowy pines, headlights on the falling snow](docs/gallery/road_winter.png) | ![A mountain pass: the cliff rising sheer on one side, a guard rail on the other and the valley far below](docs/gallery/road_mountain.png) |
+| ![At the rail on the mountain pass, the valley's river, pasture and pine forest far below, its far side hazy with distance](docs/gallery/road_valley.png) |  |
+
+### Off the road, and on foot
+
+| | |
+|---|---|
+| ![Off the road in a jeep through a red rock canyon, a rally car ahead in its dust](docs/gallery/road_canyon.png) | ![Walking an avenue of the neon city in the rain, red lanterns strung over the street, a noodle stall](docs/gallery/road_neon_avenue.png) |
+| ![A forest path on a misty morning, someone walking it ahead](docs/gallery/road_forest.png) | ![A jungle trail toward a ruined arch, an explorer ahead](docs/gallery/road_jungle.png) |
+| ![A cobbled path through a glowing wood under two moons, a witch with her lantern](docs/gallery/road_enchanted.png) | ![A road of marble across a sea of cloud, arches over it, a sky whale beside it](docs/gallery/road_sky.png) |
+
+### On the water
+
+| | |
+|---|---|
 | ![A speedboat across a tropical bay, the low sun on the water, the island's palms mirrored in it](docs/gallery/road_island.png) | ![Skimming low over the bay toward the island's shore, sailboats standing over their reflections](docs/gallery/road_island_low.png) |
-| ![By boat through a brick canal tunnel, lamps along its walls, a narrowboat ahead against the daylight at its end](docs/gallery/road_canal.png) | ![Racing a hover car through the neon city at night, the wet street mirroring every window and sign](docs/gallery/road_neon_race.png) |
-| ![Leaning into a bend in the neon race, the towers tilting](docs/gallery/road_neon_lean.png) | ![Walking an avenue of the neon city in the rain, red lanterns strung over the street, a noodle stall](docs/gallery/road_neon_avenue.png) |
+| ![By boat through a brick canal tunnel, lamps along its walls, a narrowboat ahead against the daylight at its end](docs/gallery/road_canal.png) |  |
+
+### Rides
+
+| | |
+|---|---|
 | ![On a roller coaster at the top of the drop, the track plunging down to the park](docs/gallery/road_coaster_drop.png) | ![The roller coaster banking through a curve, its track climbing over the camel back on its white frame](docs/gallery/road_coaster_curve.png) |
+| ![A runaway mine cart down the rails through a gold mine, its timber sets and their lamps rushing past](docs/gallery/road_mine.png) | ![A starfighter low down a trench in a great ship's hull, bolts of fire streaking past, a ringed planet overhead](docs/gallery/road_trench.png) |
 
 ## Comic mode
 
@@ -744,7 +769,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Volumetric fog**: mist that lies low and drifts in banks, halos round every lamp, and beams of sun or moonlight through windows, doorways, standing stones and trees; sunlight finds its way into roofed rooms through their doorways, windows and skylights
 - **Reflections**: water, ice, wet streets and puddles mirror the lamps, windows and figures beyond them
 - **The 90s look**: 320x200 framebuffer, Bayer-dithered 256-colour palette, chunky nearest-neighbour upscale, optional scanlines and 2x supersampling
-- **Sprites**: 368 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 33-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
+- **Sprites**: 372 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 33-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
 - **Planar sprites**: a plant can stand as fixed planes in the world instead of a billboard - a cross of two, or a star of three that cuts the ground round it into sixths - so it has body as the camera moves; the low plants do by default, and a prefab can mix billboards and planes (a billboard palm trunk under a star of fronds)
 - **Layered forest edges**: give the walls of a jungle or a wood a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth; with `wander` the layers follow a natural, rounded line instead of the grid's square corners
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
@@ -770,7 +795,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Post-processing**: colour grading, bloom (from the whole frame, or only from what gives off light - neon, windows, flames, fireflies, a held lantern, the sun - so it can glow hard), depth of field that focuses on the shot's subject and leaves its colours alone, streaks (the twinkle of a star filter on the brightest lights, or the long blue lines of an anamorphic lens), a lens flare from a sun in the frame, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
 - **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
 - **Pixel art drawn in code**: the jungle, ruins and beach are built from shapes - leaves, stones, planks, blades of grass, carved glyphs - stamped into a height field, lit from one direction, and snapped onto hue-shifted colour ramps with dark edges on their shadow sides (`scripts/pixelart.py`), so they read as pixel art rather than noise. The held items go a step further: each is a small 3D model - capsules for finger bones, cylinders and boxes for a revolver - posed in a hand, rendered from the player's eye and painted onto the same ramps with an outline (`scripts/sculpt.py`), so the perspective is right: the barrel runs away into the view and you see the back of your own hand
-- **No assets to download**: all 250 textures, 368 props, 33 characters, 41 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
+- **No assets to download**: all 252 textures, 372 props, 33 characters, 41 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
 
 ![Character cast](docs/gallery/cast.png)
 

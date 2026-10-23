@@ -40,6 +40,12 @@ def spr_sports_car():
     cv = Canvas(w, h, wrap=False, ground=-9)
     for x in (3, 49):                                              # the tyres, under the fenders
         cv.box(x, 25, 12, 14, z=0.6, top=0.5, bevel=2.2, mat=3)
+    cv.polygon([(14, 2.4), (50, 2.4), (52, 9), (12, 9)], z=0.8, top=0.2, bevel=0.6, mat=8)   # the windscreen beyond
+    cv.box(13.5, 1.6, 37, 1.6, z=0.9, top=0.4, bevel=0.5, mat=4)                 # its frame
+    cv.stroke([(14.2, 2.4), (11.5, 11)], 1.3, z=0.9, dome=0.5, mat=4)
+    cv.stroke([(49.8, 2.4), (52.5, 11)], 1.3, z=0.9, dome=0.5, mat=4)
+    for x in (5.5, 58.5):                                          # the mirrors, out at its sides
+        cv.ellipse(x, 10.5, 3.0, 1.9, z=1.4, dome=0.7, mat=0)
     cv.box(16, 4, 12, 10, z=1.0, top=0.5, bevel=1.6, mat=4)                      # the seats' backs
     cv.box(36, 4, 12, 10, z=1.0, top=0.5, bevel=1.6, mat=4)
     cv.ellipse(22, 5.5, 4.2, 4.8, z=1.9, dome=0.9, mat=5)                        # the driver
@@ -56,13 +62,24 @@ def spr_sports_car():
     cv.box(5, 28.5, 54, 4, z=1.5, top=0.4, bevel=1.2, mat=4)                     # the bumper
     for x in (17, 47):                                             # twin exhausts
         cv.ellipse(x, 33, 1.8, 1.3, z=1.6, dome=0.4, mat=7)
-    return _prop(cv, [RED, TAIL, PLATE, TYRE, TRIM, HAIR_D, HAIR_B, CHROME], em=_tail_em(cv, [1]),
+    return _prop(cv, [RED, TAIL, PLATE, TYRE, TRIM, HAIR_D, HAIR_B, CHROME, GLASS], em=_tail_em(cv, [1]),
                  relief=1.0, cavity=0.45, shadow=0.45)
 
 
+# the traffic's paint: each car drawn a few ways (assets.VARIANTS), one picked by where it stands
+COMPACT_PAINT = [ramp('#2c5a9a', dark=0.35, light=1.5, cool=0.1), ramp('#b8282a', dark=0.35, light=1.5),
+                 ramp('#3a7a4a', dark=0.35, light=1.5), ramp('#e2d8c2', dark=0.45, light=1.25, warm=0.04)]
+SEDAN_PAINT = [ramp('#d4d4cc', dark=0.45, light=1.3), ramp('#5a5e66', dark=0.4, light=1.8),
+               ramp('#22242a', dark=0.5, light=2.6), ramp('#6e2026', dark=0.35, light=1.6)]
+
+
 def spr_car_compact():
-    """A small rounded car seen from behind, in blue: its roof and rear window, round tail lights, a chrome
-    bumper."""
+    return _car_compact(0)
+
+
+def _car_compact(k):
+    """A small rounded car seen from behind, in blue (red, green or cream: `variant` 1 to 3): its roof and rear
+    window, round tail lights, a chrome bumper."""
     w, h = 44, 40
     cv = Canvas(w, h, wrap=False, ground=-9)
     for x in (2, 33):
@@ -74,12 +91,17 @@ def spr_car_compact():
         cv.ellipse(x, 23, 3, 3, z=1.8, dome=0.4, mat=1)                          # round tail lights
     cv.box(15, 23, 14, 4, z=1.6, top=0.1, bevel=0.4, mat=2)                      # the plate
     cv.box(3, 29, 38, 3.4, z=1.7, top=0.5, bevel=1.0, mat=5)                     # the bumper
-    return _prop(cv, [BLUE, TAIL, PLATE, TYRE, GLASS, CHROME], em=_tail_em(cv, [1]),
+    return _prop(cv, [COMPACT_PAINT[k], TAIL, PLATE, TYRE, GLASS, CHROME], em=_tail_em(cv, [1]),
                  relief=1.0, cavity=0.45, shadow=0.45)
 
 
 def spr_car_sedan():
-    """A boxy sedan seen from behind, pale: a roof over a raked rear window, a trunk lid, wide tail lights."""
+    return _car_sedan(0)
+
+
+def _car_sedan(k):
+    """A boxy sedan seen from behind, pale (grey, black or maroon: `variant` 1 to 3): a roof over a raked rear
+    window, a trunk lid, wide tail lights."""
     w, h = 52, 44
     cv = Canvas(w, h, wrap=False, ground=-9)
     for x in (3, 40):
@@ -92,7 +114,7 @@ def spr_car_sedan():
     cv.box(36, 22, 11, 4.5, z=1.7, top=0.2, bevel=0.5, mat=1)
     cv.box(19.5, 23.5, 13, 4, z=1.6, top=0.1, bevel=0.4, mat=2)
     cv.box(3, 31, 46, 3.6, z=1.6, top=0.4, bevel=1.0, mat=5)
-    return _prop(cv, [WHITE, TAIL, PLATE, TYRE, GLASS, TRIM], em=_tail_em(cv, [1]),
+    return _prop(cv, [SEDAN_PAINT[k], TAIL, PLATE, TYRE, GLASS, TRIM], em=_tail_em(cv, [1]),
                  relief=1.0, cavity=0.45, shadow=0.45)
 
 
@@ -130,12 +152,20 @@ def spr_curve_sign():
 
 
 def spr_billboard():
-    """A billboard on two legs: a sunset over the sea and a palm in flat bands of colour, a frame round it, a
-    catwalk under it."""
+    return _billboard(0)
+
+
+def _billboard(k):
+    """A billboard on two legs, a frame round it and a catwalk under it, its ad in flat bands of colour: a sunset
+    over the sea and a palm (`variant` 1: a cold drink, its bubbles rising; 2: an airliner climbing through
+    clouds)."""
     w, h = 72, 52
     rgba = np.zeros((h, w, 4), np.float32)
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     board = (xx >= 2) & (xx < 70) & (yy >= 2) & (yy < 34)
+    if k:
+        _ad(rgba, k, board, yy, xx)
+        return _billboard_frame(rgba, board, yy, xx)
     t = (yy - 2) / 32
     bands = np.array([[0.22, 0.16, 0.38], [0.62, 0.22, 0.42], [0.95, 0.42, 0.32], [0.99, 0.7, 0.36]], np.float32)
     k = np.clip((t * 4).astype(int), 0, 3)
@@ -150,6 +180,50 @@ def spr_billboard():
     for ex, ey in ((5, 12), (7, 6), (15, 4), (24, 6), (27, 12), (22, 15), (9, 16)):
         d.line([(15, 11), ((15 + ex) / 2, min(11, ey) - 1.5), (ex, ey)], fill=255, width=2)
     rgba[board & (np.asarray(palm) > 0), :3] = [0.12, 0.08, 0.12]
+    return _billboard_frame(rgba, board, yy, xx)
+
+
+def _ad(rgba, k, board, yy, xx):
+    """A billboard's other ads, painted on its board."""
+    if k == 1:                                                     # a cold drink on red, bubbles rising
+        rgba[board, :3] = np.where(((yy[board] - 2) / 32 < 0.5)[:, None], [0.84, 0.12, 0.12], [0.72, 0.08, 0.1])
+        glass = board & (np.abs(xx - 22) < 7 - (yy - 8) * 0.06) & (yy >= 8) & (yy < 31)
+        rgba[glass, :3] = [0.36, 0.16, 0.08]
+        rgba[glass & (yy < 11), :3] = [0.96, 0.92, 0.84]                         # the head on it
+        rgba[glass & (np.abs(xx - 17.5) < 1), :3] = [0.6, 0.34, 0.2]              # light down its side
+        rng = np.random.default_rng(6)
+        for _ in range(14):
+            cx, cy, r = rng.uniform(30, 66), rng.uniform(5, 31), rng.uniform(0.8, 2.2)
+            ring = board & (np.abs(np.hypot(xx - cx, yy - cy) - r) < 0.6)
+            rgba[ring, :3] = [0.98, 0.9, 0.86]
+        band = board & (yy >= 25) & (yy < 30) & (xx >= 34) & (xx < 66)
+        rgba[band, :3] = [0.98, 0.86, 0.3]
+    else:                                                          # an airliner climbing through clouds
+        t = (yy - 2) / 32
+        rgba[board, :3] = (np.array([0.28, 0.52, 0.86]) * (1 - t[board, None]) +
+                           np.array([0.62, 0.8, 0.96]) * t[board, None])
+        for cx, cy, r in ((14, 26, 9), (24, 29, 8), (54, 12, 7), (62, 14, 6), (46, 30, 10)):
+            cloud = board & (np.hypot((xx - cx) / 1.6, yy - cy) < r * 0.6)
+            rgba[cloud, :3] = [0.96, 0.97, 1.0]
+        plane = Image.new('L', (72, 52), 0)                        # an airliner side on, nose up, climbing
+        d = ImageDraw.Draw(plane)
+        d.ellipse([18, 15, 58, 21], fill=255)                                  # the fuselage
+        d.polygon([(55, 16), (62, 18), (55, 20)], fill=255)                    # its nose
+        d.polygon([(20, 16), (14, 8), (19, 8), (27, 16)], fill=255)            # the tail fin
+        d.polygon([(34, 18), (44, 18), (30, 27), (25, 27)], fill=255)          # the near wing, swept back
+        d.polygon([(16, 17), (22, 17), (17, 21), (13, 21)], fill=255)          # the tailplane
+        m = np.asarray(plane.rotate(16, resample=Image.NEAREST, center=(38, 18))) > 0
+        rgba[board & m, :3] = [0.95, 0.95, 0.97]
+        stripe = np.asarray(Image.fromarray((m * 255).astype(np.uint8)).rotate(0)) > 0
+        band = Image.new('L', (72, 52), 0)
+        ImageDraw.Draw(band).rectangle([18, 18, 58, 19], fill=255)
+        bm = np.asarray(band.rotate(16, resample=Image.NEAREST, center=(38, 18))) > 0
+        rgba[board & bm & stripe, :3] = [0.82, 0.14, 0.16]                    # a red line along it
+
+
+def _billboard_frame(rgba, board, yy, xx):
+    """The billboard round its board: the frame, the catwalk under it, its two legs."""
+    h, w = rgba.shape[:2]
     rgba[board, 3] = 1.0
     frame = ((xx >= 0) & (xx < 72) & (yy >= 0) & (yy < 36)) & ~board
     rgba[frame, :3] = [0.82, 0.82, 0.8]
@@ -1209,6 +1283,155 @@ def tex_coaster_frame(name):
     return rgb, None, a.astype(np.float32)
 
 
+# ------------------------------------------------------------------ the mine
+
+TIMBER = ramp('#6a4a2c', dark=0.4, light=1.5, warm=0.06)
+IRON = ramp('#4a4644', dark=0.45, light=1.9)
+
+
+def tex_rail_track(name):
+    """A railway's track for a road scene's `surface`: two steel rails half a unit either side of the middle on
+    wooden sleepers every quarter unit, bedded in grey ballast. Give the road a `width` of about 1.4; a mine's
+    tracks, a railway's."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    n = fbm(T, rng, 16, 3)
+    rgb = np.zeros((T, T, 3), np.float32) + [0.4, 0.38, 0.36]
+    rgb *= (0.7 + 0.5 * n)[..., None]                                   # the ballast, stones in it
+    stones = rng.random((T, T)) < 0.25
+    rgb[stones] *= rng.uniform(0.7, 1.25, stones.sum())[:, None]
+    ties = (yy % 16) < 5                                              # the sleepers, right across
+    rgb[ties] = (np.array([0.34, 0.24, 0.16]) * (0.8 + 0.35 * fbm(T, rng, 8, 2)[ties])[:, None])
+    rgb[ties & ((yy % 16) == 0)] *= 1.25
+    rail = np.abs(xx - 31.5) < 3.0                                   # at the tile's middle: x = +-0.5 from the road's
+    rgb[rail] = [0.42, 0.42, 0.44]
+    rgb[np.abs(xx - 31.5) < 1.0] = [0.78, 0.78, 0.8]                # its worn top, bright
+    return np.clip(rgb, 0, 1), None
+
+
+def spr_mine_frame():
+    """A mine's timber set, end on: two posts and a cap across them, a lamp hung from its middle, lit. A row of them
+    down the `middle` every 2 or so shores up a tunnel; at its own size the opening is 1.7 wide and 1.9 high."""
+    w, h = 72, 64
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (4, 61):                                               # the posts
+        cv.box(x, 6, 7, 58, z=1.0, top=0.6, bevel=1.6, mat=0, rough=0.3, rng=np.random.default_rng(x))
+    cv.box(1, 1, 70, 8, z=1.2, top=0.6, bevel=1.8, mat=0, rough=0.3, rng=np.random.default_rng(3))   # the cap
+    for x in (4, 61):
+        cv.stroke([(x + 3.5, 8.5), (x + 3.5 + (8 if x < 30 else -8), 1.5)], 2.4, z=1.15, dome=0.6, mat=0)  # braces
+    cv.stroke([(36, 9), (36, 14)], 0.7, z=1.3, dome=0.4, mat=1)       # the lamp's wire
+    cv.box(33, 14, 6, 6, z=1.5, top=0.5, bevel=1.0, mat=1)            # its cage
+    cv.box(34.5, 15.5, 3, 3, z=1.6, top=0.3, bevel=0.4, mat=2)        # the flame
+    rgba, _ = _prop(cv, [TIMBER, IRON, ramp('#ffc060', dark=0.8, light=1.1)], relief=1.1, cavity=0.5, shadow=0.45)
+    return rgba, _tail_em(cv, [2])
+
+
+def spr_mine_cart():
+    """The mine cart ahead of you, riding the rails: a riveted iron tub heaped with ore, gold glinting in it, on
+    small wheels."""
+    w, h = 44, 34
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    rng = np.random.default_rng(13)
+    for _ in range(22):                                             # the ore, heaped over its rim
+        cv.ellipse(rng.uniform(8, 36), rng.uniform(4, 12), rng.uniform(2.0, 4.4), rng.uniform(1.6, 3.2),
+                   z=1.0 + rng.uniform(0, 0.5), dome=0.8, mat=2 if rng.random() < 0.2 else 1)
+    cv.polygon([(3, 9), (41, 9), (38, 27), (6, 27)], z=1.2, top=0.7, bevel=1.8, mat=0)        # the tub
+    for x in range(7, 40, 6):                                       # its rivets
+        cv.ellipse(x, 11, 0.8, 0.8, z=1.5, dome=0.6, mat=0)
+    cv.box(3, 9, 38, 2.2, z=1.4, top=0.5, bevel=0.6, mat=0, tone=0.1)            # its rim
+    for x in (7, 31):
+        cv.ellipse(x + 3, 29.5, 4.2, 4.2, z=0.9, dome=0.7, mat=3)                # wheels on the rails
+    return _prop(cv, [IRON, ramp('#5a524a', dark=0.4, light=1.6), ramp('#e8c040', dark=0.5, light=1.4, warm=0.1),
+                      TYRE], relief=1.1, cavity=0.5, shadow=0.45)
+
+
+# ------------------------------------------------------------------ in space
+
+HULL = ramp('#8a9098', dark=0.35, light=1.6, cool=0.1)
+HULL_D = ramp('#4a4e58', dark=0.4, light=1.9, cool=0.1)
+JET = ramp('#ffa040', dark=0.8, light=1.15, warm=0.1)
+
+
+def spr_starfighter():
+    """A small starfighter seen from behind, as you fly it: a grey hull swept back into two wings angled down, a
+    canopy over the pilot, red lights at the wingtips and twin engines glowing at its tail."""
+    w, h = 64, 32
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(30, 12), (34, 12), (62, 22), (60, 25), (34, 19), (30, 19), (4, 25), (2, 22)], z=1.0, top=0.7,
+               bevel=1.6, mat=0)                                                # the wings, angled down
+    cv.box(58, 21, 5, 3, z=1.3, top=0.4, bevel=0.6, mat=3)                       # the wingtips' lights
+    cv.box(1, 21, 5, 3, z=1.3, top=0.4, bevel=0.6, mat=3)
+    cv.ellipse(32, 15, 9, 8, z=1.4, dome=0.8, mat=0)                             # the hull
+    cv.ellipse(32, 9.5, 4.5, 4, z=1.8, dome=0.8, mat=4)                          # the canopy
+    cv.polygon([(29, 2), (35, 2), (34, 9), (30, 9)], z=1.2, top=0.6, bevel=0.8, mat=1)   # the fin
+    for x in (26, 38):                                              # the engines
+        cv.ellipse(x, 19, 4.4, 4.0, z=1.6, dome=0.6, mat=1)
+        cv.ellipse(x, 19.5, 2.8, 2.4, z=1.8, dome=0.4, mat=2)
+    rgba, _ = _prop(cv, [HULL, HULL_D, JET, ramp('#ff3020', dark=0.8, light=1.2), GLASS], relief=1.0, cavity=0.4,
+                    shadow=0.4)
+    return rgba, _tail_em(cv, [2, 3])
+
+
+# ------------------------------------------------------------------ the race track
+
+LIVERY = [ramp('#c81e1e', dark=0.35, light=1.5), ramp('#1e5ac8', dark=0.35, light=1.6, cool=0.06),
+          ramp('#f0f0ea', dark=0.45, light=1.2), ramp('#f0a020', dark=0.4, light=1.35, warm=0.05)]
+
+
+def spr_race_car():
+    return _race_car(0)
+
+
+def _race_car(k):
+    """An open-wheel race car seen from behind, on the grid: a wide rear wing on its pylon, the fat rear tyres
+    either side of the gearbox, the rain light under the wing, the driver's helmet over the cockpit - in red (blue,
+    white or orange: `variant` 1 to 3)."""
+    w, h = 60, 30
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (1, 45):                                               # the rear tyres, fat
+        cv.box(x, 11, 14, 18, z=0.8, top=0.6, bevel=2.6, mat=3)
+        cv.stroke([(x + 2, 13), (x + 2, 27)], 0.6, dome=0.3, mode='carve')
+    cv.box(18, 13, 24, 13, z=1.1, top=0.6, bevel=2.2, mat=0)                     # the body, the gearbox
+    cv.box(28.5, 4, 3, 10, z=1.4, top=0.5, bevel=0.6, mat=1)                     # the wing's pylon
+    cv.ellipse(30, 10.5, 4.4, 4.6, z=1.7, dome=0.9, mat=4)                       # the helmet, before it
+    cv.box(26.5, 10, 7, 1.6, z=1.9, top=0.3, bevel=0.4, mat=5)                   # its visor
+    cv.box(13, 2, 34, 4.5, z=1.6, top=0.6, bevel=1.0, mat=0)                     # the rear wing
+    cv.box(12, 1, 3, 9, z=1.7, top=0.5, bevel=0.6, mat=1)                        # its end plates
+    cv.box(45, 1, 3, 9, z=1.7, top=0.5, bevel=0.6, mat=1)
+    cv.box(28, 21, 4, 3, z=1.5, top=0.3, bevel=0.5, mat=2)                       # the rain light
+    cv.box(19, 25, 22, 3, z=1.0, top=0.4, bevel=0.6, mat=1)                      # the diffuser
+    return _prop(cv, [LIVERY[k], TRIM, TAIL, TYRE, WHITE, GLASS], em=_tail_em(cv, [2]), relief=1.0,
+                 cavity=0.45, shadow=0.45)
+
+
+def tex_grandstand(name):
+    """A grandstand full of people, for a wall along a race track: tiers of concrete steps rising, a crowd on every
+    one - heads and shirts of every colour - a flag waved here and there. One tile is the whole stand: give the
+    wall `"tile": [2, h]` for a stand h high."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    rgb = np.zeros((T, T, 3), np.float32) + [0.5, 0.5, 0.52]
+    step = (yy % 8) < 2
+    rgb[step] = [0.62, 0.62, 0.64]
+    shirts = np.array([[0.85, 0.2, 0.2], [0.2, 0.4, 0.85], [0.95, 0.85, 0.3], [0.9, 0.9, 0.9], [0.2, 0.6, 0.3],
+                       [0.95, 0.5, 0.15], [0.15, 0.15, 0.18]], np.float32)
+    heads = np.array([[0.85, 0.65, 0.5], [0.6, 0.42, 0.3], [0.35, 0.24, 0.16], [0.9, 0.8, 0.6]], np.float32)
+    for row in range(8):
+        y0 = row * 8 + 2
+        x = rng.uniform(0, 2)
+        while x < T:
+            if rng.random() < 0.9:
+                xi = int(x)
+                rgb[y0 + 2:y0 + 6, xi:xi + 2] = shirts[int(rng.integers(len(shirts)))]
+                rgb[y0:y0 + 2, xi:xi + 2] = heads[int(rng.integers(len(heads)))]
+            x += rng.uniform(2.4, 3.4)
+    for _ in range(3):                                              # flags waved
+        fx, fy = int(rng.integers(2, 58)), int(rng.integers(0, 48))
+        rgb[fy:fy + 4, fx:fx + 6] = shirts[int(rng.integers(len(shirts)))]
+        rgb[fy:fy + 8, fx:fx + 1] = [0.3, 0.3, 0.3]
+    return np.clip(rgb, 0, 1), None
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -1222,10 +1445,13 @@ TEXTURES.update({'tower_windows': lambda n: tex_tower_windows(n), 'tower_windows
                  'shopfront': lambda n: tex_shopfront(n),
                  'shopfront_b': lambda n: tex_shopfront(n, (0.25, 0.95, 1.0)),
                  'shopfront_c': lambda n: tex_shopfront(n, (1.0, 0.7, 0.2)),
-                 'coaster_track': lambda n: tex_coaster_track(n), 'coaster_frame': lambda n: tex_coaster_frame(n)})
+                 'coaster_track': lambda n: tex_coaster_track(n), 'coaster_frame': lambda n: tex_coaster_frame(n),
+                 'rail_track': lambda n: tex_rail_track(n), 'grandstand': lambda n: tex_grandstand(n)})
 TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront': 0.4, 'shopfront_b': 0.4,
-                      'shopfront_c': 0.4, 'coaster_track': 0.2, 'coaster_frame': 0.2})
-VARIANTS = {'traffic_light': (3, _traffic_light)}
+                      'shopfront_c': 0.4, 'coaster_track': 0.2, 'coaster_frame': 0.2, 'rail_track': 0.6,
+                      'grandstand': 0.3})
+VARIANTS = {'traffic_light': (3, _traffic_light), 'car_compact': (4, _car_compact), 'car_sedan': (4, _car_sedan),
+            'billboard': (3, _billboard), 'race_car': (4, _race_car)}
 
 SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_sedan': spr_car_sedan,
            'box_truck': spr_box_truck, 'curve_sign': spr_curve_sign, 'billboard': spr_billboard,
@@ -1237,16 +1463,18 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'jeep': spr_jeep, 'rally_car': spr_rally_car, 'dirt_bike': spr_dirt_bike, 'dust_cloud': spr_dust_cloud,
            'speedboat': spr_speedboat, 'narrowboat': spr_narrowboat, 'boat_bow': spr_boat_bow,
            'hover_car': spr_hover_car, 'neon_bike': spr_neon_bike, 'taxi': spr_taxi, 'brick_ring': spr_brick_ring,
-           'coaster_car': spr_coaster_car}
+           'coaster_car': spr_coaster_car, 'mine_frame': spr_mine_frame, 'mine_cart': spr_mine_cart,
+           'starfighter': spr_starfighter, 'race_car': spr_race_car}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
                  'reflector_post': 0.34, 'highway_lamp': 3.6, 'sign_gantry': 3.2, 'speed_sign': 0.95,
                  'traffic_light': 1.5, 'tyre_stack': 0.32, 'road_barrier': 0.36, 'start_lights': 3.0,
                  'jeep': 0.62, 'rally_car': 0.48, 'dirt_bike': 0.55, 'dust_cloud': 0.62, 'speedboat': 0.44,
-                 'narrowboat': 0.9, 'boat_bow': 0.42, 'hover_car': 0.36, 'neon_bike': 0.52, 'taxi': 0.5, 'brick_ring': 3.25, 'coaster_car': 0.55}
+                 'narrowboat': 0.9, 'boat_bow': 0.42, 'hover_car': 0.36, 'neon_bike': 0.52, 'taxi': 0.5, 'brick_ring': 3.25, 'coaster_car': 0.55,
+                 'mine_frame': 2.2, 'mine_cart': 0.38, 'starfighter': 0.4, 'race_car': 0.3}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
                  'speedboat': {'shadow': False}, 'narrowboat': {'shadow': False}, 'boat_bow': {'shadow': False},
-                 'brick_ring': {'shadow': False}}
+                 'brick_ring': {'shadow': False}, 'mine_frame': {'shadow': False}, 'starfighter': {'shadow': False}}

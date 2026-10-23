@@ -1,0 +1,555 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    20,
+    0,
+    0
+   ],
+   [
+    60,
+    0.15,
+    0
+   ],
+   [
+    60,
+    -0.2,
+    0
+   ],
+   [
+    300,
+    0.1,
+    0
+   ]
+  ],
+  "width": 3.4,
+  "surface": "hull_dark",
+  "lines": false,
+  "rumble": false,
+  "bands": 0.05,
+  "ground": "hangar_floor",
+  "walls": [
+   {
+    "side": "both",
+    "offset": 0.6,
+    "height": 6,
+    "ragged": 1.2,
+    "texture": [
+     "hull_lit",
+     "tech_panel",
+     "conduit",
+     "hull",
+     "hull_red"
+    ],
+    "tile": 1.5,
+    "blocks": 3.0,
+    "seed": 1
+   },
+   {
+    "side": "both",
+    "offset": 1.0,
+    "z": 6,
+    "height": 1.6,
+    "ragged": 0.8,
+    "texture": [
+     "hull",
+     "tech_panel"
+    ],
+    "tile": 1.5,
+    "blocks": 2.0,
+    "gaps": 0.5,
+    "seed": 2
+   }
+  ],
+  "distance": 260
+ },
+ "camera": {
+  "at": 2.0,
+  "x": 0.0,
+  "height": 0.9,
+  "fov": 66,
+  "pitch": 0.06
+ },
+ "title": "The space trench - a starfighter low down a trench in the hull of a great ship",
+ "sky": "space",
+ "sky_objects": [
+  {
+   "type": "ringed",
+   "azimuth": 268,
+   "elevation": 9,
+   "size": 9,
+   "color": [
+    0.8,
+    0.62,
+    0.5
+   ]
+  }
+ ],
+ "ambient": [
+  0.32,
+  0.32,
+  0.4
+ ],
+ "lights": [
+  {
+   "at": 4,
+   "x": 2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    0.35,
+    0.6,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 11,
+   "x": -2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 18,
+   "x": 2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    0.35,
+    0.6,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 25,
+   "x": -2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 32,
+   "x": 2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    0.35,
+    0.6,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 39,
+   "x": -2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 46,
+   "x": 2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    0.35,
+    0.6,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 53,
+   "x": -2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 60,
+   "x": 2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    0.35,
+    0.6,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 67,
+   "x": -2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 74,
+   "x": 2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    0.35,
+    0.6,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 81,
+   "x": -2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 88,
+   "x": 2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    0.35,
+    0.6,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 95,
+   "x": -2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 102,
+   "x": 2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    0.35,
+    0.6,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 109,
+   "x": -2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 116,
+   "x": 2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    0.35,
+    0.6,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 123,
+   "x": -2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 130,
+   "x": 2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    0.35,
+    0.6,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 137,
+   "x": -2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 144,
+   "x": 2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    0.35,
+    0.6,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 151,
+   "x": -2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 158,
+   "x": 2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    0.35,
+    0.6,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 165,
+   "x": -2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 172,
+   "x": 2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    0.35,
+    0.6,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 179,
+   "x": -2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 186,
+   "x": 2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    0.35,
+    0.6,
+    1.0
+   ],
+   "intensity": 1.1
+  },
+  {
+   "at": 193,
+   "x": -2.1,
+   "z": 1.0,
+   "radius": 3.2,
+   "color": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "intensity": 1.1
+  }
+ ],
+ "sprites": [
+  {
+   "blend": "additive",
+   "tint": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "fullbright": true,
+   "type": "orb",
+   "at": 6,
+   "x": -0.5,
+   "z": 1.2,
+   "scale": 0.16
+  },
+  {
+   "blend": "additive",
+   "tint": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "fullbright": true,
+   "type": "orb",
+   "at": 7.5,
+   "x": -0.45,
+   "z": 1.25,
+   "scale": 0.12
+  },
+  {
+   "blend": "additive",
+   "tint": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "fullbright": true,
+   "type": "orb",
+   "at": 11,
+   "x": 0.6,
+   "z": 1.6,
+   "scale": 0.16
+  },
+  {
+   "blend": "additive",
+   "tint": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "fullbright": true,
+   "type": "orb",
+   "at": 12.5,
+   "x": 0.55,
+   "z": 1.62,
+   "scale": 0.12
+  },
+  {
+   "blend": "additive",
+   "tint": [
+    1.0,
+    0.25,
+    0.2
+   ],
+   "fullbright": true,
+   "type": "orb",
+   "at": 16,
+   "x": 0.1,
+   "z": 0.9,
+   "scale": 0.16
+  },
+  {
+   "type": "drone",
+   "at": 18,
+   "x": -0.6,
+   "z": 1.6,
+   "scale": 1.6
+  },
+  {
+   "type": "drone",
+   "at": 24,
+   "x": 0.8,
+   "z": 2.2,
+   "scale": 1.6
+  },
+  {
+   "type": "fireball",
+   "at": 14,
+   "x": 2.2,
+   "z": 2.5,
+   "scale": 1.6
+  }
+ ],
+ "shots": [
+  {
+   "at": 2.0,
+   "x": 0.0,
+   "height": 0.9,
+   "fov": 66,
+   "pitch": 0.06,
+   "roll": 6,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.8,
+     "radius": 2.4,
+     "spread": 0.5
+    }
+   ],
+   "vehicle": {
+    "type": "starfighter",
+    "ahead": 2.2,
+    "z": 0.35,
+    "scale": 0.4
+   }
+  }
+ ],
+ "supersample": 2
+}

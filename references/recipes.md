@@ -193,6 +193,30 @@ The street is `walls` cut into buildings: shops at street level - `"texture": ["
 
 The road is the track: `surface` `coaster_track` (rails and ties, see-through), `width` 1.4, no lines, no kerb, `bands` 0, the `ground` `void` and the park far `below` (`depth` 2.5 under the station: `city_park`, `pasture`, `farmland` in bands). The `sections` are the ride: the station (a `ceiling` of `planks` over its first units), the lift hill (`[30, 0, 22]`), a short crest, the drop (`[20, 0.15, -22]`), a banked curve at its foot, a camel back. The frame under the track is `walls` of `coaster_frame` from `z` -60, 59.9 high, a little in from the track's edges - the land below hides what is under the ground. Ride in the second car: `{"type": "coaster_car", "ahead": 1.25, "scale": 0.5}`. Over the drop, set the camera just past the crest and `pitch` it down hard (-0.55): the camera tilts by moving the horizon, so a steep drop needs a strong pitch to come into view. See `examples/roller_coaster.py`.
 
+### A synthwave drive
+
+Light on black: the `vector` sky, a sun with `disc_style` `stripes` (`disc_size` 9) at `elevation` 10 straight ahead over the `mountains` skyline - low enough to sit on them, high enough that its cut lower half clears them - the `ground` `vector_grid` tinted magenta (its lines glow), the road asphalt tinted dark violet with magenta `lines`, cyan `edges` and a kerb of pink and deep violet, palms every 8 `tint`ed almost to black so they stand in silhouette. The red convertible as the `vehicle`, a strong neon bloom. See `examples/synthwave_drive.py`.
+
+### A desert highway
+
+Two lanes of faded asphalt (tinted a little pale), a yellow centre `lines`, white `edges`, a `gravel` shoulder, pale `desert_wash` then `sand`. Make the `sections` long and nearly straight but give them real rises and dips - 3 units up or down over 50 to 70 - so each crest hides the road until it comes up again further on; a camera on a crest with a long lens (`fov` 46) shows it best. Buttes are `walls` far out (70 and 110), cut into `blocks` 26-34 long with `gaps` 0.55 - most left out - each its own height (`ragged` 9-10), banded `sandstone`; `saguaro`s by density, the `desert` scatter, `power_pole`s every 10 from 0 with `power_lines` between them (`"tile": [10, 0.6]` at `z` 3), a `billboard`, a `box_truck` ahead, sand `drifts` on the road. A noon sun, a pale hazy `fog`. See `examples/desert_highway.py`.
+
+### A winter road at night
+
+Asphalt with snow blown over it (`sand_drift` decals `tint`ed blue-white, more of them along the edges), the plough's banks low `walls` of `snow` (0.32 high, `ragged` 0.12) just past both edges, `snow` beyond, `snowy_pine`s by density, `reflector_post`s every 5; the moon over the `mountains`, a blue night (`ambient` 0.22, 0.26, 0.38), your `headlights` with a stronger `beam` and `snow` falling through them; drive in one lane (camera `x` -0.65) so a car ahead in the other shows its tail lights. See `examples/winter_road.py`.
+
+### A mine ride
+
+The road is the rails: `surface` `rail_track` (rails and sleepers on ballast), `width` 1.4, no lines, no kerb; `gravel` along its edges, `rock_floor` beyond. The tunnel is `walls` of `mine_rock`, `mine_rock_vein` and `mine_rock_gold` in `blocks` (a list: each stretch its own rock) 0.5 past the edge, a `ceiling` of `mine_rock` at 2.6 (`light` 0.3), and `mine_frame`s down the `middle` every 2.2 at `scale` 2.6 - narrow enough that their posts stand in front of the rock - each with a warm `light` under its lamp. Bends that dip (`rise` -1 to -2): a mine coaster; a few `crystal`s with their own blue lights in the rock, stones and `ore_heap`s at the walls' feet, a `pick_shovel`. You ride behind a `mine_cart` (the `vehicle`, `scale` 0.42), leaning into the bend. See `examples/mine_ride.py`.
+
+### A space trench
+
+The trench floor is the road (`hull_dark`, `hangar_floor` beyond); its walls are `walls` in `blocks` of a list of hull plating - `hull_lit`, `tech_panel`, `conduit`, `hull`, `hull_red` - 6 high give or take 1.2, and a tier of boxes along the rims (`z` 6, `gaps` 0.5); `sky` `space` with a `ringed` planet low at the trench's far end. Red and blue lamps along the walls every 7. Bolts of fire are `orb`s, `blend` `additive`, `fullbright`, tinted red, in pairs; `drone`s ahead, a `fireball` on the wall. You fly the `starfighter` (`z` 0.35, `scale` 0.4), banking. See `examples/space_trench.py`.
+
+### A grand prix start
+
+A wide track (`width` 5, one lane, white `edges`), kerbs striped red and white (`rumble` 0.4 wide, `stripe` 1 for short stripes), grass, then on one side a `jersey_barrier` with `chainlink` catch fencing on it and on the other `tyre_stack`s every 0.55; `grandstand` walls 3 out on both sides, 3 high (`"tile": [2, 3]`: one tile is the whole stand) with a roof edge over them. The field on the grid in two staggered columns - `race_car`s, `variant` for their liveries - the `start_lights` over the `start_line`, rubber laid down in the grid boxes (`tyre_marks` along it). You in your own car on the back row; a second shot from the side of the track. See `examples/grand_prix.py`.
+
 ### A highway at night, and a tunnel
 
 Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.

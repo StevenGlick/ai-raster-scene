@@ -1,0 +1,254 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    30,
+    0,
+    0
+   ],
+   [
+    60,
+    0,
+    3.0
+   ],
+   [
+    50,
+    0.05,
+    -3.4
+   ],
+   [
+    70,
+    0,
+    3.8
+   ],
+   [
+    60,
+    -0.05,
+    -3.2
+   ],
+   [
+    600,
+    0,
+    1.0
+   ]
+  ],
+  "width": 3.0,
+  "lanes": 2,
+  "surface": {
+   "base": "asphalt",
+   "tint": [
+    1.1,
+    1.06,
+    1.0
+   ]
+  },
+  "lines": "#e8c040",
+  "edges": "#e0e0dc",
+  "rumble": false,
+  "shoulder": {
+   "width": 0.4,
+   "texture": "gravel"
+  },
+  "ground": [
+   {
+    "width": 4,
+    "texture": {
+     "base": "desert_wash",
+     "tint": [
+      1.0,
+      0.94,
+      0.86
+     ]
+    }
+   },
+   {
+    "texture": "sand"
+   }
+  ],
+  "walls": [
+   {
+    "side": "right",
+    "offset": 70,
+    "z": -2,
+    "height": 16,
+    "ragged": 9,
+    "texture": "sandstone",
+    "tile": 8,
+    "blocks": 26,
+    "gaps": 0.55,
+    "seed": 1
+   },
+   {
+    "side": "left",
+    "offset": 110,
+    "z": -2,
+    "height": 22,
+    "ragged": 10,
+    "texture": "sandstone",
+    "tile": 9,
+    "blocks": 34,
+    "gaps": 0.6,
+    "seed": 2
+   },
+   {
+    "side": "right",
+    "offset": 0.9,
+    "z": 3.0,
+    "height": 0.6,
+    "texture": "power_lines",
+    "tile": [
+     10,
+     0.6
+    ]
+   }
+  ],
+  "bands": 0.05,
+  "distance": 600
+ },
+ "camera": {
+  "at": 2.0,
+  "x": 0.0,
+  "height": 0.7,
+  "fov": 62,
+  "pitch": 0.06
+ },
+ "title": "The desert highway - straight across the desert at noon, over the dips, buttes in the haze",
+ "sky": "day",
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 240,
+   "elevation": 62,
+   "intensity": 0.9
+  }
+ ],
+ "ambient": [
+  0.66,
+  0.6,
+  0.56
+ ],
+ "fog": {
+  "color": [
+   0.92,
+   0.86,
+   0.76
+  ],
+  "density": 0.0035
+ },
+ "roadside": [
+  {
+   "type": "saguaro",
+   "density": 0.06,
+   "offset": [
+    2.0,
+    14.0
+   ],
+   "scale": [
+    1.6,
+    2.6
+   ],
+   "seed": 1
+  },
+  {
+   "type": "power_pole",
+   "side": "right",
+   "every": 10,
+   "from": 0,
+   "offset": 0.9,
+   "scale": 3.5
+  },
+  {
+   "type": "billboard",
+   "side": "left",
+   "every": 120,
+   "from": 40,
+   "offset": 4.0,
+   "scale": 2.6,
+   "variant": 1
+  }
+ ],
+ "scatter": [
+  {
+   "of": "desert",
+   "density": 0.2,
+   "offset": [
+    0.2,
+    6.0
+   ],
+   "seed": 1
+  }
+ ],
+ "decals": [
+  {
+   "tex": "drifts",
+   "density": 0.03,
+   "size": [
+    0.6,
+    1.2
+   ],
+   "seed": 1
+  },
+  {
+   "tex": "wear",
+   "density": 0.02,
+   "size": [
+    0.5,
+    1.0
+   ],
+   "seed": 2
+  }
+ ],
+ "sprites": [
+  {
+   "type": "box_truck",
+   "at": 26,
+   "x": 0.75
+  },
+  {
+   "type": "speed_sign",
+   "at": 8,
+   "x": 2.3
+  }
+ ],
+ "shots": [
+  {
+   "at": 2.0,
+   "x": 0.0,
+   "height": 0.7,
+   "fov": 62,
+   "pitch": 0.06,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.5,
+     "radius": 2.0
+    }
+   ],
+   "vehicle": {
+    "type": "dirt_bike",
+    "ahead": 2.4,
+    "x": 0.75
+   }
+  },
+  {
+   "at": 87.0,
+   "x": 0.4,
+   "height": 1.0,
+   "fov": 46,
+   "pitch": 0.03,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.5,
+     "radius": 2.0
+    }
+   ]
+  }
+ ],
+ "supersample": 2
+}

@@ -1098,6 +1098,7 @@ class RoadRenderer:
             it = dict(assets.sprite_defaults(v['type'], self.defs))
             it.update(v)
             it.update(at=at + float(v.get('ahead', 2.4)), x=camx + float(v.get('x', 0.0)), _vehicle=True)
+            it['type'] = assets.variant_name({**it, 'x': it['at'], 'y': it['x']}, self.s)
             items.append(it)
         for sp in cam.get('extra_sprites', []) if only is None else []:
             items.append(dict(sp, at=float(sp.get('at', 0.0)), x=float(sp.get('x', 0.0))))
@@ -1162,7 +1163,8 @@ class RoadRenderer:
                     L = L + lamp['c'] * (1 - d / lamp['r']) ** 2
             tint = _col(it.get('tint'))
             full = bool(it.get('fullbright'))
-            rgb = sub[..., :3] * np.where(e > 0, 1.0, tint)       # a tint paints the prop, not its lamps
+            light = full or it.get('blend', 'alpha') in ADDITIVE    # a prop that is all light takes its tint
+            rgb = sub[..., :3] * (tint if light else np.where(e > 0, 1.0, tint))   # else a tint skips its lamps
             lit = rgb if full else rgb * L
             colour = np.where(e > 0, np.maximum(lit, rgb * np.clip(e, 0, 1)), lit)
             glow = rgb * np.clip(e, 0, 1) if not full else rgb
@@ -1216,7 +1218,7 @@ class RoadRenderer:
         a &= (self._gdepth[r0:r1, c0:c1] == depth[r0:r1, c0:c1])    # the water still shows there
         if not a.any():
             return
-        rgb = sub[..., :3] * np.where(e > 0, 1.0, tint)
+        rgb = sub[..., :3] * (tint if full or blend in ADDITIVE else np.where(e > 0, 1.0, tint))
         lit = rgb if full else rgb * L
         colour = np.where(e > 0, np.maximum(lit, rgb * np.clip(e, 0, 1)), lit) * 0.82
         glow = (rgb * np.clip(e, 0, 1) if not full else rgb) * 0.82
