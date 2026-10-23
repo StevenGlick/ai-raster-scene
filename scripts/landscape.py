@@ -519,7 +519,10 @@ TEXTURES = {'city_street': lambda n: _street(n, False), 'city_street_lit': lambd
             'forest_canopy': lambda n: (tex_forest_canopy(n), None),
             'pine_canopy': lambda n: (tex_pine_canopy(n), None), 'river_water': lambda n: (tex_river_water(n), None),
             'pasture': lambda n: (tex_pasture(n), None)}
-TEXTURE_NOISE = {'city_street': 0.15, 'city_street_lit': 0.15, 'harbor_water': 0.1, 'quay': 0.2, 'container_yard': 0.1}
+TEXTURE_NOISE = {'city_street': 0.15, 'city_street_lit': 0.15, 'harbor_water': 0.1, 'quay': 0.2, 'container_yard': 0.1,
+                 'city_park': 1.0, 'farmland': 1.0, 'farmland_b': 1.0, 'farmland_c': 1.0, 'farmland_d': 1.0,
+                 'farmland_e': 1.0, 'farmland_f': 1.0, 'pasture': 1.0, 'forest_canopy': 1.0, 'pine_canopy': 1.0,
+                 'river_water': 1.0}                 # the country mottled in full, as soil and weather lie across it
 TEXTURE_REFLECT = {'harbor_water': 0.35, 'river_water': 0.5}
 SPRITES = {'kaiju': spr_kaiju, 'kaiju_roar': spr_kaiju_roar, 'kaiju_wading': spr_kaiju_wading, 'blaze': spr_blaze,
            'smoke_plume': spr_smoke_plume,
