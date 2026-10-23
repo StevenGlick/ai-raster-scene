@@ -246,6 +246,9 @@ SHOTS = {
     'road_lavender': ('lavender_ride', 1),
     'road_ghost_ship': ('ghost_ship', 1),
     'road_cattle': ('cattle_drive', 1),
+    'road_reef': ('reef_dive', 1),
+    'road_brass': ('brass_city', 1),
+    'road_winter_market': ('winter_market', 1),
     # where it started: the three concept drawings, made scenes (the drawings are in docs/origins)
     'storm_island': ('storm_island', 1),
     'storm_town': ('storm_island', 2),

@@ -1,0 +1,245 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    16,
+    0,
+    0
+   ],
+   [
+    30,
+    0.12,
+    0.25
+   ],
+   [
+    30,
+    -0.1,
+    0.1
+   ],
+   [
+    200,
+    0.0,
+    0.0
+   ]
+  ],
+  "width": 2.4,
+  "surface": {
+   "base": "cobble",
+   "tint": [
+    0.9,
+    0.92,
+    1.0
+   ]
+  },
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "ground": [
+   {
+    "width": 0.7,
+    "texture": {
+     "base": "snow",
+     "tint": [
+      0.82,
+      0.86,
+      1.0
+     ]
+    }
+   },
+   {
+    "texture": {
+     "base": "snow",
+     "tint": [
+      0.82,
+      0.86,
+      1.0
+     ]
+    }
+   }
+  ],
+  "walls": [
+   {
+    "side": "both",
+    "offset": 0.7,
+    "height": 2.6,
+    "tile": [
+     2.0,
+     2.6
+    ],
+    "blocks": 2.0,
+    "seed": 3,
+    "texture": [
+     "timber_house",
+     "timber_house_b",
+     "timber_house_c"
+    ]
+   }
+  ],
+  "distance": 120
+ },
+ "camera": {
+  "at": 1.0,
+  "x": 0.0,
+  "height": 0.55,
+  "fov": 64,
+  "pitch": 0.12
+ },
+ "title": "The winter market - the medieval town's high street on a snowy night, stalls lit, the great fir aglow",
+ "sky": "night",
+ "ambient": [
+  0.26,
+  0.28,
+  0.4
+ ],
+ "fog": {
+  "color": [
+   0.2,
+   0.22,
+   0.34
+  ],
+  "density": 0.02
+ },
+ "roadside": [
+  {
+   "type": [
+    "market_stall",
+    "fruit_stall"
+   ],
+   "every": 5.5,
+   "offset": [
+    0.05,
+    0.25
+   ],
+   "from": 8,
+   "to": 40,
+   "flip": true,
+   "seed": 1,
+   "light": {
+    "color": [
+     1.0,
+     0.72,
+     0.4
+    ],
+    "radius": 2.4,
+    "intensity": 1.0,
+    "z": 1.0
+   }
+  },
+  {
+   "type": "lamp_post",
+   "every": 7,
+   "offset": 0.1,
+   "from": 4,
+   "seed": 2,
+   "light": {
+    "color": [
+     1.0,
+     0.72,
+     0.4
+    ],
+    "radius": 3.0,
+    "intensity": 0.9,
+    "z": 1.5
+   }
+  }
+ ],
+ "decals": [
+  {
+   "tex": "sand_drift",
+   "density": 0.3,
+   "size": [
+    0.8,
+    1.6
+   ],
+   "side": "road",
+   "tint": [
+    1.4,
+    1.5,
+    1.7
+   ],
+   "seed": 1
+  }
+ ],
+ "sprites": [
+  {
+   "type": "villager",
+   "at": 5.5,
+   "x": -1.1
+  },
+  {
+   "type": "child",
+   "at": 6.3,
+   "x": -0.6
+  },
+  {
+   "type": "farmer",
+   "at": 9,
+   "x": 1.0,
+   "flip": true
+  },
+  {
+   "type": "monk",
+   "at": 12,
+   "x": 0.3,
+   "view": "back"
+  },
+  {
+   "type": "villager",
+   "at": 15,
+   "x": -0.8,
+   "flip": true
+  },
+  {
+   "type": "christmas_tree",
+   "at": 28,
+   "x": 0.0,
+   "scale": 3.2,
+   "light": {
+    "color": [
+     1.0,
+     0.72,
+     0.4
+    ],
+    "radius": 4.0,
+    "intensity": 1.0,
+    "z": 1.5
+   }
+  },
+  {
+   "type": "castle_hill",
+   "at": 70,
+   "x": 0.0,
+   "scale": 21,
+   "tint": [
+    0.55,
+    0.6,
+    0.8
+   ]
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": 0.0,
+   "height": 0.55,
+   "fov": 64,
+   "pitch": 0.12,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.4,
+     "spread": 0.5
+    },
+    "snow"
+   ]
+  }
+ ],
+ "supersample": 2
+}

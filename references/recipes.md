@@ -679,6 +679,30 @@ and a thinner one out to both sides; `dust_cloud`s half see-through over the her
 the flanks; red buttes as a `mountains` skyline, a `sunset` sky. Your `horse_neck` as the shot's `vehicle`. See
 `examples/cattle_drive.py`.
 
+### A dive on a coral reef
+
+No road but the sand: `reef_flat` for the floor and the way, its edges ragged; the reef wall rising along one side
+(`reef_wall`, ragged); the surface a bright `ceiling` of `water_surface` close overhead (`light` 1.0); corals
+crowding both sides (`brain_coral`, `staghorn_coral`, `anemone`), clownfish and angelfish, a `fish_school`, a
+`sea_turtle`, the `manta_ray` and the `whale_shark` overhead, `light_shaft`s; your buddy the `diver` swimming ahead
+(`z` 0.7) with `bubbles`. A turquoise `fog` with `sky_mix` 1.0 - and a dark sky, drawn far - or the sky shows as a
+band where the ceiling ends; marine snow. See `examples/reef_dive.py`.
+
+### The clockwork city's high street
+
+The clockwork kit along a road: a `cobble` street with `flagstone` pavements; `brass_plate`, `copper_pipes` and
+`clock_face` walls in `blocks` of their own heights, taller ones behind; `brass_gear`s up the fronts (a `roadside`
+row at the walls' face with `z` spread), `steam` from them half see-through, `lamp_post`s with warm `light`s; a
+`great_clock` on a front; the `tram` tinted brass ahead; `airship`s overhead; a `sunset` sky in a brown smog. On
+foot. See `examples/brass_city.py`.
+
+### A winter market at night
+
+The market ride's street turned to a snowy night: `cobble` tinted cold, `snow` either side, the `timber_house`
+walls in `blocks`; the stalls with warm `light`s of their own (a roadside row's `light` lights every one), gaslit
+`lamp_post`s; the townspeople; the `christmas_tree` in the square ahead with a light at its foot; the `castle_hill`
+tinted to the night; `snow` falling and bloom from the lights. See `examples/winter_market.py`.
+
 ### A highway at night, and a tunnel
 
 Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.
