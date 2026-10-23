@@ -36,6 +36,8 @@
   "surface": "cobble",
   "lines": false,
   "rumble": false,
+  "wet": 0.2,
+  "ripple": 0.3,
   "edge": {
    "ragged": 0.1,
    "blend": 0.35

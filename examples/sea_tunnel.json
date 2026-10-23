@@ -1,0 +1,530 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    20,
+    0,
+    0
+   ],
+   [
+    60,
+    0.2,
+    -0.6
+   ],
+   [
+    60,
+    -0.25,
+    0.4
+   ],
+   [
+    300,
+    0.1,
+    0
+   ]
+  ],
+  "width": 3.0,
+  "lanes": 2,
+  "surface": "asphalt",
+  "lines": "#e0e0e0",
+  "edges": "#e0c040",
+  "rumble": false,
+  "ground": [
+   {
+    "width": 0.5,
+    "texture": "concrete"
+   },
+   {
+    "texture": "seabed"
+   }
+  ],
+  "walls": [
+   {
+    "side": "both",
+    "offset": 0.45,
+    "height": 2.6,
+    "texture": "viewport",
+    "tile": [
+     2.0,
+     2.6
+    ]
+   }
+  ],
+  "ceiling": {
+   "height": 2.6,
+   "texture": "tunnel_roof",
+   "tile": 2.0,
+   "light": 0.5
+  },
+  "distance": 200
+ },
+ "camera": {
+  "at": 2.0,
+  "x": 0.75,
+  "height": 0.7,
+  "fov": 66,
+  "pitch": 0.08
+ },
+ "title": "The sea tunnel - a road through a glass tube on the sea floor, sharks and rays outside",
+ "sky": "night",
+ "ambient": [
+  0.42,
+  0.56,
+  0.62
+ ],
+ "fog": {
+  "color": [
+   0.06,
+   0.24,
+   0.36
+  ],
+  "density": 0.06,
+  "sky_mix": 1.0
+ },
+ "lights": [
+  {
+   "at": 3,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 9,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 15,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 21,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 27,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 33,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 39,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 45,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 51,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 57,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 63,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 69,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 75,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 81,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 87,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 93,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 99,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 105,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 111,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 117,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 123,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 129,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 135,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 141,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 147,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 153,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  },
+  {
+   "at": 159,
+   "x": 0.0,
+   "z": 2.5,
+   "radius": 3.4,
+   "color": [
+    0.85,
+    0.95,
+    1.0
+   ],
+   "intensity": 0.9
+  }
+ ],
+ "roadside": [
+  {
+   "type": [
+    "reef_rock",
+    "brain_coral",
+    "sea_fan",
+    "staghorn_coral",
+    "rocks"
+   ],
+   "density": 0.25,
+   "offset": [
+    1.2,
+    9.0
+   ],
+   "scale": [
+    0.5,
+    1.4
+   ],
+   "seed": 1
+  },
+  {
+   "type": "kelp",
+   "density": 0.12,
+   "offset": [
+    2.0,
+    10.0
+   ],
+   "scale": [
+    1.6,
+    2.8
+   ],
+   "seed": 2
+  }
+ ],
+ "sprites": [
+  {
+   "type": "reef_shark",
+   "at": 9,
+   "x": -3.6,
+   "z": 1.2,
+   "scale": 1.0
+  },
+  {
+   "type": "manta_ray",
+   "at": 14,
+   "x": 3.8,
+   "z": 2.4,
+   "scale": 1.6
+  },
+  {
+   "type": "sea_turtle",
+   "at": 7,
+   "x": 2.8,
+   "z": 0.6,
+   "scale": 0.7,
+   "flip": true
+  },
+  {
+   "type": "fish_school",
+   "at": 18,
+   "x": -4.5,
+   "z": 2.0,
+   "scale": 1.6
+  },
+  {
+   "type": "moon_jelly",
+   "at": 11,
+   "x": 3.0,
+   "z": 3.2,
+   "scale": 0.5
+  },
+  {
+   "type": "moon_jelly",
+   "at": 12.5,
+   "x": 3.6,
+   "z": 3.8,
+   "scale": 0.4
+  },
+  {
+   "type": "whale_shark",
+   "at": 40,
+   "x": -12,
+   "z": 4.5,
+   "scale": 6.0
+  },
+  {
+   "type": "car_compact",
+   "at": 16,
+   "x": -0.75,
+   "variant": 2
+  }
+ ],
+ "shots": [
+  {
+   "at": 2.0,
+   "x": 0.75,
+   "height": 0.7,
+   "fov": 66,
+   "pitch": 0.08,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.2,
+     "radius": 2.4,
+     "spread": 0.5
+    }
+   ],
+   "vehicle": {
+    "type": "sports_car",
+    "ahead": 2.6,
+    "headlights": true
+   }
+  }
+ ],
+ "supersample": 2
+}

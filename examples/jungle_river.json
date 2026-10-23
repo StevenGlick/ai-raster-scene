@@ -1,0 +1,231 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    12,
+    0,
+    0
+   ],
+   [
+    40,
+    -0.4,
+    0
+   ],
+   [
+    40,
+    0.45,
+    0
+   ],
+   [
+    40,
+    -0.3,
+    0
+   ],
+   [
+    300,
+    0.2,
+    0
+   ]
+  ],
+  "width": 3.4,
+  "surface": {
+   "base": "water",
+   "tint": [
+    0.75,
+    0.9,
+    0.62
+   ]
+  },
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "ripple": 0.5,
+  "ground": [
+   {
+    "width": 0.8,
+    "texture": {
+     "base": "water",
+     "tint": [
+      0.75,
+      0.9,
+      0.62
+     ]
+    },
+    "reflect": 0.45
+   },
+   {
+    "width": 0.6,
+    "texture": "mud"
+   },
+   {
+    "texture": "jungle_floor"
+   }
+  ],
+  "walls": [
+   {
+    "side": "both",
+    "offset": 3.4,
+    "height": 6.0,
+    "texture": "jungle_leaves",
+    "tile": 2.0,
+    "ragged": 2.5,
+    "seed": 1
+   }
+  ],
+  "distance": 220
+ },
+ "camera": {
+  "at": 1.0,
+  "x": -0.2,
+  "height": 0.5,
+  "fov": 62,
+  "pitch": 0.04
+ },
+ "title": "The jungle river - by canoe up a river through the jungle, its banks mirrored in the water",
+ "sky": "day",
+ "skyline": "jungle",
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 250,
+   "elevation": 55,
+   "intensity": 0.7,
+   "disc": false
+  }
+ ],
+ "ambient": [
+  0.46,
+  0.52,
+  0.44
+ ],
+ "fog": {
+  "color": [
+   0.66,
+   0.74,
+   0.62
+  ],
+  "density": 0.03
+ },
+ "roadside": [
+  {
+   "type": "kapok",
+   "density": 0.06,
+   "offset": [
+    1.6,
+    3.2
+   ],
+   "scale": [
+    6.0,
+    8.0
+   ],
+   "seed": 1
+  },
+  {
+   "type": [
+    "palm",
+    "tree_fern",
+    "banana_plant",
+    "palm"
+   ],
+   "density": 0.5,
+   "offset": [
+    1.0,
+    3.2
+   ],
+   "scale": [
+    1.6,
+    3.2
+   ],
+   "seed": 2
+  },
+  {
+   "type": [
+    "fern",
+    "heliconia",
+    "monstera",
+    "reeds",
+    "reeds"
+   ],
+   "density": 1.4,
+   "offset": [
+    0.6,
+    1.6
+   ],
+   "scale": [
+    0.5,
+    1.0
+   ],
+   "seed": 3
+  }
+ ],
+ "sprites": [
+  {
+   "type": "canoe",
+   "at": 11,
+   "x": 0.4,
+   "z": -0.04,
+   "scale": 0.9
+  },
+  {
+   "type": "heron",
+   "at": 8,
+   "x": 2.15,
+   "scale": 0.8
+  },
+  {
+   "type": "alligator",
+   "at": 14,
+   "x": -2.4,
+   "scale": 1.2
+  },
+  {
+   "type": "stone_head",
+   "at": 19,
+   "x": -2.8,
+   "scale": 1.4
+  },
+  {
+   "type": "macaw",
+   "at": 9,
+   "x": -1.0,
+   "z": 3.4,
+   "scale": 0.8
+  },
+  {
+   "type": "macaw",
+   "at": 10.5,
+   "x": 0.4,
+   "z": 3.8,
+   "scale": 0.7,
+   "flip": true
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": -0.2,
+   "height": 0.5,
+   "fov": 62,
+   "pitch": 0.04,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.7,
+     "radius": 2.0
+    }
+   ],
+   "vehicle": {
+    "type": "boat_bow",
+    "ahead": 1.2,
+    "z": -0.1,
+    "scale": 0.48
+   }
+  }
+ ],
+ "supersample": 2
+}

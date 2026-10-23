@@ -24,7 +24,7 @@ LOOK = [{'fx': 'bloom', 'source': 'light', 'strength': 1.5, 'radius': 2.6, 'spre
 def enchanted_path():
     road = {
         'sections': [[8, 0, 0], [30, 0.45, 0.5], [30, -0.6, -0.4], [40, 0.35, 0.9], [100, -0.2, 0.0]],
-        'width': 1.6, 'surface': 'cobble', 'lines': False, 'rumble': False,
+        'width': 1.6, 'surface': 'cobble', 'lines': False, 'rumble': False, 'wet': 0.2, 'ripple': 0.3,
         'edge': {'ragged': 0.1, 'blend': 0.35},
         'ground': [{'width': 0.9, 'texture': 'lumen_floor'}, {'texture': 'moss'}],
         'bands': 0.03, 'distance': 140,

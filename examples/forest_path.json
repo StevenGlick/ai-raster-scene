@@ -58,6 +58,17 @@
     "texture": "pine_needles"
    }
   ],
+  "walls": [
+   {
+    "side": "left",
+    "offset": 0.55,
+    "height": 0.42,
+    "texture": "rock",
+    "tile": 0.9,
+    "ragged": 0.07,
+    "seed": 1
+   }
+  ],
   "bands": 0.04,
   "distance": 160
  },

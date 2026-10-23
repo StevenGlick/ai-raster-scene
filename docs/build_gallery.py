@@ -183,6 +183,11 @@ SHOTS = {
     'road_trench': ('space_trench', 1),
     'road_grand_prix': ('grand_prix', 1),
     'road_grand_prix_side': ('grand_prix', 2),
+    'road_ice': ('ice_road', 1),
+    'road_motel': ('desert_motel', 1),
+    'road_sea_tunnel': ('sea_tunnel', 1),
+    'road_viaduct': ('viaduct_train', 1),
+    'road_jungle_river': ('jungle_river', 1),
     # where it started: the three concept drawings, made scenes (the drawings are in docs/origins)
     'storm_island': ('storm_island', 1),
     'storm_town': ('storm_island', 2),

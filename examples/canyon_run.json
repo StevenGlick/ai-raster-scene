@@ -58,11 +58,48 @@
    "blend": 0.5
   },
   "ground": {
-   "base": "desert_wash",
-   "tint": [
-    1.05,
-    0.9,
-    0.8
+   "left": {
+    "base": "desert_wash",
+    "tint": [
+     1.05,
+     0.9,
+     0.8
+    ]
+   },
+   "right": [
+    {
+     "width": 0.9,
+     "texture": {
+      "base": "desert_wash",
+      "tint": [
+       1.05,
+       0.9,
+       0.8
+      ]
+     }
+    },
+    {
+     "width": 2.3,
+     "texture": {
+      "base": "shallows",
+      "tint": [
+       0.62,
+       0.78,
+       0.72
+      ]
+     },
+     "reflect": 0.45
+    },
+    {
+     "texture": {
+      "base": "desert_wash",
+      "tint": [
+       1.05,
+       0.9,
+       0.8
+      ]
+     }
+    }
    ]
   },
   "walls": [
@@ -170,12 +207,23 @@
   },
   {
    "of": "desert",
+   "side": "left",
    "density": 0.35,
    "offset": [
     0.2,
     3.0
    ],
    "seed": 3
+  },
+  {
+   "of": "desert",
+   "side": "right",
+   "density": 0.35,
+   "offset": [
+    0.1,
+    0.8
+   ],
+   "seed": 4
   }
  ],
  "decals": [

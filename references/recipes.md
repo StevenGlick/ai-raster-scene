@@ -217,6 +217,26 @@ The trench floor is the road (`hull_dark`, `hangar_floor` beyond); its walls are
 
 A wide track (`width` 5, one lane, white `edges`), kerbs striped red and white (`rumble` 0.4 wide, `stripe` 1 for short stripes), grass, then on one side a `jersey_barrier` with `chainlink` catch fencing on it and on the other `tyre_stack`s every 0.55; `grandstand` walls 3 out on both sides, 3 high (`"tile": [2, 3]`: one tile is the whole stand) with a roof edge over them. The field on the grid in two staggered columns - `race_car`s, `variant` for their liveries - the `start_lights` over the `start_line`, rubber laid down in the grid boxes (`tyre_marks` along it). You in your own car on the back row; a second shot from the side of the track. See `examples/grand_prix.py`.
 
+### An ice road under the aurora
+
+A track ploughed across a frozen lake: `surface` `snow` tinted grey-blue, the plough's banks low `walls` of `snow`, and either side the lake's `ice_floor` (it mirrors by its nature: the aurora lies in it, green, and the far shore's `mountains` upside down under the horizon). Raise the camera a little (0.95) so more ice shows; drifts of snow over it all (`sand_drift` decals tinted blue-white), marker posts along the track, a truck's tail lights ahead, the `aurora` sky, your `jeep`'s headlights. See `examples/ice_road.py`.
+
+### A desert motel at night
+
+The desert highway after dark (`night` sky, a moon, low blue `ambient`): a `motel_sign` on the left (`scale` 4.2) with a pink light beside it and the motel's rooms behind - a `wall` of `window_lit_plaster` 1.1 high (`"tile": [1.4, 1.1]`) with a concrete eave on it - and a `gas_station` on the right (`scale` 2.6) with a white light under its canopy and a car at the pumps; saguaros `tint`ed nearly black against the sky, power poles and their wires, your headlights. See `examples/desert_motel.py`.
+
+### A sea tunnel
+
+A road through a glass tube on the sea floor: `walls` of `viewport` (open glass between a frame at its foot and head, a rib at each tile's side: `"tile": [2, 2.6]`) and a `ceiling` of `tunnel_roof` (the deep water seen from below, the surface lit far above), lamps along the roof; outside, `seabed` with `reef_rock`, corals and `kelp` by density, and the sea's life at every height beyond the glass - a `reef_shark`, a `manta_ray`, a `sea_turtle`, a `fish_school`, `moon_jelly`s, a `whale_shark` far off. Make the `fog` thick and blue (0.06) with `sky_mix` 1, so the water closes in and the sky is all sea. See `examples/sea_tunnel.py`.
+
+### A viaduct by train
+
+The line (`rail_track`) between low parapets (`walls` of `stone` 0.42 high), the ground `void` either side and the valley far `below` in bands (woods, a river, pasture); telegraph poles and their wires along it, `steam` drifting back past the cab, a `golden` sky and a low sun. A wall can only run along the line, never across it - a tunnel ahead needs a portal prop, not a wall. See `examples/viaduct_train.py`.
+
+### A jungle river by canoe
+
+The river is the road (`water` tinted green-brown, `bands` 0, a gentle `ripple`), its first band of ground river too, then mud, then `jungle_floor`; the jungle behind is a `wall` of `jungle_leaves` (`ragged` 2.5) with kapoks, palms, tree ferns and banana plants standing in front of it over the water and ferns, heliconias and reeds at the edge - the still water mirrors them all. A `canoe` ahead, a `heron` in the shallows, an `alligator` on the bank, a `stone_head`, `macaw`s overhead; your own `boat_bow`. See `examples/jungle_river.py`.
+
 ### A highway at night, and a tunnel
 
 Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.

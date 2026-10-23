@@ -687,6 +687,10 @@
      "strength": 2.2,
      "radius": 2.4,
      "spread": 0.6
+    },
+    {
+     "fx": "speed",
+     "strength": 0.32
     }
    ],
    "vehicle": {

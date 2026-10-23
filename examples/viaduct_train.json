@@ -1,0 +1,159 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    20,
+    0,
+    0
+   ],
+   [
+    40,
+    0.35,
+    0
+   ],
+   [
+    300,
+    0.1,
+    0.5
+   ]
+  ],
+  "width": 1.4,
+  "surface": "rail_track",
+  "lines": false,
+  "rumble": false,
+  "bands": 0.02,
+  "ground": {
+   "left": "void",
+   "right": "void"
+  },
+  "below": {
+   "depth": 34,
+   "tile": 33,
+   "haze": 0.6,
+   "texture": [
+    {
+     "width": 30,
+     "texture": "forest_canopy"
+    },
+    {
+     "width": 8,
+     "texture": "river_water"
+    },
+    {
+     "width": 60,
+     "texture": "pasture"
+    },
+    {
+     "texture": "forest_canopy"
+    }
+   ]
+  },
+  "walls": [
+   {
+    "side": "both",
+    "offset": 0.15,
+    "height": 0.42,
+    "texture": "stone",
+    "tile": 0.8
+   },
+   {
+    "side": "right",
+    "offset": 0.6,
+    "z": 2.6,
+    "height": 0.5,
+    "texture": "power_lines",
+    "tile": [
+     9,
+     0.5
+    ]
+   }
+  ],
+  "distance": 300
+ },
+ "camera": {
+  "at": 1.0,
+  "x": 0.0,
+  "height": 0.9,
+  "fov": 64,
+  "pitch": -0.02
+ },
+ "title": "The viaduct train - at the front of a train crossing a long stone viaduct high over a valley",
+ "sky": "golden",
+ "skyline": "mountains",
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 240,
+   "elevation": 14,
+   "intensity": 0.8,
+   "color": [
+    1.0,
+    0.86,
+    0.66
+   ]
+  }
+ ],
+ "ambient": [
+  0.6,
+  0.56,
+  0.54
+ ],
+ "fog": {
+  "color": [
+   0.86,
+   0.8,
+   0.72
+  ],
+  "density": 0.0025
+ },
+ "roadside": [
+  {
+   "type": "power_pole",
+   "side": "right",
+   "every": 9,
+   "from": 0,
+   "offset": 0.6,
+   "scale": 2.9
+  }
+ ],
+ "sprites": [
+  {
+   "type": "steam",
+   "at": 2.6,
+   "x": -0.5,
+   "z": 0.9,
+   "scale": 1.4,
+   "opacity": 0.55
+  },
+  {
+   "type": "steam",
+   "at": 3.8,
+   "x": 0.4,
+   "z": 1.3,
+   "scale": 1.8,
+   "opacity": 0.45
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": 0.0,
+   "height": 0.9,
+   "fov": 64,
+   "pitch": -0.02,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.7,
+     "radius": 2.0
+    }
+   ]
+  }
+ ],
+ "supersample": 2
+}

@@ -118,6 +118,33 @@ def _car_sedan(k):
                  relief=1.0, cavity=0.45, shadow=0.45)
 
 
+def spr_car_oncoming():
+    return _car_oncoming(0)
+
+
+def _car_oncoming(k):
+    """A car coming the other way, seen from the front: the windscreen with the driver dim behind it, the bonnet,
+    a grille between two headlights, lit - white, glowing - the bumper, a plate. In the sedan's paints (`variant`
+    0 to 3); at night its lights carry a `light` of their own if you give it one."""
+    w, h = 52, 44
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (3, 40):
+        cv.box(x, 31, 9, 12, z=0.6, top=0.5, bevel=2.0, mat=3)                    # the front tyres
+    cv.polygon([(10, 4), (42, 4), (46, 16), (6, 16)], z=1.0, top=0.8, bevel=1.4, mat=0)       # the roof's edge
+    cv.polygon([(11, 6), (41, 6), (44, 16), (8, 16)], z=1.3, top=0.3, bevel=0.8, mat=4)       # the windscreen
+    cv.ellipse(18, 12, 3.2, 3.4, z=1.15, dome=0.8, mat=6)                        # the driver, dim behind it
+    cv.box(3, 16, 46, 6, z=1.4, top=0.9, bevel=1.6, mat=0, tone=0.06)            # the bonnet
+    cv.box(3, 21, 46, 12, z=1.3, top=0.5, bevel=2.2, mat=0)                      # its front
+    cv.box(18, 24, 16, 5, z=1.5, top=0.3, bevel=0.6, mat=5)                      # the grille
+    for x in (5, 36):
+        cv.box(x, 23, 11, 5, z=1.7, top=0.3, bevel=0.8, mat=1)                   # the headlights, lit
+    cv.box(3, 31, 46, 3.6, z=1.6, top=0.4, bevel=1.0, mat=5)                     # the bumper
+    cv.box(20, 30, 12, 3.2, z=1.7, top=0.1, bevel=0.4, mat=2)                    # the plate
+    return _prop(cv, [SEDAN_PAINT[k], ramp('#fffbe8', dark=0.85, light=1.05), PLATE, TYRE, GLASS, TRIM,
+                      ramp('#2a2a30', dark=0.5, light=1.8)], em=_tail_em(cv, [1]), relief=1.0, cavity=0.45,
+                 shadow=0.45)
+
+
 def spr_box_truck():
     """A delivery truck seen from behind: a tall box with a roll-up door, small tail lights low down, dual wheels,
     a bumper of black steel."""
@@ -1432,6 +1459,89 @@ def tex_grandstand(name):
     return np.clip(rgb, 0, 1), None
 
 
+# ------------------------------------------------------------------ the roadside at night
+
+def spr_motel_sign():
+    """A motel's sign by the highway: MOTEL in pink neon on an arrow-shaped board pointing in, a star at its tip,
+    VACANCY lit in green on a panel under it, the whole on a tall pole. Its tubes glow."""
+    import lettering
+    w, h = 64, 112
+    rgba = np.zeros((h, w, 4), np.float32)
+    em = np.zeros((h, w), np.float32)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32) + 0.5
+    pole = (np.abs(xx - 40) < 2.2) & (yy > 40)
+    rgba[pole, :3] = [0.5, 0.52, 0.55]
+    rgba[pole & (xx > 40), :3] = [0.36, 0.37, 0.4]
+    board = (yy >= 8) & (yy < 30) & (xx >= 10 - (yy - 8) * 0.0) & (xx < 58)
+    tip = (xx >= 2) & (xx < 12) & (np.abs(yy - 19) < (xx - 2) * 1.1)                  # the arrow's point
+    arrow = board | tip
+    rgba[arrow, :3] = [0.14, 0.08, 0.16]
+    edge = arrow & ~(((yy >= 10) & (yy < 28) & (xx >= 12) & (xx < 56)) |
+                     ((xx >= 4.5) & (xx < 12) & (np.abs(yy - 19) < (xx - 4.5) * 1.1 - 1)))
+    rgba[edge, :3] = [1.0, 0.4, 0.75]
+    em[edge] = 1.0
+    word = lettering.mask('MOTEL', 1, False)
+    mh, mw = word.shape
+    y0, x0 = 19 - mh // 2, 35 - mw // 2
+    rgba[y0:y0 + mh, x0:x0 + mw][word, :3] = [1.0, 0.55, 0.85]
+    em[y0:y0 + mh, x0:x0 + mw][word] = 1.0
+    star = (np.abs(xx - 52) + np.abs(yy - 4) * 1.4 < 4) & (yy < 8)
+    rgba[star, :3] = [1.0, 0.9, 0.4]
+    em[star] = 1.0
+    panel = (yy >= 32) & (yy < 42) & (xx >= 20) & (xx < 60)
+    rgba[panel, :3] = [0.1, 0.1, 0.12]
+    vac = lettering.mask('VACANCY', 1, False)
+    vh, vw = vac.shape
+    vy, vx = 37 - vh // 2, 40 - vw // 2
+    rgba[vy:vy + vh, vx:vx + vw][vac, :3] = [0.4, 1.0, 0.5]
+    em[vy:vy + vh, vx:vx + vw][vac] = 1.0
+    rgba[..., 3] = (arrow | star | panel | pole).astype(np.float32)
+    return rgba, em
+
+
+def spr_gas_station():
+    """A gas station by the road, seen across its forecourt: a flat canopy on two pillars, lit white underneath, two
+    pumps under it, a little shop behind with its window lit, the price board on a pole."""
+    w, h = 120, 60
+    rgba = np.zeros((h, w, 4), np.float32)
+    em = np.zeros((h, w), np.float32)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32) + 0.5
+    shop = (xx >= 64) & (xx < 112) & (yy >= 26) & (yy < 60)
+    rgba[shop, :3] = [0.62, 0.6, 0.56]
+    win = (xx >= 70) & (xx < 104) & (yy >= 36) & (yy < 52)
+    rgba[win, :3] = [1.0, 0.92, 0.7]
+    em[win] = 0.8
+    roof = (xx >= 62) & (xx < 114) & (yy >= 24) & (yy < 27)
+    rgba[roof, :3] = [0.3, 0.3, 0.32]
+    canopy = (xx >= 4) & (xx < 76) & (yy >= 14) & (yy < 21)
+    rgba[canopy, :3] = [0.92, 0.92, 0.9]
+    band = canopy & (yy >= 16) & (yy < 19)
+    rgba[band, :3] = [0.85, 0.15, 0.12]
+    under = (xx >= 6) & (xx < 74) & (yy >= 21) & (yy < 23)
+    rgba[under, :3] = [1.0, 1.0, 0.95]
+    em[under] = 1.0
+    for x0 in (14, 62):                                            # the pillars
+        p = (xx >= x0) & (xx < x0 + 4) & (yy >= 21)
+        rgba[p, :3] = [0.82, 0.82, 0.8]
+    for x0 in (26, 44):                                            # the pumps
+        pump = (xx >= x0) & (xx < x0 + 7) & (yy >= 42) & (yy < 60)
+        rgba[pump, :3] = [0.8, 0.2, 0.16]
+        face = (xx >= x0 + 1.5) & (xx < x0 + 5.5) & (yy >= 45) & (yy < 50)
+        rgba[face, :3] = [0.9, 0.95, 1.0]
+        em[face] = 0.6
+    post = (xx >= 113) & (xx < 116) & (yy >= 6)
+    rgba[post, :3] = [0.45, 0.45, 0.48]
+    sign = (xx >= 104) & (xx < 120) & (yy >= 2) & (yy < 14)
+    rgba[sign, :3] = [0.1, 0.1, 0.12]
+    digits = sign & ((((xx - 106) % 4) < 2.5) & (((yy - 4) % 4) < 2.5)) & (xx >= 106) & (xx < 118) & (yy >= 4) & (yy < 12)
+    rgba[digits, :3] = [1.0, 0.6, 0.2]
+    em[digits] = 1.0
+    rgba[..., 3] = (shop | roof | canopy | under | post | sign |
+                    np.any([(xx >= x0) & (xx < x0 + 4) & (yy >= 21) for x0 in (14, 62)], axis=0) |
+                    np.any([(xx >= x0) & (xx < x0 + 7) & (yy >= 42) for x0 in (26, 44)], axis=0)).astype(np.float32)
+    return rgba, em
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -1451,7 +1561,7 @@ TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront':
                       'shopfront_c': 0.4, 'coaster_track': 0.2, 'coaster_frame': 0.2, 'rail_track': 0.6,
                       'grandstand': 0.3})
 VARIANTS = {'traffic_light': (3, _traffic_light), 'car_compact': (4, _car_compact), 'car_sedan': (4, _car_sedan),
-            'billboard': (3, _billboard), 'race_car': (4, _race_car)}
+            'billboard': (3, _billboard), 'race_car': (4, _race_car), 'car_oncoming': (4, _car_oncoming)}
 
 SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_sedan': spr_car_sedan,
            'box_truck': spr_box_truck, 'curve_sign': spr_curve_sign, 'billboard': spr_billboard,
@@ -1464,7 +1574,8 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'speedboat': spr_speedboat, 'narrowboat': spr_narrowboat, 'boat_bow': spr_boat_bow,
            'hover_car': spr_hover_car, 'neon_bike': spr_neon_bike, 'taxi': spr_taxi, 'brick_ring': spr_brick_ring,
            'coaster_car': spr_coaster_car, 'mine_frame': spr_mine_frame, 'mine_cart': spr_mine_cart,
-           'starfighter': spr_starfighter, 'race_car': spr_race_car}
+           'starfighter': spr_starfighter, 'race_car': spr_race_car, 'car_oncoming': spr_car_oncoming,
+           'motel_sign': spr_motel_sign, 'gas_station': spr_gas_station}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
@@ -1472,9 +1583,11 @@ SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'bo
                  'traffic_light': 1.5, 'tyre_stack': 0.32, 'road_barrier': 0.36, 'start_lights': 3.0,
                  'jeep': 0.62, 'rally_car': 0.48, 'dirt_bike': 0.55, 'dust_cloud': 0.62, 'speedboat': 0.44,
                  'narrowboat': 0.9, 'boat_bow': 0.42, 'hover_car': 0.36, 'neon_bike': 0.52, 'taxi': 0.5, 'brick_ring': 3.25, 'coaster_car': 0.55,
-                 'mine_frame': 2.2, 'mine_cart': 0.38, 'starfighter': 0.4, 'race_car': 0.3}
+                 'mine_frame': 2.2, 'mine_cart': 0.38, 'starfighter': 0.4, 'race_car': 0.3, 'car_oncoming': 0.48,
+                 'motel_sign': 4.2, 'gas_station': 2.6}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
                  'speedboat': {'shadow': False}, 'narrowboat': {'shadow': False}, 'boat_bow': {'shadow': False},
-                 'brick_ring': {'shadow': False}, 'mine_frame': {'shadow': False}, 'starfighter': {'shadow': False}}
+                 'brick_ring': {'shadow': False}, 'mine_frame': {'shadow': False}, 'starfighter': {'shadow': False},
+                 'motel_sign': {'shadow': False}, 'gas_station': {'shadow': False}}

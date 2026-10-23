@@ -24,9 +24,11 @@ GLOW = [{'fx': 'bloom', 'source': 'light', 'strength': 1.3, 'radius': 2.2, 'spre
 def night_highway():
     road = {
         'sections': [[16, 0, 0], [40, 0.45, 1.0], [40, -0.35, 0.0], [60, 0.3, -0.8], [140, 0, 0]],
-        'width': 4.2, 'lanes': 3, 'surface': 'asphalt', 'edges': '#d8d8d8', 'rumble': False,
+        'width': 4.2, 'lanes': 3, 'surface': 'asphalt', 'edges': '#d8d8d8', 'rumble': False, 'wet': 0.3,
+        'ripple': 0.4,
         'shoulder': {'width': 0.5, 'texture': 'gravel'},
-        'ground': [{'width': 1.5, 'texture': 'concrete'}, {'texture': 'asphalt', 'tint': [0.5, 0.5, 0.55]}],
+        'ground': [{'width': 1.5, 'texture': 'concrete', 'reflect': 0.18},
+                   {'texture': 'asphalt', 'tint': [0.5, 0.5, 0.55], 'reflect': 0.12}],
         'roofs': [[TUNNEL[0], TUNNEL[1], 0.1]],
         'bands': 0.05, 'distance': 200,
     }

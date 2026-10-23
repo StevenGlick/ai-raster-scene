@@ -65,7 +65,7 @@ PRESETS = {
 
 WORLD = {'grade', 'bloom', 'vignette', 'grain', 'rain', 'snow', 'lightning', 'letterbox', 'hurt', 'fade',
          'splashes', 'embers', 'fireflies', 'spores', 'ash', 'leaves', 'dust',
-         'pixelate', 'posterize', 'gradient_map', 'dof', 'streaks', 'flare'}
+         'pixelate', 'posterize', 'gradient_map', 'dof', 'streaks', 'flare', 'speed'}
 LENS = {'dof'}      # run first, on the bare frame: a held item drawn after them stays sharp
 DISPLAY = {'crt', 'vhs', 'chromatic', 'scanlines'}
 
@@ -378,6 +378,38 @@ def fx_vignette(img, p, ctx):
     k = np.clip((r - rad * 0.55) / (1 - rad * 0.55), 0, 1) ** 1.6 * float(p.get('strength', 0.5))
     col = _rgb(p.get('color', [0, 0, 0]))
     return img * (1 - k[..., None]) + col * k[..., None]
+
+
+def fx_speed(img, p, ctx):
+    """Speed: the frame streaked outward from the point it rushes toward - a road's vanishing point, or `x`, `y`
+    (0-1 across and down the frame) - more toward its edges, its middle (`clear`, 0.3) and a road shot's own
+    vehicle left sharp: an arcade racer's sense of speed. `strength` 0.4 how far the streaks reach, `samples` 10."""
+    H, W = img.shape[:2]
+    cx, cy = W / 2, H / 2
+    rays = ctx.get('rays') or {}
+    if 'horizon' in rays:                      # a road shot: the horizon, and the column the road runs toward
+        cy = float(rays['horizon'])
+        rdx = np.asarray(rays.get('rdx', []), np.float64)
+        rdy = np.asarray(rays.get('rdy', [0.0]), np.float64)
+        if len(rdx) == W and np.allclose(rdy, 1.0) and rdx.min() < 0 < rdx.max():    # a road's rays: rdx is
+            cx = float(np.interp(0.0, rdx, np.arange(W) + 0.5))                     # zero where it runs to
+    cx = float(p['x']) * W if 'x' in p else cx
+    cy = float(p['y']) * H if 'y' in p else cy
+    reach = float(p.get('strength', 0.4)) * 0.16
+    n = max(2, int(p.get('samples', 10)))
+    clear = float(p.get('clear', 0.3))
+    yy, xx = np.mgrid[0:H, 0:W].astype(np.float32) + 0.5
+    dx, dy = xx - cx, yy - cy
+    k = np.clip((np.hypot(dx / (W / 2), dy / (H / 2)) - clear) / max(1e-6, 1.2 - clear), 0, 1) ** 1.3
+    v = (ctx.get('anchors') or {}).get('_vehicle')
+    if v:                                      # your own car is moving with you: it stays sharp
+        k[(xx >= v['x'] - v['w'] / 2 - 1) & (xx < v['x'] + v['w'] / 2 + 1) & (yy >= v['top'] - 1) &
+          (yy < v['top'] + v['h'] + 1)] = 0.0
+    acc = img.astype(np.float32).copy()
+    for i in range(1, n):
+        f = 1 - reach * k * i / (n - 1)
+        acc += img[np.clip(cy + dy * f, 0, H - 1).astype(int), np.clip(cx + dx * f, 0, W - 1).astype(int)]
+    return acc / n
 
 
 def fx_grain(img, p, ctx):

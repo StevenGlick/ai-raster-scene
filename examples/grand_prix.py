@@ -30,7 +30,7 @@ def grand_prix():
             {'side': 'left', 'offset': 1.32, 'z': 0.3, 'height': 1.0, 'texture': 'chainlink', 'tile': 1.0},
             {'side': 'both', 'offset': 3.0, 'height': 3.0, 'texture': 'grandstand', 'tile': [2.0, 3.0],
              'to': 90},
-            {'side': 'both', 'offset': 3.2, 'z': 3.0, 'height': 0.5, 'texture': 'tech_panel', 'tile': 1.0,
+            {'side': 'both', 'offset': 3.2, 'z': 3.0, 'height': 0.5, 'texture': 'corrugated', 'tile': 1.0,
              'to': 90},                                                     # the stands' roof edge
         ],
         'bands': 0.04, 'distance': 260,

@@ -1,10 +1,11 @@
 """The winter road: a road scene (road.py) - a mountain road at night after snow, the banks the plough left along
-it, snowy pines, your headlights on the falling snow, a car's tail lights ahead.
+it, snowy pines, your headlights on the falling snow, a car coming the other way.
 
 The road is asphalt with snow blown over it in drifts (`decals`, the sand drift tinted white) and worn down to the
 tarmac in two tracks; along both edges the plough's banks are low `walls` of `snow` with a `ragged` top, and beyond
 them the snow lies deep, `snowy_pine`s by density, marker posts every few units. The moon over the peaks
-(`mountains`), blue night, your `headlights` pooling on the road and the snow falling through them (`snow`).
+(`mountains`), blue night, your `headlights` pooling on the road and the snow falling through them (`snow`); a
+car coming the other way (`car_oncoming`), its own lights on the snow.
 Run:  python winter_road.py  -> writes winter_road.json next to this file.
 """
 import os
@@ -39,7 +40,8 @@ def winter_road():
         {'tex': 'sand_drift', 'density': 0.2, 'offset': [0.9, 1.4], 'size': [0.6, 1.2], 'tint': [1.15, 1.25, 1.45],
          'seed': 3},
     ]
-    sprites = [{'type': 'car_sedan', 'at': 19, 'x': 0.7, 'tint': [0.5, 0.52, 0.6]}]
+    sprites = [{'type': 'car_oncoming', 'at': 11, 'x': 0.7, 'variant': 1,             # a car coming the other way
+                'light': {'color': [1.0, 0.95, 0.84], 'radius': 4.5, 'intensity': 1.1, 'z': 0.4, 'at': -2.2}}]
     return road_scene(
         road,
         title='The winter road - a mountain road at night after snow, headlights on the falling snow',

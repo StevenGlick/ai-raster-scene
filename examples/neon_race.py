@@ -72,7 +72,8 @@ def neon_race():
         shots=[
             {'at': 2.0, 'x': 0.0, 'height': 0.7, 'fov': 66, 'pitch': 0.08, 'post': NEON, 'overlays': HUD,
              'vehicle': {'type': 'hover_car', 'ahead': 2.5, 'z': 0.06, 'headlights': [0.7, 0.95, 1.0]}},
-            {'at': 22.0, 'x': 0.0, 'height': 0.7, 'fov': 66, 'pitch': 0.06, 'roll': 7, 'yaw': 4, 'post': NEON,
+            {'at': 22.0, 'x': 0.0, 'height': 0.7, 'fov': 66, 'pitch': 0.06, 'roll': 7, 'yaw': 4,
+             'post': NEON + [{'fx': 'speed', 'strength': 0.32}],
              'vehicle': {'type': 'hover_car', 'ahead': 2.5, 'z': 0.06, 'headlights': [0.7, 0.95, 1.0]}},
         ],
         supersample=2,

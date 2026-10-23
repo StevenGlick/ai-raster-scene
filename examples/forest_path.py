@@ -25,6 +25,8 @@ def forest_path():
         'edge': {'ragged': 0.16, 'blend': 0.35},
         'ground': [{'width': 0.9, 'texture': 'grass'}, {'width': 2.5, 'texture': 'moss'},
                    {'texture': 'pine_needles'}],
+        'walls': [{'side': 'left', 'offset': 0.55, 'height': 0.42, 'texture': 'rock', 'tile': 0.9, 'ragged': 0.07,
+                   'seed': 1}],                                       # a dry-stone wall along it
         'bands': 0.04, 'distance': 160,
     }
     roadside = [

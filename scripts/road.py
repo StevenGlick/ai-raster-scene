@@ -120,7 +120,8 @@ def _side_spec(g):
         edge = edge + float(b['width']) if 'width' in b else math.inf
         tex = b.get('texture', 'grass')
         name = tex.get('base') if isinstance(tex, dict) else tex
-        out.append((edge, tex, _col(b.get('tint')), float(b.get('reflect', assets.TEXTURE_REFLECT.get(name, 0.0)))))
+        own = assets.TEXTURE_REFLECT.get(name, 0.0)             # water mirrors by its nature, under a roof too
+        out.append((edge, tex, _col(b.get('tint')), float(b.get('reflect', own)), own))
         if math.isinf(edge):
             break
     if not math.isinf(out[-1][0]):
@@ -166,6 +167,7 @@ class RoadRenderer:
         self.surface_alpha = assets.get_alpha(surf)            # a see-through road: a coaster's rails and ties
         # how mirror-like the road is: water mirrors by its own nature, a road by how `wet` it is
         self.wet = float(spec.get('wet', assets.TEXTURE_REFLECT.get(surf, 0.0)))
+        self.dry = assets.TEXTURE_REFLECT.get(surf, 0.0)        # under a roof the rain does not reach
         self.ripple = float(spec.get('ripple', 1.0))
         g = spec.get('ground', 'grass')
         sides = g if isinstance(g, dict) and ('left' in g or 'right' in g) else {'left': g, 'right': g}
@@ -455,6 +457,7 @@ class RoadRenderer:
         """Render one camera: the road at `supersample` times the size, brought down, then finished by the post
         effects and the GUI (render.finish_world)."""
         import render as R
+        self.anchors = {}                         # this shot's, as the raycaster's are: none left from the last
         ss = int(cam.get('supersample', self.s.get('supersample', 1)))
         res = self.s.get('resolution', [320, 200])
         bw, bh = int(res[0]), int(res[1])
@@ -838,7 +841,7 @@ class RoadRenderer:
         past = np.abs(X) - self.half                 # out from the road's edge: the valley in bands along it
         col = np.zeros(X.shape + (3,), np.float32)
         lo = 0.0
-        for hi, spec, tint, _ in b['bands']:
+        for hi, spec, tint, *_ in b['bands']:
             m = (past < hi) & (past >= lo) if lo > 0 else past < hi
             if m.any():
                 col[m] = assets.get_texture(spec)[0][tv[m], tu[m]] * tint
@@ -944,7 +947,10 @@ class RoadRenderer:
         on = edge_in < 0
         lift = np.broadcast_to(np.where(band, 1 + self.bands / 2, 1 - self.bands / 2), X.shape)
         out[on] = self.surface[tv[on], tu[on]] * lift[on][:, None]
-        refl[on] = self.wet
+        roofed = np.zeros(len(along), bool)
+        for a0, a1, _ in self.roofs:
+            roofed |= (along >= a0) & (along < a1)
+        refl[on] = np.where(np.broadcast_to(roofed[:, None], on.shape), self.dry, self.wet)[on]
         holes = on & (self.surface_alpha[tv, tu] < 0.5) if self.surface_alpha is not None else None
         # the markings: dashed lane lines on the light bands, solid edge and centre lines
         if self.lines is not None and self.lanes > 1:
@@ -986,13 +992,13 @@ class RoadRenderer:
                 void |= m
                 continue
             lo = 0.0
-            for hi, spec, tint, rk in bands:
+            for hi, spec, tint, rk, own in bands:
                 b = m & (past >= lo) & (past < hi)
                 if b.any():
                     tex = assets.get_texture(spec)[0]
                     em = assets.get_texture(spec)[1]
                     out[b] = tex[tv[b], tu[b]] * tint * np.broadcast_to(shade, b.shape)[b][:, None]
-                    refl[b] = rk
+                    refl[b] = np.where(np.broadcast_to(roofed[:, None], b.shape), own, rk)[b]
                     if em is not None:
                         lightk[b] = em[tv[b], tu[b]][:, None] * tex[tv[b], tu[b]] * 1.6
                 lo = hi
@@ -1133,6 +1139,8 @@ class RoadRenderer:
             clip = H if it.get('_vehicle') else P['clip'][k]
             r0, r1 = max(0, int(math.floor(top))), min(H, int(math.ceil(min(bot, clip))))
             c0, c1 = max(0, int(math.floor(left))), min(W, int(math.ceil(left + wpx)))
+            if it.get('_vehicle'):                 # where the shot's own vehicle is, for `speed` to leave sharp
+                self.anchors['_vehicle'] = {'x': cx, 'top': top, 'w': wpx, 'h': hpx, 'depth': z, 'visible': True}
             if it.get('id'):
                 self.anchors[it['id']] = {'x': cx, 'top': top, 'w': wpx, 'h': hpx, 'depth': z,
                                           'visible': -wpx < cx < W + wpx and top + hpx > 0 and top < H}

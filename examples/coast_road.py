@@ -72,7 +72,8 @@ def coast_road():
         shots=[
             {'at': 2.0, 'x': 0.0, 'height': 0.75, 'fov': 64, 'pitch': 0.1, 'post': GLOW,
              'vehicle': {'type': 'sports_car', 'ahead': 2.6}, 'overlays': HUD},
-            {'at': 18.0, 'x': 0.0, 'height': 0.75, 'fov': 64, 'pitch': 0.1, 'yaw': -4, 'roll': -6, 'post': GLOW,
+            {'at': 18.0, 'x': 0.0, 'height': 0.75, 'fov': 64, 'pitch': 0.1, 'yaw': -4, 'roll': -6,
+             'post': GLOW + [{'fx': 'speed', 'strength': 0.4}],
              'vehicle': {'type': 'sports_car', 'ahead': 2.6}},          # under the checkpoint, leaning into the bend
         ],
         supersample=2,

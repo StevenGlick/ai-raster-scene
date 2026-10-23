@@ -1,0 +1,235 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    30,
+    0,
+    0
+   ],
+   [
+    60,
+    0,
+    1.2
+   ],
+   [
+    60,
+    0.05,
+    -1.4
+   ],
+   [
+    600,
+    0,
+    0.6
+   ]
+  ],
+  "width": 3.0,
+  "lanes": 2,
+  "surface": "asphalt",
+  "lines": "#e8c040",
+  "edges": "#d8d8d4",
+  "rumble": false,
+  "shoulder": {
+   "width": 0.4,
+   "texture": "gravel"
+  },
+  "ground": [
+   {
+    "width": 4,
+    "texture": {
+     "base": "desert_wash",
+     "tint": [
+      0.9,
+      0.86,
+      0.8
+     ]
+    }
+   },
+   {
+    "texture": "sand"
+   }
+  ],
+  "walls": [
+   {
+    "side": "left",
+    "offset": 6.5,
+    "height": 1.1,
+    "texture": "window_lit_plaster",
+    "tile": [
+     1.4,
+     1.1
+    ],
+    "from": 16,
+    "to": 34
+   },
+   {
+    "side": "left",
+    "offset": 6.4,
+    "z": 1.1,
+    "height": 0.25,
+    "texture": "concrete",
+    "tile": 1.0,
+    "from": 16,
+    "to": 34
+   },
+   {
+    "side": "right",
+    "offset": 0.9,
+    "z": 3.0,
+    "height": 0.6,
+    "texture": "power_lines",
+    "tile": [
+     10,
+     0.6
+    ]
+   }
+  ],
+  "bands": 0.03,
+  "distance": 500
+ },
+ "camera": {
+  "at": 2.0,
+  "x": 0.75,
+  "height": 0.75,
+  "fov": 64,
+  "pitch": 0.1
+ },
+ "title": "The desert motel - the highway at night, a motel's neon sign and a gas station by the road",
+ "sky": "night",
+ "skyline": "hills",
+ "sky_objects": [
+  {
+   "type": "moon",
+   "azimuth": 300,
+   "elevation": 22,
+   "size": 2.4
+  }
+ ],
+ "ambient": [
+  0.16,
+  0.16,
+  0.24
+ ],
+ "fog": {
+  "color": [
+   0.08,
+   0.08,
+   0.14
+  ],
+  "density": 0.006
+ },
+ "lights": [
+  {
+   "at": 12,
+   "x": -2.6,
+   "z": 3.2,
+   "radius": 6.0,
+   "color": [
+    1.0,
+    0.4,
+    0.75
+   ],
+   "intensity": 1.4
+  },
+  {
+   "at": 23,
+   "x": 4.4,
+   "z": 2.2,
+   "radius": 5.5,
+   "color": [
+    0.9,
+    0.95,
+    1.0
+   ],
+   "intensity": 1.5
+  },
+  {
+   "at": 25,
+   "x": -6.0,
+   "z": 1.0,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.78,
+    0.5
+   ],
+   "intensity": 1.0
+  }
+ ],
+ "roadside": [
+  {
+   "type": "power_pole",
+   "side": "right",
+   "every": 10,
+   "from": 0,
+   "offset": 0.9,
+   "scale": 3.5
+  },
+  {
+   "type": "saguaro",
+   "density": 0.05,
+   "offset": [
+    3.0,
+    16.0
+   ],
+   "scale": [
+    1.6,
+    2.6
+   ],
+   "tint": [
+    0.12,
+    0.12,
+    0.18
+   ],
+   "seed": 1
+  }
+ ],
+ "sprites": [
+  {
+   "type": "motel_sign",
+   "at": 12,
+   "x": -3.0,
+   "scale": 4.2
+  },
+  {
+   "type": "gas_station",
+   "at": 24,
+   "x": 5.6,
+   "scale": 2.6
+  },
+  {
+   "type": "car_sedan",
+   "at": 22.5,
+   "x": 4.0,
+   "variant": 3
+  }
+ ],
+ "shots": [
+  {
+   "at": 2.0,
+   "x": 0.75,
+   "height": 0.75,
+   "fov": 64,
+   "pitch": 0.1,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.6,
+     "radius": 2.4,
+     "spread": 0.5
+    }
+   ],
+   "vehicle": {
+    "type": "sports_car",
+    "ahead": 2.6,
+    "headlights": true
+   }
+  }
+ ],
+ "supersample": 2
+}
