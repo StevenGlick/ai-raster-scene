@@ -39,7 +39,7 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel', 'ends', 'sail',
                   'band', 'lit', 'casts', 'teeth', 'spokes', 'goods', 'game', 'to', 'view', 'scene', 'shape',
                   'frame', 'edge', 'door', 'swing', 'show', 'crt', 'text', 'style', 'ground', 'smooth', 'setback',
-                  'antenna', 'pad', 'elevation', 'opacity', 'built', 'night', 'day', 'snowline', 'ridges',
+                  'antenna', 'pad', 'elevation', 'opacity', 'built', 'night', 'day', 'snowline', 'ridges', 'sag', 'crater', 'lava', 'cliff',
                   'church'}
 
 
@@ -771,7 +771,15 @@ def car(pl):
 # and what grows on top: (prop, lowest, highest), heights in units.
 SNOW = ramp(['#8e9ab2', '#a8b4ca', '#c2ccdc', '#d8e0ea', '#eaeff5', '#f8fafc'])
 CAVE = ramp('#4a4652', dark=0.3, light=1.5, cool=0.12)
+LAVA = ramp(['#fff4b0', '#ffc848', '#f88a20', '#d0480e', '#8a2208', '#40100a'])   # bright in the cracks, dark crust
 ROCKS = {
+    'volcanic': dict(ramps=[ramp('#3a3838', dark=0.3, light=1.6, cool=0.08), ramp('#6a4634', dark=0.35, light=1.3),
+                            ramp('#5a5852', dark=0.35, light=1.4)],
+                     mass=(1.4, 1.4, 0.8), chip=(0.4, 0.4, 0.3), key=(-0.4, 0.45, 0.8), shade=(0.24, 0.62),
+                     crust=0.6, weed=0.45, up=0.45, pores=0.2, density=0.14),
+    'lava': dict(ramps=[LAVA, LAVA, LAVA], mass=(0.5, 0.5, 0.4), chip=(0.2, 0.2, 0.15), key=(-0.4, 0.45, 0.8),
+                 shade=(0.5, 0.35), crust=0.6, weed=2.0, up=0.5, pores=0.0, cracks=0.9, density=0.14,
+                 glow={0: 1.0, 1: 1.0, 2: 1.0}),
     'alpine': dict(ramps=[ramp('#6a6660', dark=0.3, light=1.5, cool=0.18), ramp('#8a8478', dark=0.35, light=1.35),
                           ramp('#5a7238', dark=0.35, light=1.35), ramp('#dce4ec', dark=0.55, light=1.12, cool=0.2)],
                    mass=(1.6, 1.6, 0.9), chip=(0.45, 0.45, 0.3), key=(-0.4, 0.45, 0.8), shade=(0.28, 0.66),
@@ -923,6 +931,14 @@ def _stone(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
         line = rk['snowline'] + rk.get('snow_wander', 0.5) * (noise3(P, rk.get('snow_scale', 0.35), seed + 9) - 0.5)
         mat[(P[:, 2] > line) & (N[:, 2] > rk.get('snow_slope', 0.3))] = 3
         mat[P[:, 2] > line + rk.get('snow_cap', 1e9)] = 3
+    if rk.get('flows'):                                             # lava running down the flanks from the crater
+        cx, cy, stretch, top_z = rk['flow_axis']
+        th = np.arctan2(P[:, 1] - cy, (P[:, 0] - cx) / stretch)
+        zt = np.clip(P[:, 2] / max(top_z, 1e-3), 0, 1)
+        for ang0, phase, z_end in rk['flows']:
+            a = ang0 + 0.16 * np.sin(zt * 7.0 + phase) + 0.05 * np.sin(zt * 23.0 + phase * 2)   # it wanders
+            off = np.abs((th - a + np.pi) % (2 * np.pi) - np.pi)
+            mat[(off < 0.03 + 0.06 * (1 - zt)) & (P[:, 2] > z_end)] = 4                      # widening below
     bay = BAYER4[ys % 4, xs % 4]
     rgb = np.zeros((h * w, 3), np.float32)
     em = np.zeros(h * w, np.float32)
@@ -3712,6 +3728,45 @@ def ray(pl):
     return _ray((0.0, 0.0, 0.0), local, w0, w0 * 2, pl.get('color', '#6ad4ff'), 0.4, float(pl.get('opacity', 1.0)))
 
 
+@functools.lru_cache(maxsize=None)
+def _cable_tex(color):
+    """A cable's strip: solid, its middle a shade lighter where it catches the light."""
+    rgba = np.ones((3, 2, 4), np.float32)
+    rgba[..., :3] = _lit(color)
+    rgba[1, :, :3] = np.clip(rgba[1, :, :3] * 1.35 + 0.03, 0, 1)
+    return rgba, np.zeros((3, 2), np.float32)
+
+
+def cable(pl):
+    """A cable slung from the placement (its `z` the height it hangs from) to the point `to` ([x, y, z], in the
+    scene's own units), sagging `sag` below the straight line at its middle (default 3% of its length): power
+    lines between pylons, a ropeway, a bridge's cables. `width` thick (default 0.008), in `color` (default a
+    dark steel), drawn as two thin strips crossed along it so it shows from any side."""
+    to = pl.get('to') or [float(pl['x']) + 1.0, float(pl['y']), float(pl.get('z', 0.0))]
+    X, Y, Z = float(pl['x']), float(pl['y']), float(pl.get('z', 0.0))
+    a, k = math.radians(float(pl.get('angle', 0.0))), float(pl.get('scale', 1.0))
+    dx, dy, dz = float(to[0]) - X, float(to[1]) - Y, (float(to[2]) if len(to) > 2 else 0.0) - Z
+    b = np.array([(dx * math.cos(a) + dy * math.sin(a)) / k, (-dx * math.sin(a) + dy * math.cos(a)) / k, dz / k])
+    L = float(np.linalg.norm(b))
+    if L < 1e-6:
+        return []
+    sag = float(pl.get('sag', 0.03 * L))
+    w = float(pl.get('width', 0.008)) / 2
+    tex = _cable_tex(pl.get('color', '#2a2c30'))
+    n = max(4, min(24, int(L / 0.25) + 4))
+    pts = [b * t - np.array([0.0, 0.0, sag * 4 * t * (1 - t)]) for t in np.linspace(0, 1, n + 1)]
+    d = b / L
+    e1 = np.cross(d, [0.0, 0.0, 1.0] if abs(d[2]) < 0.95 else [1.0, 0.0, 0.0])
+    e1 /= np.linalg.norm(e1)
+    e2 = np.cross(d, e1)
+    parts = []
+    for p, q in zip(pts, pts[1:]):
+        for e in (e1, e2):
+            h = e * w
+            parts.append(quad(tex, tuple(q - h), tuple(q + h), tuple(p - h)))
+    return parts
+
+
 HOUSE_WALLS = ('#e4dccc', '#d8c8a4', '#c8a878', '#e8e4dc', '#b8b0a4')
 HOUSE_ROOFS = {'tile': '#a04a32', 'slate': '#4a4e5a', 'thatch': '#8a7448', 'red': '#b85a3a'}
 
@@ -3873,17 +3928,55 @@ def mountain(pl):
     top = np.array([*(rng.uniform(-0.3, 0.3, 2) * R), H])
     stretch = float(pl.get('length', 2 * R)) / (2 * R)
     lean = 1 + 0.35 * np.cos(ang - rng.uniform(0, 2 * np.pi))         # one flank steeper, one gentler
-    zs = [0.0, 0.1, 0.24, 0.4, 0.57, 0.73, 0.87]                       # broad feet, steepening to the summit
-    levels = [(-ROCK_FOOT / max(H, 1e-3) if k == 0 else z, (1 - z) ** 1.35) for k, z in enumerate(zs)]
+    cut = float(pl.get('top', 1.0))                                    # a mesa: cut flat at this share of its height
+    crater = float(pl.get('crater', 0.0))                              # a volcano: its crater's depth, a share of H
+    if crater > 0 and cut >= 1:
+        cut = 0.86
+    lava = pl.get('lava', 0)                                           # flows: how many, or the compass ways
+    toward = [float(a) for a in lava] if isinstance(lava, (list, tuple)) else []   # they run, in degrees
+    flows = len(toward) or int(lava)
+    if flows:
+        ramps = list(rk['ramps'])
+        ramps = ramps[:4] + [ramps[-1]] * (4 - len(ramps)) + [LAVA]
+        rk.update(ramps=ramps, glow={**rk.get('glow', {}), 4: 1.0})
+    cliff = float(pl.get('cliff', 0.0))                                # a butte: this share of it a sheer wall
+    flat = cut < 1 or cliff > 0
+    zs = [0.0, 0.1, 0.24, 0.4, 0.55, 0.68, 0.79, 0.88, 0.95]            # broad feet, then shoulders rounding over
+    if cut < 1:
+        zs = [z for z in zs if z < cut - 0.04] + [cut]
+    if cliff > 0:                                                      # a slope of talus up to a wall's foot,
+        zt = min(cut, 1.0) * (1 - min(cliff, 0.95))                    # the wall all but sheer to a flat top
+        zs = [0.0, zt * 0.32, zt * 0.66, zt] + [zt + (min(cut, 1.0) - zt) * f for f in (0.04, 0.4, 0.75, 1.0)]
+
+        def prof(z):
+            if z <= zt:
+                return 0.42 + 0.58 * (1 - z / max(zt, 1e-3)) ** 1.7
+            return 0.42 * (1 + 0.07 * (min(cut, 1.0) - z) / max(min(cut, 1.0) - zt, 1e-3))
+        cut = min(cut, 1.0)
+    else:                                  # concave flanks below, then a crown rounding over (a parabola)
+        def prof(z):
+            return max((1 - z) ** 1.35, 0.5 * np.sqrt(max(1 - z, 0.0)))
+    levels = [(-ROCK_FOOT / max(H, 1e-3) if k == 0 else z, prof(z)) for k, z in enumerate(zs)]
     rings = []
     for k, (zf, rf) in enumerate(levels):
-        r = R * rf * (0.7 + 0.55 * ridge * (1 - zf) + rng.uniform(-0.08, 0.08, N)) * lean ** (1 - max(zf, 0))
-        z = H * np.maximum(zf, 0) * (1 + 0.1 * ridge * (zf > 0)) + (0 if k == 0 else H * rng.uniform(-0.03, 0.03, N))
-        c = top[:2] * max(zf, 0) ** 1.5
+        zw = min(max(zf, 0), zt) if cliff > 0 else max(zf, 0)          # a wall's shape stops changing at its foot,
+        r = R * rf * (0.7 + 0.55 * ridge * (1 - zw) + rng.uniform(-0.08, 0.08, N)) * lean ** (1 - zw)   # so its
+        spur = 0.1 * ridge * (0 < zf < cut) * min(1.0, 2.5 * (1 - zf))   # buttresses stand straight up it
+        z = H * np.maximum(zf, 0) * (1 + spur) + (0 if k == 0 or zf >= cut else H * rng.uniform(-0.03, 0.03, N))
+        z = np.minimum(z, H * cut) if flat else z
+        c = top[:2] * zw ** 1.5
         rings.append(np.stack([r * np.cos(ang) * stretch + c[0] * stretch, r * np.sin(ang) + c[1],
                                np.where(k == 0, -ROCK_FOOT, z)], 1))
-    top = np.array([top[0] * stretch, top[1], top[2]])
+    top = (np.array([top[0] * stretch, top[1], top[2]]) if not flat else
+           np.array([*rings[-1][:, :2].mean(0), H * cut]))             # a summit, or the middle of a flat top
     mid = np.array([0.0, 0.0, H * 0.35])
+    if flows:                                                          # down the gullies, from the rim
+        gullies = (spurs + np.pi / max(len(spurs), 1)) % (2 * np.pi) if len(spurs) else rng.uniform(0, 6.3, flows)
+        pick = rng.permutation(len(gullies))[:flows] if len(gullies) >= flows else rng.integers(0, len(gullies), flows)
+        rk['flow_axis'] = (top[0], top[1], stretch, H * cut)
+        ways = ([math.radians(a - float(pl.get('angle', 0.0))) for a in toward] if toward else
+                [float(gullies[i]) + rng.uniform(-0.15, 0.15) for i in pick])
+        rk['flows'] = [(a, rng.uniform(0, 6.3), H * rng.uniform(0.0, 0.3)) for a in ways]
     parts = []
     for lo, hi in zip(rings, rings[1:]):
         for i in range(N):
@@ -3891,9 +3984,24 @@ def mountain(pl):
             A, B, C, D = lo[i], lo[j], hi[j], hi[i]
             tris = ((A, B, C), (A, C, D)) if rng.random() < 0.5 else ((A, B, D), (B, C, D))
             parts += [_rock_tri(rk, seed, *t, (A + B + C + D) / 4 - mid) for t in tris]
-    for i in range(N):                                                 # up to the summit
+    if crater > 0:                                                     # the crater: a wall down to a floor
+        rim = rings[-1]
+        ctr = rim[:, :2].mean(0)
+        floor_z = H * (cut - crater)
+        inner = np.column_stack([ctr + (rim[:, :2] - ctr) * 0.55, np.full(N, floor_z)])
+        for i in range(N):
+            j = (i + 1) % N
+            inward = np.array([*(ctr - (rim[i, :2] + rim[j, :2]) / 2), 0.0])
+            for t in ((rim[i], rim[j], inner[j]), (rim[i], inner[j], inner[i])):
+                parts.append(_rock_tri(rk, seed + 5, *t, inward / max(np.linalg.norm(inward), 1e-6) + [0, 0, 0.3]))
+        lake = dict(ROCKS['lava'], ramps=[LAVA] * 5, glow={m: 1.0 for m in range(5)}) if flows else rk
+        centre = np.array([*ctr, floor_z])
+        for i in range(N):                                             # its floor - a lake of lava, with flows
+            parts.append(_rock_tri(lake, seed + 6, inner[i], inner[(i + 1) % N], centre, np.array([0, 0, 1.0])))
+        return [p for p in parts if p]
+    for i in range(N):                                                 # up to the summit, or across the top
         A, B = rings[-1][i], rings[-1][(i + 1) % N]
-        parts.append(_rock_tri(rk, seed, A, B, top, (A + B + top) / 3 - mid))
+        parts.append(_rock_tri(rk, seed, A, B, top, (A + B + top) / 3 - mid if not flat else np.array([0, 0, 1.0])))
     return [p for p in parts if p]
 
 
@@ -4133,6 +4241,6 @@ OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'bo
            'standing_stone': standing_stone, 'gear': gear, 'heap': heap, 'arcade_cabinet': arcade_cabinet,
            'vending_machine': vending_machine, 'well': well, 'crate': crate, 'barrel': barrel,
            'card_table': card_table, 'saloon_chair': saloon_chair, 'piano': piano, 'pew': pew, 'tower': tower,
-           'city_block': city_block, 'searchlight': searchlight, 'ray': ray, 'mountain': mountain, 'village': village,
+           'city_block': city_block, 'searchlight': searchlight, 'ray': ray, 'cable': cable, 'mountain': mountain, 'village': village,
            'portal': portal, 'screen': screen,
            'sign': sign}

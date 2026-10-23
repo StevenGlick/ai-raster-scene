@@ -1674,6 +1674,30 @@ def check_objects():
     assert abs(mc[:, 2].max() - 5.0) < 1e-6 and np.abs(mc[:, :2]).max() < 10.0, 'a mountain its height, its foot'
     assert faces(snowy, 3.6, 9) > faces(bare, 3.6, 9) + 0.2, 'snow above the snowline'
     assert abs(faces(snowy, -1, 2.0) - faces(bare, -1, 2.0)) < 1e-6, 'and none below it'
+    cb = objects.expand({'map': ['.'], 'objects': [{'type': 'cable', 'x': 1.0, 'y': 1.0, 'z': 0.5, 'to': [5.0, 4.0, 0.5],
+                                                    'sag': 0.2}]})['panels']
+    mids = np.array([pn['o'] + pn['u'] / 2 for pn in cb])                      # each strip's far end, on the line
+    assert np.allclose(mids[np.argmax(mids[:, 0])], [5.0, 4.0, 0.5], atol=1e-6), 'a cable reaches its `to`'
+    assert abs(mids[:, 2].min() - 0.3) < 0.02 and not any(pn.get('blend') for pn in cb), 'it sags, dark'
+    vol = mountain(rock='volcanic', snowline=0, crater=0.1, lava=[90])
+    vz = np.array([c for pn in vol['panels'] for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])[:, 2]
+    assert abs(vz.max() - 4.3) < 0.02, 'a volcano cut at 0.86 of its height for its crater'
+    hot = [pn for pn in vol['panels'] if pn['em'].max() > 0.9]
+    floor = [pn for pn in hot if abs(pn['o'][2] - 3.8) < 1e-6]
+    assert hot and floor and any(pn['o'][1] > 1.0 for pn in hot), 'lava in its crater and down its south flank'
+    butte = mountain(size=4.0, height=4.0, rock='sandstone', snowline=0, cliff=0.7)
+    bc = np.unique(np.round([c for pn in butte['panels'] for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])], 6),
+                   axis=0)
+    rim = bc[np.abs(bc[:, 2] - 4.0) < 1e-6]
+    ctr = rim[:, :2].mean(0)
+    rim, foot = rim[np.hypot(*(rim[:, :2] - ctr).T) > 0.05], bc[(bc[:, 2] > 0.9) & (bc[:, 2] < 1.7)]
+    fa = np.arctan2(foot[:, 1] - ctr[1], foot[:, 0] - ctr[0])
+    wall = [np.hypot(*(foot[np.argmin(np.abs((fa - np.arctan2(p[1] - ctr[1], p[0] - ctr[0]) + np.pi) % (2 * np.pi)
+                                            - np.pi)), :2] - ctr)) / np.hypot(*(p[:2] - ctr)) for p in rim]
+    assert np.median(wall) < 1.15, 'a butte: its walls all but sheer from their foot to its flat top'
+    mesa = mountain(top=0.5, rock='sandstone', snowline=0)
+    zc = np.array([c for pn in mesa['panels'] for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])[:, 2]
+    assert abs(zc.max() - 2.5) < 1e-6 and (np.abs(zc - 2.5) < 1e-6).sum() >= 18, 'a mesa cut flat at its top'
     vz, hz = ends(build(type='village', count=8, seed=2)), ends(build(type='village', count=8, seed=2, church=False))
     assert vz[:, 2].max() > 0.25 > 0.12 > hz[:, 2].max() and np.abs(vz[:, :2]).max() < 1.6, 'a church spire'
     print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights, '

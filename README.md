@@ -69,7 +69,7 @@ Rows are y (south is down), columns are x, one cell is one unit, eye height is 0
 
 ## The gallery
 
-Seventy-two example scenes in [`examples/`](examples/), every one a single JSON file you can open, change and render:
+Seventy-five example scenes in [`examples/`](examples/), every one a single JSON file you can open, change and render:
 
 - **[Cities](#cities)** - [streets in the rain](#city-streets) · [the neon city](#the-neon-city) · [a night market](#the-night-market) · [a bar](#the-bar) · [the rooftops](#the-rooftops) · [a capsule hotel](#the-capsule-hotel) · [a village](#the-village) · [a frontier town](#the-frontier-town) · [a clockwork city](#the-clockwork-city)
 - **[Woods and weather](#woods-and-weather)** - [the woods at night](#the-woods-at-night) · [autumn](#autumn) · [the autumn garden](#the-autumn-garden) · [winter](#winter) · [fog and light](#fog-and-light) · [the palm house](#the-palm-house) · [the bayou](#the-bayou)
@@ -78,7 +78,7 @@ Seventy-two example scenes in [`examples/`](examples/), every one a single JSON 
 - **[Haunts and old stones](#haunts-and-old-stones)** - [the haunted house](#the-haunted-house) · [the castle and the chapel](#the-castle-and-the-chapel) · [encounters](#encounters)
 - **[Space and other worlds](#space-and-other-worlds)** - [stations and ships](#stations-and-ships) · [the Moon](#the-moon) · [Vector World](#vector-world) · [Doomed](#doomed)
 - **[Dreams and wonders](#dreams-and-wonders)** - [dreams](#dreams) · [the drowned library](#the-drowned-library) · [the hall of doors](#the-hall-of-doors) · [the sky islands](#the-sky-islands) · [the aurora palace](#the-aurora-palace) · [ask Claude](#ask-claude)
-- **[Landscape scale](#landscape-scale)** - [the kaiju in the harbour](#the-kaiju-in-the-harbour) · [the giant valley](#the-giant-valley)
+- **[Landscape scale](#landscape-scale)** - [the kaiju in the harbour](#the-kaiju-in-the-harbour) · [the kaiju in the country](#the-kaiju-in-the-country) · [the volcano island](#the-volcano-island) · [the mesa desert](#the-mesa-desert) · [the giant valley](#the-giant-valley)
 - **[Pages](#pages)** - comics and storyboards, every panel a shot
 
 ## Cities
@@ -549,10 +549,39 @@ Shrink the world and the camera is a giant's: a map cell is about 100 m, the eye
 
 A city at night, and something enormous wading in from the bay. Every block is a `city_block` object, its towers drawn floor by floor with their windows lit; searchlights swing across the sky from the rooftops, helicopters hold the monster in their lamps, tanks fire up at it from the quay and the waterfront burns. From the air its breath cuts into downtown; the next day, at golden hour, it comes ashore.
 
+![Eye to eye from a helicopter: its breath streams toward downtown, searchlights over the harbour](docs/gallery/kaiju_close.png)
+
 | | |
 |---|---|
 | ![Something in the harbour: the kaiju wading in under the searchlights](docs/gallery/kaiju_bay.png) | ![From the quay, behind the tanks](docs/gallery/kaiju_quay.png) |
 | ![From the air: its breath cuts into downtown](docs/gallery/kaiju_breath.png) | ![The next day: ashore among the warehouses at golden hour](docs/gallery/kaiju_ashore.png) |
+
+### The kaiju in the country
+
+An afternoon on the plain: a patchwork of fields and woods, country roads meeting at a market town, a line of pylons marching across with their cables slung from arm to arm - and the kaiju walking in beside it, a pylon nearly its own height, jets over it and a wood burning where it has been.
+
+| | |
+|---|---|
+| ![From the edge of town: the kaiju beyond the power line](docs/gallery/country_town.png) | ![From a helicopter at its shoulder](docs/gallery/country_stride.png) |
+| ![At the foot of a pylon, looking up](docs/gallery/country_pylon.png) | ![Golden hour, through a long lens over the town](docs/gallery/country_evening.png) |
+
+### The volcano island
+
+A volcano erupting over a harbour town at night: lava fountaining over the crater's rim and running down its flanks, a river of it reaching the sea in steam, an ash column towering over it lit from below. The volcano is a `mountain` of volcanic rock with a `crater` and `lava`.
+
+| | |
+|---|---|
+| ![From the sea: the eruption mirrored in the water](docs/gallery/island_eruption.png) | ![From the quay of the harbour town](docs/gallery/island_town.png) |
+| ![From the air, over the old lava field](docs/gallery/island_above.png) | ![A boat off the lava delta, steam where the river meets the sea](docs/gallery/island_delta.png) |
+
+### The mesa desert
+
+Buttes, spires and long mesas standing out of a red plain, a highway running straight at them. Each is a `mountain` with a `cliff` - a slope of talus up to sheer walls and a flat top - casting its shadow across the desert in the low sun.
+
+| | |
+|---|---|
+| ![Down the highway at golden hour](docs/gallery/desert_road.png) | ![From the air: the monuments' long shadows](docs/gallery/desert_above.png) |
+| ![The buttes against the sunset](docs/gallery/desert_sunset.png) | ![The road by moonlight](docs/gallery/desert_moon.png) |
 
 ### The giant valley
 
@@ -631,12 +660,12 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Volumetric fog**: mist that lies low and drifts in banks, halos round every lamp, and beams of sun or moonlight through windows, doorways, standing stones and trees; sunlight finds its way into roofed rooms through their doorways, windows and skylights
 - **Reflections**: water, ice, wet streets and puddles mirror the lamps, windows and figures beyond them
 - **The 90s look**: 320x200 framebuffer, Bayer-dithered 256-colour palette, chunky nearest-neighbour upscale, optional scanlines and 2x supersampling
-- **Sprites**: 321 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 33-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
+- **Sprites**: 322 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 33-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
 - **Planar sprites**: a plant can stand as fixed planes in the world instead of a billboard - a cross of two, or a star of three that cuts the ground round it into sixths - so it has body as the camera moves; the low plants do by default, and a prefab can mix billboards and planes (a billboard palm trunk under a star of fronds)
 - **Layered forest edges**: give the walls of a jungle or a wood a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth; with `wander` the layers follow a natural, rounded line instead of the grid's square corners
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
 - **Glass**: a pass of its own after everything else, showing what is behind each pane tinted and softly blurred - the frame shrunk to half size and blown back up without smoothing - under a faint reflection
-- **Objects**: things bigger than a prop - a `car`, a `noodle_stand`, a `rock_wall` of overlapping rounded pieces along a wall's foot, a `boulder`, a `column` of stone or wood and a `beam` to lay across them, a `trough`, a `shed_roof` and a `gable_roof` of weathered boards (or thatch, or clay tiles, with a chimney), a `market_stand` with its goods heaped in 3D, `crate`s and `barrel`s, a village `well`, a `saloon_bar` with `card_table`s, `saloon_chair`s and a `piano`, `arcade_cabinet`s and a `vending_machine`, a `portal` that opens onto another scene and a `screen` that shows one, `rails` and an `ore_cart`, a `keel` of rock to hang under a floating island, a `chess_piece` turned in polished marble, a wrecked `ship_hull`, a `longship` under sail, a `lighthouse` with its lamp lit, a `stone_lantern`, a `standing_stone` (that, like any object, can cast the sun's shadow), a `gear` of brass, a `heap` of salt, a roof of `glass` between iron glazing bars, a `crystal_cluster` whose every facet bends the light through it, and at landscape scale `tower`s and `city_block`s, a `village`, `mountain`s, a `searchlight` and a `ray` of light - built in 3D out of flat panels at any angle, see-through wherever the thing is not, with glass to see inside and billboards among them for the small things; drawn in true perspective, depth-tested per pixel and lit like walls; rock is cut from one solid block of stone, so it runs on round a corner (`scripts/objects.py`)
+- **Objects**: things bigger than a prop - a `car`, a `noodle_stand`, a `rock_wall` of overlapping rounded pieces along a wall's foot, a `boulder`, a `column` of stone or wood and a `beam` to lay across them, a `trough`, a `shed_roof` and a `gable_roof` of weathered boards (or thatch, or clay tiles, with a chimney), a `market_stand` with its goods heaped in 3D, `crate`s and `barrel`s, a village `well`, a `saloon_bar` with `card_table`s, `saloon_chair`s and a `piano`, `arcade_cabinet`s and a `vending_machine`, a `portal` that opens onto another scene and a `screen` that shows one, `rails` and an `ore_cart`, a `keel` of rock to hang under a floating island, a `chess_piece` turned in polished marble, a wrecked `ship_hull`, a `longship` under sail, a `lighthouse` with its lamp lit, a `stone_lantern`, a `standing_stone` (that, like any object, can cast the sun's shadow), a `gear` of brass, a `heap` of salt, a roof of `glass` between iron glazing bars, a `crystal_cluster` whose every facet bends the light through it, and at landscape scale `tower`s and `city_block`s, a `village`, `mountain`s, a `searchlight`, a `ray` of light and a `cable` - built in 3D out of flat panels at any angle, see-through wherever the thing is not, with glass to see inside and billboards among them for the small things; drawn in true perspective, depth-tested per pixel and lit like walls; rock is cut from one solid block of stone, so it runs on round a corner (`scripts/objects.py`)
 - **Landscape scale**: shrink the world - a map cell about 100 m - and the camera is a giant's: city streets, a harbour, farmland and woods drawn as seen from the air, towers, villages and mountains built small, and a kaiju standing in a city as a person stands in a room
 - **Pictures within pictures**: a `portal` - a door, an arch - opens onto another scene, or another part of this one: the view through it is rendered from where the camera would stand beyond its exit, so it lines up as the camera moves; a `screen` shows another shot on a television, a monitor or a wall, or on an arcade cabinet's screen
 - **Lettering**: any words in the world as pixel art - a painted shop board, neon tubes, a brass plaque, letters cut in stone, chalk on a blackboard, gilt, a poster - on a `sign` object in 3D, or as a sprite or a decal of your own
@@ -656,7 +685,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Post-processing**: colour grading, bloom (from the whole frame, or only from what gives off light - neon, windows, flames, fireflies, a held lantern, the sun - so it can glow hard), depth of field that focuses on the shot's subject and leaves its colours alone, streaks (the twinkle of a star filter on the brightest lights, or the long blue lines of an anamorphic lens), a lens flare from a sun in the frame, vignette, grain, lightning, letterbox, damage flash, fade, pixelate, posterize, gradient maps, retro palettes (Game Boy, CGA, EGA, amber, phosphor, sepia...), CRT curvature and shadow mask, VHS chroma bleed and tracking, chromatic aberration; 20 one-word presets
 - **Authoring tools**: a render report after every shot (too dark, blown out, a hidden or tiny subject, a wall in the lens, a camera inside a wall - each with a fix), `look_at` camera aiming, top-down layout maps with camera cones, contact sheets, a material catalog, and `maptools.Grid` for building maps in Python
 - **Pixel art drawn in code**: the jungle, ruins and beach are built from shapes - leaves, stones, planks, blades of grass, carved glyphs - stamped into a height field, lit from one direction, and snapped onto hue-shifted colour ramps with dark edges on their shadow sides (`scripts/pixelart.py`), so they read as pixel art rather than noise. The held items go a step further: each is a small 3D model - capsules for finger bones, cylinders and boxes for a revolver - posed in a hand, rendered from the player's eye and painted onto the same ramps with an outline (`scripts/sculpt.py`), so the perspective is right: the barrel runs away into the view and you see the back of your own hand
-- **No assets to download**: all 217 textures, 321 props, 33 characters, 27 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
+- **No assets to download**: all 228 textures, 322 props, 33 characters, 27 decals, the skies and the font are generated in code, so the whole thing is a few hundred KB of Python
 
 ![Character cast](docs/gallery/cast.png)
 

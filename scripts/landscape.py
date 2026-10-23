@@ -146,6 +146,137 @@ def tex_farmland(name):
     return np.clip(img, 0, 1)
 
 
+def tex_road(name, ew=True, ns=False):
+    """A country road at landscape scale across a cell of farmland: two lanes of asphalt, a dashed white line down
+    the middle and pale lines at its edges, grass verges and a hedgerow either side with trees in it, the fields
+    beyond. `road_ew` runs across the cell (east-west), `road_ns` down it, `road_x` is a crossroads; their ends
+    meet the next cell's, so a row of them is one road."""
+    rng = _rng(name)
+    img = tex_farmland(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    c = T // 2
+    roads = [d for d, on in ((yy, ew), (xx, ns)) if on]       # the distance across each road is from its middle
+    hedge = np.zeros((T, T), bool)
+    for across in roads:
+        off = np.abs(across - c)
+        hedge |= off == 6
+        img[(off >= 4) & (off <= 5)] = col('#6a8a42') * (0.92 + 0.12 * rng.random((T, T, 1)))[(off >= 4) & (off <= 5)]
+    for across in roads:                                       # every road's verges cleared before its tarmac
+        along = xx if across is yy else yy
+        off = np.abs(across - c)
+        img[off <= 3] = col('#4a4a4c') * (0.9 + 0.16 * rng.random((T, T, 1)))[off <= 3]
+        img[off == 3] = col('#a8a8a0')                         # the edge lines
+        img[(across == c) & (along % 6 < 3)] = col('#e8e6dc')  # the dashes down the middle
+    for across in roads:                                       # no hedge across another road
+        hedge &= np.abs(across - c) > 3
+    img[hedge] = col('#3a4e26')
+    for y, x in zip(*np.nonzero(hedge & (rng.random((T, T)) < 0.16))):
+        img[y:y + 2, x:x + 2] = col('#2a3c1c')                 # a tree in the hedge
+        img[y, x] = col('#4a6a2c')
+    return np.clip(img, 0, 1)
+
+
+def _voronoi(n, rng, size=T):
+    """The two nearest of n points scattered over a wrapping cell, for every texel: (F1, F2, nearest's index)."""
+    pts = rng.random((n, 2)) * size
+    yy, xx = np.mgrid[0:size, 0:size].astype(np.float32)
+    best = np.full((2, size, size), 1e9, np.float32)
+    idx = np.zeros((size, size), int)
+    for k, (py, px) in enumerate(pts):
+        dy = np.abs(yy - py)
+        dx = np.abs(xx - px)
+        d = np.hypot(np.minimum(dy, size - dy), np.minimum(dx, size - dx))
+        closer = d < best[0]
+        best[1] = np.where(closer, best[0], np.minimum(best[1], d))
+        idx = np.where(closer, k, idx)
+        best[0] = np.where(closer, d, best[0])
+    return best[0], best[1], idx
+
+
+LAVA_GLOW = ramp(['#5a1206', '#9a2a08', '#d8540e', '#ff8a1e', '#ffc048', '#fff0a8'])
+BASALT = ramp(['#141214', '#1e1b1c', '#2a2626', '#383232', '#4a4340', '#625a54'])
+
+
+def tex_lava_field(name):
+    """Old lava from high up: black crust broken into plates, ropy and rough, and in patches - where it is still
+    moving underneath - the cracks between the plates glowing orange (they glow)."""
+    rng = _rng(name)
+    f1, f2, idx = _voronoi(26, rng)
+    rope = smooth_noise(T, T, 16, rng) * 0.5 + smooth_noise(T, T, 5, rng) * 0.5
+    v = 0.28 + 0.3 * rope + 0.12 * (rng.random(26)[idx] - 0.5) - 0.18 * np.exp(-f1 / 6.0)
+    img = dither(np.clip(v, 0, 1), BASALT, 0.5)
+    crack = (f2 - f1) < 1.1
+    live = smooth_noise(T, T, 3, rng) > 0.55                                 # where it still moves underneath
+    hot = crack & live
+    heat = np.clip(0.55 + 0.45 * (smooth_noise(T, T, 9, rng) - 0.3), 0, 1)
+    img[hot] = dither(heat, LAVA_GLOW, 0.4)[hot]
+    img[crack & ~live] = BASALT[0]
+    em = np.where(hot, 1.0, 0.0).astype(np.float32)
+    return np.clip(img, 0, 1), em
+
+
+def tex_lava_flow(name):
+    """A river of lava from high up: plates of dark crust riding on it, the glowing melt between them wide and
+    bright, yellow-white where it runs hottest (it all glows)."""
+    rng = _rng(name)
+    f1, f2, idx = _voronoi(30, rng)
+    gap = f2 - f1
+    heat = np.clip(1.0 - gap / 3.2, 0, 1) * 0.8 + 0.25 * smooth_noise(T, T, 6, rng)
+    img = dither(np.clip(heat, 0, 1), LAVA_GLOW, 0.5)
+    crust = gap > 2.2 + 1.5 * rng.random(30)[idx]                             # plates of crust riding on it
+    cv = 0.2 + 0.25 * smooth_noise(T, T, 12, rng)
+    img[crust] = dither(np.clip(cv, 0, 1), ramp(['#1a0c0a', '#2a120c', '#3e1a10', '#5a2614', '#7a3418', '#9a4a20']),
+                        0.5)[crust]
+    em = np.where(crust, 0.55, 1.0).astype(np.float32)
+    return np.clip(img, 0, 1), em
+
+
+def tex_black_sand(name):
+    """A beach of black volcanic sand from high up: dark grey-black, wind ripples faint across it, darker where
+    the sea has wet it, a scatter of pale pebbles and drift."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    v = (0.36 + 0.14 * smooth_noise(T, T, 6, rng) + 0.05 * np.sin((xx * 0.7 + yy * 0.25) * 0.9)
+         - 0.12 * (smooth_noise(T, T, 3, rng) > 0.6))
+    img = dither(np.clip(v, 0, 1), ramp(['#141416', '#1e1e20', '#2a2a2c', '#38383a', '#4a4a4a', '#626058']), 0.5)
+    for y, x in zip(*np.nonzero(rng.random((T, T)) < 0.012)):
+        img[y, x] = col('#8a8478')
+    return np.clip(img, 0, 1)
+
+
+def tex_desert_floor(name):
+    """Desert from high up: red-brown sand and gravel in broad patches, darker where desert pavement lies, pale
+    braided washes where the rain runs off, and the dots of scrub - sage and creosote - scattered over it; it
+    wraps, so a plain of it runs on without a seam. Three layouts (`desert_floor`, `_b`, `_c`) to mix at random."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    v = 0.46 + 0.16 * smooth_noise(T, T, 4, rng) + 0.08 * smooth_noise(T, T, 12, rng) - 0.1 * (
+        smooth_noise(T, T, 6, rng) > 0.62)
+    wash = np.abs(smooth_noise(T, T, 3, rng) - 0.5) < 0.018                 # a braided wash, pale
+    wash |= np.abs(smooth_noise(T, T, 5, rng) - 0.5) < 0.011
+    v = np.where(wash, 0.82, v)
+    img = dither(np.clip(v, 0, 1), ramp(['#5a2e1c', '#7a4026', '#9a5632', '#b46e42', '#c88a5a', '#dcb084']), 0.5)
+    scrub = (rng.random((T, T)) < 0.035) & ~wash
+    img[scrub] = col('#5a5e3a')
+    img[np.roll(scrub, 1, 0) & ~scrub & ~wash] *= 0.82                      # each bush's shadow
+    return np.clip(img, 0, 1)
+
+
+def tex_desert_road(name, ew=True):
+    """A desert highway at landscape scale: two lanes of sun-faded asphalt, a dashed yellow line, pale sandy
+    shoulders, the desert either side; `desert_road` runs down the cell (north-south), `desert_road_ew` across."""
+    rng = _rng(name)
+    img = tex_desert_floor(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    across, along = (yy, xx) if ew else (xx, yy)
+    off = np.abs(across - T // 2)
+    img[(off >= 4) & (off <= 5)] = col('#d4b08a')
+    img[off <= 3] = col('#4e4a48') * (0.9 + 0.16 * rng.random((T, T, 1)))[off <= 3]
+    img[off == 3] = col('#b0aca4')
+    img[(across == T // 2) & (along % 8 < 4)] = col('#e0b840')
+    return np.clip(img, 0, 1)
+
+
 def _canopy(name, rmin, rmax, n, greens, light):
     """Woodland from high up: crowns packed close, each a round of its own green, lit on its upper left and in
     shade on the lower right, the gaps between them dark - wrapping, so the wood runs on from cell to cell."""
@@ -271,11 +402,13 @@ def _back_edge(cv, rows, cols):
 
 
 def _kaiju(roar, wade=False):
-    """The kaiju, three-quarters on, facing left: upright on legs like pillars, a heavy tail sweeping out behind
-    it, small clawed arms held forward, a thick neck and a heavy, blunt head; charcoal skin pebbled over, a pale
-    ridged belly, and two rows of jagged plates standing up along its back and tail. Roaring (`roar`), its head is
-    thrown back, its jaws gape on two rows of teeth, and its plates and its throat glow a cold blue. Wading
-    (`wade`), the sea is up to its thighs: it stops in a ring of surf where the water meets it."""
+    """The kaiju, three-quarters on, facing left: upright on legs like pillars set under its hips - the near one's
+    haunch swelling out of the body, the belly whole in front of it - a heavy tail sweeping out behind it, small
+    clawed arms held forward, a thick neck and a heavy, blunt head; charcoal skin pebbled over, a pale ridged
+    belly, and two rows of jagged plates standing up along its back and tail. Roaring (`roar`), its head is thrown
+    back and its jaws gape on two rows of teeth, the lower one hinged at the cheek into the neck; its plates glow a
+    cold blue, and its throat, deep in the mouth. Wading (`wade`), the sea is up to its thighs: it stops in a ring
+    of surf where the water meets it."""
     rng = np.random.default_rng(61)
     w, h = 124, 126
     cv = Canvas(w, h, wrap=False, ground=-9)
@@ -283,8 +416,10 @@ def _kaiju(roar, wade=False):
     cv.stroke([(68, 80), (84, 95), (98, 105), (110, 113), (121, 121)], 25, z=0.6, dome=1.0, taper=(1.0, 0.14), mat=0,
               tone=-0.05)                                        # the tail
     cv.stroke([(62, 48), (58, 56), (53, 62)], 6.5, z=0.62, dome=0.8, taper=(1.0, 0.7), mat=0, tone=-0.14)   # far arm
-    cv.stroke([(66, 82), (68, 102), (69, 119)], 16, z=0.62, dome=1.0, taper=(1.0, 0.8), mat=0, tone=-0.1)   # far leg
-    cv.ellipse(70, 120.5, 8.5, 3.8, z=0.64, dome=0.6, mat=0, tone=-0.1)
+    cv.stroke([(72, 84), (75, 102), (76, 119)], 16, z=0.62, dome=1.0, taper=(1.0, 0.8), mat=0, tone=-0.1)   # far leg
+    cv.ellipse(76, 120.5, 8.5, 3.8, z=0.64, dome=0.6, mat=0, tone=-0.1)
+    for dx in (-6, -2.5):                                           # its claws, in the far leg's shade
+        cv.stroke([(76 + dx, 121.5), (72.5 + dx, 124.3)], 1.4, z=0.8, dome=0.3, mat=4, tone=-0.16)
     cv.ellipse(57, 64, 23, 29, z=0.7, dome=1.4, angle=-10, mat=0)   # the body
     cv.ellipse(54, 44, 17, 13, z=0.85, dome=1.0, mat=0)             # the shoulders
     cv.stroke([(57, 42), (52, 33), (hx + 7, hy + 4)], 18, z=1.0, dome=1.0, taper=(1.0, 0.78), mat=0)   # the neck
@@ -293,24 +428,28 @@ def _kaiju(roar, wade=False):
     _crest(cv, back, 14, np.random.default_rng(62), z=0.0, side=2.5, step=8.5, mode='max')  # the far row
     _crest(cv, back, 20, rng, z=0.1, side=0.0, step=8.0, mode='max')                         # the near row, tallest
     cv.ellipse(51, 70, 8.5, 20, z=1.3, dome=0.8, angle=-8, mat=1)   # the belly
-    for y in np.arange(54, 90, 3.6):                                # its ridges
-        cv.stroke([(43, y), (58, y + 1.5)], 1.0, z=2.2, dome=0.1, mat=1, tone=-0.2, mode='max')
-    cv.ellipse(50, 86, 11, 13, z=1.0, dome=1.1, mat=0)              # the near thigh
-    cv.stroke([(48, 92), (46, 106), (44, 119)], 15, z=1.05, dome=1.1, taper=(1.0, 0.85), mat=0)
-    cv.ellipse(42, 120.5, 10, 4.2, z=1.1, dome=0.6, mat=0)
+    for y in np.arange(54, 89, 3.6):                                # its ridges, each across the belly's width
+        half = 8.5 * np.sqrt(max(0.0, 1 - ((y + 0.75 - 70) / 20) ** 2)) - 1.2
+        if half > 1.5:
+            cv.stroke([(51 - half, y), (51 + half, y + 1.5)], 1.0, z=2.2, dome=0.1, mat=1, tone=-0.2, mode='max')
+    cv.ellipse(61, 88, 13.5, 15, z=1.0, dome=1.1, angle=-15, mat=0, mode='max')   # the near thigh, out of the hip
+    cv.stroke([(59, 94), (57, 106), (55.5, 118)], 17, z=1.05, dome=1.1, taper=(1.0, 0.85), mat=0, mode='max')
+    cv.ellipse(55.5, 104, 6.5, 5, z=1.75, dome=0.45, mat=0, mode='max', tone=0.03)  # the knee, a little forward
+    cv.ellipse(52.5, 120.5, 11, 4.3, z=1.1, dome=0.6, mat=0)
     for dx in (-7, -3, 1):                                          # its claws
-        cv.stroke([(42 + dx, 121.5), (38 + dx, 124.5)], 1.5, z=1.3, dome=0.3, mat=4)
+        cv.stroke([(53 + dx, 121.5), (49 + dx, 124.5)], 1.5, z=1.3, dome=0.3, mat=4)
     ca, sa = np.cos(np.radians(tilt)), np.sin(np.radians(tilt))
     sx, sy = hx - 11 * ca, hy - 11 * sa                                                                 # the snout
     cv.ellipse(sx, sy, 9, 5.4, z=1.6, dome=0.8, angle=tilt - 6, mat=0)
     cv.stroke([(hx - 4 * ca + 1.5 * sa, hy - 7), (hx + 6, hy - 7.5 - 2 * sa)], 2.6, z=2.0, dome=0.5, mat=0,
               tone=0.08)                                                                                # the brow
     if roar:                                                       # the jaws gape
-        jx, jy = sx + 2, sy + 10
+        jx, jy = sx + 2.5, sy + 12
         cv.ellipse(jx, jy, 9.5, 3.4, z=1.45, dome=0.7, angle=22, mat=0)                                 # lower jaw
+        cv.ellipse(hx + 2, hy + 13, 6, 7, z=1.45, dome=0.8, mat=0)                                   # the hinge
         cv.polygon([(sx - 7, sy + 3), (sx + 6, sy + 2.5), (jx + 5, jy - 1.5), (jx - 7, jy - 4)], z=1.5, top=0.2,
                    bevel=0.6, mat=7)                                                                    # the mouth
-        cv.ellipse(sx + 3, sy + 5.5, 3.6, 2.4, z=1.52, dome=0.2, mat=3)                                 # the throat
+        cv.ellipse(sx + 5.5, sy + 5.2, 2.3, 1.6, z=1.52, dome=0.2, mat=3, tone=-0.15)                    # the throat
         for k in range(6):
             cv.polygon([(sx - 6.5 + k * 2.2, sy + 2.6), (sx - 5.3 + k * 2.2, sy + 2.6), (sx - 5.9 + k * 2.2, sy + 4.4)],
                        z=1.7, top=0.1, bevel=0.2, mat=4)                                                # upper teeth
@@ -340,9 +479,11 @@ def _kaiju(roar, wade=False):
         cv.id[WADE:] = 0
         body = np.nonzero((cv.id[WADE - 4:WADE] > 0).any(0))[0]
         x0, x1 = float(body.min()) - 6, float(body.max()) + 6
-        for x in np.arange(x0, x1, 2.2):                             # the surf boiling round it
-            cv.ellipse(x + rng.uniform(-1, 1), WADE - 0.5 + rng.uniform(-1.2, 0.8), rng.uniform(2.2, 4.0),
-                       rng.uniform(1.0, 2.0), z=3.0, dome=0.6, mat=8, tone=float(rng.uniform(-0.08, 0.06)))
+        for x in np.arange(x0, x1, 2.2):                             # the surf round it, broken and thin
+            if rng.random() < 0.22:
+                continue
+            cv.ellipse(x + rng.uniform(-1, 1), WADE + rng.uniform(-0.8, 0.4), rng.uniform(1.6, 3.4),
+                       rng.uniform(0.6, 1.2), z=3.0, dome=0.6, mat=8, tone=float(rng.uniform(-0.08, 0.06)))
         for _ in range(26):                                           # spray thrown up
             x = rng.uniform(x0 + 4, x1 - 4)
             cv.ellipse(x, WADE - rng.uniform(3, 10), rng.uniform(0.5, 1.2), rng.uniform(0.5, 1.2), z=3.2,
@@ -401,6 +542,32 @@ def spr_smoke_plume():
     rgba = cv.paint([SMOKE, FLAME[0]], cv.light(sun=(-0.4, -0.85, 0.55), relief=1.2, ambient=0.45, cavity=0.3),
                     dither=0.4, outline=0)
     em = np.where((cv.mat == 1) & (cv.id > 0), 0.5, 0.0).astype(np.float32)
+    return rgba.astype(np.float32), em
+
+
+def spr_ash_plume():
+    """A volcano's column of ash, a kilometre and more: billows boiling up from the crater, dense and dark,
+    rising nearly straight and spreading out at the top into a flattened head the wind drags aside; lit orange
+    from below by the fire in the crater (it glows there)."""
+    rng = np.random.default_rng(91)
+    w, h = 120, 190
+    cv = Canvas(w, h, wrap=False)
+    puffs = []
+    for k in range(170):
+        t = rng.random() ** 0.8                                   # from the foot up
+        width = 8 + 16 * t if t < 0.72 else 20 + 120 * (t - 0.72)  # a column, then the head spreading out
+        x = 46 + 10 * t + 22 * max(0.0, t - 0.7) / 0.3 + rng.normal(0, width * 0.32)
+        y = h - 6 - (h - 30) * t + rng.normal(0, 3.0)
+        r = rng.uniform(0.32, 0.55) * min(width, 40)
+        puffs.append((rng.random(), x, y, r, t))
+    for z, x, y, r, t in sorted(puffs):
+        cv.ellipse(x, y, r, r * rng.uniform(0.7, 0.92), z=z * 2, dome=1.0, rough=0.28, rng=rng,
+                   mat=1 if t < 0.22 else 0, tone=float(-0.16 + 0.14 * t + rng.uniform(-0.05, 0.05)))
+    ash = ramp(['#0e0c0c', '#1a1716', '#262220', '#34302c', '#46403a', '#5a524a'])
+    glow = ramp(['#3a0e06', '#6a1c08', '#a8360c', '#e05e16', '#ff8a2a', '#ffb850'])
+    rgba = cv.paint([ash, glow], cv.light(sun=(-0.3, 0.6, 0.6), relief=1.2, ambient=0.42, cavity=0.3),
+                    dither=0.4, outline=0)
+    em = np.where((cv.mat == 1) & (cv.id > 0), 0.6, 0.0).astype(np.float32)
     return rgba.astype(np.float32), em
 
 
@@ -518,20 +685,28 @@ TEXTURES = {'city_street': lambda n: _street(n, False), 'city_street_lit': lambd
             'farmland_e': lambda n: (tex_farmland(n), None), 'farmland_f': lambda n: (tex_farmland(n), None),
             'forest_canopy': lambda n: (tex_forest_canopy(n), None),
             'pine_canopy': lambda n: (tex_pine_canopy(n), None), 'river_water': lambda n: (tex_river_water(n), None),
-            'pasture': lambda n: (tex_pasture(n), None)}
+            'pasture': lambda n: (tex_pasture(n), None), 'road_ew': lambda n: (tex_road(n), None),
+            'road_ns': lambda n: (tex_road(n, False, True), None), 'road_x': lambda n: (tex_road(n, True, True), None),
+            'lava_field': tex_lava_field, 'lava_flow': tex_lava_flow, 'black_sand': lambda n: (tex_black_sand(n), None),
+            'desert_floor': lambda n: (tex_desert_floor(n), None), 'desert_floor_b': lambda n: (tex_desert_floor(n), None),
+            'desert_floor_c': lambda n: (tex_desert_floor(n), None), 'desert_road': lambda n: (tex_desert_road(n, False), None),
+            'desert_road_ew': lambda n: (tex_desert_road(n), None)}
 TEXTURE_NOISE = {'city_street': 0.15, 'city_street_lit': 0.15, 'harbor_water': 0.1, 'quay': 0.2, 'container_yard': 0.1,
                  'city_park': 1.0, 'farmland': 1.0, 'farmland_b': 1.0, 'farmland_c': 1.0, 'farmland_d': 1.0,
                  'farmland_e': 1.0, 'farmland_f': 1.0, 'pasture': 1.0, 'forest_canopy': 1.0, 'pine_canopy': 1.0,
-                 'river_water': 1.0}                 # the country mottled in full, as soil and weather lie across it
+                 'river_water': 1.0, 'road_ew': 0.6, 'road_ns': 0.6, 'road_x': 0.6, 'lava_field': 0.5,
+                 'lava_flow': 0.0, 'black_sand': 0.6, 'desert_floor': 0.8, 'desert_floor_b': 0.8,
+                 'desert_floor_c': 0.8, 'desert_road': 0.5, 'desert_road_ew': 0.5}                 # the country mottled in full, as soil and weather lie across it
 TEXTURE_REFLECT = {'harbor_water': 0.35, 'river_water': 0.5}
 SPRITES = {'kaiju': spr_kaiju, 'kaiju_roar': spr_kaiju_roar, 'kaiju_wading': spr_kaiju_wading, 'blaze': spr_blaze,
            'smoke_plume': spr_smoke_plume,
            'tanks': spr_tanks, 'tanks_firing': spr_tanks_firing, 'helicopter': spr_helicopter, 'jet': spr_jet,
-           'pylon': spr_pylon}
+           'pylon': spr_pylon, 'ash_plume': spr_ash_plume}
 SPRITE_HEIGHT = {'kaiju': 0.62, 'kaiju_roar': 0.62, 'kaiju_wading': round(0.62 * (WADE + 2) / 126, 3), 'blaze': 0.24,
                  'smoke_plume': 1.2,
                  'tanks': 0.045,
-                 'tanks_firing': 0.045, 'helicopter': 0.05, 'jet': 0.045, 'pylon': 0.55}
+                 'tanks_firing': 0.045, 'helicopter': 0.05, 'jet': 0.045, 'pylon': 0.55, 'ash_plume': 9.0}
 PROP_DEFAULTS = {'blaze': {'blend': 'additive', 'shadow': False}, 'smoke_plume': {'opacity': 0.85, 'shadow': False},
-                 'helicopter': {'shadow': False}, 'jet': {'shadow': False}, 'pylon': {'planes': 2}}
-NO_CONTACT_SHADOW = {'blaze', 'smoke_plume', 'helicopter', 'jet'}
+                 'helicopter': {'shadow': False}, 'jet': {'shadow': False}, 'pylon': {'planes': 2},
+                 'ash_plume': {'opacity': 0.92, 'shadow': False}}
+NO_CONTACT_SHADOW = {'blaze', 'smoke_plume', 'helicopter', 'jet', 'ash_plume'}

@@ -1,0 +1,1345 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "caaecddecbfbcd|bedaaafddaeffdcabaecfbebfcececfce",
+  "adbfdedffbbbec|ebeaaadaecececaccecdebcbaeafdbceb",
+  "feadbdaafddabb|abfaedfacaddbaacdebdcbaaeefbfeebc",
+  "adbadcfdbefdaf|fbecddceeeacaafbcefdbbfacefeabedd",
+  "fcacdabfdbfabf|fdadfcdefefebeeccabaddafdedcfcdcc",
+  "ccbdadwwwwecfa|bcbecaedacedaacabefdadacbcebeabfe",
+  "defccwwwwwwaaf|abefbfcdfceaaeeacabcabbbdcebeedfc",
+  "efbfwwwwwwwcdc|ddcfbfebbcddaacfddbedcbcafcdbdced",
+  "aeefdwwwwwwwda|fdcafaddcffffcfbbeaeedeaaddfbfcae",
+  "aeebewwwwwwcdd|eccfabfeebafbfafccaeaaafdfaecceed",
+  "ffabffwwwwbbbd|ffbcaedaeedafabbacfeeedadadccffea",
+  "bbcabbbefaedeb|efefeebacfeaefbaedcabfedcafbbcfdd",
+  "bbeebcaeeabfba|cfaadabccfbdffccaddadefddffabefaa",
+  "acfbaffffcdffb|cbeceeefeeefedffbecdfcfbacceaddcf",
+  "adfacbaaeebcdb|afefccbbfbebdfcffdccebedwwwwwefaa",
+  "ababadcbcbafcc|efdfebedefeceafbffadedfwwwwwwcfdb",
+  "ebffbfacebacde|ccdedbeddbafbdadafcbcbbwwwwwwbdab",
+  "dbbaebafaabcaf|aedfcedfabcabaaabaabbafdwwwwefaae",
+  "fbawwwwaedbcee|aceefebdcabcfcffefccbdbfawwcdfedf",
+  "dbwwwwwbdfaead|fadcadaebacbefdaffecbbcbbebcffdbf",
+  "daawwwwwbcbdae|efdbbededaadcfedcabcbfccbacefdceb",
+  "babwwwcabaeabd|acbcefabccbebdbfccacfdbbeffdeeceb",
+  "ebfefdededcbda|aefaefaacebadbdfcdcfefcdcfcbfdbfd",
+  "cdbbaffdbfcadf|sssfbfadcabeabfeeccafebdcadbdddfa",
+  "bfdcdaabdfbfac|sssacfffaeaefbecbdeeccbbfceabcdad",
+  "febbafaeedfeff|ssscffdacbeafaecadedbbbbbdaceccda",
+  "--------------+---------------------------------",
+  "afdacebecaafab|ffebfecdcfddaababceccwwwwwabdecfe",
+  "bbdcbabdacbdec|eaccedcbcabcaebdbaewwwwwwwwbcfddc",
+  "efeddeddccceda|cacccfafcbeddefcccewwwwwwwwbbcdbb",
+  "ceceeefddffbec|ebabfaacdbbdddaedfbwwwwwwwwdafaee",
+  "befcecacddffaf|abafcbebececefcacabwwwwwwwadbacac",
+  "dfdfcefcccccfb|ebebcadabbabdeebefedcwwwwwbccfafc",
+  "badcdfeafbfdae|fbwwwwdbdaafdcbdfddbdcccaefaaafdb",
+  "eebfeedfcccefc|awwwwwaaeabecfeedebbfbbadfaaaabbf",
+  "eeaabacfbfdbef|fwwwwwwfcecdeddacbeefddeedcbddefc",
+  "ebceecaffdcddd|cwwwwwafaaefadecbdceafcdaaeeebaba",
+  "abaafcdaeedcae|bdecaeeaaaaeeebdeccdeeeddfcacbbed",
+  "fdefabbfbabfbd|cedfcdfedfbcfedfaccdbfbbccdafddcd",
+  "ffdeeaedfceddd|efdedceddedddccadadbfabcfbdafdfeb"
+ ],
+ "legend": {
+  "a": {
+   "floor": "farmland"
+  },
+  "b": {
+   "floor": "farmland_b"
+  },
+  "c": {
+   "floor": "farmland_c"
+  },
+  "d": {
+   "floor": "farmland_d"
+  },
+  "e": {
+   "floor": "farmland_e"
+  },
+  "f": {
+   "floor": "farmland_f"
+  },
+  "w": {
+   "floor": "forest_canopy"
+  },
+  "-": {
+   "floor": "road_ew"
+  },
+  "|": {
+   "floor": "road_ns"
+  },
+  "+": {
+   "floor": "road_x"
+  },
+  "s": {
+   "floor": "city_street"
+  }
+ },
+ "camera": {
+  "x": 18.4,
+  "y": 24.1,
+  "look_at": [
+   21.5,
+   19.3,
+   0.34
+  ],
+  "fov": 44,
+  "height": 0.11
+ },
+ "title": "The kaiju in the country - an afternoon at landscape scale",
+ "sky": "day",
+ "skyline": "hills",
+ "ambient": [
+  0.44,
+  0.44,
+  0.48
+ ],
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 140,
+   "elevation": 34,
+   "intensity": 1.25
+  },
+  {
+   "x": 24.2,
+   "y": 18.4,
+   "z": 0.1,
+   "radius": 1.2,
+   "color": [
+    1.0,
+    0.55,
+    0.22
+   ],
+   "intensity": 0.8
+  }
+ ],
+ "fog": {
+  "color": [
+   0.74,
+   0.78,
+   0.84
+  ],
+  "density": 0.012
+ },
+ "sprites": [
+  {
+   "id": "kaiju",
+   "x": 21.5,
+   "y": 19.3,
+   "type": "kaiju"
+  },
+  {
+   "x": 19.6,
+   "y": 17.9,
+   "type": "jet",
+   "z": 1.0
+  },
+  {
+   "x": 20.9,
+   "y": 18.3,
+   "type": "jet",
+   "z": 1.1
+  },
+  {
+   "x": 19.2,
+   "y": 20.7,
+   "type": "helicopter",
+   "z": 0.42
+  },
+  {
+   "x": 24.0,
+   "y": 18.8,
+   "type": "helicopter",
+   "z": 0.5,
+   "flip": true
+  },
+  {
+   "x": 19.4,
+   "y": 26.35,
+   "type": "tanks_firing",
+   "flip": true
+  },
+  {
+   "x": 22.2,
+   "y": 26.35,
+   "type": "tanks_firing"
+  },
+  {
+   "x": 24.2,
+   "y": 18.4,
+   "type": "blaze",
+   "scale": 0.6
+  },
+  {
+   "x": 24.3,
+   "y": 18.3,
+   "type": "smoke_plume"
+  },
+  {
+   "x": 25.8,
+   "y": 17.2,
+   "type": "blaze",
+   "scale": 0.4
+  },
+  {
+   "x": 3.5,
+   "y": 30.5,
+   "type": "pylon",
+   "angle": -27.6
+  },
+  {
+   "x": 7.7,
+   "y": 28.3,
+   "type": "pylon",
+   "angle": -27.6
+  },
+  {
+   "x": 11.9,
+   "y": 26.1,
+   "type": "pylon",
+   "angle": -27.6
+  },
+  {
+   "x": 16.1,
+   "y": 23.9,
+   "type": "pylon",
+   "angle": -27.6
+  },
+  {
+   "x": 20.3,
+   "y": 21.7,
+   "type": "pylon",
+   "angle": -27.6
+  },
+  {
+   "x": 24.5,
+   "y": 19.5,
+   "type": "pylon",
+   "angle": -27.6
+  },
+  {
+   "x": 28.7,
+   "y": 17.3,
+   "type": "pylon",
+   "angle": -27.6
+  },
+  {
+   "x": 32.9,
+   "y": 15.1,
+   "type": "pylon",
+   "angle": -27.6
+  },
+  {
+   "x": 37.1,
+   "y": 12.9,
+   "type": "pylon",
+   "angle": -27.6
+  },
+  {
+   "x": 41.3,
+   "y": 10.7,
+   "type": "pylon",
+   "angle": -27.6
+  },
+  {
+   "x": 45.5,
+   "y": 8.5,
+   "type": "pylon",
+   "angle": -27.6
+  }
+ ],
+ "objects": [
+  {
+   "type": "city_block",
+   "x": 15.5,
+   "y": 23.5,
+   "height": [
+    0.03,
+    0.1
+   ],
+   "count": 3,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 62804
+  },
+  {
+   "type": "city_block",
+   "x": 15.5,
+   "y": 24.5,
+   "height": [
+    0.03,
+    0.1
+   ],
+   "count": 2,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 47648
+  },
+  {
+   "type": "city_block",
+   "x": 15.5,
+   "y": 25.5,
+   "height": [
+    0.03,
+    0.1
+   ],
+   "count": 2,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 22124
+  },
+  {
+   "type": "city_block",
+   "x": 16.5,
+   "y": 23.5,
+   "height": [
+    0.03,
+    0.1
+   ],
+   "count": 3,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 22317
+  },
+  {
+   "type": "city_block",
+   "x": 16.5,
+   "y": 24.5,
+   "height": [
+    0.03,
+    0.1
+   ],
+   "count": 3,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 15813
+  },
+  {
+   "type": "city_block",
+   "x": 16.5,
+   "y": 25.5,
+   "height": [
+    0.03,
+    0.1
+   ],
+   "count": 3,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 65452
+  },
+  {
+   "type": "city_block",
+   "x": 17.5,
+   "y": 23.5,
+   "height": [
+    0.03,
+    0.1
+   ],
+   "count": 2,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 27895
+  },
+  {
+   "type": "city_block",
+   "x": 17.5,
+   "y": 24.5,
+   "height": [
+    0.03,
+    0.1
+   ],
+   "count": 3,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 63550
+  },
+  {
+   "type": "city_block",
+   "x": 17.5,
+   "y": 25.5,
+   "height": [
+    0.03,
+    0.1
+   ],
+   "count": 3,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 41145
+  },
+  {
+   "type": "village",
+   "x": 11.4,
+   "y": 28.8,
+   "size": 2.6,
+   "count": 18,
+   "seed": 5
+  },
+  {
+   "type": "mountain",
+   "x": -5.4706855035659325,
+   "y": -6.5127793406621795,
+   "size": 16.25,
+   "length": 17.12,
+   "height": 4.89,
+   "snowline": 0,
+   "seed": 105
+  },
+  {
+   "type": "mountain",
+   "x": 3.412458122725466,
+   "y": -6.875802516628559,
+   "size": 14.21,
+   "length": 23.44,
+   "height": 4.05,
+   "snowline": 0,
+   "seed": 637
+  },
+  {
+   "type": "mountain",
+   "x": 8.569907416062932,
+   "y": -5.813349838272471,
+   "size": 18.87,
+   "length": 21.09,
+   "height": 4.94,
+   "snowline": 0,
+   "seed": 33
+  },
+  {
+   "type": "mountain",
+   "x": 17.152940415249972,
+   "y": -7.552184657609674,
+   "size": 18.2,
+   "length": 16.72,
+   "height": 4.98,
+   "snowline": 0,
+   "seed": 784
+  },
+  {
+   "type": "mountain",
+   "x": 24.979236726717325,
+   "y": -7.849544315594644,
+   "size": 18.92,
+   "length": 19.15,
+   "height": 6.27,
+   "snowline": 0,
+   "seed": 248
+  },
+  {
+   "type": "mountain",
+   "x": 30.277800400019437,
+   "y": -7.320096356126204,
+   "size": 17.72,
+   "length": 20.59,
+   "height": 5.38,
+   "snowline": 0,
+   "seed": 643
+  },
+  {
+   "type": "mountain",
+   "x": 38.22520906003692,
+   "y": -6.325942121339794,
+   "size": 16.44,
+   "length": 22.73,
+   "height": 4.29,
+   "snowline": 0,
+   "seed": 807
+  },
+  {
+   "type": "mountain",
+   "x": 44.09281989597314,
+   "y": -6.2052511844693985,
+   "size": 13.39,
+   "length": 15.05,
+   "height": 4.05,
+   "snowline": 0,
+   "seed": 248
+  },
+  {
+   "type": "mountain",
+   "x": 53.14094067199362,
+   "y": -8.853741698175858,
+   "size": 17.61,
+   "length": 18.66,
+   "height": 4.77,
+   "snowline": 0,
+   "seed": 304
+  },
+  {
+   "type": "cable",
+   "x": 3.4675,
+   "y": 30.438,
+   "z": 0.495,
+   "to": [
+    7.6675,
+    28.238,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 3.5325,
+   "y": 30.562,
+   "z": 0.495,
+   "to": [
+    7.7325,
+    28.362,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 3.4582,
+   "y": 30.4203,
+   "z": 0.458,
+   "to": [
+    7.6582,
+    28.2203,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 3.5418,
+   "y": 30.5797,
+   "z": 0.458,
+   "to": [
+    7.7418,
+    28.3797,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 3.4694,
+   "y": 30.4415,
+   "z": 0.43,
+   "to": [
+    7.6694,
+    28.2415,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 3.5306,
+   "y": 30.5585,
+   "z": 0.43,
+   "to": [
+    7.7306,
+    28.3585,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 7.6675,
+   "y": 28.238,
+   "z": 0.495,
+   "to": [
+    11.8675,
+    26.038,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 7.7325,
+   "y": 28.362,
+   "z": 0.495,
+   "to": [
+    11.9325,
+    26.162,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 7.6582,
+   "y": 28.2203,
+   "z": 0.458,
+   "to": [
+    11.8582,
+    26.0203,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 7.7418,
+   "y": 28.3797,
+   "z": 0.458,
+   "to": [
+    11.9418,
+    26.1797,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 7.6694,
+   "y": 28.2415,
+   "z": 0.43,
+   "to": [
+    11.8694,
+    26.0415,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 7.7306,
+   "y": 28.3585,
+   "z": 0.43,
+   "to": [
+    11.9306,
+    26.1585,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 11.8675,
+   "y": 26.038,
+   "z": 0.495,
+   "to": [
+    16.0675,
+    23.838,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 11.9325,
+   "y": 26.162,
+   "z": 0.495,
+   "to": [
+    16.1325,
+    23.962,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 11.8582,
+   "y": 26.0203,
+   "z": 0.458,
+   "to": [
+    16.0582,
+    23.8203,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 11.9418,
+   "y": 26.1797,
+   "z": 0.458,
+   "to": [
+    16.1418,
+    23.9797,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 11.8694,
+   "y": 26.0415,
+   "z": 0.43,
+   "to": [
+    16.0694,
+    23.8415,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 11.9306,
+   "y": 26.1585,
+   "z": 0.43,
+   "to": [
+    16.1306,
+    23.9585,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 16.0675,
+   "y": 23.838,
+   "z": 0.495,
+   "to": [
+    20.2675,
+    21.638,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 16.1325,
+   "y": 23.962,
+   "z": 0.495,
+   "to": [
+    20.3325,
+    21.762,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 16.0582,
+   "y": 23.8203,
+   "z": 0.458,
+   "to": [
+    20.2582,
+    21.6203,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 16.1418,
+   "y": 23.9797,
+   "z": 0.458,
+   "to": [
+    20.3418,
+    21.7797,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 16.0694,
+   "y": 23.8415,
+   "z": 0.43,
+   "to": [
+    20.2694,
+    21.6415,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 16.1306,
+   "y": 23.9585,
+   "z": 0.43,
+   "to": [
+    20.3306,
+    21.7585,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 20.2675,
+   "y": 21.638,
+   "z": 0.495,
+   "to": [
+    24.4675,
+    19.438,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 20.3325,
+   "y": 21.762,
+   "z": 0.495,
+   "to": [
+    24.5325,
+    19.562,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 20.2582,
+   "y": 21.6203,
+   "z": 0.458,
+   "to": [
+    24.4582,
+    19.4203,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 20.3418,
+   "y": 21.7797,
+   "z": 0.458,
+   "to": [
+    24.5418,
+    19.5797,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 20.2694,
+   "y": 21.6415,
+   "z": 0.43,
+   "to": [
+    24.4694,
+    19.4415,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 20.3306,
+   "y": 21.7585,
+   "z": 0.43,
+   "to": [
+    24.5306,
+    19.5585,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 24.4675,
+   "y": 19.438,
+   "z": 0.495,
+   "to": [
+    28.6675,
+    17.238,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 24.5325,
+   "y": 19.562,
+   "z": 0.495,
+   "to": [
+    28.7325,
+    17.362,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 24.4582,
+   "y": 19.4203,
+   "z": 0.458,
+   "to": [
+    28.6582,
+    17.2203,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 24.5418,
+   "y": 19.5797,
+   "z": 0.458,
+   "to": [
+    28.7418,
+    17.3797,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 24.4694,
+   "y": 19.4415,
+   "z": 0.43,
+   "to": [
+    28.6694,
+    17.2415,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 24.5306,
+   "y": 19.5585,
+   "z": 0.43,
+   "to": [
+    28.7306,
+    17.3585,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 28.6675,
+   "y": 17.238,
+   "z": 0.495,
+   "to": [
+    32.8675,
+    15.038,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 28.7325,
+   "y": 17.362,
+   "z": 0.495,
+   "to": [
+    32.9325,
+    15.162,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 28.6582,
+   "y": 17.2203,
+   "z": 0.458,
+   "to": [
+    32.8582,
+    15.0203,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 28.7418,
+   "y": 17.3797,
+   "z": 0.458,
+   "to": [
+    32.9418,
+    15.1797,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 28.6694,
+   "y": 17.2415,
+   "z": 0.43,
+   "to": [
+    32.8694,
+    15.0415,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 28.7306,
+   "y": 17.3585,
+   "z": 0.43,
+   "to": [
+    32.9306,
+    15.1585,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 32.8675,
+   "y": 15.038,
+   "z": 0.495,
+   "to": [
+    37.0675,
+    12.838,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 32.9325,
+   "y": 15.162,
+   "z": 0.495,
+   "to": [
+    37.1325,
+    12.962,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 32.8582,
+   "y": 15.0203,
+   "z": 0.458,
+   "to": [
+    37.0582,
+    12.8203,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 32.9418,
+   "y": 15.1797,
+   "z": 0.458,
+   "to": [
+    37.1418,
+    12.9797,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 32.8694,
+   "y": 15.0415,
+   "z": 0.43,
+   "to": [
+    37.0694,
+    12.8415,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 32.9306,
+   "y": 15.1585,
+   "z": 0.43,
+   "to": [
+    37.1306,
+    12.9585,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 37.0675,
+   "y": 12.838,
+   "z": 0.495,
+   "to": [
+    41.2675,
+    10.638,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 37.1325,
+   "y": 12.962,
+   "z": 0.495,
+   "to": [
+    41.3325,
+    10.762,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 37.0582,
+   "y": 12.8203,
+   "z": 0.458,
+   "to": [
+    41.2582,
+    10.6203,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 37.1418,
+   "y": 12.9797,
+   "z": 0.458,
+   "to": [
+    41.3418,
+    10.7797,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 37.0694,
+   "y": 12.8415,
+   "z": 0.43,
+   "to": [
+    41.2694,
+    10.6415,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 37.1306,
+   "y": 12.9585,
+   "z": 0.43,
+   "to": [
+    41.3306,
+    10.7585,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 41.2675,
+   "y": 10.638,
+   "z": 0.495,
+   "to": [
+    45.4675,
+    8.438,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 41.3325,
+   "y": 10.762,
+   "z": 0.495,
+   "to": [
+    45.5325,
+    8.562,
+    0.495
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 41.2582,
+   "y": 10.6203,
+   "z": 0.458,
+   "to": [
+    45.4582,
+    8.4203,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 41.3418,
+   "y": 10.7797,
+   "z": 0.458,
+   "to": [
+    45.5418,
+    8.5797,
+    0.458
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 41.2694,
+   "y": 10.6415,
+   "z": 0.43,
+   "to": [
+    45.4694,
+    8.4415,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  },
+  {
+   "type": "cable",
+   "x": 41.3306,
+   "y": 10.7585,
+   "z": 0.43,
+   "to": [
+    45.5306,
+    8.5585,
+    0.43
+   ],
+   "sag": 0.09,
+   "width": 0.006
+  }
+ ],
+ "scatter": [
+  {
+   "of": [
+    "tree",
+    "tree",
+    "pine"
+   ],
+   "on": "w",
+   "density": 2.5,
+   "scale": 0.09,
+   "seed": 4
+  }
+ ],
+ "time": "afternoon",
+ "shots": [
+  {
+   "x": 18.4,
+   "y": 24.1,
+   "look_at": [
+    21.5,
+    19.3,
+    0.34
+   ],
+   "fov": 44,
+   "height": 0.11
+  },
+  {
+   "x": 19.7,
+   "y": 21.2,
+   "look_at": [
+    21.5,
+    19.3,
+    0.38
+   ],
+   "fov": 58,
+   "height": 0.45
+  },
+  {
+   "x": 19.6,
+   "y": 22.4,
+   "look_at": [
+    21.2,
+    19.9,
+    0.42
+   ],
+   "fov": 70,
+   "height": 0.03
+  },
+  {
+   "x": 10.0,
+   "y": 25.0,
+   "look_at": [
+    21.0,
+    20.6,
+    0.25
+   ],
+   "fov": 19,
+   "height": 0.1,
+   "time": "golden"
+  }
+ ],
+ "max_distance": 70,
+ "supersample": 2
+}

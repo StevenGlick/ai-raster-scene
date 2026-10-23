@@ -6,7 +6,7 @@ cells, each block's towers drawn floor by floor with their windows lit, a `city_
 `quay` along the `harbor_water`. Searchlight beams (`searchlight` objects) swing across it from the rooftops and
 helicopters hold it in theirs (`ray`), tanks fire up at it from the quay, the waterfront burns (`blaze`,
 `smoke_plume`), and the `kaiju_wading` throws its head back and roars, its plates glowing; from the air its breath
-(a `ray`) cuts into downtown. The last shot is another day: `time` golden - the city's windows dim and the
+(a `ray`) cuts into downtown, and a helicopter hangs eye to eye with it as it breathes. The last shot is another day: `time` golden - the city's windows dim and the
 searchlights, marked for the night, gone - the monster ashore among the low buildings of the waterfront, `jet`s
 overhead.
 Run:  python kaiju_harbor.py  -> writes kaiju_harbor.json next to this file.
@@ -21,7 +21,7 @@ from maptools import Grid, scene  # noqa: E402
 
 W, H = 42, 30
 KAIJU = (20.6, 22.6)                    # where it wades, in the shallows off the quay
-MOUTH = (20.43, 22.6, 0.36)             # its jaws, as the cameras from the bay see them
+MOUTH = (20.44, 22.6, 0.33)             # its open jaws, as the cameras from the bay see them
 STRUCK = (17.6, 16.6, 0.32)             # where its breath lands, a tower downtown
 GLOW = {'fx': 'bloom', 'source': 'light', 'strength': 1.3, 'radius': 2.5, 'spread': 0.5}
 FIRES = [(17.4, 20.25), (24.8, 20.35), (27.6, 18.6), (15.6, 18.6)]
@@ -121,6 +121,7 @@ def kaiju_harbor():
             {'x': 21.0, 'y': 20.2, 'look_at': [21.4, 18.2, 0.4], 'fov': 60, 'height': 0.03,
              'overrides': {'time': 'golden', 'sprites': day_sprites,
                            'fog': {'color': [0.7, 0.66, 0.62], 'density': 0.03}}},
+            {'x': 20.15, 'y': 23.55, 'look_at': [20.55, 22.6, 0.31], 'fov': 54, 'height': 0.3, 'post': [GLOW]},
         ],
         max_distance=48,
         supersample=2,
