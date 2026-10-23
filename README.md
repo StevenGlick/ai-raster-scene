@@ -2,7 +2,7 @@
 
 [![smoke](https://github.com/StevenGlick/ai-raster-scene/actions/workflows/smoke.yml/badge.svg)](https://github.com/StevenGlick/ai-raster-scene/actions/workflows/smoke.yml)
 
-**90s game pictures from a text file.** A tiny software raycaster in Python with a Doom/Wolfenstein/Build-engine look, plus everything that makes a frame read as a real game screen: rain-soaked streets whose windows have depth behind glass, layered jungle, fog and sunbeams, reflections in wet stone and water, pixel-art characters and translucent ghosts, a full retro GUI toolkit (dialog, choice menus, HUDs, inventories, title cards) and post-processing (CRT, VHS, Game Boy, night vision, rain, film looks).
+**90s game pictures from a text file.** A tiny software raycaster in Python with a Doom/Wolfenstein/Build-engine look, plus everything that makes a frame read as a real game screen: rain-soaked streets whose windows have depth behind glass, layered jungle, fog and sunbeams, reflections in wet stone and water, pixel-art characters and translucent ghosts, a full retro GUI toolkit (dialog, choice menus, HUDs, inventories, title cards) and post-processing (CRT, VHS, Game Boy, night vision, rain, film looks). It can also shrink the world so the camera is a giant's - valleys, volcanoes, deserts and a kaiju loose in the harbour - and lay its shots out as comic pages.
 
 It ships as a Claude skill and works as Claude's retro imagination: ask for a picture of a place, a moment or a game screen, and Claude builds the scene, renders it, looks at the result, iterates, then hands you the image. It also works as a plain command-line tool.
 
@@ -10,7 +10,17 @@ It ships as a Claude skill and works as Claude's retro imagination: ask for a pi
 
 *Every image on this page is rendered straight from a scene file in [`examples/`](examples/) - no hand-painted assets anywhere.*
 
-**On this page:** [Install](#install) · [A scene in 30 seconds](#a-scene-in-30-seconds) · [The gallery](#the-gallery) · [GUI toolkit](#gui-toolkit) · [Post-processing](#post-processing) · [Features](#features) · [Materials](#materials) · [Development](#development)
+**On this page:** [What's new](#whats-new) · [Install](#install) · [A scene in 30 seconds](#a-scene-in-30-seconds) · [The gallery](#the-gallery) · [Landscape scale](#landscape-scale) · [Comic mode](#comic-mode) · [GUI toolkit](#gui-toolkit) · [Post-processing](#post-processing) · [Features](#features) · [Materials](#materials) · [Development](#development)
+
+## What's new
+
+- **[Landscape scale](#landscape-scale)** - shrink the world and the camera is a giant's: a kaiju wading into a harbour city at night and a giant moth coming in over the bay to meet it, a volcano erupting over an island, buttes and mesas on a red plain, a winter valley under the aurora, a suspension bridge over a sea strait, a tropical archipelago.
+- **[Comic mode](#comic-mode)** - lay shots of any scenes out as a comic page or a storyboard. *It came from the bay* tells the kaiju's night in six panels.
+
+| | |
+|---|---|
+| ![The giant moth comes in over the bay, the kaiju roaring up at it](docs/gallery/kaiju_moth.png) | ![A volcano erupting over a harbour town at night](docs/gallery/island_eruption.png) |
+| ![Down the highway into the mesa desert at golden hour](docs/gallery/desert_road.png) | ![A village under snow, the aurora over the white peak](docs/gallery/winter_street.png) |
 
 ## Install
 
@@ -79,7 +89,7 @@ Seventy-eight example scenes in [`examples/`](examples/), every one a single JSO
 - **[Space and other worlds](#space-and-other-worlds)** - [stations and ships](#stations-and-ships) · [the Moon](#the-moon) · [Vector World](#vector-world) · [Doomed](#doomed)
 - **[Dreams and wonders](#dreams-and-wonders)** - [dreams](#dreams) · [the drowned library](#the-drowned-library) · [the hall of doors](#the-hall-of-doors) · [the sky islands](#the-sky-islands) · [the aurora palace](#the-aurora-palace) · [ask Claude](#ask-claude)
 - **[Landscape scale](#landscape-scale)** - [the kaiju in the harbour](#the-kaiju-in-the-harbour) · [the kaiju in the country](#the-kaiju-in-the-country) · [the volcano island](#the-volcano-island) · [the mesa desert](#the-mesa-desert) · [the winter valley](#the-winter-valley) · [the strait bridge](#the-strait-bridge) · [the archipelago](#the-archipelago) · [the giant valley](#the-giant-valley)
-- **[Pages](#pages)** - comics and storyboards, every panel a shot
+- **[Comic mode](#comic-mode)** - comics and storyboards, every panel a shot
 
 ## Cities
 
@@ -622,18 +632,18 @@ A river valley at dawn as a giant would see it: the river winding through water 
 | ![Dawn: up the valley to the great peak, mist on the valley floor](docs/gallery/valley_dawn.png) | ![The village and its church by the river](docs/gallery/valley_village.png) |
 | ![From the air, down the whole valley](docs/gallery/valley_above.png) | ![The same view in the afternoon](docs/gallery/valley_afternoon.png) |
 
-## Pages
+## Comic mode
 
 Shots of any scenes laid out on one page, each panel rendered at its own size and shape: a comic page with caption
 boxes, the shots' speech bubbles and a sound in big letters, or a storyboard with numbered panels and a note under
 each. A page is a JSON file of rows of panels ([`examples/pages/`](examples/pages/)), and
 `python scripts/pages.py page.json -o page.png` lays it out.
 
+![It came from the bay: a comic page - the kaiju comes in from the bay, the army on the quay, its breath, and something comes in over the water to meet it](docs/gallery/page_kaiju.png)
+
 ![A comic page: the door on the salt flat, and through it, winter](docs/gallery/page_door.png)
 
 ![A storyboard: the frontier town's saloon in six numbered panels, a note under each](docs/gallery/page_saloon.png)
-
-![A comic page: the kaiju comes in from the bay, the army on the quay, its breath - and something comes in over the water to meet it](docs/gallery/page_kaiju.png)
 
 ## GUI toolkit
 
@@ -701,7 +711,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Landscape scale**: shrink the world - a map cell about 100 m - and the camera is a giant's: city streets, a harbour, farmland and woods drawn as seen from the air, towers, villages and mountains built small, and a kaiju standing in a city as a person stands in a room
 - **Pictures within pictures**: a `portal` - a door, an arch - opens onto another scene, or another part of this one: the view through it is rendered from where the camera would stand beyond its exit, so it lines up as the camera moves; a `screen` shows another shot on a television, a monitor or a wall, or on an arcade cabinet's screen
 - **Lettering**: any words in the world as pixel art - a painted shop board, neon tubes, a brass plaque, letters cut in stone, chalk on a blackboard, gilt, a poster - on a `sign` object in 3D, or as a sprite or a decal of your own
-- **Pages**: comic pages and storyboards, every panel a shot of any scene at its own shape, with captions, speech bubbles, sound effects and notes
+- **Comic mode (pages)**: comic pages and storyboards, every panel a shot of any scene at its own shape, with captions, speech bubbles, sound effects and notes
 - **Wireframes**: low-poly meshes - cubes, pyramids, polyhedra, mountains, racers, palms, or your own vertices - drawn as lines of light in true 3D, one pixel wide at any distance, hidden behind what is nearer and mirrored in wet floors; solid ones are black faces edged in light
 - **Prefabs**: named groups placed with one line - a campsite with its light, a palm grove, a beach hut with its walls, door, window, roof and torches - turned, scaled and varied by seed; scenes can define their own
 - **Procedural scatter**: declare debris by set, density and size class and the loader expands it into hundreds of placed props, clumped by a noise field so it drifts and leaves bare patches instead of spreading evenly - and never piles up on a camera or in front of a speaker
