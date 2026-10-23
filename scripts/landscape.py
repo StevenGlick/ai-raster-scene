@@ -807,19 +807,43 @@ def spr_giant_moth():
 
 def _tanks(firing):
     """A column of four tanks, side on, facing left, olive drab on dark tracks, their guns raised toward something
-    tall; `firing`: a flash at every muzzle."""
-    w, h = 76, 14
+    tall: road wheels in the tracks, a sloped glacis, a rounded turret with its cupola, the long gun raised;
+    `firing`: a burst at every muzzle - a white-hot core, flame thrown forward, a puff of smoke."""
+    w, h = 164, 46
     cv = Canvas(w, h, wrap=False)
+    rng = np.random.default_rng(5)
+    a = np.radians(32)                                           # the guns' elevation
     for k in range(4):
-        x = 4 + k * 18
-        cv.box(x, h - 4, 15, 3, z=0.4, top=0.4, bevel=0.8, mat=1)                  # tracks
-        cv.box(x + 1, h - 7, 13, 3.5, z=0.7, top=0.5, bevel=0.8, mat=0)          # hull
-        cv.ellipse(x + 7, h - 8, 4, 2.2, z=1.0, dome=0.6, mat=0)                  # turret
-        cv.stroke([(x + 5, h - 8.5), (x - 2, h - 12.5)], 1.0, z=1.1, dome=0.2, mat=0)   # the gun, raised
+        x = 18 + k * 36
+        base = h - 1                                               # the tracks on the ground
+        cv.box(x, base - 6, 30, 6, z=0.4, top=0.5, bevel=1.2, mat=1)                      # the track
+        for j in range(5):
+            cv.ellipse(x + 4 + j * 5.5, base - 3, 2.3, 2.3, z=0.7, dome=0.5, mat=1, tone=0.12)   # road wheels
+        cv.polygon([(x - 1, base - 6), (x + 3, base - 12), (x + 29, base - 12), (x + 31, base - 6)], z=0.8,
+                   top=0.6, bevel=1.2, mat=0)                                               # the hull, its glacis
+        cv.ellipse(x + 17, base - 14.5, 8, 4.2, z=1.1, dome=0.8, mat=0)                    # the turret
+        cv.box(x + 19, base - 20, 4, 2.5, z=1.2, top=0.3, bevel=0.6, mat=0, tone=-0.05)   # its cupola
+        mx, my = x + 10 - 17 * np.cos(a), base - 15 - 17 * np.sin(a)                   # the muzzle
+        cv.stroke([(x + 11, base - 15), (mx, my)], 1.8, z=1.3, dome=0.3, mat=0, tone=-0.04)   # the gun
+        cv.stroke([(mx + 1.2, my + 0.8), (mx, my)], 2.6, z=1.35, dome=0.3, mat=0, tone=-0.1)  # its muzzle brake
         if firing:
-            cv.ellipse(x - 3, h - 13, 2.2, 1.4, z=1.3, dome=0.3, mat=2)
-    rgba = cv.paint([OLIVE, ramp('#26262a', dark=0.5, light=1.6), FLAME[2]], cv.light(relief=0.8), dither=0.2)
-    em = ((cv.mat == 2) & (cv.id > 0)).astype(np.float32)
+            ux, uy = -np.cos(a), -np.sin(a)                     # the way it fires
+            for t in range(9):                                      # flame thrown forward, tongues splayed
+                spread = rng.uniform(-0.55, 0.55)
+                L_ = rng.uniform(5.0, 10.0) * (1.0 - abs(spread) * 0.6)
+                dx, dy = ux * np.cos(spread) - uy * np.sin(spread), ux * np.sin(spread) + uy * np.cos(spread)
+                cv.leaf(mx, my, mx + dx * L_, my + dy * L_, rng.uniform(2.4, 3.6), z=1.6, dome=0.4, mat=3,
+                        tone=float(rng.uniform(-0.1, 0.1)))
+            cv.ellipse(mx + ux * 2.0, my + uy * 2.0, 3.2, 2.6, z=1.9, dome=0.4, mat=2)    # the white-hot core
+            for t in range(4):                                      # smoke rolling out round it
+                cv.ellipse(mx + ux * rng.uniform(5, 9) + rng.uniform(-2, 2), my + uy * rng.uniform(5, 9) - 1.5,
+                           rng.uniform(1.6, 2.6), rng.uniform(1.4, 2.2), z=1.0, dome=0.8, mat=4,
+                           tone=float(rng.uniform(-0.05, 0.1)))
+    rgba = cv.paint([OLIVE, ramp('#26262a', dark=0.5, light=1.6), FLAME[2], FLAME[1], SMOKE],
+                    cv.light(relief=0.8), dither=0.2)
+    em = np.zeros((h, w), np.float32)
+    em[(cv.mat == 2) & (cv.id > 0)] = 1.0
+    em[(cv.mat == 3) & (cv.id > 0)] = 0.9
     return outline_sprite(rgba).astype(np.float32), em
 
 
@@ -948,8 +972,8 @@ SPRITES = {'kaiju': spr_kaiju, 'kaiju_roar': spr_kaiju_roar, 'kaiju_wading': spr
            'sailboat': spr_sailboat, 'giant_moth': spr_giant_moth}
 SPRITE_HEIGHT = {'kaiju': 0.62, 'kaiju_roar': 0.62, 'kaiju_wading': round(0.62 * (WADE + 2) / 126, 3), 'blaze': 0.24,
                  'smoke_plume': 1.2,
-                 'tanks': 0.045,
-                 'tanks_firing': 0.045, 'helicopter': 0.05, 'jet': 0.045, 'pylon': 0.55, 'ash_plume': 9.0,
+                 'tanks': 0.071,
+                 'tanks_firing': 0.071, 'helicopter': 0.05, 'jet': 0.045, 'pylon': 0.55, 'ash_plume': 9.0,
                  'cargo_ship': 0.5, 'ferry': 0.28, 'sailboat': 0.16, 'giant_moth': 0.72}
 PROP_DEFAULTS = {'blaze': {'blend': 'additive', 'shadow': False}, 'smoke_plume': {'opacity': 0.85, 'shadow': False},
                  'helicopter': {'shadow': False}, 'jet': {'shadow': False}, 'pylon': {'planes': 2},
