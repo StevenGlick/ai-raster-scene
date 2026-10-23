@@ -249,6 +249,7 @@ SHOTS = {
     'road_reef': ('reef_dive', 1),
     'road_brass': ('brass_city', 1),
     'road_winter_market': ('winter_market', 1),
+    'road_aurora_lake': ('aurora_lake', 1),
     # where it started: the three concept drawings, made scenes (the drawings are in docs/origins)
     'storm_island': ('storm_island', 1),
     'storm_town': ('storm_island', 2),

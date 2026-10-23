@@ -4354,6 +4354,49 @@ def spr_scooter_bars():
     return rgba, _tail_em(cv, [2]) * 0.6
 
 
+# ------------------------------------------------------------------ the aurora lake
+
+def _snowmobile_body(cv, c, paint, glow):
+    """A snowmobile from behind, drawn round x = c: the tracks under it, the seat, the cowl and windscreen, a
+    tail light (glowing)."""
+    cv.box(c - 13, 30, 26, 8, z=0.8, top=0.5, bevel=1.4, mat=3)                     # the track and its guard
+    cv.polygon([(c - 14, 30), (c + 14, 30), (c + 12, 22), (c - 12, 22)], z=1.2, top=0.7, bevel=1.6, mat=0)  # body
+    cv.box(c - 9, 16, 18, 7, z=1.4, top=0.7, bevel=1.6, mat=4)                      # the seat
+    cv.polygon([(c - 10, 16), (c + 10, 16), (c + 7, 6), (c - 7, 6)], z=1.3, top=0.5, bevel=1.0, mat=1)       # screen
+    cv.box(c - 4, 24.5, 8, 2.5, z=1.6, top=0.2, bevel=0.4, mat=glow)                # the tail light
+
+
+def spr_snowmobile():
+    """A snowmobile seen from behind as it runs ahead of you over the snow: its track under the red body, the black
+    seat, the cowl's windscreen beyond, the tail light lit red."""
+    w, h = 40, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    _snowmobile_body(cv, 20, 0, 5)
+    rgba, _ = _prop(cv, [ramp('#c8302a', dark=0.4, light=1.4), ramp('#7a9ab0', dark=0.45, light=1.6, cool=0.1),
+                         CHROME, ramp('#2a2a30', dark=0.5, light=2.0), ramp('#1a1a1e', dark=0.6, light=2.2), TAIL],
+                    relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [5])
+
+
+def spr_snowmobile_bars():
+    """Your snowmobile from its seat: the red cowl curving away to its tip, the tinted windscreen standing on it, the
+    handlebars across with their grips and a little gauge between, the headlamp's beam on the snow ahead. A shot's
+    `vehicle` for a ride over the snow: wide and low."""
+    w, h, c = 160, 48, 80
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(c - 46, 48), (c + 46, 48), (c + 22, 24), (c - 22, 24)], z=1.0, top=0.8, bevel=3.0, mat=0)   # cowl
+    cv.polygon([(c - 17, 26), (c + 17, 26), (c + 12, 13), (c - 12, 13)], z=1.4, top=0.3, bevel=1.0, mat=1)   # screen
+    cv.box(c - 5, 30, 10, 6, z=1.6, top=0.4, bevel=0.8, mat=4)                      # the gauge
+    cv.box(c - 3.5, 31.2, 7, 3.6, z=1.8, top=0.1, bevel=0.3, mat=5)
+    for s in (-1, 1):
+        cv.stroke([(c + 8 * s, 36), (c + 40 * s, 34), (c + 58 * s, 37)], 4.0, z=1.8, dome=0.7, mat=2)   # the bars
+        cv.stroke([(c + 56 * s, 37), (c + 74 * s, 40)], 6.5, z=2.0, dome=0.9, mat=3)                    # grips
+    rgba, _ = _prop(cv, [ramp('#c8302a', dark=0.4, light=1.4), ramp('#5a7a90', dark=0.45, light=1.5, cool=0.1),
+                         CHROME, ramp('#2a2a30', dark=0.5, light=2.0), ramp('#1a1a1e', dark=0.6, light=2.2),
+                         ramp('#80f0c0', dark=0.8, light=1.1)], relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [5]) * 0.6
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -4457,7 +4500,7 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'redwood_trunk': spr_redwood_trunk, 'raft_bow': spr_raft_bow,
            'asteroid': spr_asteroid, 'sauropod': spr_sauropod, 'tyrannosaur': spr_tyrannosaur,
            'longship_bow': spr_longship_bow, 'bamboo_stalks': spr_bamboo_stalks,
-           'scooter_bars': spr_scooter_bars}
+           'scooter_bars': spr_scooter_bars, 'snowmobile': spr_snowmobile, 'snowmobile_bars': spr_snowmobile_bars}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
@@ -4485,7 +4528,8 @@ SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'bo
                  'water_taxi': 0.42, 'floating_lantern': 0.22, 'rocket_pad': 20.0,
                  'airship': 3.0, 'airship_deck': 0.3, 'island_falls': 12.0, 'horse_neck': 0.22,
                  'castle_hill': 12.0, 'redwood_trunk': 24.0, 'raft_bow': 0.3, 'asteroid': 2.0, 'sauropod': 9.0,
-                 'tyrannosaur': 4.2, 'longship_bow': 0.3, 'bamboo_stalks': 9.0, 'scooter_bars': 0.24}
+                 'tyrannosaur': 4.2, 'longship_bow': 0.3, 'bamboo_stalks': 9.0, 'scooter_bars': 0.24,
+                 'snowmobile': 0.4, 'snowmobile_bars': 0.24}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
@@ -4521,4 +4565,5 @@ PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}
                  'redwood_trunk': {'planes': 1}, 'raft_bow': {'shadow': False},
                  'asteroid': {'shadow': False, 'planes': 1}, 'sauropod': {'planes': 1},
                  'tyrannosaur': {'planes': 1}, 'longship_bow': {'shadow': False},
-                 'bamboo_stalks': {'planes': 1}, 'scooter_bars': {'shadow': False}}
+                 'bamboo_stalks': {'planes': 1}, 'scooter_bars': {'shadow': False},
+                 'snowmobile_bars': {'shadow': False}}
