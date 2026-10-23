@@ -7,7 +7,7 @@ opposite it. It picks the sky (`dawn`, `day`, `golden`, `sunset`, `dusk` or `nig
 scene's ambient light and the colour of its air and tints them - scaled from what the scene has, taken to be
 right for the hour its own sky shows, so a dim interior stays dim beside a bright street and a warm room stays
 warm at any hour - and lights fewer of the rooms behind its facades' windows by day (a facade's `lit` is how many
-show a lamp after dark), and so for the windows of `tower`s and `city_block`s. Lights, objects and sprites marked
+show a lamp after dark), and so for the windows of `tower`s, `city_block`s and `village`s. Lights, objects and sprites marked
 `"night": true` (street lamps, lanterns, searchlights, a lit window's glow) are there only between sunset and
 sunrise, and ones marked `"day": true` only by day.
 
@@ -42,7 +42,7 @@ SUN = [(0.0, (1.0, 0.5, 0.32), 0.9), (3.0, (1.0, 0.6, 0.4), 1.05), (8.0, (1.0, 0
        (15.0, (1.0, 0.86, 0.68), 1.4), (30.0, (1.0, 0.94, 0.84), 1.5), (90.0, (1.0, 0.98, 0.93), 1.5)]
 MOON = 0.38                             # the moon's strength, full night
 LIGHT_KEYS = ('type', 'azimuth', 'elevation', 'color', 'intensity', 'night', 'day')
-LIT_OBJECTS = ('tower', 'city_block')                      # objects whose `lit` windows the hour turns down by day
+LIT_OBJECTS = ('tower', 'city_block', 'village', 'bridge')                      # objects whose `lit` windows the hour turns down by day
 SPEC_KEYS = {'at', 'azimuth', 'elevation', 'sky', 'ambient', 'fog'}      # what a time given as a dict may hold
 
 

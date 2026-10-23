@@ -1,6 +1,6 @@
 """A mountain valley at landscape scale - the world as a giant sees it, a map cell about 100 m and the camera's eye
 fifty metres up: a river winding down a valley floor of `farmland` and `pasture`, a `village` by the water with its
-church and a hamlet further up, woods of `forest_canopy` and `pine_canopy` on the flanks with tiny trees standing
+church and an old stone `bridge`, a hamlet further up, woods of `forest_canopy` and `pine_canopy` on the flanks with tiny trees standing
 at their edges (a `scatter` with a `scale`), and `mountain`s - ranges either side and a great peak at the valley's
 head, snow on their tops. Dawn: mist lies along the valley floor and the first sun catches the peaks.
 Run:  python giant_valley.py  -> writes giant_valley.json next to this file.
@@ -48,6 +48,8 @@ def giant_valley():
                               'height': round(rng.uniform(5.5, 9.5), 2), 'seed': rng.randrange(1000)})
     mountains.append({'type': 'mountain', 'x': 28.0, 'y': -6.0, 'size': 30, 'length': 40, 'height': 16, 'seed': 77,
                       'ridges': 6})
+    bridge = {'type': 'bridge', 'style': 'stone', 'x': round(river_x(34.0), 2), 'y': 34.0, 'length': 5.2, 'span': 0.85,
+              'seed': 4}                                          # the village's old bridge over the river
     villages = [{'type': 'village', 'x': river_x(34) + 2.6, 'y': 34.0, 'size': 3.2, 'count': 26, 'seed': 3},
                 {'type': 'village', 'x': river_x(16) - 2.4, 'y': 16.0, 'size': 1.6, 'count': 9, 'seed': 8,
                  'church': False}]
@@ -68,7 +70,7 @@ def giant_valley():
         lights=[{'type': 'sun', 'azimuth': 200, 'elevation': 30, 'intensity': 1.2}],
         fog={'color': [0.72, 0.76, 0.84], 'density': 0.008, 'ground': 0.22, 'height': 0.1, 'noise': 0.7,
              'scale': 3.0, 'shafts': 0.5},
-        objects=mountains + villages,
+        objects=mountains + villages + [bridge],
         scatter=[{'of': ['pine', 'pine', 'tree'], 'on': 'w', 'density': 3.0, 'scale': 0.09, 'seed': 5},
                  {'of': 'pine', 'on': 'p', 'density': 3.0, 'scale': 0.09, 'seed': 6}],
         time='dawn',

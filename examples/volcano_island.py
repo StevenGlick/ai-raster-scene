@@ -56,7 +56,8 @@ def volcano_island():
     sprites = ([{'x': PEAK[0] + 0.3, 'y': PEAK[1] - 0.2, 'z': RIM - 0.3, 'type': 'ash_plume', 'tint': [1.5, 1.25, 1.15]}]
                + [{'x': round(x, 2), 'y': round(y, 2), 'z': RIM - 0.5, 'type': 'blaze', 'scale': round(rng.uniform(2.2, 3.4), 2)}
                   for x, y in rim]                                       # lava fountaining over the rim
-               + [{'x': sx - 0.4, 'y': sy + 0.5, 'type': 'smoke_plume', 'scale': 1.4, 'tint': [1.6, 1.6, 1.7]},
+               + [{'x': 36.6, 'y': 33.6, 'type': 'ferry', 'flip': True}, {'x': 31.2, 'y': 34.4, 'type': 'sailboat'},
+                  {'x': sx - 0.4, 'y': sy + 0.5, 'type': 'smoke_plume', 'scale': 1.4, 'tint': [1.6, 1.6, 1.7]},
                   {'x': sx + 0.3, 'y': sy + 0.8, 'type': 'smoke_plume', 'scale': 1.0, 'tint': [1.7, 1.7, 1.8]}])
     lights = [{'type': 'moon', 'azimuth': 320, 'elevation': 24, 'intensity': 0.22, 'disc_size': 1.4},
               {'x': PEAK[0], 'y': PEAK[1], 'z': RIM + 0.6, 'radius': 11, 'color': [1.0, 0.42, 0.14], 'intensity': 1.7},

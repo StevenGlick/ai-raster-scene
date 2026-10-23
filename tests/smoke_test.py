@@ -1695,6 +1695,16 @@ def check_objects():
     wall = [np.hypot(*(foot[np.argmin(np.abs((fa - np.arctan2(p[1] - ctr[1], p[0] - ctr[0]) + np.pi) % (2 * np.pi)
                                             - np.pi)), :2] - ctr)) / np.hypot(*(p[:2] - ctr)) for p in rim]
     assert np.median(wall) < 1.15, 'a butte: its walls all but sheer from their foot to its flat top'
+    sus = build(type='bridge', length=10.0, deck=0.5, height=1.6)
+    sc_ = ends(sus)
+    assert abs(sc_[:, 2].max() - 1.6) < 0.06 and np.ptp(sc_[:, 0]) > 9.9, 'a suspension bridge: its towers, its length'
+    hang = [pn for pn in sus['panels'] if abs(pn['o'][0]) < 0.4 and pn['o'][2] < 0.7 and pn['o'][2] > 0.5]
+    assert hang, 'its main cables sag nearly to the road at the middle'
+    stone = build(type='bridge', style='stone', length=4.0, span=1.0)
+    side = [pn for pn in stone['panels'] if abs(pn['v'][2]) > 0.1]
+    assert side and all((pn['rgba'][..., 3] < 0.5).mean() > 0.2 for pn in side), 'a stone bridge: its arches open'
+    lamps = build(type='village', count=6, seed=2, lit=0.8, snow=True)
+    assert max(pn['em'].max() for pn in lamps['panels']) > 0.9, 'a village with its lamps lit'
     mesa = mountain(top=0.5, rock='sandstone', snowline=0)
     zc = np.array([c for pn in mesa['panels'] for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])[:, 2]
     assert abs(zc.max() - 2.5) < 1e-6 and (np.abs(zc - 2.5) < 1e-6).sum() >= 18, 'a mesa cut flat at its top'

@@ -1,0 +1,483 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "ppppppppppppppppbabbaabaabbbaaaabbbababapppppppppppppppp",
+  "ppppppppppppppppbbbabbabbbabbabbbaababaabppppppppppppppp",
+  "pppppppppppppppbabababbaabbaabbabaabababbbpppppppppppppp",
+  "pppppppppppppppaaabbaabbbbbbababaaaabaaababppppppppppppp",
+  "ppppppppppppppppbabaaabaaaaaaabaababbbbabbbppppppppppppp",
+  "pppppppppppppppbabaababaaaabaaabaaabaaabbaabpppppppppppp",
+  "ppppppppppppppppbbbaaaaabbaaababaaabaaaabbbppppppppppppp",
+  "pppppppppppppppbaabaaaaabbbbbabbbbaaababaabapppppppppppp",
+  "ppppppppppppppppbbbbaabbaabbabababbabaababaaappppppppppp",
+  "pppppppppppppppaabbbaaabbabababbbaabbbaaabaabppppppppppp",
+  "ppppppppppppppppbaabbaabbbaaaabaaabaabbbbaabappppppppppp",
+  "ppppppppppppppppbabbbbbbaabbaababbaabbbababbappppppppppp",
+  "ppppppppppppppppbabaabbbbbabbbbbaabaabbbbbaabppppppppppp",
+  "ppppppppppppppppbbbabababbbaaabbbbaaababbaabappppppppppp",
+  "pppppppppppppppppbbaaabbbbbbbaaaabaabbbbaaaapppppppppppp",
+  "ppppppppppppppppbabababbbbabbaaaaabaaababbbbpppppppppppp",
+  "pppppppppppppppppbbaaaaabbbabbaabbbaabbaaaabpppppppppppp",
+  "pppppppppppppppppaaabbbbababbabbbbaabaaabbbbpppppppppppp",
+  "pppppppppppppppppbaabaabbbbaabbbababaaabaabppppppppppppp",
+  "pppppppppppppppppbabababbbabbbbbababaaaabbappppppppppppp",
+  "ppppppppppppppppppbbbaabbaaababbaababbbbabappppppppppppp",
+  "ppppppppppppppppppbaababaababbbbabbabaabaapppppppppppppp",
+  "ppppppppppppppppppbababbbababbaaaabbbbaabppppppppppppppp",
+  "ppppppppppppppppppaabbbbababababbabaabaabppppppppppppppp",
+  "ppppppppppppppppppbabbbbbbbaaabbbabbabaaappppppppppppppp",
+  "ppppppppppppppppppabababbjiikbababbbbaabpppppppppppppppp",
+  "pppppppppppppppppbbabbbaijijjjkbbababbbppppppppppppppppp",
+  "ppppppppppppppppppbbbbaijkkjiijiibbaaabppppppppppppppppp",
+  "pppppppppppppppppabbbbkikjkijkkijjibaabppppppppppppppppp",
+  "ppppppppppppppppppbabikjkkkjkjiiikjkbbpppppppppppppppppp",
+  "pppppppppppppppppabbaiijkijikjiijjkkabpppppppppppppppppp",
+  "pppppppppppppppppbbbkjkkkjkjjikkkkikibpppppppppppppppppp",
+  "ppppppppppppppppababjiikkjjjjiikkijkibpppppppppppppppppp",
+  "ppppppppppppppppaaabbijjjijkkjkkjijkbbpppppppppppppppppp",
+  "ppppppppppppppppaaabakikiijiiijkkkiabapppppppppppppppppp",
+  "pppppppppppppppaabbaaaikjjijkiiiibbbappppppppppppppppppp",
+  "ppppppppppppppabbbabbbbaakabbbaabaaabapppppppppppppppppp",
+  "ppppppppppppppaaababbbaabbbbabbbbabababppppppppppppppppp",
+  "pppppppppppppbaaababbabbaaabaaaaabbbabpppppppppppppppppp",
+  "pppppppppppppaabaaabbabaabbaabbbaaabaaappppppppppppppppp",
+  "pppppppppppppbbbbaababbaabbaaababbbaabbppppppppppppppppp",
+  "ppppppppppppbaaaabaaabbaababababaaaaaaappppppppppppppppp",
+  "pppppppppppaaabbbbababaaaaabaaaabaabababpppppppppppppppp",
+  "ppppppppppppabaabaababaaabbabaaaababbbabpppppppppppppppp",
+  "pppppppppppaaaaabaaababbababbaaaaaaabaappppppppppppppppp",
+  "ppppppppppppabbabaabbbbbababaabaaaabaabbpppppppppppppppp",
+  "ppppppppppppaaaabaabaaababbbabbaaabbabbapppppppppppppppp",
+  "pppppppppppbbabbbbbbabbaabbbaabbbabbabaapppppppppppppppp",
+  "ppppppppppppabbbaabbaaaaaaabaabbababababappppppppppppppp",
+  "ppppppppppppabbaaabbabbbbbaaabbaabbabaabpppppppppppppppp",
+  "ppppppppppppbabaabaababbabbabababbabaabapppppppppppppppp",
+  "pppppppppppppaabaabababbbaabababaaaaaaaaappppppppppppppp",
+  "pppppppppppppaababbaaaaabaaabaabbabaaaaabppppppppppppppp",
+  "ppppppppppppppaaabaaaabbbbaabbbbbbababbabppppppppppppppp",
+  "ppppppppppppppbabbbbabaabaabbbbababbababpppppppppppppppp",
+  "ppppppppppppppaaaabaaabbabbabbbbaaababaabppppppppppppppp"
+ ],
+ "legend": {
+  "a": {
+   "floor": "snow_fields"
+  },
+  "b": {
+   "floor": "snow_fields_b"
+  },
+  "p": {
+   "floor": "snow_forest"
+  },
+  "i": {
+   "floor": "frozen_lake"
+  },
+  "j": {
+   "floor": "frozen_lake_b"
+  },
+  "k": {
+   "floor": "frozen_lake_c"
+  }
+ },
+ "camera": {
+  "x": 28.0,
+  "y": 47.0,
+  "look_at": [
+   28.0,
+   22.0,
+   2.4
+  ],
+  "fov": 66,
+  "height": 0.5
+ },
+ "title": "The winter valley - a frozen lake and a lit village under the aurora, at landscape scale",
+ "sky": "aurora",
+ "ambient": [
+  0.14,
+  0.16,
+  0.22
+ ],
+ "lights": [
+  {
+   "type": "moon",
+   "azimuth": 210,
+   "elevation": 22,
+   "intensity": 0.34,
+   "disc": false
+  },
+  {
+   "x": 27.1,
+   "y": 23.3,
+   "z": 0.05,
+   "radius": 0.7,
+   "color": [
+    1.0,
+    0.72,
+    0.4
+   ],
+   "intensity": 0.7,
+   "night": true
+  },
+  {
+   "x": 28.0,
+   "y": 23.0,
+   "z": 0.05,
+   "radius": 0.7,
+   "color": [
+    1.0,
+    0.72,
+    0.4
+   ],
+   "intensity": 0.7,
+   "night": true
+  },
+  {
+   "x": 28.9,
+   "y": 23.4,
+   "z": 0.05,
+   "radius": 0.7,
+   "color": [
+    1.0,
+    0.72,
+    0.4
+   ],
+   "intensity": 0.7,
+   "night": true
+  },
+  {
+   "x": 28.3,
+   "y": 23.8,
+   "z": 0.05,
+   "radius": 0.7,
+   "color": [
+    1.0,
+    0.72,
+    0.4
+   ],
+   "intensity": 0.7,
+   "night": true
+  }
+ ],
+ "fog": {
+  "color": [
+   0.1,
+   0.13,
+   0.18
+  ],
+  "density": 0.01
+ },
+ "objects": [
+  {
+   "type": "mountain",
+   "x": 4.03,
+   "y": -0.9330726220669772,
+   "angle": 90,
+   "size": 13.12,
+   "length": 17.64,
+   "height": 6.76,
+   "snowline": 0.02,
+   "seed": 202
+  },
+  {
+   "type": "mountain",
+   "x": 49.78,
+   "y": -1.8579807557078234,
+   "angle": 90,
+   "size": 13.67,
+   "length": 21.61,
+   "height": 7.8,
+   "snowline": 0.02,
+   "seed": 182
+  },
+  {
+   "type": "mountain",
+   "x": 4.78,
+   "y": 4.5031739459818985,
+   "angle": 90,
+   "size": 12.19,
+   "length": 19.86,
+   "height": 6.46,
+   "snowline": 0.02,
+   "seed": 771
+  },
+  {
+   "type": "mountain",
+   "x": 52.88,
+   "y": 3.6803019917800923,
+   "angle": 90,
+   "size": 12.23,
+   "length": 19.1,
+   "height": 6.22,
+   "snowline": 0.02,
+   "seed": 846
+  },
+  {
+   "type": "mountain",
+   "x": 4.67,
+   "y": 9.987479160506185,
+   "angle": 90,
+   "size": 15.89,
+   "length": 19.46,
+   "height": 5.69,
+   "snowline": 0.02,
+   "seed": 784
+  },
+  {
+   "type": "mountain",
+   "x": 51.76,
+   "y": 9.465110293237291,
+   "angle": 90,
+   "size": 12.11,
+   "length": 19.59,
+   "height": 6.37,
+   "snowline": 0.02,
+   "seed": 789
+  },
+  {
+   "type": "mountain",
+   "x": 5.34,
+   "y": 14.787260793453813,
+   "angle": 90,
+   "size": 13.25,
+   "length": 16.55,
+   "height": 7.66,
+   "snowline": 0.02,
+   "seed": 905
+  },
+  {
+   "type": "mountain",
+   "x": 52.44,
+   "y": 15.657147221525989,
+   "angle": 90,
+   "size": 12.49,
+   "length": 21.95,
+   "height": 6.03,
+   "snowline": 0.02,
+   "seed": 421
+  },
+  {
+   "type": "mountain",
+   "x": 6.93,
+   "y": 22.960724059022056,
+   "angle": 90,
+   "size": 12.63,
+   "length": 18.83,
+   "height": 6.53,
+   "snowline": 0.02,
+   "seed": 556
+  },
+  {
+   "type": "mountain",
+   "x": 52.25,
+   "y": 20.64772453113032,
+   "angle": 90,
+   "size": 15.18,
+   "length": 20.8,
+   "height": 5.99,
+   "snowline": 0.02,
+   "seed": 106
+  },
+  {
+   "type": "mountain",
+   "x": 3.82,
+   "y": 29.388611108985828,
+   "angle": 90,
+   "size": 15.2,
+   "length": 21.66,
+   "height": 6.28,
+   "snowline": 0.02,
+   "seed": 832
+  },
+  {
+   "type": "mountain",
+   "x": 49.1,
+   "y": 29.006950805592986,
+   "angle": 90,
+   "size": 15.8,
+   "length": 18.7,
+   "height": 5.25,
+   "snowline": 0.02,
+   "seed": 929
+  },
+  {
+   "type": "mountain",
+   "x": 4.05,
+   "y": 32.56872899813738,
+   "angle": 90,
+   "size": 15.97,
+   "length": 19.05,
+   "height": 5.89,
+   "snowline": 0.02,
+   "seed": 736
+  },
+  {
+   "type": "mountain",
+   "x": 52.72,
+   "y": 33.68315215288318,
+   "angle": 90,
+   "size": 14.97,
+   "length": 16.39,
+   "height": 6.21,
+   "snowline": 0.02,
+   "seed": 168
+  },
+  {
+   "type": "mountain",
+   "x": 5.38,
+   "y": 41.104363590274964,
+   "angle": 90,
+   "size": 13.0,
+   "length": 21.47,
+   "height": 7.39,
+   "snowline": 0.02,
+   "seed": 128
+  },
+  {
+   "type": "mountain",
+   "x": 50.49,
+   "y": 41.45842550453561,
+   "angle": 90,
+   "size": 13.24,
+   "length": 21.32,
+   "height": 5.62,
+   "snowline": 0.02,
+   "seed": 376
+  },
+  {
+   "type": "mountain",
+   "x": 26.0,
+   "y": -9.0,
+   "size": 26,
+   "length": 36,
+   "height": 13,
+   "seed": 12,
+   "ridges": 5,
+   "snowline": 0.02
+  },
+  {
+   "type": "village",
+   "x": 28.0,
+   "y": 23.2,
+   "size": 2.8,
+   "count": 22,
+   "seed": 6,
+   "snow": true,
+   "lit": 0.55
+  },
+  {
+   "type": "village",
+   "x": 38.5,
+   "y": 13.5,
+   "size": 1.2,
+   "count": 6,
+   "seed": 2,
+   "snow": true,
+   "lit": 0.5,
+   "church": false
+  }
+ ],
+ "scatter": [
+  {
+   "of": "snowy_pine",
+   "on": "p",
+   "density": 2.5,
+   "scale": 0.09,
+   "seed": 7
+  }
+ ],
+ "shots": [
+  {
+   "x": 28.0,
+   "y": 36.5,
+   "look_at": [
+    28.0,
+    20.0,
+    1.6
+   ],
+   "fov": 64,
+   "height": 0.3,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.6,
+     "radius": 2.2,
+     "spread": 0.5
+    }
+   ]
+  },
+  {
+   "x": 28.3,
+   "y": 26.4,
+   "look_at": [
+    28.0,
+    22.6,
+    0.3
+   ],
+   "fov": 58,
+   "height": 0.03,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.6,
+     "radius": 2.2,
+     "spread": 0.5
+    }
+   ]
+  },
+  {
+   "x": 27.4,
+   "y": 24.4,
+   "look_at": [
+    27.0,
+    10.0,
+    2.5
+   ],
+   "fov": 70,
+   "height": 0.05,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.6,
+     "radius": 2.2,
+     "spread": 0.5
+    }
+   ]
+  },
+  {
+   "x": 28.0,
+   "y": 47.0,
+   "look_at": [
+    28.0,
+    22.0,
+    2.4
+   ],
+   "fov": 66,
+   "height": 0.5,
+   "overrides": {
+    "time": "morning",
+    "sky": "day",
+    "ambient": [
+     0.5,
+     0.52,
+     0.58
+    ],
+    "fog": {
+     "color": [
+      0.78,
+      0.82,
+      0.88
+     ],
+     "density": 0.01
+    }
+   }
+  }
+ ],
+ "max_distance": 80,
+ "supersample": 2
+}

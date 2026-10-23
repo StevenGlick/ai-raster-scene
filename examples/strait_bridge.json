@@ -1,0 +1,785 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "wwwwwwmmmmmmmwwwwwwwwwwwwwwmmmmmmmwwwwwwwwwwwwwmmmmmmmwwwwww",
+  "wwwwwwmmmmmmwwwwwwwwwwwwwwwmmmmmwwwwwwwwwwwwwwwmmmmmmwwwwwww",
+  "wwwwwwwmmwwwwwwwwwwwwwwwwwwmmmmwwwwwwwwwwwwwwwwmmmmmwwwwwwww",
+  "wwwwwwwwwwwwwwwwwwwwwwwwwwwmmwwwwwwwwwwwwwwwwwwmmmmwwwwwwwww",
+  "wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwmmwwwwwwwwwww",
+  "wwwwwwwwwwwwmmwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww",
+  "wwwwwwwwwwwmmmwwwwwwwwwwwwwswwwwmmwwwwwwwwwwwwwwwwwwwwwwwwww",
+  "wwwwwwwwwmmmmmwwwwwwwwwwwwwsswmmmmmwwwwwwwwwwwwwwwwwmmwwwwww",
+  "wwwwwwwwmmmmmmwwwwwwwwwwwwwssssmmmmwwwwwwwwwwwwwwmmmmmmwwwww",
+  "wwwwwwwmmmmmmmwwwwwwwwwkkkwqssssssmwwwwwwwwwwwwmmmmmmkkkwwww",
+  "wwwwwwmmmmmmmmmwwwmmwkk~~~~kqsssssmwwwwwwmmwwwmmmmmk~~~~~kww",
+  "wwwwwmmmmmmmmmmmmmmkk~~~~~~~~qqsssmmwwmmmmwwwmmmmkk~~~~~~~kk",
+  "kwwwmmmmmkkkkkkkkkk~~~~~~~~~~~kqqqmmmmmkkkwwwmmkk~~~~~~~~~~~",
+  "~kkmmmmkk~~~~~~~~~~~~~~~~~~~~~~~kkkkk~~~~~~kkkk~~~~~~~~~~~~~",
+  "~~~~kk~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "~~~~~~~~~kkkkkkkkkkkk~~~~~~~~~~~~~~~~~~kkkkkkk~~~~~~~~~~~~~~",
+  "~~~~~~~kkmmmmmmmmmmmwk~~~~~~~~~~kkmwwwwwmmwwwwk~~~~~~~~~~kkk",
+  "~~~~~~kmmmmmmmmmmmwwwwwk~~~~~~~kmmwwwwwwwwwwwwmk~~~~~~~kwwww",
+  "k~~~~kmmmmmmmmmmmwwwwwwwk~~~~kmmmwwwwwwwwwwwwwmmkk~~~kkwwwww",
+  "wkkkwwmmwwwwwmmmwwwwwwwwwkkkkmmwwwwwwwwwwwwwwwmmmmkkkwwwwwww",
+  "wwwwwwwwwwwwwmmwwwwwwwwwwwwmwwwwwwwwwwwwwwwwwwmmmmwwwwwwwwww",
+  "wwwwwwwwwwwwmmwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwmwwwwwwwwwwww",
+  "wwwwwwwwwwwmmmwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww",
+  "wwwwwwwwwwmmmwwwwwwwwwwwwwwwwwwwmmwwwwwwwwwwwwwwwwwwwwwwwwww",
+  "wwwwwwwwwmmmmwwwwwwwwwwwwwwwwwmmmmwwwwwwwwwwwwwwwwwwmmwwwwww",
+  "wwwwwwwwmmmmmwwwwwwwwwwwwwwwwmmmmmwwwwwwwwwwwwwwwmmmmmwwwwww",
+  "wwwwwwwmmmmmmwwwwwwwwwwwwwwmmmmmmmwwwwwwwwwwwwwwmmmmmmwwwwww",
+  "wwwwwwmmmmmmmmwwwwwwwwwwwwmmmmmmmmwwwwwwwwwwwwwmmmmmmmwwwwww",
+  "wwwwwmmmmmmmmmmmmmmwwwwwwmmmmmmmmmmwwmmwwwwwwwmmmmmmmmwwwwww",
+  "wwwwmmmmmmmmmmmmmmmwwwwwmmmmmmmmmmmmmmmmwwwwwmmmmmmmmmmwwmmm"
+ ],
+ "legend": {
+  "~": {
+   "floor": "harbor_water"
+  },
+  "k": {
+   "floor": "black_sand"
+  },
+  "w": {
+   "floor": "forest_canopy"
+  },
+  "m": {
+   "floor": "pasture"
+  },
+  "s": {
+   "floor": "city_street_lit"
+  },
+  "q": {
+   "floor": "quay"
+  }
+ },
+ "camera": {
+  "x": 20.0,
+  "y": 29.5,
+  "look_at": [
+   30.0,
+   22.0,
+   1.0
+  ],
+  "fov": 62,
+  "height": 0.06
+ },
+ "title": "The strait bridge - a suspension bridge over a sea strait, at landscape scale",
+ "sky": "day",
+ "skyline": "hills",
+ "ambient": [
+  0.44,
+  0.44,
+  0.48
+ ],
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 180,
+   "elevation": 30,
+   "intensity": 1.25
+  }
+ ],
+ "fog": {
+  "color": [
+   0.76,
+   0.78,
+   0.84
+  ],
+  "density": 0.01
+ },
+ "objects": [
+  {
+   "type": "bridge",
+   "x": 30.0,
+   "y": 23.169183212820503,
+   "angle": 90,
+   "length": 24.41,
+   "deck": 0.55,
+   "height": 1.9,
+   "lit": true
+  },
+  {
+   "type": "lighthouse",
+   "x": 42.0,
+   "y": 31.433092425826466,
+   "scale": 0.04
+  },
+  {
+   "type": "city_block",
+   "x": 27.5,
+   "y": 6.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 64813
+  },
+  {
+   "type": "city_block",
+   "x": 27.5,
+   "y": 7.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 23816
+  },
+  {
+   "type": "city_block",
+   "x": 28.5,
+   "y": 7.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 28412
+  },
+  {
+   "type": "city_block",
+   "x": 27.5,
+   "y": 8.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 42023
+  },
+  {
+   "type": "city_block",
+   "x": 28.5,
+   "y": 8.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 38446
+  },
+  {
+   "type": "city_block",
+   "x": 29.5,
+   "y": 8.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 42069
+  },
+  {
+   "type": "city_block",
+   "x": 30.5,
+   "y": 8.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 3633
+  },
+  {
+   "type": "city_block",
+   "x": 28.5,
+   "y": 9.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 63722
+  },
+  {
+   "type": "city_block",
+   "x": 29.5,
+   "y": 9.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 46848
+  },
+  {
+   "type": "city_block",
+   "x": 30.5,
+   "y": 9.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 47100
+  },
+  {
+   "type": "city_block",
+   "x": 31.5,
+   "y": 9.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 8535
+  },
+  {
+   "type": "city_block",
+   "x": 32.5,
+   "y": 9.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 53149
+  },
+  {
+   "type": "city_block",
+   "x": 33.5,
+   "y": 9.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 60466
+  },
+  {
+   "type": "city_block",
+   "x": 29.5,
+   "y": 10.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 43227
+  },
+  {
+   "type": "city_block",
+   "x": 30.5,
+   "y": 10.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 21966
+  },
+  {
+   "type": "city_block",
+   "x": 31.5,
+   "y": 10.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 43863
+  },
+  {
+   "type": "city_block",
+   "x": 32.5,
+   "y": 10.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 828
+  },
+  {
+   "type": "city_block",
+   "x": 33.5,
+   "y": 10.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 12030
+  },
+  {
+   "type": "city_block",
+   "x": 31.5,
+   "y": 11.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 22843
+  },
+  {
+   "type": "city_block",
+   "x": 32.5,
+   "y": 11.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 44243
+  },
+  {
+   "type": "city_block",
+   "x": 33.5,
+   "y": 11.5,
+   "height": [
+    0.03,
+    0.12
+   ],
+   "count": 2,
+   "lit": 0.5,
+   "style": [
+    "brick",
+    "apartment",
+    "office"
+   ],
+   "seed": 3457
+  },
+  {
+   "type": "mountain",
+   "x": 5.734075242474259,
+   "y": 0.5766720809904435,
+   "size": 9,
+   "length": 13,
+   "height": 2.67,
+   "snowline": 0,
+   "seed": 303
+  },
+  {
+   "type": "mountain",
+   "x": 16.622827717416534,
+   "y": 2.952915220879114,
+   "size": 9,
+   "length": 13,
+   "height": 2.81,
+   "snowline": 0,
+   "seed": 451
+  },
+  {
+   "type": "mountain",
+   "x": 25.914895037367693,
+   "y": 2.47183103479045,
+   "size": 9,
+   "length": 13,
+   "height": 2.71,
+   "snowline": 0,
+   "seed": 643
+  },
+  {
+   "type": "mountain",
+   "x": 33.50008830960646,
+   "y": 3.1275667462615275,
+   "size": 9,
+   "length": 13,
+   "height": 2.54,
+   "snowline": 0,
+   "seed": 429
+  },
+  {
+   "type": "mountain",
+   "x": 41.630835361299276,
+   "y": 0.5218641215769924,
+   "size": 9,
+   "length": 13,
+   "height": 1.87,
+   "snowline": 0,
+   "seed": 376
+  },
+  {
+   "type": "mountain",
+   "x": 50.934518963518364,
+   "y": 2.1577722843054956,
+   "size": 9,
+   "length": 13,
+   "height": 1.9,
+   "snowline": 0,
+   "seed": 315
+  },
+  {
+   "type": "mountain",
+   "x": 61.993946880313615,
+   "y": 1.691726034221304,
+   "size": 9,
+   "length": 13,
+   "height": 1.93,
+   "snowline": 0,
+   "seed": 354
+  },
+  {
+   "type": "mountain",
+   "x": 4.85473159145617,
+   "y": 42.78734833326178,
+   "size": 8,
+   "length": 12,
+   "height": 1.51,
+   "snowline": 0,
+   "seed": 362
+  },
+  {
+   "type": "mountain",
+   "x": 16.467353204723654,
+   "y": 42.06274300555267,
+   "size": 8,
+   "length": 12,
+   "height": 1.89,
+   "snowline": 0,
+   "seed": 432
+  },
+  {
+   "type": "mountain",
+   "x": 29.569708746608086,
+   "y": 42.389885740503466,
+   "size": 8,
+   "length": 12,
+   "height": 1.47,
+   "snowline": 0,
+   "seed": 506
+  },
+  {
+   "type": "mountain",
+   "x": 38.409045128158425,
+   "y": 43.37228419344093,
+   "size": 8,
+   "length": 12,
+   "height": 2.05,
+   "snowline": 0,
+   "seed": 643
+  },
+  {
+   "type": "mountain",
+   "x": 53.89668459914608,
+   "y": 42.0593646907329,
+   "size": 8,
+   "length": 12,
+   "height": 2.26,
+   "snowline": 0,
+   "seed": 754
+  }
+ ],
+ "sprites": [
+  {
+   "x": 25.5,
+   "y": 24.5,
+   "type": "cargo_ship",
+   "flip": true
+  },
+  {
+   "x": 36.0,
+   "y": 17.0,
+   "type": "ferry"
+  },
+  {
+   "x": 23.0,
+   "y": 27.2,
+   "type": "sailboat"
+  },
+  {
+   "x": 45.0,
+   "y": 25.0,
+   "type": "sailboat",
+   "flip": true
+  },
+  {
+   "x": 17.0,
+   "y": 22.0,
+   "type": "sailboat"
+  }
+ ],
+ "scatter": [
+  {
+   "of": [
+    "tree",
+    "pine"
+   ],
+   "on": "w",
+   "density": 1.5,
+   "scale": 0.09,
+   "seed": 3
+  }
+ ],
+ "time": "golden",
+ "shots": [
+  {
+   "x": 20.0,
+   "y": 29.5,
+   "look_at": [
+    30.0,
+    22.0,
+    1.0
+   ],
+   "fov": 62,
+   "height": 0.06
+  },
+  {
+   "x": 33.6,
+   "y": 14.7,
+   "look_at": [
+    30.0,
+    26.0,
+    0.8
+   ],
+   "fov": 62,
+   "height": 0.08
+  },
+  {
+   "x": 42.0,
+   "y": 36.0,
+   "look_at": [
+    30.0,
+    22.0,
+    0.2
+   ],
+   "fov": 62,
+   "height": 2.0
+  },
+  {
+   "x": 20.0,
+   "y": 29.5,
+   "look_at": [
+    30.0,
+    22.0,
+    1.0
+   ],
+   "fov": 62,
+   "height": 0.06,
+   "time": "dusk",
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.6,
+     "radius": 2.2,
+     "spread": 0.5
+    }
+   ]
+  },
+  {
+   "x": 32.9,
+   "y": 23.5,
+   "look_at": [
+    30.6,
+    20.8,
+    0.42
+   ],
+   "fov": 60,
+   "height": 0.12,
+   "overrides": {
+    "time": "night",
+    "sprites": [
+     {
+      "id": "kaiju",
+      "x": 30.75,
+      "y": 21.0,
+      "type": "kaiju_wading",
+      "facing": 90
+     },
+     {
+      "x": 31.9,
+      "y": 20.2,
+      "type": "helicopter",
+      "z": 0.62,
+      "flip": true
+     },
+     {
+      "x": 29.0,
+      "y": 20.6,
+      "type": "helicopter",
+      "z": 0.7
+     },
+     {
+      "x": 22.0,
+      "y": 19.5,
+      "type": "cargo_ship",
+      "flip": true
+     }
+    ],
+    "lights": [
+     {
+      "type": "moon",
+      "azimuth": 300,
+      "elevation": 26,
+      "intensity": 0.3
+     },
+     {
+      "x": 31.6,
+      "y": 21.0,
+      "z": 0.3,
+      "radius": 1.0,
+      "color": [
+       0.45,
+       0.85,
+       1.0
+      ],
+      "intensity": 0.5
+     }
+    ],
+    "fog": {
+     "color": [
+      0.1,
+      0.1,
+      0.14
+     ],
+     "density": 0.02,
+     "glow": 0.7
+    }
+   },
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.4,
+     "radius": 2.5,
+     "spread": 0.5
+    }
+   ]
+  }
+ ],
+ "max_distance": 70,
+ "supersample": 2
+}

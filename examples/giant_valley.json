@@ -337,6 +337,15 @@
    "count": 9,
    "seed": 8,
    "church": false
+  },
+  {
+   "type": "bridge",
+   "style": "stone",
+   "x": 22.05,
+   "y": 34.0,
+   "length": 5.2,
+   "span": 0.85,
+   "seed": 4
   }
  ],
  "scatter": [

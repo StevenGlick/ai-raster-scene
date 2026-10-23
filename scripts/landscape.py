@@ -277,6 +277,49 @@ def tex_desert_road(name, ew=True):
     return np.clip(img, 0, 1)
 
 
+def tex_snow_fields(name):
+    """Farmland under snow from high up: the fields white, each a shade of its own and the ploughed ones showing
+    their furrows faintly through, the hedgerows dark lines across it with their trees standing out of the snow."""
+    base = tex_farmland(name)
+    lum = base.mean(-1)
+    rng = _rng(name + '/snow')
+    hedge = lum < 0.25
+    drift = smooth_noise(T, T, 5, rng)                                # the snow lies unevenly, in drifts
+    img = col('#e4ecf4') * (0.88 + 0.08 * (lum[..., None] - 0.4) + 0.1 * drift[..., None]) * (
+        0.97 + 0.05 * rng.random((T, T, 1)))
+    img[hedge] = (img * 0.84 + col('#5a6466') * 0.16)[hedge]          # hedges buried, a faint line
+    img[hedge & (lum < 0.16)] = col('#2e3836')                       # the trees in them, standing out
+    return np.clip(img, 0, 1)
+
+
+def tex_snow_forest(name):
+    """Pines under snow from high up: dark crowns close together, each white on its lit side and its top, blue
+    shadow between them."""
+    base = tex_pine_canopy(name)
+    lum = base.mean(-1)
+    img = base * 0.75 + col('#22303a') * 0.1
+    snow = lum > np.percentile(lum, 55)
+    img[snow] = col('#dce6f0') * (0.85 + 0.5 * (lum[snow, None] - lum[snow].mean()))
+    return np.clip(img, 0, 1)
+
+
+def tex_frozen_lake(name):
+    """A frozen lake from high up: grey-blue ice, white drifts of snow blown across it in streaks, cracks running long and straight. Three layouts
+    (`frozen_lake`, `_b`, `_c`) to mix, so a lake of it does not repeat."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    v = 0.56 + 0.1 * smooth_noise(T, T, 5, rng)
+    drift = smooth_noise(T, T, 8, rng, cells_y=2) > 0.6                 # streaks blown along it
+    v = np.where(drift, 0.8, v)
+    img = dither(np.clip(v, 0, 1), ramp(['#2a3a48', '#3e5262', '#5a7282', '#7a94a4', '#a8bccc', '#e0eaf2']), 0.5)
+    for _ in range(3):                                                    # cracks, long and straight
+        x0, y0, a = rng.uniform(0, T), rng.uniform(0, T), rng.uniform(0, np.pi)
+        t = np.arange(-26, 26)
+        cx, cy = (x0 + t * np.cos(a)).astype(int) % T, (y0 + t * np.sin(a)).astype(int) % T
+        img[cy, cx] = col('#3e5060')
+    return np.clip(img, 0, 1)
+
+
 def _canopy(name, rmin, rmax, n, greens, light):
     """Woodland from high up: crowns packed close, each a round of its own green, lit on its upper left and in
     shade on the lower right, the gaps between them dark - wrapping, so the wood runs on from cell to cell."""
@@ -571,6 +614,73 @@ def spr_ash_plume():
     return rgba.astype(np.float32), em
 
 
+HULL = ramp('#2a3644', dark=0.35, light=1.5, cool=0.15)
+RED_HULL = ramp('#7a2a22', dark=0.4, light=1.35)
+WHITE = ramp('#d8dcdc', dark=0.45, light=1.12)
+BOX = [ramp(c, dark=0.4, light=1.35) for c in ('#a8402c', '#2c5a8a', '#3a7a4a', '#b8a03a', '#7a7e84', '#c86a2a')]
+
+
+def spr_cargo_ship():
+    """A container ship, side on, bow to the left, two hundred metres of it: a long dark hull over a red boot-top
+    at the waterline, its deck stacked with containers of every colour in bays, the white superstructure and
+    bridge at the stern under its funnel; its lights lit."""
+    rng = np.random.default_rng(83)
+    w, h = 160, 38
+    oy = 8                                                          # headroom for the funnel
+    cv = Canvas(w, h, wrap=False)
+    hull = [(2, 18 + oy), (8, 22 + oy), (150, 22 + oy), (158, 15 + oy), (156, 13 + oy), (4, 13 + oy)]
+    cv.polygon(hull, z=0.4, top=0.6, bevel=1.2, mat=0)
+    cv.polygon([(7, 21 + oy), (8, 23.5 + oy), (150, 23.5 + oy), (152, 21 + oy)], z=0.45, top=0.3, bevel=0.6, mat=1)   # the boot-top
+    for bay in range(16):                                           # containers, bay by bay
+        x0 = 14 + bay * 7.8
+        if x0 > 124:
+            break
+        for tier in range(int(rng.integers(2, 5))):
+            cv.box(x0, 12 + oy - tier * 2.6, 7.2, 2.5, z=0.8 + tier * 0.05, top=0.2, bevel=0.5,
+                   mat=3 + int(rng.integers(0, len(BOX))), tone=float(rng.uniform(-0.06, 0.06)))
+    cv.box(130, 2 + oy, 16, 11, z=0.9, top=0.3, bevel=0.8, mat=2)      # the superstructure
+    cv.box(127, 1 + oy, 22, 2.4, z=1.0, top=0.2, bevel=0.5, mat=2)     # its bridge wings
+    cv.box(141, -3 + oy, 5, 6, z=1.0, top=0.3, bevel=0.6, mat=1)       # the funnel
+    for x in range(132, 145, 3):                                  # the bridge's windows
+        cv.box(x, 3.4 + oy, 1.6, 1.0, z=1.2, top=0.05, bevel=0.2, mat=0, tone=-0.3)
+    rgba = cv.paint([HULL, RED_HULL, WHITE] + BOX, cv.light(relief=1.0, cavity=0.3), dither=0.3)
+    return outline_sprite(rgba).astype(np.float32), np.zeros(rgba.shape[:2], np.float32)
+
+
+def spr_ferry():
+    """A car ferry, side on, bow to the left: a white hull and two decks of windows, a blue band along it, a
+    squat funnel; its windows lit."""
+    w, h = 72, 28
+    oy = 8
+    cv = Canvas(w, h, wrap=False)
+    cv.polygon([(2, 12 + oy), (6, 16 + oy), (66, 16 + oy), (70, 10 + oy), (69, 8 + oy), (3, 8 + oy)], z=0.4, top=0.6, bevel=1.0, mat=1)
+    cv.box(6, 15 + oy, 60, 1.6, z=0.5, top=0.2, bevel=0.4, mat=0)                       # the band along the hull
+    cv.box(12, 3 + oy, 46, 5, z=0.8, top=0.3, bevel=0.6, mat=1)                        # its decks
+    cv.box(20, -1 + oy, 26, 4, z=0.9, top=0.3, bevel=0.6, mat=1)
+    cv.box(36, -5 + oy, 5, 4.5, z=1.0, top=0.3, bevel=0.5, mat=0)                      # the funnel
+    for x in range(14, 56, 3):
+        cv.box(x, 4.5 + oy, 1.6, 1.2, z=1.1, top=0.05, bevel=0.2, mat=2)
+    for x in range(22, 44, 3):
+        cv.box(x, 0.4 + oy, 1.6, 1.2, z=1.1, top=0.05, bevel=0.2, mat=2)
+    rgba = cv.paint([ramp('#2a5a9a', dark=0.4, light=1.35), WHITE, ramp('#e8d8a0', dark=0.5, light=1.1)],
+                    cv.light(relief=1.0, cavity=0.3), dither=0.3)
+    em = np.where((cv.mat == 2) & (cv.id > 0), 0.6, 0.0).astype(np.float32)
+    return outline_sprite(rgba).astype(np.float32), em
+
+
+def spr_sailboat():
+    """A yacht under sail, side on, heeling a little: a white hull, a tall mainsail and a jib, white against the
+    water."""
+    w, h = 24, 36
+    cv = Canvas(w, h, wrap=False)
+    cv.polygon([(3, 29), (5, 32), (19, 32), (22, 28.5)], z=0.4, top=0.5, bevel=0.6, mat=1)
+    cv.stroke([(12.5, 29), (13.5, 2)], 0.9, z=0.6, dome=0.2, mat=0)                 # the mast
+    cv.polygon([(13.6, 3), (21, 27.5), (13.8, 27.5)], z=0.7, top=0.3, bevel=0.6, mat=1)   # the mainsail
+    cv.polygon([(12.6, 5), (12.6, 27.5), (4.5, 27.5)], z=0.65, top=0.3, bevel=0.6, mat=1, tone=-0.06)  # the jib
+    rgba = cv.paint([ramp('#6a6a70', dark=0.4, light=1.3), WHITE], cv.light(relief=1.0, cavity=0.3), dither=0.3)
+    return outline_sprite(rgba).astype(np.float32), np.zeros(rgba.shape[:2], np.float32)
+
+
 def _tanks(firing):
     """A column of four tanks, side on, facing left, olive drab on dark tracks, their guns raised toward something
     tall; `firing`: a flash at every muzzle."""
@@ -690,22 +800,30 @@ TEXTURES = {'city_street': lambda n: _street(n, False), 'city_street_lit': lambd
             'lava_field': tex_lava_field, 'lava_flow': tex_lava_flow, 'black_sand': lambda n: (tex_black_sand(n), None),
             'desert_floor': lambda n: (tex_desert_floor(n), None), 'desert_floor_b': lambda n: (tex_desert_floor(n), None),
             'desert_floor_c': lambda n: (tex_desert_floor(n), None), 'desert_road': lambda n: (tex_desert_road(n, False), None),
-            'desert_road_ew': lambda n: (tex_desert_road(n), None)}
+            'desert_road_ew': lambda n: (tex_desert_road(n), None), 'snow_fields': lambda n: (tex_snow_fields(n), None),
+            'snow_fields_b': lambda n: (tex_snow_fields(n), None), 'snow_forest': lambda n: (tex_snow_forest(n), None),
+            'frozen_lake': lambda n: (tex_frozen_lake(n), None), 'frozen_lake_b': lambda n: (tex_frozen_lake(n), None),
+            'frozen_lake_c': lambda n: (tex_frozen_lake(n), None)}
 TEXTURE_NOISE = {'city_street': 0.15, 'city_street_lit': 0.15, 'harbor_water': 0.1, 'quay': 0.2, 'container_yard': 0.1,
                  'city_park': 1.0, 'farmland': 1.0, 'farmland_b': 1.0, 'farmland_c': 1.0, 'farmland_d': 1.0,
                  'farmland_e': 1.0, 'farmland_f': 1.0, 'pasture': 1.0, 'forest_canopy': 1.0, 'pine_canopy': 1.0,
                  'river_water': 1.0, 'road_ew': 0.6, 'road_ns': 0.6, 'road_x': 0.6, 'lava_field': 0.5,
                  'lava_flow': 0.0, 'black_sand': 0.6, 'desert_floor': 0.8, 'desert_floor_b': 0.8,
-                 'desert_floor_c': 0.8, 'desert_road': 0.5, 'desert_road_ew': 0.5}                 # the country mottled in full, as soil and weather lie across it
-TEXTURE_REFLECT = {'harbor_water': 0.35, 'river_water': 0.5}
+                 'desert_floor_c': 0.8, 'desert_road': 0.5, 'desert_road_ew': 0.5, 'snow_fields': 0.4,
+                 'snow_fields_b': 0.4, 'snow_forest': 0.8, 'frozen_lake': 0.4, 'frozen_lake_b': 0.4,
+                 'frozen_lake_c': 0.4}                 # the country mottled in full, as soil and weather lie across it
+TEXTURE_REFLECT = {'harbor_water': 0.35, 'river_water': 0.5, 'frozen_lake': 0.18, 'frozen_lake_b': 0.18,
+                   'frozen_lake_c': 0.18}
 SPRITES = {'kaiju': spr_kaiju, 'kaiju_roar': spr_kaiju_roar, 'kaiju_wading': spr_kaiju_wading, 'blaze': spr_blaze,
            'smoke_plume': spr_smoke_plume,
            'tanks': spr_tanks, 'tanks_firing': spr_tanks_firing, 'helicopter': spr_helicopter, 'jet': spr_jet,
-           'pylon': spr_pylon, 'ash_plume': spr_ash_plume}
+           'pylon': spr_pylon, 'ash_plume': spr_ash_plume, 'cargo_ship': spr_cargo_ship, 'ferry': spr_ferry,
+           'sailboat': spr_sailboat}
 SPRITE_HEIGHT = {'kaiju': 0.62, 'kaiju_roar': 0.62, 'kaiju_wading': round(0.62 * (WADE + 2) / 126, 3), 'blaze': 0.24,
                  'smoke_plume': 1.2,
                  'tanks': 0.045,
-                 'tanks_firing': 0.045, 'helicopter': 0.05, 'jet': 0.045, 'pylon': 0.55, 'ash_plume': 9.0}
+                 'tanks_firing': 0.045, 'helicopter': 0.05, 'jet': 0.045, 'pylon': 0.55, 'ash_plume': 9.0,
+                 'cargo_ship': 0.5, 'ferry': 0.28, 'sailboat': 0.16}
 PROP_DEFAULTS = {'blaze': {'blend': 'additive', 'shadow': False}, 'smoke_plume': {'opacity': 0.85, 'shadow': False},
                  'helicopter': {'shadow': False}, 'jet': {'shadow': False}, 'pylon': {'planes': 2},
                  'ash_plume': {'opacity': 0.92, 'shadow': False}}

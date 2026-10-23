@@ -80,7 +80,8 @@ def kaiju_harbor():
     sprites += [{'x': 18.2, 'y': 20.45, 'type': 'tanks_firing', 'flip': True},
                 {'x': 20.02, 'y': 20.79, 'type': 'tanks_firing', 'flip': True},     # before the camera on the quay
                 {'x': 20.29, 'y': 20.77, 'type': 'tanks_firing'},
-                {'x': 23.2, 'y': 20.4, 'type': 'tanks_firing'}, {'x': 25.4, 'y': 20.5, 'type': 'tanks'}]
+                {'x': 23.2, 'y': 20.4, 'type': 'tanks_firing'}, {'x': 25.4, 'y': 20.5, 'type': 'tanks'},
+                {'x': 33.4, 'y': 21.35, 'type': 'cargo_ship', 'flip': True}]   # berthed at the container quay
     for x, y in FIRES:
         sprites += [{'x': x, 'y': y, 'type': 'blaze'}, {'x': x + 0.1, 'y': y - 0.05, 'type': 'smoke_plume'}]
     sprites += [{'x': STRUCK[0], 'y': STRUCK[1], 'z': STRUCK[2] - 0.12, 'type': 'blaze', 'scale': 0.42, 'night': True}]

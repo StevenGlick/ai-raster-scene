@@ -39,7 +39,7 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel', 'ends', 'sail',
                   'band', 'lit', 'casts', 'teeth', 'spokes', 'goods', 'game', 'to', 'view', 'scene', 'shape',
                   'frame', 'edge', 'door', 'swing', 'show', 'crt', 'text', 'style', 'ground', 'smooth', 'setback',
-                  'antenna', 'pad', 'elevation', 'opacity', 'built', 'night', 'day', 'snowline', 'ridges', 'sag', 'crater', 'lava', 'cliff',
+                  'antenna', 'pad', 'elevation', 'opacity', 'built', 'night', 'day', 'snowline', 'ridges', 'sag', 'crater', 'lava', 'cliff', 'deck', 'span', 'snow',
                   'church'}
 
 
@@ -3737,6 +3737,132 @@ def _cable_tex(color):
     return rgba, np.zeros((3, 2), np.float32)
 
 
+def _strips(pts, w, tex):
+    """A line through `pts` drawn as two thin strips crossed along each piece of it, `w` across, so it shows
+    from any side - a cable, a hanger."""
+    parts = []
+    for p, q in zip(pts, pts[1:]):
+        p, q = np.asarray(p, float), np.asarray(q, float)
+        d = q - p
+        L = float(np.linalg.norm(d))
+        if L < 1e-6:
+            continue
+        d /= L
+        e1 = np.cross(d, [0.0, 0.0, 1.0] if abs(d[2]) < 0.95 else [1.0, 0.0, 0.0])
+        e1 /= np.linalg.norm(e1)
+        e2 = np.cross(d, e1)
+        for e in (e1, e2):
+            h = e * w / 2
+            parts.append(quad(tex, tuple(q - h), tuple(q + h), tuple(p - h)))
+    return parts
+
+
+@functools.lru_cache(maxsize=None)
+def _deck_tex(w, h, lanes):
+    """A bridge's road seen from above, w along it and h across: asphalt, a pale line at each edge, dashed
+    lines between its `lanes`."""
+    img = np.empty((h, w, 3), np.float32)
+    img[:] = rgb('#4a4a4c')
+    img[[0, -1]] = rgb('#8a8680')
+    img[[1, -2]] = rgb('#c8c4b8')
+    for k in range(1, lanes):
+        y = int(round(h * k / lanes))
+        img[y, (np.arange(w) % 6) < 3] = rgb('#d8d4c8')
+    return np.concatenate([img, np.ones((h, w, 1), np.float32)], -1), np.zeros((h, w), np.float32)
+
+
+@functools.lru_cache(maxsize=None)
+def _arch_side(w, h, span, pier, rise, color, seed):
+    """The side of a stone bridge, w x h texels from its parapet's top down to the ground: courses of stone, and
+    a round-headed arch through it every `span` texels between piers `pier` wide, springing `rise` below the
+    top."""
+    rng = np.random.default_rng(seed)
+    img = np.empty((h, w, 3), np.float32)
+    img[:] = rgb(color) * (0.9 + 0.16 * rng.random((h, w, 1)))
+    img[np.arange(h) % 4 == 3] *= 0.82                              # the courses
+    img[:2] = rgb(color) * 1.12                                     # the parapet's coping
+    yy, xx = np.mgrid[0:h, 0:w]
+    a = np.ones((h, w), np.float32)
+    r = (span - pier) / 2
+    for c in np.arange(span / 2, w, span):
+        crown = rise                                                # the arch's crown, `rise` below the top
+        hole = (np.abs(xx + 0.5 - c) < r) & (yy >= crown + r)
+        hole |= (np.hypot(xx + 0.5 - c, yy + 0.5 - (crown + r)) < r) & (yy < crown + r)
+        a[hole] = 0.0
+        ring = (np.hypot(xx + 0.5 - c, yy + 0.5 - (crown + r)) < r + 1.5) & (yy < crown + r) & ~hole
+        img[ring] = rgb(color) * 0.78                               # its voussoirs, a ring of darker stone
+    img[a > 0] *= 1.0
+    return np.concatenate([np.clip(img, 0, 1), a[..., None]], -1), np.zeros((h, w), np.float32)
+
+
+def bridge(pl):
+    """A bridge `length` long (default 12) along the way it faces, its road `width` across (default 0.22) at
+    `deck` height over the ground or the water under it. `style` `suspension` (the default): two towers
+    `height` tall (default 3.2 times the deck's height) a little in from each end, each a pair of legs braced by
+    beams, carrying a main cable either side from an anchorage at each end over their tops, sagging between them
+    nearly down to the road, hangers dropping from them to it; the deck a steel box with the road on top, in
+    `paint` (default an orange-red); `lit` puts lamps along its road and red lights on its towers' tops (the
+    hour turns them off by day, as it does a tower's windows). `stone`: the road carried on round arches `span` apart (default 0.9), a
+    parapet each side, of `color` stone (default a warm grey) - for a village's river."""
+    L, Wd = float(pl.get('length', 12.0)), float(pl.get('width', 0.22))
+    style = pl.get('style', 'suspension')
+    parts = []
+    if style == 'stone':
+        D = float(pl.get('deck', 0.16))
+        span = float(pl.get('span', 0.9))
+        n = max(1, int(round(L / span)))
+        span = L / n
+        f = lambda v: max(3, int(round(v * FINE * 0.5)))           # noqa: E731
+        side = _arch_side(f(L), f(D + 0.03), f(span), max(2, f(span * 0.18)), max(1, f(0.035)),
+                          pl.get('color', '#b4ac9c'), int(pl.get('seed', 1)))
+        for y in (-Wd / 2, Wd / 2):
+            parts.append(quad(side, (L / 2, y, D + 0.03), (-L / 2, y, D + 0.03), (L / 2, y, 0.0)) if y > 0 else
+                         quad(side, (-L / 2, y, D + 0.03), (L / 2, y, D + 0.03), (-L / 2, y, 0.0)))
+        parts += box((-L / 2, -Wd / 2, D - 0.02), (L / 2, Wd / 2, D),
+                     {'top': _deck_tex(f(Wd) * 0 + max(8, int(L * 40)), max(4, int(Wd * 40)), 1)})
+        return parts
+    D = float(pl.get('deck', 0.55))
+    Ht = float(pl.get('height', D * 3.2))
+    paint = pl.get('paint', '#b8442c')
+    tx = L * 0.3                                                    # the towers, in from each end
+    parts += box((-L / 2, -Wd / 2, D - 0.05), (L / 2, Wd / 2, D),
+                 {'top': _deck_tex(max(8, int(L * 40)), max(4, int(Wd * 40)), 4)})
+    parts += _painted_box((-L / 2, -Wd / 2 - 0.01, D - 0.07), (L / 2, Wd / 2 + 0.01, D - 0.02), '#4a4e54',
+                          skip=('top',))                            # the stiffening truss under it
+    oy = Wd / 2 + 0.025
+    for x in (-tx, tx):
+        for y in (-oy, oy):                                         # each tower's two legs
+            parts += _painted_box((x - 0.03, y - 0.025, 0.0), (x + 0.03, y + 0.025, Ht), paint)
+        for zb in (D - 0.08, D + (Ht - D) * 0.45, Ht - 0.06):        # braced by beams across
+            parts += _painted_box((x - 0.025, -oy, zb), (x + 0.025, oy, zb + 0.05), paint)
+    tex = _cable_tex(paint)
+    low = D + 0.05
+
+    def main(xx):                                                   # the main cable's height along the bridge
+        if abs(xx) <= tx:
+            return low + (Ht - low) * (xx / tx) ** 2
+        return Ht - (Ht - D) * (abs(xx) - tx) / (L / 2 - tx)
+    if float(pl.get('lit', 0)) > 0.5:                               # lamps along the road, red lights on its towers
+        lamp = (np.concatenate([np.full((2, 2, 3), rgb('#ffd890')), np.ones((2, 2, 1))], -1).astype(np.float32),
+                np.ones((2, 2), np.float32))
+        red = (np.concatenate([np.full((2, 2, 3), rgb('#ff3020')), np.ones((2, 2, 1))], -1).astype(np.float32),
+               np.ones((2, 2), np.float32))
+        for x in np.arange(-L / 2 + 0.2, L / 2, L / 28):
+            for y in (-Wd / 2 - 0.004, Wd / 2 + 0.004):
+                parts += box((x - 0.012, y - 0.004, D + 0.01), (x + 0.012, y + 0.004, D + 0.04),
+                             {'front': lamp, 'back': lamp, 'right': lamp, 'left': lamp})
+        for x in (-tx, tx):
+            parts += box((x - 0.03, -0.03, Ht), (x + 0.03, 0.03, Ht + 0.05),
+                         {'front': red, 'back': red, 'right': red, 'left': red, 'top': red})
+    xs = np.linspace(-L / 2, L / 2, 49)
+    for y in (-oy, oy):
+        parts += _strips([(x, y, main(x)) for x in xs], 0.03, tex)
+        for x in np.arange(-L / 2 + 0.3, L / 2 - 0.2, 0.3):         # the hangers
+            if main(x) - D > 0.03:
+                parts += _strips([(x, y, main(x)), (x, y, D)], 0.01, tex)
+    return parts
+
+
 def cable(pl):
     """A cable slung from the placement (its `z` the height it hangs from) to the point `to` ([x, y, z], in the
     scene's own units), sagging `sag` below the straight line at its middle (default 3% of its length): power
@@ -3772,29 +3898,38 @@ HOUSE_ROOFS = {'tile': '#a04a32', 'slate': '#4a4e5a', 'thatch': '#8a7448', 'red'
 
 
 @functools.lru_cache(maxsize=None)
-def _house_wall(w, h, color, seed, door):
+def _house_wall(w, h, color, seed, door, lit=0.0):
     """A cottage's wall at landscape scale, w x h texels: its plaster or stone, a row or two of small dark windows
-    in pale frames, and with `door` a door at its foot."""
+    in pale frames, and with `door` a door at its foot; `lit` the share of its windows with a lamp in them."""
     rng = np.random.default_rng(seed)
     img = np.empty((h, w, 3), np.float32)
     img[:] = rgb(color) * (0.92 + 0.12 * rng.random((h, w, 1)))
+    em = np.zeros((h, w), np.float32)
     rows = [h // 3] if h < 9 else [h // 4, h // 2 + 1]
     for y in rows:
         for x in range(2, w - 2, 4):
-            img[y:y + 2, x:x + 2] = rgb('#2a2e34')
+            on = lit > 0 and rng.random() < lit
+            img[y:y + 2, x:x + 2] = rgb('#ffc870') * rng.uniform(0.85, 1.05) if on else rgb('#2a2e34')
+            em[y:y + 2, x:x + 2] = 1.0 if on else 0.0
             img[y + 2:y + 3, x:x + 2] = rgb(color) * 1.15
     if door:
         x = w // 2
         img[h - 3:h, x:x + 2] = rgb('#4a3020')
     img[-1] *= 0.7                                               # its foot, in its own shade
-    return np.concatenate([np.clip(img, 0, 1), np.ones((h, w, 1), np.float32)], -1), np.zeros((h, w), np.float32)
+    return np.concatenate([np.clip(img, 0, 1), np.ones((h, w, 1), np.float32)], -1), em
 
 
 @functools.lru_cache(maxsize=None)
 def _roof_tex(w, h, color):
     """A roof's slope at landscape scale: rows of tiles (or slate, or thatch) running along it, darker at the
-    eave."""
+    eave; `snow` - lying thick, a tile showing here and there, the eave's edge in its shade."""
     img = np.empty((h, w, 3), np.float32)
+    if color == 'snow':
+        rng = np.random.default_rng(w * 31 + h)
+        img[:] = rgb('#e6edf4') * (0.94 + 0.06 * rng.random((h, w, 1)))
+        img[rng.random((h, w)) < 0.03] = rgb('#6a5a52')
+        img[-1] = rgb('#9aa6b4')
+        return np.concatenate([img, np.ones((h, w, 1), np.float32)], -1), np.zeros((h, w), np.float32)
     img[:] = rgb(color)
     img[np.arange(h) % 2 == 1] *= 0.86
     img[-1] *= 0.75
@@ -3809,14 +3944,16 @@ def _gable(w, h, color):
     return tex, np.zeros((h, w), np.float32)
 
 
-def _cottage(L, W, h, r, wall, roof, seed, chimney=True):
+def _cottage(L, W, h, r, wall, roof, seed, chimney=True, lit=0.0):
     """A cottage at landscape scale, about the origin, its ridge along x: walls `h` tall, a gabled roof rising `r`
-    over them with a little overhang, a chimney at one end."""
+    over them with a little overhang, a chimney at one end; `lit` of its windows lit."""
     f = lambda v: max(3, int(round(v * FINE)))                       # noqa: E731
     x0, x1, y0, y1 = -L / 2, L / 2, -W / 2, W / 2
     parts = box((x0, y0, 0.0), (x1, y1, h), {
-        'front': _house_wall(f(W), f(h), wall, seed, False), 'back': _house_wall(f(W), f(h), wall, seed + 1, False),
-        'right': _house_wall(f(L), f(h), wall, seed + 2, True), 'left': _house_wall(f(L), f(h), wall, seed + 3, False)})
+        'front': _house_wall(f(W), f(h), wall, seed, False, lit),
+        'back': _house_wall(f(W), f(h), wall, seed + 1, False, lit),
+        'right': _house_wall(f(L), f(h), wall, seed + 2, True, lit),
+        'left': _house_wall(f(L), f(h), wall, seed + 3, False, lit)})
     o = W * 0.12
     tex = _roof_tex(f(L + 2 * o), f(math.hypot(W / 2 + o, r)), HOUSE_ROOFS.get(roof, roof))
     for sgn in (1, -1):                                              # the two slopes, ridge to eave
@@ -3830,10 +3967,10 @@ def _cottage(L, W, h, r, wall, roof, seed, chimney=True):
     return parts
 
 
-def _church(seed):
-    """A village church at landscape scale: a nave of stone under slate, a square tower at its west end and a
-    spire on the tower."""
-    parts = _cottage(0.2, 0.085, 0.075, 0.055, '#b8b0a0', 'slate', seed, chimney=False)
+def _church(seed, lit=0.0, snow=False):
+    """A village church at landscape scale: a nave of stone under slate (or snow), a square tower at its west end
+    and a spire on the tower."""
+    parts = _cottage(0.2, 0.085, 0.075, 0.055, '#b8b0a0', 'snow' if snow else 'slate', seed, chimney=False, lit=lit)
     tw, th = 0.026, 0.16
     tx = -0.1 - tw
     f = lambda v: max(3, int(round(v * FINE)))                       # noqa: E731
@@ -3841,7 +3978,7 @@ def _church(seed):
              for i, k in enumerate(('front', 'back', 'right', 'left'))}
     parts += box((tx - tw, -tw, 0.0), (tx + tw, tw, th), faces)                 # the tower
     tip = (tx, 0.0, th + 0.11)
-    tex = _roof_tex(f(2 * tw), f(0.115), '#4a4e5a')
+    tex = _roof_tex(f(2 * tw), f(0.115), 'snow' if snow else '#4a4e5a')
     tri = (tex[0].copy(), tex[1])
     w_, h_ = tri[0].shape[1], tri[0].shape[0]
     tri[0][..., 3] = _grown(_poly(w_, h_, [(0, h_), (w_, h_), (w_ / 2, 0)]))
@@ -3859,9 +3996,11 @@ def village(pl):
     """A village at landscape scale - a map cell about 100 m: `count` cottages (default 16) along a street that
     winds through it, `size` across (default 2.4), each its own size and colours - plaster or stone, roofs of red
     tile, slate or thatch, a chimney - turned to the street, and its church (`church`, default true) with a spire
-    near the middle; a few farms stand off by themselves. `seed` draws another."""
+    near the middle; a few farms stand off by themselves. `seed` draws another. `lit` (0-1) puts lamps in that
+    share of its windows - at night; the hour turns them down by day - and `snow` lays its roofs under snow."""
     rng = np.random.default_rng(int(pl.get('seed', 1)))
     R = float(pl.get('size', 2.4)) / 2
+    lit, snow = float(pl.get('lit', 0.0)), bool(pl.get('snow'))
     parts = []
     bend = rng.uniform(-0.6, 0.6)
     for k in range(int(pl.get('count', 16))):
@@ -3877,10 +4016,11 @@ def village(pl):
         L, W = rng.uniform(0.09, 0.15), rng.uniform(0.055, 0.075)
         roof = ('tile', 'tile', 'slate', 'thatch', 'red')[int(rng.integers(0, 5))]
         house = _cottage(L, W, rng.uniform(0.035, 0.05), rng.uniform(0.028, 0.04),
-                         HOUSE_WALLS[int(rng.integers(0, len(HOUSE_WALLS)))], roof, int(rng.integers(0, 1 << 16)))
+                         HOUSE_WALLS[int(rng.integers(0, len(HOUSE_WALLS)))], 'snow' if snow else roof,
+                         int(rng.integers(0, 1 << 16)), lit=lit)
         parts += _turned_parts(house, ang, x, y)
     if pl.get('church', True):
-        parts += _turned_parts(_church(int(rng.integers(0, 1 << 16))), math.atan2(2 * bend * 0.1, 1.0), 0.1 * R,
+        parts += _turned_parts(_church(int(rng.integers(0, 1 << 16)), lit, snow), math.atan2(2 * bend * 0.1, 1.0), 0.1 * R,
                                bend * R * (0.01 - 0.3) - 0.2)
     return parts
 
@@ -4241,6 +4381,6 @@ OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'bo
            'standing_stone': standing_stone, 'gear': gear, 'heap': heap, 'arcade_cabinet': arcade_cabinet,
            'vending_machine': vending_machine, 'well': well, 'crate': crate, 'barrel': barrel,
            'card_table': card_table, 'saloon_chair': saloon_chair, 'piano': piano, 'pew': pew, 'tower': tower,
-           'city_block': city_block, 'searchlight': searchlight, 'ray': ray, 'cable': cable, 'mountain': mountain, 'village': village,
+           'city_block': city_block, 'searchlight': searchlight, 'ray': ray, 'cable': cable, 'bridge': bridge, 'mountain': mountain, 'village': village,
            'portal': portal, 'screen': screen,
            'sign': sign}

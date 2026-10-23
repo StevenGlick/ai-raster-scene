@@ -7330,6 +7330,12 @@
    "type": "tanks"
   },
   {
+   "x": 33.4,
+   "y": 21.35,
+   "type": "cargo_ship",
+   "flip": true
+  },
+  {
    "x": 17.4,
    "y": 20.25,
    "type": "blaze"
