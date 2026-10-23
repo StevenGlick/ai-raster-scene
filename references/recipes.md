@@ -384,6 +384,53 @@ runners' ruts); deep `snow` either side, `snowy_pine`s by density, the `snow` sc
 with a warm light and `steam` from its chimney. The `aurora` sky, a moon's light, a thin cold fog. The `dog_team`
 2.7 ahead of the camera (`scale` 0.55) is the team you drive. See `examples/sled_run.py`.
 
+### A voyage under sail
+
+The sea is the road and the ground (`sea`, `ripple` 0.8), the `islands` skyline far off, a `golden` sky and a low sun
+ahead so the water carries its glow; a `galleon` ahead with a warm light of its own (its reflection sits in the
+glow), a `sea_fort` on its rock off to one side, palms on a sandbar, a `seagull` or two. The `bowsprit` as the
+vehicle (`ahead` 1.2, `scale` 0.75): its jib stands off to starboard, so keep what matters to port and ahead. See
+`examples/high_seas.py`.
+
+### A safari drive
+
+A red dirt track (`dirt` tinted, the edge ragged into the grass) across `dry_grass` tinted gold, a low `hills`
+skyline, a `sunset` sky with a big `sun` sky object low ahead; `acacia`s far apart by density and one near, a
+`giraffe` or two under it, `elephant`s walking across the plain, `zebra`s in a knot (flip some), the `jeep` ahead,
+the `dry_tuft` and rocks scatter. See `examples/safari_drive.py`.
+
+### A close encounter on a desert road
+
+Two lanes of old asphalt at night with a `centre` line, `desert_wash` either side, `telegraph_pole`s and their
+`power_lines`, `saguaro`s; a `barn` and a few `cow`s by the road. The `flying_saucer` hangs over the road (`z` 4.2)
+with a green light of its own; a `tractor_beam` stands under it at the same `at` and `x`, tall enough to reach the
+saucer's port, a `cow` floating up inside it (tinted green); your car with its headlights on, the camera pitched up
+(`pitch` 0.16) to take in the saucer. See `examples/close_encounter.py`.
+
+### A fair at night
+
+The midway is the road (trampled `dirt`, the edge blended into worn grass); stalls along both sides every 3.2
+(`market_stall`, `food_cart`, `fruit_stall`, `gadget_stall`, each with a warm light), a `lantern_span` across now
+and then (every 14 - more and it is a night market), `balloon`s, the `crowd` scatter along the stalls; the
+`ferris_wheel` ahead to one side, the `carousel` behind the stalls on the other, both with lights. See
+`examples/night_fair.py`.
+
+### A frontier main street at noon
+
+The street is the road (`desert_wash` tinted, no lines), a boardwalk of `planks` either side, then the buildings as
+`walls` in `blocks` 2 long with a little `ragged` - `western_front`, `_b`, `_c` with `"tile": [2.0, 2.2]`, one
+building to a tile. A `cowboy` standing square in the street ahead (`view` front), `horse`s at the rails every 7,
+`tumbleweed`s, a `water_trough`, a `wagon_wheel`, the `water_tower` closing the street; a red `mountains` skyline
+and a high sun. See `examples/high_noon.py`.
+
+### A storm coast and its lighthouse
+
+The road along a cliff's edge: `cliff_face` walls with a `ragged` top on one side, a `guard_rail` and then a `void`
+side with the `sea` far `below`; `wet` 0.32 so the road shines, `reflector_post`s. The `lighthouse_tower` on a
+headland ahead (`z` -6, `scale` 10), its `lighthouse_beam` at the lantern's height thrown back across the view
+(`flip`); the `storm` sky, the `rain` post effect slanting, `lightning` far out, your car's headlights. See
+`examples/storm_coast.py`.
+
 ### A highway at night, and a tunnel
 
 Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.

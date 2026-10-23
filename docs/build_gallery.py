@@ -209,6 +209,12 @@ SHOTS = {
     'road_kelp': ('kelp_run', 1),
     'road_ring': ('ring_station', 1),
     'road_sled': ('sled_run', 1),
+    'road_high_seas': ('high_seas', 1),
+    'road_safari': ('safari_drive', 1),
+    'road_encounter': ('close_encounter', 1),
+    'road_fair': ('night_fair', 1),
+    'road_high_noon': ('high_noon', 1),
+    'road_storm_coast': ('storm_coast', 1),
     # where it started: the three concept drawings, made scenes (the drawings are in docs/origins)
     'storm_island': ('storm_island', 1),
     'storm_town': ('storm_island', 2),

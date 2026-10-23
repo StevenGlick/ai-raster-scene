@@ -2850,6 +2850,385 @@ def spr_log_cabin():
     return rgba, _tail_em(cv, [5])
 
 
+# ------------------------------------------------------------------ the high seas
+
+SHIP_WOOD = ramp('#6a4426', dark=0.4, light=1.6, warm=0.05)
+GILT = ramp('#d8a838', dark=0.4, light=1.35, warm=0.06)
+SAILCLOTH = ramp('#ece4d0', dark=0.5, light=1.15)
+FORT_STONE = ramp('#a89c88', dark=0.4, light=1.35)
+
+
+def spr_galleon():
+    """A galleon seen from astern, sailing on ahead of you: its high stern castle in dark wood picked out in gilt,
+    the stern windows lit, a lantern at each corner, the rudder below; three masts behind it carrying their square
+    sails, pennants flying from the tops."""
+    w, h = 56, 84
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x, top, k in ((17, 10, 1), (39, 12, 2), (28, 2, 0)):                        # the masts and their sails
+        for j, (y0, half) in enumerate(((top + 6, 9 - k), (top + 18, 11 - k), (top + 31, 12 - k))):
+            cv.polygon([(x - half, y0), (x + half, y0), (x + half + 1, y0 + 10), (x - half - 1, y0 + 10)], z=1.0,
+                       top=0.6, bevel=1.4, mat=2, tone=-0.1 * ((j + k) % 2))       # the sails, bellied
+            cv.stroke([(x - half - 1, y0), (x + half + 1, y0)], 1.0, z=1.2, dome=0.4, mat=0)   # their yards
+        cv.stroke([(x, top), (x, 52)], 1.4, z=1.15, dome=0.4, mat=0)                # the mast, astern of them
+        cv.polygon([(x, top), (x + 7, top + 1.5), (x, top + 3)], z=1.1, top=0.3, bevel=0.3, mat=4)   # pennants
+    cv.polygon([(12, 50), (44, 50), (46, 78), (10, 78)], z=1.4, top=0.7, bevel=2.0, mat=0)          # the stern
+    cv.polygon([(14, 44), (42, 44), (44, 51), (12, 51)], z=1.5, top=0.5, bevel=1.0, mat=0)          # the poop's rail
+    for y in (52, 66, 77):                                                          # gilt mouldings
+        cv.stroke([(11, y), (45, y)], 1.0, z=1.6, dome=0.4, mat=1)
+    for x in (17, 25, 31, 39):                                                      # the stern windows, lit
+        cv.box(x - 2, 56, 4.2, 6, z=1.55, top=0.3, bevel=0.4, mat=3)
+    for x in (11, 45):                                                              # the lanterns
+        cv.ellipse(x, 44, 2.0, 2.6, z=1.8, dome=0.8, mat=3)
+    cv.box(26.6, 70, 2.8, 14, z=1.5, top=0.5, bevel=0.6, mat=0)                     # the rudder
+    rgba, _ = _prop(cv, [SHIP_WOOD, GILT, SAILCLOTH, ramp('#ffc870', dark=0.8, light=1.1),
+                         ramp('#c8282a', dark=0.4, light=1.4)], relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [3])
+
+
+def spr_sea_fort():
+    """A stone fort on a rock in the sea: a curtain wall with its crenels, a round tower at one end flying a flag,
+    the dark mouths of gun ports, the rock falling into the water under it. A landmark for a coast, 4 tall."""
+    w, h = 96, 44
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(0, 44), (6, 32), (30, 28), (70, 29), (90, 34), (96, 44)], z=0.9, top=0.5, bevel=2.0, mat=1)   # the rock
+    cv.box(14, 16, 58, 14, z=1.2, top=0.6, bevel=1.2, mat=0)                        # the curtain wall
+    for x in range(14, 72, 6):                                                      # its crenels
+        cv.box(x, 13, 3.4, 3.4, z=1.25, top=0.5, bevel=0.4, mat=0)
+    for x in (22, 34, 46, 58):                                                      # gun ports
+        cv.box(x, 21, 3.4, 2.6, z=1.3, top=0.2, bevel=0.3, mat=2)
+    cv.box(68, 4, 16, 27, z=1.4, top=0.7, bevel=3.0, mat=0)                         # the round tower
+    for x in range(68, 84, 5):
+        cv.box(x, 1.5, 3, 3, z=1.45, top=0.5, bevel=0.4, mat=0)
+    cv.stroke([(76, 1.5), (76, -8)], 0.8, z=1.5, dome=0.3, mat=2)                   # the flagstaff
+    rgba, em = _prop(cv, [FORT_STONE, ramp('#5a5448', dark=0.4, light=1.6), ramp('#1e1a18', dark=0.6, light=1.5)],
+                     relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, em
+
+
+def spr_bowsprit():
+    """The bow of your own sailing ship, from her deck: the rail curving in to the stem at the bottom of the view,
+    the bowsprit running out and up from it over the sea, its stays climbing away to the foremast and a jib set on
+    them. A shot's `vehicle` for a voyage."""
+    w, h = 128, 72
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(96, 2), (126, 56), (90, 56)], z=1.0, top=0.5, bevel=1.2, mat=2)    # the jib, off to starboard
+    cv.stroke([(84, 30), (98, 0)], 0.7, z=1.4, dome=0.3, mat=3)                     # the stays
+    cv.stroke([(72, 60), (128, 6)], 0.7, z=1.4, dome=0.3, mat=3)
+    cv.stroke([(64, 72), (72, 50), (86, 26)], 4.2, z=1.6, dome=0.8, taper=(1.0, 0.5), mat=0)   # the bowsprit
+    cv.stroke([(0, 66), (30, 60), (64, 57), (98, 60), (128, 66)], 3.2, z=1.8, dome=0.7, mat=0)  # the rail
+    for x in (10, 30, 48, 80, 98, 118):                                             # its stanchions
+        cv.stroke([(x, 72), (x, 58 + abs(x - 64) * 0.12)], 1.6, z=1.7, dome=0.5, mat=0)
+    cv.stroke([(62, 57), (66, 53)], 2.0, z=1.9, dome=0.6, mat=1)                    # gilt at the stem
+    return _prop(cv, [SHIP_WOOD, GILT, SAILCLOTH, ramp('#2a2420', dark=0.5, light=1.8)], relief=1.0, cavity=0.4,
+                 shadow=0.4)
+
+
+# ------------------------------------------------------------------ the safari
+
+ACACIA_LEAF = ramp('#5a7a32', dark=0.4, light=1.5)
+GIRAFFE = ramp('#d8a050', dark=0.4, light=1.3, warm=0.06)
+ELEPHANT = ramp('#8a8680', dark=0.4, light=1.6)
+ZEBRA_W = ramp('#ecebe4', dark=0.5, light=1.15)
+
+
+def spr_acacia():
+    """An acacia of the savanna: a thin forked trunk and its crown spread flat like a parasol, dark against the
+    sky. Scatter them across the grass far apart."""
+    w, h = 80, 56
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    rng = np.random.default_rng(101)
+    cv.stroke([(40, 56), (40, 40), (30, 26), (22, 18)], 2.6, z=1.0, dome=0.7, taper=(1.0, 0.5), mat=1)   # trunk
+    cv.stroke([(40, 40), (50, 26), (60, 18)], 2.2, z=1.0, dome=0.7, taper=(1.0, 0.5), mat=1)
+    cv.stroke([(36, 33), (40, 20)], 1.6, z=1.0, dome=0.6, taper=(1.0, 0.5), mat=1)
+    for _ in range(40):                                                             # the flat crown
+        cx, cy = rng.uniform(6, 74), rng.normal(15, 2.4)
+        cv.ellipse(cx, cy, rng.uniform(5, 9), rng.uniform(2.2, 3.6), z=1.5 + rng.random() * 0.4, dome=0.7,
+                   mat=0, rough=0.3, rng=rng)
+    return _prop(cv, [ACACIA_LEAF, ramp('#4a3a2c', dark=0.4, light=1.6)], relief=1.0, cavity=0.4, shadow=0.45)
+
+
+def spr_giraffe():
+    """A giraffe side on, browsing: the long legs, the sloping back, the neck reaching up to the head with its
+    ossicones, the coat patched in brown on tan."""
+    w, h = 44, 72
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (8, 12, 26, 30):                                                       # the legs
+        cv.stroke([(x, 40), (x - 0.5, 56), (x, 72)], 2.0, z=1.0, dome=0.6, mat=0)
+    cv.polygon([(5, 40), (32, 34), (35, 44), (7, 47)], z=1.3, top=0.7, bevel=2.4, mat=0)          # the body, sloping
+    cv.stroke([(31, 38), (35, 20), (37, 8)], 4.4, z=1.4, dome=0.8, taper=(1.0, 0.6), mat=0)         # the neck
+    cv.ellipse(39.5, 6, 4.2, 2.4, z=1.6, dome=0.8, angle=-15, mat=0)                # the head
+    cv.stroke([(36.5, 4), (36, 0.5)], 0.8, z=1.7, dome=0.4, mat=1)                  # the ossicones
+    cv.stroke([(38, 3.6), (38, 0.5)], 0.8, z=1.7, dome=0.4, mat=1)
+    cv.stroke([(5, 41), (2, 50)], 0.8, z=1.2, dome=0.3, mat=1)                      # the tail
+    rgba, em = _prop(cv, [GIRAFFE, ramp('#6a4022', dark=0.4, light=1.5)], relief=1.0, cavity=0.4, shadow=0.45)
+    rng = np.random.default_rng(103)
+    yy, xx = np.mgrid[0:h, 0:w]
+    body = (rgba[..., 3] > 0) & (yy < 52)
+    cells = ((np.sin(xx * 0.9 + rng.random() * 6) + np.sin(yy * 0.8 + xx * 0.3)) > 0.35) & body    # the patches
+    rgba[cells, :3] *= np.array([0.62, 0.42, 0.3])
+    return rgba, em
+
+
+def spr_elephant():
+    """An elephant side on, walking: the great grey body, the column legs, the ear spread, the trunk hanging and
+    curling at its tip, a tusk."""
+    w, h = 64, 48
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (16, 23, 40, 47):                                                      # the legs
+        cv.box(x - 3.2, 28, 6.4, 20, z=1.0, top=0.6, bevel=2.0, mat=0)
+    cv.ellipse(32, 22, 22, 14, z=1.4, dome=0.9, mat=0)                              # the body
+    cv.ellipse(52, 18, 8, 9, z=1.6, dome=0.9, mat=0)                                # the head
+    cv.ellipse(47, 19, 6.5, 9, z=1.7, dome=0.5, mat=2)                              # the ear, in its shade
+    cv.stroke([(58, 20), (60, 32), (58, 42), (61, 44)], 3.4, z=1.6, dome=0.7, taper=(1.0, 0.5), mat=0)   # trunk
+    cv.stroke([(56, 26), (62, 30)], 1.4, z=1.8, dome=0.6, mat=1)                    # a tusk
+    cv.stroke([(10, 18), (7, 30)], 1.0, z=1.2, dome=0.3, mat=0)                     # the tail
+    return _prop(cv, [ELEPHANT, ZEBRA_W, ramp('#6a6660', dark=0.4, light=1.6)], relief=1.0, cavity=0.45,
+                 shadow=0.45)
+
+
+def spr_zebra():
+    """A zebra side on, grazing: the stocky striped body, the striped legs, the head down to the grass, the
+    upright mane."""
+    w, h = 40, 30
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (8, 12, 26, 30):
+        cv.stroke([(x, 15), (x, 30)], 2.0, z=1.0, dome=0.6, mat=0)                  # the legs
+    cv.ellipse(19, 13, 13, 6.5, z=1.3, dome=0.9, mat=0)                             # the body
+    cv.stroke([(30, 11), (35, 18), (37, 25)], 3.6, z=1.4, dome=0.8, taper=(1.0, 0.7), mat=0)         # the neck, down
+    cv.ellipse(37.5, 26, 2.6, 2.2, z=1.5, dome=0.8, mat=0)                          # the head, grazing
+    rgba, em = _prop(cv, [ZEBRA_W], relief=1.0, cavity=0.4, shadow=0.45)
+    yy, xx = np.mgrid[0:h, 0:w]
+    stripes = (((xx * 0.9 + np.sin(yy * 0.45) * 1.6) // 2) % 2 == 0) & (rgba[..., 3] > 0)
+    rgba[stripes, :3] *= 0.16
+    return rgba, em
+
+
+# ------------------------------------------------------------------ the close encounter
+
+SAUCER = ramp('#9aa2ae', dark=0.4, light=1.7, cool=0.06)
+COW = ramp('#ecebe4', dark=0.5, light=1.15)
+
+
+def spr_flying_saucer():
+    """A flying saucer hovering low, seen from below and a little to the side: the wide disc of its hull, a ring of
+    lights round its rim lit in turn, the dome on top glowing, the round port underneath blazing. A billboard to
+    hang in the sky over a road at night; give it a `tractor_beam` under it."""
+    w, h = 96, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.ellipse(48, 9, 15, 9, z=1.4, dome=0.9, mat=1)                                # the dome, glowing
+    cv.ellipse(48, 21, 46, 9, z=1.2, dome=0.7, mat=0)                               # the hull
+    cv.ellipse(48, 26, 38, 6.5, z=1.0, dome=0.5, mat=0)                             # its belly
+    cv.ellipse(48, 29, 12, 4.4, z=1.1, dome=0.4, mat=2)                             # the port beneath, blazing
+    for k in range(13):                                                             # the lights round the rim
+        x = 6 + k * 7
+        cv.ellipse(x, 21 + 0.8 * np.sin(k), 2.0, 1.6, z=1.5, dome=0.8, mat=3 + k % 2)
+    rgba, _ = _prop(cv, [SAUCER, ramp('#a8ffd8', dark=0.7, light=1.15), ramp('#e8fff4', dark=0.8, light=1.05),
+                         ramp('#ff5a3a', dark=0.7, light=1.2), ramp('#ffe070', dark=0.7, light=1.15)],
+                    relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [1, 2, 3, 4])
+
+
+def spr_tractor_beam():
+    """The beam of light a flying saucer lets down to the ground: a cone widening from its port to a pool on the
+    road, pale green-white, brightest at its edges and its foot, see-through. Drawn `additive`, standing under the
+    saucer."""
+    w, h = 48, 96
+    rgba = np.zeros((h, w, 4), np.float32)
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    half = 5 + 18 * (yy / h)
+    d = np.abs(xx - 24) / half
+    inside = d < 1
+    a = np.where(inside, 0.28 + 0.5 * d ** 4, 0) * (0.6 + 0.4 * yy / h)              # its walls brighter
+    rgba[..., :3] = [0.75, 1.0, 0.86]
+    rgba[..., 3] = np.clip(a, 0, 1)
+    return rgba, rgba[..., 3] * 0.8
+
+
+def spr_cow():
+    """A dairy cow side on, black patches on white, its legs dangling - for a field, or for lifting up a beam."""
+    w, h = 40, 28
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (9, 13, 27, 31):
+        cv.stroke([(x, 15), (x, 27)], 2.4, z=1.0, dome=0.6, mat=0)                  # the legs
+    cv.ellipse(20, 12, 13, 6.5, z=1.3, dome=0.9, mat=0)                             # the body
+    cv.ellipse(34.5, 10, 4.2, 3.4, z=1.5, dome=0.8, mat=0)                          # the head
+    cv.ellipse(37.6, 11.4, 1.8, 1.4, z=1.6, dome=0.6, mat=1)                        # the muzzle
+    cv.stroke([(33, 6.5), (31.5, 5)], 1.0, z=1.6, dome=0.4, mat=2)                  # the horns
+    cv.stroke([(36, 6.5), (37.5, 5)], 1.0, z=1.6, dome=0.4, mat=2)
+    cv.stroke([(7, 10), (4, 17)], 0.9, z=1.2, dome=0.3, mat=3)                      # the tail
+    rgba, em = _prop(cv, [COW, ramp('#e8a0a0', dark=0.5, light=1.2), ramp('#d8d0b0', dark=0.5, light=1.2),
+                          ramp('#1e1e22', dark=0.6, light=1.8)], relief=1.0, cavity=0.4, shadow=0.45)
+    yy, xx = np.mgrid[0:h, 0:w]
+    patches = ((np.sin(xx * 0.5 + 1.0) + np.sin(yy * 0.7 - xx * 0.2)) > 0.8) & (rgba[..., 3] > 0) & (yy < 19)
+    rgba[patches, :3] = [0.1, 0.1, 0.12]
+    return rgba, em
+
+
+# ------------------------------------------------------------------ the fairground
+
+FAIR_LIGHT = ramp('#ffe8a0', dark=0.8, light=1.08)
+STRIPE_R = ramp('#d8282e', dark=0.4, light=1.4)
+
+
+def spr_ferris_wheel():
+    """A big wheel at a fair at night: its rim and spokes outlined in bulbs, the cars hanging round it in red and
+    blue, the A-frame legs, lit from the hub out. A landmark over a fairground, 6 tall at its own size."""
+    w, h = 80, 96
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cx, cy, r = 40, 40, 34
+    for s in (-1, 1):                                                               # the legs
+        cv.stroke([(cx, cy), (cx + s * 24, 96)], 2.4, z=0.9, dome=0.5, mat=0)
+    a = np.linspace(0, 2 * np.pi, 49)
+    cv.stroke([(cx + np.cos(t) * r, cy + np.sin(t) * r) for t in a], 1.6, z=1.0, dome=0.4, mat=0)   # the rim
+    for k in range(16):                                                             # the spokes
+        t = k * np.pi / 8
+        cv.stroke([(cx, cy), (cx + np.cos(t) * r, cy + np.sin(t) * r)], 0.8, z=0.95, dome=0.3, mat=0)
+    for k in range(48):                                                             # the bulbs along the rim
+        t = k * np.pi / 24
+        cv.ellipse(cx + np.cos(t) * r, cy + np.sin(t) * r, 1.0, 1.0, z=1.2, dome=0.6, mat=1)
+    for k in range(12):                                                             # the cars, hanging
+        t = k * np.pi / 6
+        x, y = cx + np.cos(t) * r, cy + np.sin(t) * r
+        cv.box(x - 3, y + 1.5, 6, 4.5, z=1.3, top=0.5, bevel=0.8, mat=2 + k % 2)
+    cv.ellipse(cx, cy, 4, 4, z=1.3, dome=0.8, mat=1)                                # the hub, lit
+    rgba, _ = _prop(cv, [ramp('#c8c8d0', dark=0.4, light=1.5), FAIR_LIGHT, STRIPE_R,
+                         ramp('#2a5ad8', dark=0.4, light=1.5)], relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [1])
+
+
+def spr_carousel():
+    """A carousel at night: a striped canopy on its centre pole, a fringe of bulbs round its edge, horses on their
+    poles rising and falling under it, the whole of it glowing warm."""
+    w, h = 72, 56
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(2, 18), (70, 18), (60, 8), (36, 1), (12, 8)], z=1.3, top=0.6, bevel=1.4, mat=0)   # the canopy
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    canopy = cv.id > 0
+    cv.mat[canopy & ((((xx - 36) / (yy + 4) * 6).astype(int) % 2) == 0)] = 1       # its stripes, fanning
+    for x in range(4, 70, 4):                                                       # the fringe's bulbs
+        cv.ellipse(x, 19.5, 1.1, 1.1, z=1.4, dome=0.6, mat=2)
+    cv.box(34.5, 18, 3, 34, z=1.0, top=0.5, bevel=0.6, mat=3)                       # the centre pole
+    for k, x in enumerate((12, 24, 48, 60)):                                        # horses on their poles
+        y = 34 + (4 if k % 2 else -2)
+        cv.stroke([(x, 20), (x, 46)], 1.1, z=1.1, dome=0.3, mat=3)
+        cv.ellipse(x, y, 5.0, 2.6, z=1.3, dome=0.8, mat=4)
+        cv.ellipse(x + 4.6, y - 2.6, 1.8, 2.0, z=1.35, dome=0.8, mat=4)
+        cv.stroke([(x - 3, y + 1.5), (x - 4, y + 6)], 1.0, z=1.25, dome=0.4, mat=4)
+        cv.stroke([(x + 3, y + 1.5), (x + 4, y + 6)], 1.0, z=1.25, dome=0.4, mat=4)
+    cv.box(2, 50, 68, 6, z=1.0, top=0.5, bevel=1.0, mat=5)                          # the platform
+    rgba, _ = _prop(cv, [STRIPE_R, ramp('#f4ece0', dark=0.5, light=1.15), FAIR_LIGHT, GILT,
+                         ramp('#ecebe4', dark=0.5, light=1.15), ramp('#6a3a2a', dark=0.4, light=1.6)],
+                    relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [2])
+
+
+# ------------------------------------------------------------------ high noon
+
+HORSE_C = [ramp('#6a3e24', dark=0.4, light=1.5, warm=0.05), ramp('#2a2224', dark=0.5, light=2.0),
+           ramp('#c8a070', dark=0.4, light=1.35, warm=0.05)]
+
+
+def tex_western_front(name, paint=(0.62, 0.3, 0.24)):
+    """The false front of a frontier town's building, for a wall along a main street: upright boards painted
+    (`paint`) and sun-faded, a sign board across the top with its lettering, two windows either side of the door
+    with dark panes, the porch's roof a dark band across with its posts. One building to a tile."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    p = np.array(paint, np.float32)
+    rgb = p * (0.72 + 0.4 * fbm(T, rng, 8, 3))[..., None]
+    rgb[(xx % 4) == 0] *= 0.7                                                       # the boards' joints
+    sign = (yy >= 3) & (yy < 15) & (xx >= 6) & (xx < 58)
+    rgb[sign] = [0.86, 0.8, 0.66]
+    for k in range(7):                                                              # its lettering
+        x0 = 10 + k * 7
+        rgb[sign & (np.abs(xx - x0 - 2) < 1) & (yy >= 6) & (yy < 12)] = [0.18, 0.1, 0.08]
+        rgb[sign & (yy == 6 + int(rng.integers(0, 6))) & (xx >= x0) & (xx < x0 + 4)] = [0.18, 0.1, 0.08]
+    for x0 in (8, 44):                                                              # the windows
+        win = (yy >= 34) & (yy < 50) & (xx >= x0) & (xx < x0 + 12)
+        rgb[win] = [0.07, 0.07, 0.09]
+        rgb[win & ((xx - x0) % 6 == 5)] = p * 0.5
+        rgb[win & (yy < 38) & (xx < x0 + 4)] = [0.3, 0.3, 0.32]
+    door = (yy >= 34) & (xx >= 25) & (xx < 39)
+    rgb[door] = [0.12, 0.08, 0.06]
+    rgb[door & (yy >= 38) & (yy < 50) & (xx != 32)] = [0.52, 0.36, 0.22]           # the batwing doors
+    porch = (yy >= 24) & (yy < 28)
+    rgb[porch] = [0.22, 0.16, 0.12]
+    rgb[(yy >= 28) & (yy < 30)] *= 0.55                                             # its shadow
+    for x0 in (2, 60):
+        rgb[(yy >= 28) & (xx >= x0) & (xx < x0 + 3)] = [0.4, 0.3, 0.22]             # the posts
+    return np.clip(rgb, 0, 1), None
+
+
+def spr_horse():
+    """A saddled horse side on, standing at a hitching rail: the bay coat, black mane and tail, the saddle and its
+    blanket, the reins looped round the rail before it."""
+    w, h = 56, 36
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(46, 14, 2, 22, z=0.8, top=0.5, bevel=0.6, mat=3)                         # the rail's post
+    cv.stroke([(40, 16), (55, 16)], 1.6, z=0.85, dome=0.5, mat=3)                   # the rail
+    for x in (9, 13, 31, 35):                                                       # the legs
+        cv.stroke([(x, 20), (x, 35)], 2.4, z=1.0, dome=0.6, mat=0)
+        cv.box(x - 1.3, 33, 2.6, 2.4, z=1.05, top=0.5, bevel=0.4, mat=1)            # the hooves
+    cv.ellipse(22, 17, 15.5, 6.0, z=1.3, dome=0.9, mat=0)                           # the body, long
+    cv.stroke([(35, 14), (40, 9), (43, 7)], 4.6, z=1.4, dome=0.8, taper=(1.0, 0.75), mat=0)   # the neck, forward
+    cv.ellipse(46.5, 9.5, 5.4, 2.8, z=1.5, dome=0.8, angle=35, mat=0)               # the head, nose down
+    cv.ellipse(42.2, 5.2, 0.8, 1.4, z=1.55, dome=0.6, mat=0)                        # an ear
+    cv.stroke([(35, 11), (41, 5.5)], 1.6, z=1.5, dome=0.5, mat=1)                   # the mane
+    cv.stroke([(7, 14), (4, 22), (5, 28)], 2.0, z=1.2, dome=0.6, mat=1)             # the tail
+    cv.box(17, 10, 10, 4.4, z=1.6, top=0.6, bevel=1.2, mat=2)                       # the saddle
+    cv.box(16, 13, 12, 3.6, z=1.55, top=0.4, bevel=0.6, mat=4)                      # its blanket
+    cv.stroke([(49, 11), (46, 16)], 0.6, z=1.6, dome=0.3, mat=3)                    # the reins to the rail
+    return _prop(cv, [HORSE_C[0], HORSE_C[1], ramp('#5a3a22', dark=0.4, light=1.6), ramp('#8a6a48', dark=0.4,
+                      light=1.5), ramp('#2a5a8a', dark=0.4, light=1.5)], relief=1.0, cavity=0.4, shadow=0.45)
+
+
+# ------------------------------------------------------------------ the storm coast
+
+LH_WHITE = ramp('#e8e6e0', dark=0.45, light=1.15)
+
+
+def spr_lighthouse_tower():
+    """A lighthouse on its rock: the tower tapering up in white with red bands, the gallery's rail near its top,
+    the lantern room of black iron and glass with the light blazing in it, a keeper's cottage at its foot with a
+    window lit. A landmark for a coast at night, 7 tall at its own size; give it a `lighthouse_beam`."""
+    w, h = 44, 100
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(0, 100), (4, 88), (20, 84), (40, 86), (44, 100)], z=0.8, top=0.5, bevel=2.0, mat=3)   # the rock
+    cv.box(26, 74, 16, 12, z=1.0, top=0.6, bevel=1.2, mat=0)                        # the cottage
+    cv.polygon([(25, 75), (43, 75), (34, 68)], z=1.1, top=0.5, bevel=0.8, mat=1)    # its roof
+    cv.box(31, 78, 4, 4, z=1.1, top=0.3, bevel=0.3, mat=4)                          # its window, lit
+    cv.polygon([(9, 86), (25, 86), (21, 20), (13, 20)], z=1.3, top=0.8, bevel=3.0, mat=0)          # the tower
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    tower = (cv.id > 0) & (yy > 20) & (yy < 86) & (xx < 25.5)
+    cv.mat[tower & (((yy - 20) // 11) % 2 == 1)] = 1                                # its red bands
+    cv.box(10, 17, 14, 3, z=1.5, top=0.4, bevel=0.6, mat=2)                         # the gallery
+    cv.box(12, 8, 10, 9, z=1.4, top=0.4, bevel=0.6, mat=2)                          # the lantern room
+    cv.box(13.5, 9.5, 7, 6, z=1.45, top=0.3, bevel=0.4, mat=4)                      # the light in it
+    cv.ellipse(17, 6.5, 5.6, 3.0, z=1.5, dome=0.8, mat=2)                           # its cap
+    rgba, _ = _prop(cv, [LH_WHITE, ramp('#c8282a', dark=0.4, light=1.4), ramp('#1e1e22', dark=0.6, light=1.8),
+                         ramp('#4a4644', dark=0.4, light=1.6), ramp('#fff4c8', dark=0.9, light=1.05)],
+                    relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [4])
+
+
+def spr_lighthouse_beam():
+    """The beam of a lighthouse sweeping out over the sea: a long wedge of pale light from its point at the lantern
+    widening away to the right, brightest at its core, rain caught in it. Drawn `additive`; stand it at the
+    lantern's height beside the tower (`flip` for a beam to the left)."""
+    w, h = 160, 40
+    rgba = np.zeros((h, w, 4), np.float32)
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    t = xx / w
+    half = 1.5 + 17 * t
+    d = np.abs(yy - 20) / half
+    a = np.clip(1 - d, 0, 1) ** 1.4 * (1 - t) ** 0.45
+    rng = np.random.default_rng(111)
+    a *= 0.85 + 0.3 * (rng.random((h, w)) < 0.1)                                    # rain caught in it
+    rgba[..., :3] = [1.0, 0.96, 0.82]
+    rgba[..., 3] = np.clip(a, 0, 1)
+    return rgba, rgba[..., 3] * 0.9
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -2877,14 +3256,16 @@ TEXTURES.update({'tower_windows': lambda n: tex_tower_windows(n), 'tower_windows
                  'tulip_field_c': lambda n: tex_tulip_field(n, (0.96, 0.46, 0.7)),
                  'tulip_field_d': lambda n: tex_tulip_field(n, (0.56, 0.24, 0.7)),
                  'peppermint': lambda n: tex_peppermint(n), 'frosting': lambda n: tex_frosting(n),
-                 'wheat_field': lambda n: tex_wheat_field(n)})
+                 'wheat_field': lambda n: tex_wheat_field(n), 'western_front': lambda n: tex_western_front(n),
+                 'western_front_b': lambda n: tex_western_front(n, (0.72, 0.56, 0.3)),
+                 'western_front_c': lambda n: tex_western_front(n, (0.46, 0.52, 0.56))})
 TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront': 0.4, 'shopfront_b': 0.4,
                       'shopfront_c': 0.4, 'coaster_track': 0.2, 'coaster_frame': 0.2, 'rail_track': 0.6,
                       'grandstand': 0.3, 'suspension_cables': 0.0, 'canal_house': 0.3, 'canal_house_b': 0.3,
                       'canal_house_c': 0.3, 'canal_footing': 0.4, 'piste': 0.15, 'ski_fence': 0.0, 'chairlift': 0.0,
                       'city_night': 0.0, 'light_lane': 0.0, 'tulip_field': 0.2, 'tulip_field_b': 0.2,
                       'tulip_field_c': 0.2, 'tulip_field_d': 0.2, 'peppermint': 0.1, 'frosting': 0.2,
-                      'wheat_field': 0.3})
+                      'wheat_field': 0.3, 'western_front': 0.4, 'western_front_b': 0.4, 'western_front_c': 0.4})
 VARIANTS = {'traffic_light': (3, _traffic_light), 'car_compact': (4, _car_compact), 'car_sedan': (4, _car_sedan),
             'billboard': (3, _billboard), 'race_car': (4, _race_car), 'car_oncoming': (4, _car_oncoming),
             'mooring_pole': (3, _mooring_pole), 'slalom_gate': (2, _slalom_gate), 'gumdrop': (4, _gumdrop)}
@@ -2914,7 +3295,11 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'cherry_tree': spr_cherry_tree, 'torii': spr_torii, 'snow_peak': spr_snow_peak, 'tornado': spr_tornado,
            'barn': spr_barn, 'pickup_truck': spr_pickup_truck, 'mini_sub': spr_mini_sub,
            'light_shaft': spr_light_shaft, 'porthole': spr_porthole, 'dog_team': spr_dog_team,
-           'log_cabin': spr_log_cabin}
+           'log_cabin': spr_log_cabin, 'galleon': spr_galleon, 'sea_fort': spr_sea_fort, 'bowsprit': spr_bowsprit,
+           'acacia': spr_acacia, 'giraffe': spr_giraffe, 'elephant': spr_elephant, 'zebra': spr_zebra,
+           'flying_saucer': spr_flying_saucer, 'tractor_beam': spr_tractor_beam, 'cow': spr_cow,
+           'ferris_wheel': spr_ferris_wheel, 'carousel': spr_carousel, 'horse': spr_horse,
+           'lighthouse_tower': spr_lighthouse_tower, 'lighthouse_beam': spr_lighthouse_beam}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
@@ -2932,7 +3317,10 @@ SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'bo
                  'candy_cane': 1.8, 'lollipop': 2.4, 'gumdrop': 0.8, 'gingerbread_house': 2.0, 'skeleton': 0.75,
                  'ghost_car': 0.4, 'cherry_tree': 3.2, 'torii': 3.6, 'snow_peak': 18.0,
                  'tornado': 30.0, 'barn': 2.4, 'pickup_truck': 0.62, 'mini_sub': 0.5, 'light_shaft': 8.0,
-                 'porthole': 1.0, 'dog_team': 0.4, 'log_cabin': 1.8}
+                 'porthole': 1.0, 'dog_team': 0.4, 'log_cabin': 1.8, 'galleon': 4.0, 'sea_fort': 4.0,
+                 'bowsprit': 0.75, 'acacia': 2.4, 'giraffe': 1.8, 'elephant': 1.1, 'zebra': 0.5,
+                 'flying_saucer': 1.6, 'tractor_beam': 4.0, 'cow': 0.5, 'ferris_wheel': 6.0, 'carousel': 2.2, 'horse': 0.6, 'lighthouse_tower': 7.0,
+                 'lighthouse_beam': 1.6}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
@@ -2950,4 +3338,8 @@ PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}
                  'torii': {'shadow': False}, 'snow_peak': {'shadow': False}, 'tornado': {'shadow': False},
                  'barn': {'shadow': False}, 'mini_sub': {'shadow': False},
                  'light_shaft': {'shadow': False, 'blend': 'additive'}, 'porthole': {'shadow': False},
-                 'dog_team': {'shadow': False}, 'log_cabin': {'shadow': False}}
+                 'dog_team': {'shadow': False}, 'log_cabin': {'shadow': False}, 'galleon': {'shadow': False},
+                 'sea_fort': {'shadow': False}, 'bowsprit': {'shadow': False}, 'flying_saucer': {'shadow': False},
+                 'tractor_beam': {'shadow': False, 'blend': 'additive'}, 'ferris_wheel': {'shadow': False},
+                 'carousel': {'shadow': False}, 'lighthouse_tower': {'shadow': False},
+                 'lighthouse_beam': {'shadow': False, 'blend': 'additive'}}
