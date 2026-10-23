@@ -188,6 +188,9 @@ SHOTS = {
     'road_sea_tunnel': ('sea_tunnel', 1),
     'road_viaduct': ('viaduct_train', 1),
     'road_jungle_river': ('jungle_river', 1),
+    'road_lane': ('autumn_lane_road', 1),
+    'road_rain_motorway': ('rain_motorway', 1),
+    'road_bridge': ('suspension_bridge', 1),
     # where it started: the three concept drawings, made scenes (the drawings are in docs/origins)
     'storm_island': ('storm_island', 1),
     'storm_town': ('storm_island', 2),

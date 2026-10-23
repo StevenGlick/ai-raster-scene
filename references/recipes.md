@@ -237,6 +237,18 @@ The line (`rail_track`) between low parapets (`walls` of `stone` 0.42 high), the
 
 The river is the road (`water` tinted green-brown, `bands` 0, a gentle `ripple`), its first band of ground river too, then mud, then `jungle_floor`; the jungle behind is a `wall` of `jungle_leaves` (`ragged` 2.5) with kapoks, palms, tree ferns and banana plants standing in front of it over the water and ferns, heliconias and reeds at the edge - the still water mirrors them all. A `canoe` ahead, a `heron` in the shallows, an `alligator` on the bank, a `stone_head`, `macaw`s overhead; your own `boat_bow`. See `examples/jungle_river.py`.
 
+### A country lane between hedges
+
+One narrow track (`width` 1.8, no lines, a `ragged` edge), the hedges `walls` of `hedge` 1.5 high just past its edges with a `ragged` top, the hedgerow's trees by density behind them (turned for the fall), leaves on the lane (`fall` and `leaf_litter` decals) and tufts at the hedges' feet; a little car ahead, a low sun in a haze. See `examples/autumn_lane_road.py`.
+
+### A motorway in the rain
+
+Both carriageways in one road (`lanes` 4), a `jersey_barrier` down the middle as a `wall` placed back over the road (`side` left, `offset` minus half the width), `highway_lamp`s down the `middle` with sodium lights; `car_oncoming`s in the far lanes, each with a `light` thrown out in front of it (`at` -2), tail lights in ours; `wet` 0.3 and the shoulder's band wet too, `rain` with `splashes`, a `dusk` sky. See `examples/rain_motorway.py`.
+
+### A suspension bridge
+
+The deck is the road over `void`, the bay far `below`; `bridge_tower`s down the `middle` every span (40) from 0 at `scale` 10, and the cables `walls` of `suspension_cables` along both edges, `"tile": [40, 10]` - one tile a span, so the main cable sags from tower to tower; a guard rail and lamps along the deck, a `dawn` sky over the `city`. See `examples/suspension_bridge.py`.
+
 ### A highway at night, and a tunnel
 
 Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.

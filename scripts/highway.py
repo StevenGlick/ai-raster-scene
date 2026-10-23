@@ -146,22 +146,31 @@ def _car_oncoming(k):
 
 
 def spr_box_truck():
-    """A delivery truck seen from behind: a tall box with a roll-up door, small tail lights low down, dual wheels,
-    a bumper of black steel."""
+    """A delivery truck seen from behind: a tall box with a roll-up door - a red band across it and a round badge on
+    it - a marker light at each top corner, small tail lights low down, dual wheels, a step bumper of black steel."""
     w, h = 48, 64
     cv = Canvas(w, h, wrap=False, ground=-9)
     for x in (2, 37):
         cv.box(x, 52, 9, 11, z=0.6, top=0.5, bevel=1.8, mat=3)
     cv.box(2, 2, 44, 50, z=1.0, top=0.4, bevel=1.4, mat=0)                       # the box
+    cv.box(2, 30, 44, 5, z=1.05, top=0.4, bevel=0.6, mat=5)                      # a band of red across it
     for y in range(8, 48, 6):                                      # the door's slats
         cv.stroke([(6, y), (42, y)], 0.7, dome=0.3, mode='carve')
+    cv.ellipse(24, 18, 6, 6, z=1.1, dome=0.3, mat=5)                             # a round badge
+    cv.ellipse(24, 18, 3.6, 3.6, z=1.15, dome=0.3, mat=0)
+    cv.stroke([(4, 4), (4, 49)], 1.2, z=1.2, dome=0.5, mat=4)                    # the door's runners
+    cv.stroke([(44, 4), (44, 49)], 1.2, z=1.2, dome=0.5, mat=4)
+    for x in (3, 42):                                              # marker lights at its top corners
+        cv.box(x, 2, 3, 2, z=1.3, top=0.2, bevel=0.3, mat=6)
     cv.box(21, 44, 6, 3, z=1.3, top=0.2, bevel=0.4, mat=4)                       # its handle
     cv.box(3, 49, 42, 4, z=1.4, top=0.3, bevel=0.8, mat=4)                       # the sill
     cv.box(4, 53, 6, 3, z=1.6, top=0.1, bevel=0.4, mat=1)
     cv.box(38, 53, 6, 3, z=1.6, top=0.1, bevel=0.4, mat=1)
     cv.box(18, 53, 12, 3.6, z=1.6, top=0.1, bevel=0.4, mat=2)
     cv.box(1, 57, 46, 3, z=1.5, top=0.3, bevel=0.8, mat=4)
-    return _prop(cv, [BOX, TAIL, PLATE, TYRE, TRIM], em=_tail_em(cv, [1]), relief=1.0, cavity=0.45, shadow=0.45)
+    cv.box(14, 60, 20, 2.4, z=1.4, top=0.3, bevel=0.5, mat=4)                    # the step
+    return _prop(cv, [BOX, TAIL, PLATE, TYRE, TRIM, ramp('#b02a24', dark=0.35, light=1.5), AMBER],
+                 em=_tail_em(cv, [1, 6]), relief=1.0, cavity=0.45, shadow=0.45)
 
 
 def spr_curve_sign():
@@ -374,11 +383,24 @@ def spr_tunnel_portal():
     yy, xx, up, inside, lining = _tunnel_card(w, h, 128, 52, 80)
     rgba = np.zeros((h, w, 4), np.float32)
     rng = np.random.default_rng(5)
-    hill = up < 112 + 36 * np.cos((xx - w / 2) / w * np.pi) - 8 * np.abs(np.sin(xx * 0.07)) - 30 * (
-        np.abs(xx - w / 2) / (w / 2)) ** 3                                                        # the hillside
+    ridge = 112 + 36 * np.cos((xx - w / 2) / w * np.pi) - 8 * np.abs(np.sin(xx * 0.07)) - 30 * (
+        np.abs(xx - w / 2) / (w / 2)) ** 3
+    hill = up < ridge                                                                             # the hillside
     face = (np.abs(xx - w / 2) < 92) & (up < 100)
     grass = rng.random((h, w)) * 0.12
-    rgba[hill, :3] = (np.array([0.24, 0.34, 0.16]) + grass[hill][:, None] * np.array([1, 1.2, 0.6]))
+    n = _noise(h, w, 9, 6)
+    rgba[hill, :3] = (np.array([0.24, 0.34, 0.16]) * (0.75 + 0.5 * n[hill])[:, None] +
+                      grass[hill][:, None] * np.array([1, 1.2, 0.6]))                              # patchy grass
+    rgba[hill & (up > ridge - 3), :3] *= 1.25                                                     # its lit crest
+    for _ in range(26):                                             # bushes and trees along the ridge and its slopes
+        cx = rng.uniform(4, w - 4)
+        cy = h - (112 + 36 * np.cos((cx - w / 2) / w * np.pi) - 30 * (abs(cx - w / 2) / (w / 2)) ** 3) + \
+            rng.uniform(-2, 30)
+        r = rng.uniform(4, 9)
+        bush = (np.hypot(xx - cx, (yy - cy) * 1.2) < r)
+        rgba[bush, :3] = np.array([0.16, 0.26, 0.12]) * (0.8 + 0.4 * n[bush])[:, None]
+        rgba[bush & (yy < cy - r * 0.3), :3] *= 1.3
+        hill = hill | bush
     rgba[face, :3] = [0.56, 0.55, 0.52]
     rgba[face & (((yy // 10) + (xx // 22)) % 2 == 0), :3] = [0.52, 0.51, 0.48]               # its panels
     band = face & (up > 86) & (up < 100)
@@ -1542,6 +1564,47 @@ def spr_gas_station():
     return rgba, em
 
 
+# ------------------------------------------------------------------ a suspension bridge
+
+BRIDGE_RED = ramp('#b8462c', dark=0.35, light=1.45, warm=0.06)
+
+
+def spr_bridge_tower():
+    """A suspension bridge's tower spanning the road: two tall legs in red paint, stepping in as they rise, joined by
+    portal beams, a recess down each face. Stand it at `x` 0 over the road; at its own size it is 10 tall and its
+    legs stand 7 apart - a row of them every span, with `suspension_cables` walls between."""
+    w, h = 96, 120
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for side in (-1, 1):
+        x0 = 48 + side * 38
+        for k, (y0, y1, half) in enumerate(((60, 120, 7.0), (24, 60, 6.0), (0, 24, 5.0))):   # stepping in
+            cv.box(x0 - half, y0, 2 * half, y1 - y0, z=1.0 + 0.05 * k, top=0.6, bevel=1.4, mat=0)
+            cv.stroke([(x0, y0 + 2), (x0, y1 - 2)], 1.2, dome=0.3, mode='carve')         # the recess
+    for y0, hh in ((6, 6), (40, 6), (80, 5)):                       # the portal beams
+        cv.box(14, y0, 68, hh, z=0.9, top=0.6, bevel=1.4, mat=0)
+        cv.stroke([(18, y0 + hh - 1.2), (78, y0 + hh - 1.2)], 0.6, dome=0.3, mode='carve')
+    cv.box(8, 0, 10, 3, z=1.2, top=0.5, bevel=0.8, mat=1)          # the cable saddles on top
+    cv.box(78, 0, 10, 3, z=1.2, top=0.5, bevel=0.8, mat=1)
+    cv.box(10.5, 1, 2, 1.4, z=1.3, top=0.3, bevel=0.3, mat=2)       # an aircraft light on each
+    cv.box(83.5, 1, 2, 1.4, z=1.3, top=0.3, bevel=0.3, mat=2)
+    rgba, _ = _prop(cv, [BRIDGE_RED, TRIM, ramp('#ff3020', dark=0.8, light=1.2)], relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [2])
+
+
+def tex_suspension_cables(name):
+    """A suspension bridge's cables, for a wall along its deck: the main cable sagging over the width of the tile
+    from its top at both ends, the suspenders hanging from it to the deck every few texels, see-through between.
+    Give the wall the towers' spacing and height: `"tile": [span, height]`, the towers every span from 0."""
+    yy, xx = np.mgrid[0:T, 0:T].astype(np.float32)
+    u = (xx + 0.5) / T
+    main = 1.5 + 54 * (1 - (2 * u - 1) ** 2)                       # the cable's row, sagging to near the deck
+    cable = np.abs(yy - main) < 1.3
+    hangers = ((xx.astype(int) % 4) == 0) & (yy > main)
+    rgb = np.zeros((T, T, 3), np.float32) + [0.7, 0.28, 0.17]
+    rgb[hangers] = [0.5, 0.22, 0.16]
+    return rgb, None, (cable | hangers).astype(np.float32)
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -1556,10 +1619,11 @@ TEXTURES.update({'tower_windows': lambda n: tex_tower_windows(n), 'tower_windows
                  'shopfront_b': lambda n: tex_shopfront(n, (0.25, 0.95, 1.0)),
                  'shopfront_c': lambda n: tex_shopfront(n, (1.0, 0.7, 0.2)),
                  'coaster_track': lambda n: tex_coaster_track(n), 'coaster_frame': lambda n: tex_coaster_frame(n),
-                 'rail_track': lambda n: tex_rail_track(n), 'grandstand': lambda n: tex_grandstand(n)})
+                 'rail_track': lambda n: tex_rail_track(n), 'grandstand': lambda n: tex_grandstand(n),
+                 'suspension_cables': lambda n: tex_suspension_cables(n)})
 TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront': 0.4, 'shopfront_b': 0.4,
                       'shopfront_c': 0.4, 'coaster_track': 0.2, 'coaster_frame': 0.2, 'rail_track': 0.6,
-                      'grandstand': 0.3})
+                      'grandstand': 0.3, 'suspension_cables': 0.0})
 VARIANTS = {'traffic_light': (3, _traffic_light), 'car_compact': (4, _car_compact), 'car_sedan': (4, _car_sedan),
             'billboard': (3, _billboard), 'race_car': (4, _race_car), 'car_oncoming': (4, _car_oncoming)}
 
@@ -1575,7 +1639,7 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'hover_car': spr_hover_car, 'neon_bike': spr_neon_bike, 'taxi': spr_taxi, 'brick_ring': spr_brick_ring,
            'coaster_car': spr_coaster_car, 'mine_frame': spr_mine_frame, 'mine_cart': spr_mine_cart,
            'starfighter': spr_starfighter, 'race_car': spr_race_car, 'car_oncoming': spr_car_oncoming,
-           'motel_sign': spr_motel_sign, 'gas_station': spr_gas_station}
+           'motel_sign': spr_motel_sign, 'gas_station': spr_gas_station, 'bridge_tower': spr_bridge_tower}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
@@ -1584,10 +1648,10 @@ SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'bo
                  'jeep': 0.62, 'rally_car': 0.48, 'dirt_bike': 0.55, 'dust_cloud': 0.62, 'speedboat': 0.44,
                  'narrowboat': 0.9, 'boat_bow': 0.42, 'hover_car': 0.36, 'neon_bike': 0.52, 'taxi': 0.5, 'brick_ring': 3.25, 'coaster_car': 0.55,
                  'mine_frame': 2.2, 'mine_cart': 0.38, 'starfighter': 0.4, 'race_car': 0.3, 'car_oncoming': 0.48,
-                 'motel_sign': 4.2, 'gas_station': 2.6}
+                 'motel_sign': 4.2, 'gas_station': 2.6, 'bridge_tower': 10.0}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
                  'speedboat': {'shadow': False}, 'narrowboat': {'shadow': False}, 'boat_bow': {'shadow': False},
                  'brick_ring': {'shadow': False}, 'mine_frame': {'shadow': False}, 'starfighter': {'shadow': False},
-                 'motel_sign': {'shadow': False}, 'gas_station': {'shadow': False}}
+                 'motel_sign': {'shadow': False}, 'gas_station': {'shadow': False}, 'bridge_tower': {'shadow': False}}

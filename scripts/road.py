@@ -121,7 +121,7 @@ def _side_spec(g):
         tex = b.get('texture', 'grass')
         name = tex.get('base') if isinstance(tex, dict) else tex
         own = assets.TEXTURE_REFLECT.get(name, 0.0)             # water mirrors by its nature, under a roof too
-        out.append((edge, tex, _col(b.get('tint')), float(b.get('reflect', own)), own))
+        out.append((edge, tex, _col(b.get('tint')), float(b.get('reflect', own)), own, float(b.get('tile', 1.0))))
         if math.isinf(edge):
             break
     if not math.isinf(out[-1][0]):
@@ -992,15 +992,17 @@ class RoadRenderer:
                 void |= m
                 continue
             lo = 0.0
-            for hi, spec, tint, rk, own in bands:
+            for hi, spec, tint, rk, own, tile in bands:
                 b = m & (past >= lo) & (past < hi)
                 if b.any():
                     tex = assets.get_texture(spec)[0]
                     em = assets.get_texture(spec)[1]
-                    out[b] = tex[tv[b], tu[b]] * tint * np.broadcast_to(shade, b.shape)[b][:, None]
+                    bv, bu = (tv[b], tu[b]) if tile == 1.0 else (      # a band's own `tile`: a big pattern
+                        (A[b] * TEX / tile).astype(int) % TEX, (X[b] * TEX / tile).astype(int) % TEX)
+                    out[b] = tex[bv, bu] * tint * np.broadcast_to(shade, b.shape)[b][:, None]
                     refl[b] = np.where(np.broadcast_to(roofed[:, None], b.shape), own, rk)[b]
                     if em is not None:
-                        lightk[b] = em[tv[b], tu[b]][:, None] * tex[tv[b], tu[b]] * 1.6
+                        lightk[b] = em[bv, bu][:, None] * tex[bv, bu] * 1.6
                 lo = hi
         if holes is not None:                     # through a see-through road, whatever lies beyond it
             void |= holes

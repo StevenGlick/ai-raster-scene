@@ -1,0 +1,154 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    300,
+    0,
+    0
+   ]
+  ],
+  "width": 5.6,
+  "lanes": 4,
+  "surface": "asphalt",
+  "edges": "#e0e0dc",
+  "rumble": false,
+  "ground": "void",
+  "below": {
+   "depth": 22,
+   "tile": 33,
+   "haze": 0.6,
+   "texture": [
+    {
+     "width": 200,
+     "texture": "harbor_water"
+    },
+    {
+     "texture": "ocean"
+    }
+   ]
+  },
+  "walls": [
+   {
+    "side": "both",
+    "offset": 0.25,
+    "height": 0.3,
+    "texture": "guard_rail",
+    "tile": [
+     1,
+     0.3
+    ]
+   },
+   {
+    "side": "both",
+    "offset": 0.35,
+    "height": 10.0,
+    "texture": "suspension_cables",
+    "tile": [
+     40,
+     10.0
+    ]
+   }
+  ],
+  "bands": 0.03,
+  "distance": 300
+ },
+ "camera": {
+  "at": 2.0,
+  "x": 0.7,
+  "height": 0.75,
+  "fov": 64,
+  "pitch": 0.1
+ },
+ "title": "The suspension bridge - across a great suspension bridge at dawn, the bay far below",
+ "sky": "dawn",
+ "skyline": "city",
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 285,
+   "elevation": 7,
+   "intensity": 0.75,
+   "color": [
+    1.0,
+    0.84,
+    0.66
+   ]
+  }
+ ],
+ "ambient": [
+  0.56,
+  0.54,
+  0.58
+ ],
+ "fog": {
+  "color": [
+   0.86,
+   0.78,
+   0.76
+  ],
+  "density": 0.003
+ },
+ "roadside": [
+  {
+   "type": "bridge_tower",
+   "side": "middle",
+   "every": 40,
+   "from": 0,
+   "offset": 0.0,
+   "scale": 10.0
+  },
+  {
+   "type": "highway_lamp",
+   "every": 10,
+   "offset": 0.1,
+   "from": 5,
+   "flip": true,
+   "scale": 2.4
+  }
+ ],
+ "sprites": [
+  {
+   "type": "car_sedan",
+   "at": 12,
+   "x": -2.0999999999999996,
+   "variant": 0
+  },
+  {
+   "type": "box_truck",
+   "at": 20,
+   "x": 0.7
+  },
+  {
+   "type": "car_compact",
+   "at": 30,
+   "x": -0.7,
+   "variant": 1
+  }
+ ],
+ "shots": [
+  {
+   "at": 2.0,
+   "x": 0.7,
+   "height": 0.75,
+   "fov": 64,
+   "pitch": 0.1,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.8,
+     "radius": 2.2
+    }
+   ],
+   "vehicle": {
+    "type": "sports_car",
+    "ahead": 2.6
+   }
+  }
+ ],
+ "supersample": 2
+}
