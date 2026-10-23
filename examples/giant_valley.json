@@ -1,0 +1,412 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "ppppppppppppppwwwwwfbaacammrrmmaafabcwwwwwpppppppppppppp",
+  "pppppppppppppppwwwwwadacbbmmrrmmcfbacawwwwwwpppppppppppp",
+  "ppppppppppppppppwwwwwdfeacammrrmmccebbcwwwwwwppppppppppp",
+  "pppppppppppppppppwwwwwceeefemmrrmmbedeaaawwwwwpppppppppp",
+  "pppppppppppppppppwwwwwcecfaaemmrrmmebbbfawwwwwpppppppppp",
+  "ppppppppppppppppppwwwwdeafeabbmrrrmeadeccccwwwwppppppppp",
+  "pppppppppppppppppppwwwbfdbdademmrrmmbfbfeebwwwwppppppppp",
+  "pppppppppppppppppppwwwbdedccdfmmrrmmedfaaeewwwwppppppppp",
+  "ppppppppppppppppppwwwweeeabaeammrrmmffebfdewwwwppppppppp",
+  "ppppppppppppppppppwwwwcbeccddcmrrrmabeeebbefwwwppppppppp",
+  "ppppppppppppppppppwwwwddfdaeeamrrrmaefccadwwwwwppppppppp",
+  "ppppppppppppppppppwwwwfbecfabmmrrmmbcfaeaewwwwpppppppppp",
+  "pppppppppppppppppwwwwwbbfeadbmrrrmaebeadbwwwwwpppppppppp",
+  "pppppppppppppppppwwwwfddbbcdmmrrmmbefdbedwwwwppppppppppp",
+  "ppppppppppppppppwwwwwadddbccmrrrmabcbeadwwwwwppppppppppp",
+  "ppppppppppppppppwwwwwbfacaammrrrmdafddewwwwwwppppppppppp",
+  "pppppppppppppppwwwwwwwfcdcfmmrrmmabbbfwwwwwwpppppppppppp",
+  "pppppppppppppppwwwwwwwccedcmmrrmmbedaawwwwwwpppppppppppp",
+  "pppppppppppppppwwwwwwwdeccemrrrmmfbcafwwwwwwpppppppppppp",
+  "pppppppppppppppwwwwwwwafcadmrrrmeaccfwwwwwwwpppppppppppp",
+  "pppppppppppppppwwwwwwwaabdamrrrmfacefwwwwwwwpppppppppppp",
+  "ppppppppppppppwwwwwwwwwcfaamrrrmccbawwwwwwwwpppppppppppp",
+  "ppppppppppppppwwwwwwwwacabmmrrmmfefawwwwwwwwpppppppppppp",
+  "ppppppppppppppwwwwwwwwwfacmrrrmmaeewwwwwwwwppppppppppppp",
+  "ppppppppppppppwwwwwwwwaadmmrrrmcbdcwwwwwwwwppppppppppppp",
+  "pppppppppppppwwwwwwwwafdemrrrmbcccwwwwwwwwpppppppppppppp",
+  "pppppppppppppwwwwwwwecadmmrrmmededwwwwwwwppppppppppppppp",
+  "pppppppppppwwwwwwwwaaacmmrrmmaacbwwwwwwwpppppppppppppppp",
+  "pppppppppppwwwwwwwbcaammrrmmccefwwwwwwwppppppppppppppppp",
+  "ppppppppppwwwwwwwbafcfmrrrmfffawwwwwwwwppppppppppppppppp",
+  "pppppppppwwwwwwfdcaafmrrrmeeecdewwwwwwwppppppppppppppppp",
+  "pppppppppwwwwwwfdeacmmrrmmcddcewwwwwwwpppppppppppppppppp",
+  "ppppppppwwwwwwebccfbmrrrmabdfbbwwwwwwppppppppppppppppppp",
+  "pppppppwwwwwwccddcbmmrrmmdffdbbcwwwwwppppppppppppppppppp",
+  "ppppppppwwwwwaebcbammrrmmdacddcawwwwpppppppppppppppppppp",
+  "pppppppwwwwwweabeedmmrrrmfdbdcdfwwwwwppppppppppppppppppp",
+  "ppppppppwwwwwedbfaadmrrrmdbdebdbwwwwwppppppppppppppppppp",
+  "ppppppppwwwwwbfcfebaemrrrmdeadfcbwwwwwpppppppppppppppppp",
+  "pppppppppwwwwabffcdbammrrmmbcaccdfwwwwwppppppppppppppppp",
+  "pppppppppppwwwwcefebedmmrrmmdbddadfawwwwpppppppppppppppp",
+  "ppppppppppppwwwaefbbbdemmrrmmeaeeaccwwwwpppppppppppppppp",
+  "ppppppppppppwwwwwadccadammrrmmebecefcwwwwwpppppppppppppp",
+  "ppppppppppppppwwwwdecfaabmmrrmmebedbdbwwwwwppppppppppppp",
+  "pppppppppppppppwwwwffdebfemmrrmmaceddbfwwwwwpppppppppppp",
+  "pppppppppppppppwwwwwdcdefbfmrrrmfcfdbadwwwwwpppppppppppp",
+  "pppppppppppppppwwwwwwebdcecmmrrmmdffaadwwwwwwppppppppppp",
+  "ppppppppppppppppwwwwwwffccfamrrrmfaeafadwwwwwppppppppppp",
+  "ppppppppppppppppwwwwwwebbcecmrrrmdfedeccwwwwwppppppppppp",
+  "ppppppppppppppppwwwwwwwdaebfmrrrmmfbabbwwwwwwwpppppppppp",
+  "ppppppppppppppppwwwwwwwfceefmmrrmmfdfaawwwwwwppppppppppp",
+  "pppppppppppppppppwwwwwwbbeacmrrrmmdbbawwwwwwwppppppppppp",
+  "pppppppppppppppppwwwwwwwffffmrrrmmdfdbwwwwwwwppppppppppp"
+ ],
+ "legend": {
+  "r": {
+   "floor": "river_water"
+  },
+  "m": {
+   "floor": "pasture"
+  },
+  "a": {
+   "floor": "farmland"
+  },
+  "b": {
+   "floor": "farmland_b"
+  },
+  "c": {
+   "floor": "farmland_c"
+  },
+  "d": {
+   "floor": "farmland_d"
+  },
+  "e": {
+   "floor": "farmland_e"
+  },
+  "f": {
+   "floor": "farmland_f"
+  },
+  "w": {
+   "floor": "forest_canopy"
+  },
+  "p": {
+   "floor": "pine_canopy"
+  }
+ },
+ "camera": {
+  "x": 27.0,
+  "y": 50.0,
+  "look_at": [
+   28.0,
+   20.0,
+   2.5
+  ],
+  "fov": 66,
+  "height": 0.6
+ },
+ "title": "The giant valley - mountains, woods and a village at landscape scale",
+ "sky": "day",
+ "skyline": "mountains",
+ "ambient": [
+  0.42,
+  0.42,
+  0.46
+ ],
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 200,
+   "elevation": 30,
+   "intensity": 1.2
+  }
+ ],
+ "fog": {
+  "color": [
+   0.72,
+   0.76,
+   0.84
+  ],
+  "density": 0.008,
+  "ground": 0.22,
+  "height": 0.1,
+  "noise": 0.7,
+  "scale": 3.0,
+  "shafts": 0.5
+ },
+ "objects": [
+  {
+   "type": "mountain",
+   "x": 7.61,
+   "y": 3.774542431355184,
+   "angle": 90,
+   "size": 13.25,
+   "length": 22.53,
+   "height": 8.63,
+   "seed": 968
+  },
+  {
+   "type": "mountain",
+   "x": 57.19,
+   "y": 4.9762915010757975,
+   "angle": 90,
+   "size": 12.55,
+   "length": 18.49,
+   "height": 6.12,
+   "seed": 88
+  },
+  {
+   "type": "mountain",
+   "x": 7.1,
+   "y": 9.561621535768229,
+   "angle": 90,
+   "size": 14.85,
+   "length": 18.66,
+   "height": 7.25,
+   "seed": 832
+  },
+  {
+   "type": "mountain",
+   "x": 57.85,
+   "y": 8.240731458704676,
+   "angle": 90,
+   "size": 13.75,
+   "length": 19.04,
+   "height": 8.53,
+   "seed": 325
+  },
+  {
+   "type": "mountain",
+   "x": 6.09,
+   "y": 14.767644859815812,
+   "angle": 90,
+   "size": 12.78,
+   "length": 19.26,
+   "height": 6.67,
+   "seed": 510
+  },
+  {
+   "type": "mountain",
+   "x": 55.42,
+   "y": 14.168232440820306,
+   "angle": 90,
+   "size": 14.3,
+   "length": 17.71,
+   "height": 9.36,
+   "seed": 330
+  },
+  {
+   "type": "mountain",
+   "x": 4.7,
+   "y": 19.474312081413085,
+   "angle": 90,
+   "size": 12.36,
+   "length": 19.26,
+   "height": 7.46,
+   "seed": 107
+  },
+  {
+   "type": "mountain",
+   "x": 55.29,
+   "y": 18.285631841015256,
+   "angle": 90,
+   "size": 12.38,
+   "length": 23.12,
+   "height": 5.69,
+   "seed": 210
+  },
+  {
+   "type": "mountain",
+   "x": 4.87,
+   "y": 24.896443159532268,
+   "angle": 90,
+   "size": 14.54,
+   "length": 19.44,
+   "height": 6.13,
+   "seed": 50
+  },
+  {
+   "type": "mountain",
+   "x": 50.53,
+   "y": 23.67185186761693,
+   "angle": 90,
+   "size": 15.2,
+   "length": 17.43,
+   "height": 6.49,
+   "seed": 268
+  },
+  {
+   "type": "mountain",
+   "x": -1.31,
+   "y": 28.110952134583737,
+   "angle": 90,
+   "size": 12.93,
+   "length": 22.35,
+   "height": 6.76,
+   "seed": 339
+  },
+  {
+   "type": "mountain",
+   "x": 46.65,
+   "y": 29.425410811543596,
+   "angle": 90,
+   "size": 14.02,
+   "length": 22.96,
+   "height": 6.62,
+   "seed": 54
+  },
+  {
+   "type": "mountain",
+   "x": -2.81,
+   "y": 33.68695820385165,
+   "angle": 90,
+   "size": 14.92,
+   "length": 18.84,
+   "height": 7.99,
+   "seed": 104
+  },
+  {
+   "type": "mountain",
+   "x": 44.97,
+   "y": 33.33084178806355,
+   "angle": 90,
+   "size": 13.53,
+   "length": 21.98,
+   "height": 8.09,
+   "seed": 398
+  },
+  {
+   "type": "mountain",
+   "x": 0.93,
+   "y": 39.73063166302404,
+   "angle": 90,
+   "size": 13.09,
+   "length": 17.67,
+   "height": 7.98,
+   "seed": 237
+  },
+  {
+   "type": "mountain",
+   "x": 51.02,
+   "y": 38.20128506532669,
+   "angle": 90,
+   "size": 15.63,
+   "length": 21.53,
+   "height": 7.37,
+   "seed": 300
+  },
+  {
+   "type": "mountain",
+   "x": 5.15,
+   "y": 44.749444674447915,
+   "angle": 90,
+   "size": 15.39,
+   "length": 18.15,
+   "height": 7.02,
+   "seed": 997
+  },
+  {
+   "type": "mountain",
+   "x": 53.07,
+   "y": 44.18800340057644,
+   "angle": 90,
+   "size": 13.39,
+   "length": 22.87,
+   "height": 9.06,
+   "seed": 982
+  },
+  {
+   "type": "mountain",
+   "x": 28.0,
+   "y": -6.0,
+   "size": 30,
+   "length": 40,
+   "height": 16,
+   "seed": 77,
+   "ridges": 6
+  },
+  {
+   "type": "village",
+   "x": 24.64764446755303,
+   "y": 34.0,
+   "size": 3.2,
+   "count": 26,
+   "seed": 3
+  },
+  {
+   "type": "village",
+   "x": 27.64677496240257,
+   "y": 16.0,
+   "size": 1.6,
+   "count": 9,
+   "seed": 8,
+   "church": false
+  }
+ ],
+ "scatter": [
+  {
+   "of": [
+    "pine",
+    "pine",
+    "tree"
+   ],
+   "on": "w",
+   "density": 3.0,
+   "scale": 0.09,
+   "seed": 5
+  },
+  {
+   "of": "pine",
+   "on": "p",
+   "density": 3.0,
+   "scale": 0.09,
+   "seed": 6
+  }
+ ],
+ "time": "dawn",
+ "shots": [
+  {
+   "x": 27.0,
+   "y": 50.0,
+   "look_at": [
+    28.0,
+    20.0,
+    2.5
+   ],
+   "fov": 66,
+   "height": 0.6
+  },
+  {
+   "x": 27.2,
+   "y": 36.6,
+   "look_at": [
+    24.6,
+    34.0,
+    0.02
+   ],
+   "fov": 60,
+   "height": 0.22
+  },
+  {
+   "x": 28.0,
+   "y": 51.5,
+   "look_at": [
+    28.0,
+    24.0,
+    0.0
+   ],
+   "fov": 70,
+   "height": 4.0
+  },
+  {
+   "x": 27.0,
+   "y": 50.0,
+   "look_at": [
+    28.0,
+    20.0,
+    2.5
+   ],
+   "fov": 66,
+   "height": 0.6,
+   "time": "afternoon"
+  }
+ ],
+ "max_distance": 80,
+ "supersample": 2
+}

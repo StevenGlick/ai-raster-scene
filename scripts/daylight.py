@@ -7,9 +7,9 @@ opposite it. It picks the sky (`dawn`, `day`, `golden`, `sunset`, `dusk` or `nig
 scene's ambient light and the colour of its air and tints them - scaled from what the scene has, taken to be
 right for the hour its own sky shows, so a dim interior stays dim beside a bright street and a warm room stays
 warm at any hour - and lights fewer of the rooms behind its facades' windows by day (a facade's `lit` is how many
-show a lamp after dark). Lights marked
-`"night": true` (street lamps, lanterns, a lit window's glow) burn only between sunset and sunrise, and ones marked
-`"day": true` only by day.
+show a lamp after dark), and so for the windows of `tower`s and `city_block`s. Lights, objects and sprites marked
+`"night": true` (street lamps, lanterns, searchlights, a lit window's glow) are there only between sunset and
+sunrise, and ones marked `"day": true` only by day.
 
 A scene is rewritten once, as it is read (prefabs.expand calls apply). The time can be a dict to adjust what the
 hour gives: `{"at": "dusk", "azimuth": 200}` (where the sun or moon stands), `"elevation"`, `"sky"`, `"ambient"`
@@ -42,6 +42,7 @@ SUN = [(0.0, (1.0, 0.5, 0.32), 0.9), (3.0, (1.0, 0.6, 0.4), 1.05), (8.0, (1.0, 0
        (15.0, (1.0, 0.86, 0.68), 1.4), (30.0, (1.0, 0.94, 0.84), 1.5), (90.0, (1.0, 0.98, 0.93), 1.5)]
 MOON = 0.38                             # the moon's strength, full night
 LIGHT_KEYS = ('type', 'azimuth', 'elevation', 'color', 'intensity', 'night', 'day')
+LIT_OBJECTS = ('tower', 'city_block')                      # objects whose `lit` windows the hour turns down by day
 SPEC_KEYS = {'at', 'azimuth', 'elevation', 'sky', 'ambient', 'fog'}      # what a time given as a dict may hold
 
 
@@ -123,6 +124,9 @@ def apply(scene, keep=()):
                 cell = dict(cell, facade=dict(f, lit=round(float(f.get('lit', 0.35)) * lit, 3)))
             legend[ch] = cell
         out['legend'] = legend
+    if outside and scene.get('objects') and 'objects' not in keep:   # and in the buildings' windows
+        out['objects'] = [dict(o, lit=round(float(o['lit']) * lit, 3)) if o.get('type') in LIT_OBJECTS and o.get('lit')
+                          else o for o in scene['objects']]
     lights = list(scene.get('lights') or [])
     old = [L for L in lights if L.get('type') in ('sun', 'moon')]
     # a sun or moon where the scene had one, or under a sky the hour sets - none under its own cloud or stars
@@ -148,5 +152,11 @@ def apply(scene, keep=()):
             lights.append({**extra, **mine, 'type': 'moon', 'azimuth': round(az, 2), 'elevation': round(el, 2),
                            'intensity': round((float(was[0].get('intensity', 0.4)) if was else MOON) * dark, 3)})
     night = lamps_lit(h)
-    out['lights'] = [L for L in lights if not (L.get('night') and not night) and not (L.get('day') and night)]
+
+    def now(item):                                               # marked for the night or the day, and is it?
+        return not (item.get('night') and not night) and not (item.get('day') and night)
+    out['lights'] = [L for L in lights if now(L)]
+    for key in ('objects', 'sprites'):                          # searchlights by night, washing hung out by day
+        if out.get(key) and key not in keep:
+            out[key] = [o for o in out[key] if now(o)]
     return out

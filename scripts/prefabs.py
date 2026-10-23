@@ -195,16 +195,17 @@ def _fresh(state):
 
 
 def expand(scene, keep=()):
-    """The scene with every prefab placement turned into its parts, every object into its panels
-    (objects.expand), and its `time` of day into its sky, its sun or moon and its air
-    (daylight.apply: the keys named in `keep` stay as they are). A scene with none of them comes
+    """The scene with every prefab placement turned into its parts, its `time` of day into its sky,
+    its sun or moon and its air (daylight.apply: the keys named in `keep` stay as they are), and
+    every object into its panels (objects.expand) - in that order, so the hour reaches the lamps a
+    prefab brings and the objects' lit windows and night marks. A scene with none of them comes
     back as it is - the same object - and an expanded one is never expanded twice."""
-    return daylight.apply(_expand(scene), keep)
+    return objects.expand(daylight.apply(_expand(scene), keep))
 
 
 def _expand(scene):
     if not scene.get('prefabs'):
-        return objects.expand(scene)
+        return scene
     defs = {**PREFABS, **(scene.get('prefab_defs') or {})}
     out = dict(scene)
     out['map'] = [list(r) for r in scene['map']]
@@ -219,7 +220,7 @@ def _expand(scene):
     out.pop('prefab_defs', None)
     if not out['objects']:
         out.pop('objects')
-    return objects.expand(out)
+    return out
 
 
 def _place(out, defs, pl, parent, depth, state, n):

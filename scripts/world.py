@@ -808,7 +808,7 @@ class World:
             for (x, y) in pts:
                 name = items[int(rng.integers(len(items)))]
                 cls = names[int(rng.choice(len(names), p=weights))]
-                scale = assets.size_scale(name, cls, defs)
+                scale = assets.size_scale(name, cls, defs) * float(spec.get('scale', 1.0))
                 # A keep-clear radius alone is not enough: a `huge` boulder is over a unit wide,
                 # so it can sit outside the radius and still fill the frame. Grow the exclusion
                 # by the item's own half-width.

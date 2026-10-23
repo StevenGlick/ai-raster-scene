@@ -320,6 +320,7 @@ KITS = (
     'temple',      # inside the jungle temple: a golden idol, treasure
     'norse',       # the north: a round shield (the longship is an object)
     'glasshouse',  # a Victorian palm house: walls of glass in white iron, encaustic tiles
+    'landscape',   # landscape scale - a cell about 100 m, a giant's eye: city streets, harbour water, a kaiju
 )
 FRINGES = {}
 for _name in KITS:

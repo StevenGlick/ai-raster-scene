@@ -38,7 +38,9 @@ PLACEMENT_KEYS = {'type', 'x', 'y', 'z', 'angle', 'scale', 'paint', 'lights', 't
                   'sink', 'broken', 'width', 'flutes', 'doric', 'fill', 'rise', 'overhang', 'walls', 'inset',
                   'cover', 'chimney', 'plaster', 'gauge', 'ore', 'roots', 'piece', 'side', 'heel', 'ends', 'sail',
                   'band', 'lit', 'casts', 'teeth', 'spokes', 'goods', 'game', 'to', 'view', 'scene', 'shape',
-                  'frame', 'edge', 'door', 'swing', 'show', 'crt', 'text', 'style', 'ground', 'smooth'}
+                  'frame', 'edge', 'door', 'swing', 'show', 'crt', 'text', 'style', 'ground', 'smooth', 'setback',
+                  'antenna', 'pad', 'elevation', 'opacity', 'built', 'night', 'day', 'snowline', 'ridges',
+                  'church'}
 
 
 # ------------------------------------------------------------------ parts
@@ -770,6 +772,10 @@ def car(pl):
 SNOW = ramp(['#8e9ab2', '#a8b4ca', '#c2ccdc', '#d8e0ea', '#eaeff5', '#f8fafc'])
 CAVE = ramp('#4a4652', dark=0.3, light=1.5, cool=0.12)
 ROCKS = {
+    'alpine': dict(ramps=[ramp('#6a6660', dark=0.3, light=1.5, cool=0.18), ramp('#8a8478', dark=0.35, light=1.35),
+                          ramp('#5a7238', dark=0.35, light=1.35), ramp('#dce4ec', dark=0.55, light=1.12, cool=0.2)],
+                   mass=(1.6, 1.6, 0.9), chip=(0.45, 0.45, 0.3), key=(-0.4, 0.45, 0.8), shade=(0.28, 0.66),
+                   crust=0.6, weed=0.38, up=0.5, pores=0.0, density=0.14, snow_slope=0.28),
     'stone': dict(ramps=[ramp('#6e6a64', dark=0.3, light=1.45), ramp('#7a7866', dark=0.35, light=1.3),
                          ramp('#4e6a32', dark=0.35, light=1.35)],
                   mass=(0.9, 0.9, 0.7), chip=(0.24, 0.24, 0.2), key=(-0.4, 0.45, 0.8), shade=(0.3, 0.62),
@@ -913,6 +919,10 @@ def _stone(rk, seed, o, u, v, w, h, alpha, rim=None, tone=0.0, tilt=None):
     up = np.nonzero(N[:, 2] > rk.get('up', 0.6))[0]                 # weed in tufts, where it faces up
     if up.size:
         mat[up[noise3(P[up], 0.12, seed + 3) > rk['weed']]] = 2
+    if rk.get('snowline') is not None:                              # snow above its line, wandering, where it lies
+        line = rk['snowline'] + rk.get('snow_wander', 0.5) * (noise3(P, rk.get('snow_scale', 0.35), seed + 9) - 0.5)
+        mat[(P[:, 2] > line) & (N[:, 2] > rk.get('snow_slope', 0.3))] = 3
+        mat[P[:, 2] > line + rk.get('snow_cap', 1e9)] = 3
     bay = BAYER4[ys % 4, xs % 4]
     rgb = np.zeros((h * w, 3), np.float32)
     em = np.zeros(h * w, np.float32)
@@ -3476,6 +3486,417 @@ def pew(pl):
     return [p for p in parts if p]
 
 
+# ------------------------------------------------------------------ landscape scale: a city as a giant sees it
+# A map cell is about 100 m here, so the camera's eye at 0.5 is a giant's, a kaiju stands as a person does in a
+# room, and a building is a thing the size of furniture. Its faces are drawn at the walls' 64 texels to a unit: a
+# texel is about a metre and a half, a floor two texels - a row of windows and the band of wall between.
+
+TOWER_STYLES = {
+    # wall, its glass by day, the window's own light at night (warm, cool), how its floors are drawn
+    'office': ('#b4ab98', '#41505e', '#ffd894', '#dde8ff'),
+    'glass': ('#56707a', '#5e8aa0', '#fff0c0', '#e0f0ff'),
+    'apartment': ('#c8c0b0', '#3e4650', '#ffc870', '#ffe0a0'),
+    'brick': ('#8a4e3a', '#2e3438', '#ffc066', '#ffd890'),
+    'dark': ('#3e3e46', '#24303c', '#ffe0a0', '#c8e0ff'),
+}
+
+
+@functools.lru_cache(maxsize=None)
+def _tower_face(w, h, style, seed, lit):
+    """One face of a building at landscape scale, w x h texels from its roofline down to the street: floors of
+    two texels - a row of windows over a band of wall - a lobby of dark glass two floors tall at its foot and a
+    parapet along its top. `office`: punched windows in a pale frame; `glass`: a curtain wall of glass reflecting
+    the sky, a seam at every floor and a mullion every fourth texel; `apartment`: balconies, every floor's slab
+    standing out; `brick`: warm brick, windows set in pale surrounds; `dark`: black stone and glass. `lit` of the
+    windows glow - at night - in runs, as offices and flats are lit, warm or cool."""
+    rng = np.random.default_rng(seed)
+    wall_c, glass_c, warm, cool = (rgb(c) for c in TOWER_STYLES[style])
+    yy = np.arange(h)[:, None] * np.ones((1, w))
+    xx = np.ones((h, 1)) * np.arange(w)[None, :]
+    floor = (h - 1 - yy) // 2                                   # from the street up
+    band = (h - 1 - yy) % 2                                     # 1: the window row, 0: the wall between
+    sky = (1.0 - yy / max(h - 1, 1))                            # glass high up shows more sky
+    img = np.empty((h, w, 3), np.float32)
+    img[:] = wall_c * (0.94 + 0.12 * rng.random((h, w, 1)))
+    glass = glass_c * (0.8 + 0.4 * sky[..., None]) * (0.9 + 0.2 * rng.random((h, w, 1)))
+    if style == 'glass':
+        win = np.ones((h, w), bool)
+        img[:] = glass
+        img[band == 0] *= 0.82                                  # the seam at every floor
+        img[(xx % 4 == 0)] *= 0.86                              # mullions
+    elif style == 'apartment':
+        win = (band == 1) & (xx % 3 != 0)
+        img[band == 0] = wall_c * 1.12                          # the balcony slabs stand out, pale
+        img[(band == 1) & (xx % 3 == 0)] *= 0.8                 # the dividing walls in their shade
+    elif style == 'brick':
+        win = (band == 1) & (xx % 3 == 1)
+        img[(band == 0) & (xx % 3 == 1)] = wall_c * 1.6         # a pale sill under each window
+    else:
+        win = (band == 1) & (xx % 2 == 1)
+    win &= (xx > 0) & (xx < w - 1)                              # the corners are solid
+    img[win] = glass[win]
+    lobby = floor < 1
+    img[lobby & (band == 1)] = glass_c * 0.55
+    img[lobby & (band == 0) & (xx % 4 != 0)] = glass_c * 0.7
+    img[0] = wall_c * 1.25                                      # the parapet, catching the light
+    em = np.zeros((h, w), np.float32)
+    if lit > 0:
+        on = np.zeros((h, w), bool)
+        for f in range(1, int(floor.max()) + 1):                # lit in runs along each floor
+            row = np.nonzero((floor[:, 0] == f) & (band[:, 0] == 1))[0]
+            if not len(row):
+                continue
+            x = 0
+            while x < w:
+                run = int(rng.integers(2, 9))
+                if rng.random() < lit:
+                    on[row[0], x:x + run] = True
+                x += run
+        on &= win
+        tone = np.where(rng.random((h, w, 1)) < 0.7, warm, cool) * (0.8 + 0.25 * rng.random((h, w, 1)))
+        img[on] = tone[on]
+        em[on] = 1.0
+    return np.concatenate([np.clip(img, 0, 1), np.ones((h, w, 1), np.float32)], -1), em
+
+
+@functools.lru_cache(maxsize=None)
+def _tower_roof(w, h, seed, kind):
+    """A flat roof seen from a giant's height, w x h texels: gravel inside a pale parapet, and its plant - boxes
+    of machinery, a water tank, vents - or for `pad` a helicopter pad, a pale H in a ring."""
+    rng = np.random.default_rng(seed)
+    img = np.empty((h, w, 3), np.float32)
+    img[:] = rgb('#8c8a84') * (0.9 + 0.2 * rng.random((h, w, 1)))
+    img[[0, -1], :] = rgb('#c8c4b8')
+    img[:, [0, -1]] = rgb('#c8c4b8')
+    if kind == 'pad' and min(w, h) >= 9:
+        cy, cx, r = (h - 1) / 2, (w - 1) / 2, min(w, h) / 2 - 2
+        yy, xx = np.mgrid[0:h, 0:w]
+        d = np.hypot(yy - cy, xx - cx)
+        img[np.abs(d - r) < 0.6] = rgb('#e8e0c8')
+        hy, hx = int(round(cy)), int(round(cx))
+        k = max(1, int(r * 0.45))
+        img[hy - k:hy + k + 1, hx - k] = img[hy - k:hy + k + 1, hx + k] = img[hy, hx - k:hx + k + 1] = rgb('#e8e0c8')
+    else:
+        for _ in range(max(1, (w * h) // 40)):                  # the plant on it
+            bw, bh = int(rng.integers(1, 4)), int(rng.integers(1, 3))
+            x, y = int(rng.integers(1, max(2, w - bw - 1))), int(rng.integers(1, max(2, h - bh - 1)))
+            img[y:y + bh, x:x + bw] = rgb(['#d8d4cc', '#6a6a6c', '#a4a49c'][int(rng.integers(0, 3))])
+    return np.concatenate([np.clip(img, 0, 1), np.ones((h, w, 1), np.float32)], -1), np.zeros((h, w), np.float32)
+
+
+def _tower_box(x0, x1, y0, y1, z0, z1, style, seed, lit, roof):
+    """The faces of one box of a building: four of windows, a roof, its foot open."""
+    faces = {}
+    for k, (f, span) in enumerate((('front', y1 - y0), ('back', y1 - y0), ('right', x1 - x0), ('left', x1 - x0))):
+        faces[f] = _tower_face(_texels(span), _texels(z1 - z0), style, seed * 7 + k, lit)
+    faces['top'] = _tower_roof(_texels(y1 - y0), _texels(x1 - x0), seed, roof)
+    return box((x0, y0, z0), (x1, y1, z1), faces)
+
+
+def tower(pl):
+    """A building at landscape scale - a map cell is about 100 m, a giant's eye at 0.5 - `width` (along x) and
+    `depth` across (default 0.3: thirty metres) and `height` tall (default 0.6), its faces floors of windows in a
+    `style` (`office`, `glass`, `apartment`, `brick` or `dark`), `lit` the share of its windows lit (at night; 0
+    by day), a flat roof with its plant on it. `setback` (0-1) steps its top part in, from that share of its
+    height up; `antenna` puts a mast on its roof that tall; `pad` puts a helicopter pad on top."""
+    seed = int(pl.get('seed', 1))
+    w = float(pl.get('width', 0.3)) / 2
+    d, H = float(pl.get('depth', pl.get('width', 0.3))) / 2, float(pl.get('height', 0.6))
+    style, lit = pl.get('style', 'office'), float(pl.get('lit', 0.0))
+    roof = 'pad' if pl.get('pad') else 'plant'
+    step = float(pl.get('setback', 0.0))
+    if 0 < step < 1:
+        z = H * step
+        parts = _tower_box(-w, w, -d, d, 0.0, z, style, seed, lit, 'plant')
+        parts += _tower_box(-w * 0.7, w * 0.7, -d * 0.7, d * 0.7, z, H, style, seed + 1, lit, roof)
+    else:
+        parts = _tower_box(-w, w, -d, d, 0.0, H, style, seed, lit, roof)
+    if pl.get('antenna'):
+        parts += _painted_box((-0.004, -0.004, H), (0.004, 0.004, H + float(pl['antenna'])), '#5a5a60')
+    return [p for p in parts if p]
+
+
+BLOCK_STYLES = ('office', 'apartment', 'brick', 'glass', 'dark', 'office', 'apartment')
+
+
+def city_block(pl):
+    """A city block at landscape scale - the buildings of one `city_street` cell, inside its streets: `count` plots
+    a side (default 2), each built up (`built`, the share of them, default 1) to a `tower` of a height drawn from
+    `height` ([lowest, tallest], default [0.08, 0.35] - most of them low), of a style from `style` (a name or a
+    list, default a mix), `lit` the share of their windows lit; tall ones step back and carry masts. `seed` draws
+    another. Set it at the middle of the cell."""
+    rng = np.random.default_rng(int(pl.get('seed', 1)))
+    n, built = int(pl.get('count', 2)), float(pl.get('built', 1.0))
+    lo, hi = (float(v) for v in pl.get('height', [0.08, 0.35]))
+    styles = pl.get('style') or BLOCK_STYLES
+    styles = [styles] if isinstance(styles, str) else list(styles)
+    inner = 0.72                                                 # inside the pavements
+    plot = inner / n
+    parts = []
+    for i in range(n):
+        for j in range(n):
+            if rng.random() >= built:
+                continue
+            h = lo + (hi - lo) * rng.random() ** 1.7
+            tall = h > 0.8
+            spec = {'width': plot * rng.uniform(0.72, 0.94), 'depth': plot * rng.uniform(0.72, 0.94), 'height': h,
+                    'style': styles[int(rng.integers(0, len(styles)))], 'seed': int(rng.integers(0, 1 << 20)),
+                    'lit': float(pl.get('lit', 0.0)), 'setback': 0.72 if tall and rng.random() < 0.5 else 0.0,
+                    'antenna': round(0.08 + 0.12 * rng.random(), 3) if tall and rng.random() < 0.6 else 0,
+                    'pad': bool(tall and rng.random() < 0.25)}
+            parts += _moved(tower(spec), -inner / 2 + plot * (i + 0.5), -inner / 2 + plot * (j + 0.5))
+    return parts
+
+
+@functools.lru_cache(maxsize=None)
+def _ray_tex(w, h, color, start, soft):
+    """A beam of light laid flat, w across and h along, its source at the bottom: `start` of its width there,
+    opening out to the whole of it at the far end; brightest along its middle, fading to its edges and - with
+    `soft` - toward the far end. All of it glows."""
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    along = 1 - yy / h                                           # 0 at the source, 1 at the far end
+    half = start + (1 - start) * along
+    across = np.clip(1 - np.abs(xx / w * 2 - 1) / half, 0, 1)
+    a = np.clip(across ** 1.4 * (1 - along) ** soft * 1.2, 0, 1).astype(np.float32)
+    rgba = np.zeros((h, w, 4), np.float32)
+    rgba[..., :3] = _lit(color) if isinstance(color, str) else np.clip(np.array(color, np.float32), 0, 1)
+    rgba[..., 3] = a
+    return rgba, np.ones((h, w), np.float32)
+
+
+def _ray(a, b, w0, w1, color, soft, opacity):
+    """A beam of light from point a to point b, w0 wide at a opening to w1 at b: two glowing panels crossed along
+    it, drawn over what is behind them (additive), so it shows from any side."""
+    a, b = np.asarray(a, float), np.asarray(b, float)
+    d = b - a
+    L = float(np.linalg.norm(d))
+    if L < 1e-6:
+        return []
+    d /= L
+    e1 = np.cross(d, [0.0, 0.0, 1.0] if abs(d[2]) < 0.95 else [1.0, 0.0, 0.0])
+    e1 /= np.linalg.norm(e1)
+    e2 = np.cross(d, e1)
+    tex = _ray_tex(max(4, _texels(w1)), max(8, min(512, _texels(L) // 4)),
+                   color if isinstance(color, str) else tuple(float(c) for c in color), round(w0 / max(w1, 1e-6), 3),
+                   soft)
+    parts = []
+    for e in (e1, e2):
+        h = e * w1 / 2
+        parts.append(quad(tex, tuple(b - h), tuple(b + h), tuple(a - h), translucent=True, blend='additive',
+                          opacity=opacity))
+    return parts
+
+
+def searchlight(pl):
+    """A searchlight's beam at landscape scale: a cone of light from its lamp on the ground (or a roof, `z`) out
+    `length` (default 12: a kilometre and more) toward the compass `angle` it faces, `elevation` degrees up (default
+    55), `width` across at the lamp (default 0.1) opening six times as wide, in `color` (default a cold white);
+    it fades along its length and glows - give the scene a little fog and a light bloom and it reads as a beam."""
+    el = math.radians(float(pl.get('elevation', 55)))
+    L, w0 = float(pl.get('length', 12.0)), float(pl.get('width', 0.1))
+    end = (L * math.cos(el), 0.0, L * math.sin(el))
+    return _ray((0.0, 0.0, 0.02), end, w0, w0 * 6, pl.get('color', '#dce8ff'), 1.3, float(pl.get('opacity', 0.45)))
+
+
+def ray(pl):
+    """A ray of light, fire or energy from the placement (its `z` the height it leaves at) straight to the point
+    `to` ([x, y, z], in the scene's own units): a kaiju's breath, a laser, a ray from a flying saucer - `width`
+    across where it leaves (default 0.03) and twice that where it lands, in `color` (default an electric blue),
+    glowing over everything behind it."""
+    to = pl.get('to') or [float(pl['x']) + 1.0, float(pl['y']), 0.0]
+    X, Y, Z = float(pl['x']), float(pl['y']), float(pl.get('z', 0.0))
+    a, k = math.radians(float(pl.get('angle', 0.0))), float(pl.get('scale', 1.0))
+    dx, dy, dz = float(to[0]) - X, float(to[1]) - Y, float(to[2]) - Z if len(to) > 2 else -Z
+    local = ((dx * math.cos(a) + dy * math.sin(a)) / k, (-dx * math.sin(a) + dy * math.cos(a)) / k, dz / k)
+    w0 = float(pl.get('width', 0.03))
+    return _ray((0.0, 0.0, 0.0), local, w0, w0 * 2, pl.get('color', '#6ad4ff'), 0.4, float(pl.get('opacity', 1.0)))
+
+
+HOUSE_WALLS = ('#e4dccc', '#d8c8a4', '#c8a878', '#e8e4dc', '#b8b0a4')
+HOUSE_ROOFS = {'tile': '#a04a32', 'slate': '#4a4e5a', 'thatch': '#8a7448', 'red': '#b85a3a'}
+
+
+@functools.lru_cache(maxsize=None)
+def _house_wall(w, h, color, seed, door):
+    """A cottage's wall at landscape scale, w x h texels: its plaster or stone, a row or two of small dark windows
+    in pale frames, and with `door` a door at its foot."""
+    rng = np.random.default_rng(seed)
+    img = np.empty((h, w, 3), np.float32)
+    img[:] = rgb(color) * (0.92 + 0.12 * rng.random((h, w, 1)))
+    rows = [h // 3] if h < 9 else [h // 4, h // 2 + 1]
+    for y in rows:
+        for x in range(2, w - 2, 4):
+            img[y:y + 2, x:x + 2] = rgb('#2a2e34')
+            img[y + 2:y + 3, x:x + 2] = rgb(color) * 1.15
+    if door:
+        x = w // 2
+        img[h - 3:h, x:x + 2] = rgb('#4a3020')
+    img[-1] *= 0.7                                               # its foot, in its own shade
+    return np.concatenate([np.clip(img, 0, 1), np.ones((h, w, 1), np.float32)], -1), np.zeros((h, w), np.float32)
+
+
+@functools.lru_cache(maxsize=None)
+def _roof_tex(w, h, color):
+    """A roof's slope at landscape scale: rows of tiles (or slate, or thatch) running along it, darker at the
+    eave."""
+    img = np.empty((h, w, 3), np.float32)
+    img[:] = rgb(color)
+    img[np.arange(h) % 2 == 1] *= 0.86
+    img[-1] *= 0.75
+    return np.concatenate([img, np.ones((h, w, 1), np.float32)], -1), np.zeros((h, w), np.float32)
+
+
+@functools.lru_cache(maxsize=None)
+def _gable(w, h, color):
+    """A gable end: a triangle of wall to the ridge, its apex at the top middle."""
+    tex = _house_wall(w, h, color, 0, False)[0].copy()
+    tex[..., 3] = _grown(_poly(w, h, [(0, h), (w, h), (w / 2, 0)]))
+    return tex, np.zeros((h, w), np.float32)
+
+
+def _cottage(L, W, h, r, wall, roof, seed, chimney=True):
+    """A cottage at landscape scale, about the origin, its ridge along x: walls `h` tall, a gabled roof rising `r`
+    over them with a little overhang, a chimney at one end."""
+    f = lambda v: max(3, int(round(v * FINE)))                       # noqa: E731
+    x0, x1, y0, y1 = -L / 2, L / 2, -W / 2, W / 2
+    parts = box((x0, y0, 0.0), (x1, y1, h), {
+        'front': _house_wall(f(W), f(h), wall, seed, False), 'back': _house_wall(f(W), f(h), wall, seed + 1, False),
+        'right': _house_wall(f(L), f(h), wall, seed + 2, True), 'left': _house_wall(f(L), f(h), wall, seed + 3, False)})
+    o = W * 0.12
+    tex = _roof_tex(f(L + 2 * o), f(math.hypot(W / 2 + o, r)), HOUSE_ROOFS.get(roof, roof))
+    for sgn in (1, -1):                                              # the two slopes, ridge to eave
+        eave = (x0 - o, sgn * (W / 2 + o), h - o * r / W * 2)
+        parts.append(quad(tex, (x0 - o, 0.0, h + r), (x1 + o, 0.0, h + r), eave))
+    g = _gable(f(W), f(r), wall)
+    parts += [quad(g, (x1, y1, h + r), (x1, y0, h + r), (x1, y1, h)),
+              quad(g, (x0, y0, h + r), (x0, y1, h + r), (x0, y0, h))]
+    if chimney:
+        parts += _painted_box((x1 - L * 0.22, -W * 0.18, h), (x1 - L * 0.12, -W * 0.06, h + r * 1.25), '#7a5a48')
+    return parts
+
+
+def _church(seed):
+    """A village church at landscape scale: a nave of stone under slate, a square tower at its west end and a
+    spire on the tower."""
+    parts = _cottage(0.2, 0.085, 0.075, 0.055, '#b8b0a0', 'slate', seed, chimney=False)
+    tw, th = 0.026, 0.16
+    tx = -0.1 - tw
+    f = lambda v: max(3, int(round(v * FINE)))                       # noqa: E731
+    faces = {k: _house_wall(f(2 * tw), f(th), '#b8b0a0', seed + 7 + i, k == 'back')
+             for i, k in enumerate(('front', 'back', 'right', 'left'))}
+    parts += box((tx - tw, -tw, 0.0), (tx + tw, tw, th), faces)                 # the tower
+    tip = (tx, 0.0, th + 0.11)
+    tex = _roof_tex(f(2 * tw), f(0.115), '#4a4e5a')
+    tri = (tex[0].copy(), tex[1])
+    w_, h_ = tri[0].shape[1], tri[0].shape[0]
+    tri[0][..., 3] = _grown(_poly(w_, h_, [(0, h_), (w_, h_), (w_ / 2, 0)]))
+    for (ax, ay), (bx, by) in (((-1, -1), (1, -1)), ((1, -1), (1, 1)), ((1, 1), (-1, 1)), ((-1, 1), (-1, -1))):
+        A = (tx + ax * tw, ay * tw, th)
+        B = (tx + bx * tw, by * tw, th)
+        mid = ((A[0] + B[0]) / 2, (A[1] + B[1]) / 2, th)
+        top_l = tuple(np.array(tip) + (np.array(A) - np.array(mid)))
+        top_r = tuple(np.array(tip) + (np.array(B) - np.array(mid)))
+        parts.append(quad(tri, top_l, top_r, A))                     # each face of the spire, a triangle
+    return parts
+
+
+def village(pl):
+    """A village at landscape scale - a map cell about 100 m: `count` cottages (default 16) along a street that
+    winds through it, `size` across (default 2.4), each its own size and colours - plaster or stone, roofs of red
+    tile, slate or thatch, a chimney - turned to the street, and its church (`church`, default true) with a spire
+    near the middle; a few farms stand off by themselves. `seed` draws another."""
+    rng = np.random.default_rng(int(pl.get('seed', 1)))
+    R = float(pl.get('size', 2.4)) / 2
+    parts = []
+    bend = rng.uniform(-0.6, 0.6)
+    for k in range(int(pl.get('count', 16))):
+        t = rng.uniform(-1, 1)
+        if rng.random() < 0.82:                                      # along the street, either side
+            x = t * R
+            y = bend * R * (t ** 2 - 0.3) + rng.choice([-1, 1]) * rng.uniform(0.07, 0.14)
+            ang = math.atan2(2 * bend * t, 1.0)
+        else:                                                        # a farm off by itself
+            a = rng.uniform(0, 2 * np.pi)
+            x, y = R * 1.1 * math.cos(a), R * 1.1 * math.sin(a)
+            ang = rng.uniform(0, np.pi)
+        L, W = rng.uniform(0.09, 0.15), rng.uniform(0.055, 0.075)
+        roof = ('tile', 'tile', 'slate', 'thatch', 'red')[int(rng.integers(0, 5))]
+        house = _cottage(L, W, rng.uniform(0.035, 0.05), rng.uniform(0.028, 0.04),
+                         HOUSE_WALLS[int(rng.integers(0, len(HOUSE_WALLS)))], roof, int(rng.integers(0, 1 << 16)))
+        parts += _turned_parts(house, ang, x, y)
+    if pl.get('church', True):
+        parts += _turned_parts(_church(int(rng.integers(0, 1 << 16))), math.atan2(2 * bend * 0.1, 1.0), 0.1 * R,
+                               bend * R * (0.01 - 0.3) - 0.2)
+    return parts
+
+
+def _turned_parts(parts, ang, dx, dy):
+    """Parts built about the origin, turned `ang` radians about the vertical and moved to (dx, dy)."""
+    c, s_ = math.cos(ang), math.sin(ang)
+    out = []
+    for p in parts:
+        p = dict(p)
+        if p['part'] == 'panel':
+            for k in ('tl', 'tr', 'bl'):
+                x, y, z = p[k]
+                p[k] = (x * c - y * s_ + dx, x * s_ + y * c + dy, z)
+        else:
+            x, y = p['dx'], p['dy']
+            p['dx'], p['dy'] = x * c - y * s_ + dx, x * s_ + y * c + dy
+        out.append(p)
+    return out
+
+
+def mountain(pl):
+    """A mountain at landscape scale - a map cell about 100 m: `size` across its foot (default 14) and `height`
+    tall (default 7), every face a triangle of `rock` (default `alpine`: grey rock in bands, meadow where it lies
+    gently, snow above the `snowline` - its share of the height, default 0.62; 0 for none - wherever snow can lie).
+    Its ridges run down from an off-centre summit in spurs with gullies between, its flanks steepening as they
+    rise; `ridges` how many (default 4), `seed` another mountain. `length` (default its size) draws it out along
+    its x into a ridge - turn it with `angle` - and a few overlapping make a range."""
+    seed = int(pl.get('seed', 1))
+    rng = np.random.default_rng(seed)
+    R, H = float(pl.get('size', 14.0)) / 2, float(pl.get('height', 7.0))
+    rk = dict(_rock_kind(dict(pl, rock=pl.get('rock', 'alpine'))))
+    rk['density'] = min(float(rk.get('density', 1.0)), ROCKS['alpine']['density'])   # texels at a mountain's size
+    if float(pl.get('snowline', 0.62)) > 0:
+        ramps = list(rk['ramps'])
+        if len(ramps) < 4:                                             # any rock takes snow: its fourth ramp
+            ramps = ramps[:3] + [ramps[-1]] * (3 - len(ramps)) + [SNOW]
+        rk.update(ramps=ramps, snowline=H * float(pl.get('snowline', 0.62)), snow_wander=H * 0.12,
+                  snow_scale=0.6 / max(H, 1.0), snow_cap=H * 0.16)
+    N = 18
+    ang = (np.arange(N) + rng.uniform(-0.25, 0.25, N)) * 2 * np.pi / N
+    spurs = rng.uniform(0, 2 * np.pi, int(pl.get('ridges', 4)))
+    near = np.min(np.abs((ang[:, None] - spurs[None, :] + np.pi) % (2 * np.pi) - np.pi), axis=1)
+    ridge = np.exp(-(near / 0.35) ** 2)                                # 1 along a spur, 0 in the gullies
+    top = np.array([*(rng.uniform(-0.3, 0.3, 2) * R), H])
+    stretch = float(pl.get('length', 2 * R)) / (2 * R)
+    lean = 1 + 0.35 * np.cos(ang - rng.uniform(0, 2 * np.pi))         # one flank steeper, one gentler
+    zs = [0.0, 0.1, 0.24, 0.4, 0.57, 0.73, 0.87]                       # broad feet, steepening to the summit
+    levels = [(-ROCK_FOOT / max(H, 1e-3) if k == 0 else z, (1 - z) ** 1.35) for k, z in enumerate(zs)]
+    rings = []
+    for k, (zf, rf) in enumerate(levels):
+        r = R * rf * (0.7 + 0.55 * ridge * (1 - zf) + rng.uniform(-0.08, 0.08, N)) * lean ** (1 - max(zf, 0))
+        z = H * np.maximum(zf, 0) * (1 + 0.1 * ridge * (zf > 0)) + (0 if k == 0 else H * rng.uniform(-0.03, 0.03, N))
+        c = top[:2] * max(zf, 0) ** 1.5
+        rings.append(np.stack([r * np.cos(ang) * stretch + c[0] * stretch, r * np.sin(ang) + c[1],
+                               np.where(k == 0, -ROCK_FOOT, z)], 1))
+    top = np.array([top[0] * stretch, top[1], top[2]])
+    mid = np.array([0.0, 0.0, H * 0.35])
+    parts = []
+    for lo, hi in zip(rings, rings[1:]):
+        for i in range(N):
+            j = (i + 1) % N
+            A, B, C, D = lo[i], lo[j], hi[j], hi[i]
+            tris = ((A, B, C), (A, C, D)) if rng.random() < 0.5 else ((A, B, D), (B, C, D))
+            parts += [_rock_tri(rk, seed, *t, (A + B + C + D) / 4 - mid) for t in tris]
+    for i in range(N):                                                 # up to the summit
+        A, B = rings[-1][i], rings[-1][(i + 1) % N]
+        parts.append(_rock_tri(rk, seed, A, B, top, (A + B + top) / 3 - mid))
+    return [p for p in parts if p]
+
+
 # ------------------------------------------------------------------ pictures within pictures: portals, screens
 
 @functools.lru_cache(maxsize=None)
@@ -3711,5 +4132,7 @@ OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'bo
            'longship': longship, 'lighthouse': lighthouse, 'stone_lantern': stone_lantern,
            'standing_stone': standing_stone, 'gear': gear, 'heap': heap, 'arcade_cabinet': arcade_cabinet,
            'vending_machine': vending_machine, 'well': well, 'crate': crate, 'barrel': barrel,
-           'card_table': card_table, 'saloon_chair': saloon_chair, 'piano': piano, 'pew': pew, 'portal': portal,
-           'screen': screen, 'sign': sign}
+           'card_table': card_table, 'saloon_chair': saloon_chair, 'piano': piano, 'pew': pew, 'tower': tower,
+           'city_block': city_block, 'searchlight': searchlight, 'ray': ray, 'mountain': mountain, 'village': village,
+           'portal': portal, 'screen': screen,
+           'sign': sign}

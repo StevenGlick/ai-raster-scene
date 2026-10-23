@@ -175,6 +175,18 @@ def check_scatter(tmp):
         assert a.height[int(s['y']), int(s['x'])] <= 0, f"{s['type']} scattered inside a wall"
     print(f'ok scatter is deterministic and clear of cameras ({len(a.scatter_sprites)} props)')
 
+    # a scatter's `scale` shrinks every item and changes nothing else: the same places, the same props, half the size
+    field = {'map': ['.' * 12] * 3 + ['...' + 's' * 9] * 9, 'legend': {'.': {'floor': 'grass'}, 's': {'floor': 'grass'}},
+             'camera': {'x': 0.5, 'y': 0.5, 'angle': 270}}
+
+    def strewn(**extra):
+        spec = dict({'of': 'stones', 'on': 's', 'density': 0.8, 'sizes': ['small', 'medium'], 'seed': 3}, **extra)
+        return rmod.World(dict(field, scatter=[spec])).scatter_sprites
+    big, small = strewn(), strewn(scale=0.5)
+    assert big and len(big) == len(small), (len(big), len(small))
+    assert all(p['x'] == q['x'] and p['y'] == q['y'] and p['type'] == q['type'] and abs(q['scale'] - p['scale'] / 2) < 1e-3
+               for p, q in zip(big, small)), 'scale shrinks each item and nothing else'
+
     # grime drives all three systems in the same direction
     counts = []
     for g in (0.0, 0.5, 1.0):
@@ -1196,7 +1208,25 @@ def check_time_of_day():
     yard['shots'] = [dict(yard['camera'], time='noon'), dict(yard['camera'], time='night')]
     lit, dark = (np.asarray(R.render_shot(yard, i).convert('RGB'), np.float32).mean() for i in (0, 1))
     assert dark < lit * 0.5, (lit, dark)
-    print('ok time of day: sky, sun and moon by the clock, the air, lamps after dark, rooms lit, keys kept')
+    # objects and sprites take the marks too, and a tower's lit windows are turned down by day; the hour comes after
+    # the prefabs, so it reaches a lamp a prefab brings, and before the objects become panels
+    town = dict(street, objects=[{'type': 'tower', 'x': 1, 'y': 1, 'lit': 0.5},
+                                 {'type': 'searchlight', 'x': 2, 'y': 2, 'night': True}],
+                sprites=[{'type': 'kaiju', 'x': 1, 'y': 2, 'day': True}])
+    tn, td = (daylight.apply(dict(town, time=t)) for t in ('night', 'noon'))
+    assert [o['type'] for o in tn['objects']] == ['tower', 'searchlight'] and [o['type'] for o in td['objects']] == ['tower']
+    assert not tn['sprites'] and [sp['type'] for sp in td['sprites']] == ['kaiju'], 'a sprite marked for the day'
+    assert tn['objects'][0]['lit'] == 0.5 > td['objects'][0]['lit'] * 4, 'windows lit at night'
+    import prefabs
+    lane = {'map': ['...'], 'sky': 'day', 'legend': {'.': {'floor': 'grass'}}, 'time': 'noon',
+            'prefab_defs': {'lamp': {'lights': [{'dx': 0, 'dy': 0, 'radius': 2, 'night': True}]}},
+            'prefabs': [{'type': 'lamp', 'x': 1.5, 'y': 0.5}],
+            'objects': [{'type': 'searchlight', 'x': 0.5, 'y': 0.5, 'night': True}]}
+    day, night = prefabs.expand(lane), prefabs.expand(dict(lane, time='night'))
+    assert not [L for L in day.get('lights', []) if 'x' in L] and not day.get('panels'), 'out by day: lamp and beam'
+    assert [L for L in night['lights'] if 'x' in L] and night['panels'], 'lit at night'
+    print('ok time of day: sky, sun and moon by the clock, the air, lamps after dark, rooms lit, keys kept, '
+          'objects and sprites marked for the night or the day')
 
 
 def check_wireframes():
@@ -1609,8 +1639,46 @@ def check_objects():
     assert pic['rgba'].shape[0] >= 40 and float(pic['rgba'][..., :3].std()) > 0.02, 'a screen shows its picture'
     own = [pn for pn in tv['panels'] if pn.get('screen')][0]           # laid into the renderer's copy, not the scene's
     assert own is not pic and own['rgba'] is not pic['rgba'], 'a renderer lays its pictures into panels of its own'
+    # 18. landscape scale: a tower stands its width, depth and height, its windows glowing only when lit; a city
+    # block keeps inside its cell's pavements; a searchlight's beam and a ray are light laid over what is behind
+    # them, the ray reaching its `to` whatever the placement's angle and scale; a mountain is snowy above its
+    # snowline and bare with none; a village's church spire stands over its cottages
+    def ends(ex):
+        return np.array([c for pn in ex['panels'] for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'],
+                                                             pn['o'] + pn['u'] + pn['v'])])
+    tw = build(type='tower', width=0.2, depth=0.1, height=0.5)
+    assert np.allclose(np.ptp(ends(tw), axis=0), [0.2, 0.1, 0.5], atol=1e-6), 'a tower its width, depth and height'
+    assert max(pn['em'].max() for pn in tw['panels']) == 0, 'its windows dark unless lit'
+    assert max(pn['em'].max() for pn in build(type='tower', lit=0.6)['panels']) > 0.9, 'lit windows glow'
+    blk = ends(build(type='city_block', count=3, height=[0.2, 1.2], seed=4))
+    assert np.abs(blk[:, :2]).max() <= 0.36 + 1e-6 and blk[:, 2].max() > 0.2, 'a city block inside its pavements'
+    sl = build(type='searchlight', angle=0, elevation=45, length=10.0)
+    assert sl['panels'] and all(pn.get('blend') == 'additive' and pn.get('translucent') for pn in sl['panels'])
+    assert abs(ends(sl)[:, 0].max() - 10 * math.cos(math.radians(45))) < 0.4, 'the beam reaches its length'
+    ry = objects.expand({'map': ['.'], 'objects': [{'type': 'ray', 'x': 1.0, 'y': 2.0, 'z': 0.5, 'angle': 30,
+                                                    'scale': 2.0, 'to': [4.0, 6.0, 0.1]}]})['panels']
+    assert ry and all(pn.get('blend') == 'additive' for pn in ry)
+    for pn in ry:
+        assert np.allclose(pn['o'] + pn['u'] / 2, [4.0, 6.0, 0.1], atol=1e-6), 'a ray reaches its `to`'
+        assert np.allclose(pn['o'] + pn['v'] + pn['u'] / 2, [1.0, 2.0, 0.5], atol=1e-6), 'from where it stands'
+
+    def mountain(**pl):
+        return build(**dict({'type': 'mountain', 'size': 10.0, 'height': 5.0, 'seed': 3}, **pl))
+
+    def faces(ex, lo, hi):
+        z = lambda pn: [c[2] for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])]  # noqa: E731
+        px = [pn['rgba'][pn['rgba'][..., 3] > 0.5][:, :3] for pn in ex['panels'] if lo < min(z(pn)) and max(z(pn)) < hi]
+        return float(np.concatenate(px).mean())
+    snowy, bare = mountain(), mountain(snowline=0)
+    mc = np.array([c for pn in snowy['panels'] for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])  # triangles
+    assert abs(mc[:, 2].max() - 5.0) < 1e-6 and np.abs(mc[:, :2]).max() < 10.0, 'a mountain its height, its foot'
+    assert faces(snowy, 3.6, 9) > faces(bare, 3.6, 9) + 0.2, 'snow above the snowline'
+    assert abs(faces(snowy, -1, 2.0) - faces(bare, -1, 2.0)) < 1e-6, 'and none below it'
+    vz, hz = ends(build(type='village', count=8, seed=2)), ends(build(type='village', count=8, seed=2, church=False))
+    assert vz[:, 2].max() > 0.25 > 0.12 > hz[:, 2].max() and np.abs(vz[:, :2]).max() < 1.6, 'a church spire'
     print(f'ok objects ({len(objects.OBJECTS)} built in: panels in 3D, depth per pixel, glass, billboards, lights, '
-          f'rock, linings, columns fluted and Doric, fill, timber, standing stones cast, crystals bend the light)')
+          f'rock, linings, columns fluted and Doric, fill, timber, standing stones cast, crystals bend the light, '
+          f'landscape scale: towers, city blocks, beams of light, mountains, villages)')
 
 
 def check_lettering_pages(tmp):
