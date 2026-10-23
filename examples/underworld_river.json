@@ -1,0 +1,257 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    12,
+    0,
+    0
+   ],
+   [
+    40,
+    -0.3,
+    0
+   ],
+   [
+    40,
+    0.35,
+    0
+   ],
+   [
+    200,
+    -0.1,
+    0
+   ]
+  ],
+  "width": 3.0,
+  "surface": {
+   "base": "water",
+   "tint": [
+    0.4,
+    0.55,
+    0.5
+   ]
+  },
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "ripple": 0.4,
+  "ground": [
+   {
+    "width": 1.2,
+    "texture": {
+     "base": "rock_floor",
+     "tint": [
+      0.5,
+      0.48,
+      0.5
+     ]
+    }
+   },
+   {
+    "texture": "rock_floor"
+   }
+  ],
+  "walls": [
+   {
+    "side": "both",
+    "offset": 1.2,
+    "height": 5.0,
+    "texture": "stone_dark",
+    "tile": 1.6,
+    "ragged": 1.2,
+    "seed": 1
+   }
+  ],
+  "ceiling": {
+   "height": 7.0,
+   "texture": "rock",
+   "tile": 2.5,
+   "light": 0.35
+  },
+  "distance": 140
+ },
+ "camera": {
+  "at": 1.0,
+  "x": 0.0,
+  "height": 0.55,
+  "fov": 62,
+  "pitch": 0.08
+ },
+ "title": "The underworld river - a ferry down a dark river through a cavern, statues holding fire on its banks",
+ "sky": "night",
+ "ambient": [
+  0.34,
+  0.36,
+  0.42
+ ],
+ "fog": {
+  "color": [
+   0.05,
+   0.08,
+   0.07
+  ],
+  "density": 0.03
+ },
+ "roadside": [
+  {
+   "type": "robed_statue",
+   "every": 8,
+   "offset": 0.5,
+   "from": 4,
+   "scale": 1.8,
+   "tint": [
+    0.6,
+    0.6,
+    0.65
+   ]
+  },
+  {
+   "type": "brazier",
+   "every": 8,
+   "offset": 0.15,
+   "from": 4.6,
+   "scale": 0.5,
+   "light": {
+    "color": [
+     1.0,
+     0.55,
+     0.25
+    ],
+    "radius": 3.2,
+    "intensity": 1.3,
+    "z": 0.6,
+    "x": 0.3
+   }
+  },
+  {
+   "type": "orb",
+   "blend": "additive",
+   "fullbright": true,
+   "tint": [
+    0.5,
+    1.0,
+    0.7
+   ],
+   "side": "middle",
+   "density": 0.25,
+   "offset": [
+    -1.3,
+    1.3
+   ],
+   "z": [
+    0.5,
+    1.8
+   ],
+   "scale": [
+    0.08,
+    0.14
+   ],
+   "seed": 5
+  }
+ ],
+ "scatter": [
+  {
+   "of": [
+    "bones",
+    "bones",
+    "rocks"
+   ],
+   "density": 0.5,
+   "offset": [
+    0.0,
+    1.2
+   ],
+   "sizes": [
+    "small",
+    "medium"
+   ],
+   "seed": 1
+  }
+ ],
+ "sprites": [
+  {
+   "type": "stone_arch",
+   "at": 26,
+   "x": 0.0,
+   "scale": 5.2,
+   "tint": [
+    0.6,
+    0.58,
+    0.62
+   ]
+  },
+  {
+   "type": "brazier",
+   "at": 25.5,
+   "x": -2.3,
+   "scale": 0.8,
+   "light": {
+    "color": [
+     1.0,
+     0.55,
+     0.25
+    ],
+    "radius": 4.0,
+    "intensity": 1.5,
+    "z": 0.8
+   }
+  },
+  {
+   "type": "brazier",
+   "at": 25.5,
+   "x": 2.3,
+   "scale": 0.8,
+   "light": {
+    "color": [
+     1.0,
+     0.55,
+     0.25
+    ],
+    "radius": 4.0,
+    "intensity": 1.5,
+    "z": 0.8
+   }
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": 0.0,
+   "height": 0.55,
+   "fov": 62,
+   "pitch": 0.08,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 1.5,
+     "radius": 2.4,
+     "spread": 0.5
+    }
+   ],
+   "vehicle": {
+    "type": "boat_bow",
+    "ahead": 1.25,
+    "z": -0.1,
+    "scale": 0.5,
+    "light": {
+     "color": [
+      1.0,
+      0.8,
+      0.5
+     ],
+     "radius": 2.4,
+     "intensity": 1.0,
+     "z": 0.5,
+     "at": 0.1
+    }
+   }
+  }
+ ],
+ "supersample": 2
+}

@@ -1605,6 +1605,42 @@ def tex_suspension_cables(name):
     return rgb, None, (cable | hangers).astype(np.float32)
 
 
+# ------------------------------------------------------------------ the dark road
+
+def spr_dark_castle():
+    """A dark castle on a crag, far off at a road's end: black towers and spires against the sky, a curtain wall
+    between them, a few windows lit red, the crag dropping away under it. A great billboard for the horizon: stand
+    it at the road's end at a `scale` of 40 or so."""
+    w, h = 160, 120
+    rgba = np.zeros((h, w, 4), np.float32)
+    em = np.zeros((h, w), np.float32)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32) + 0.5
+    rng = np.random.default_rng(66)
+    n = _noise(h, w, 7, 67)
+    crag = yy > 74 + 22 * np.abs((xx - 80) / 80) ** 1.6 + (n - 0.5) * 10        # the crag under it
+    keep = np.zeros((h, w), bool)
+    towers = [(80, 10, 9), (52, 28, 7), (108, 24, 7), (30, 44, 6), (130, 42, 6), (66, 34, 5), (94, 30, 5)]
+    for cx, top, half in towers:                                    # each tower and its spire
+        body = (np.abs(xx - cx) < half) & (yy > top + half * 2.2) & (yy < 82)
+        spire = (yy >= top) & (yy <= top + half * 2.2) & (np.abs(xx - cx) < (yy - top) / 2.2)
+        keep |= body | spire
+        for k in range(int(rng.integers(1, 4))):                    # a lit window or two
+            wy = int(top + half * 2.2 + 6 + k * 9)
+            if wy < 78:
+                win = (np.abs(xx - cx) < 1.2) & (yy >= wy) & (yy < wy + 3)
+                rgba[win, :3] = [1.0, 0.3, 0.12]
+                em[win] = 1.0
+                keep |= win
+    wall = (xx > 26) & (xx < 134) & (yy > 60) & (yy < 84)          # the curtain wall
+    crenel = wall & (yy < 63) & ((xx.astype(int) // 3) % 2 == 0)
+    keep |= wall & ~crenel
+    shade = np.array([0.08, 0.06, 0.09], np.float32)
+    rgba[keep & (em == 0), :3] = shade * (0.8 + 0.4 * n[keep & (em == 0)])[:, None]
+    rgba[crag, :3] = np.array([0.12, 0.08, 0.08]) * (0.7 + 0.6 * n[crag])[:, None]
+    rgba[..., 3] = (keep | crag).astype(np.float32)
+    return rgba, em
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -1639,7 +1675,8 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'hover_car': spr_hover_car, 'neon_bike': spr_neon_bike, 'taxi': spr_taxi, 'brick_ring': spr_brick_ring,
            'coaster_car': spr_coaster_car, 'mine_frame': spr_mine_frame, 'mine_cart': spr_mine_cart,
            'starfighter': spr_starfighter, 'race_car': spr_race_car, 'car_oncoming': spr_car_oncoming,
-           'motel_sign': spr_motel_sign, 'gas_station': spr_gas_station, 'bridge_tower': spr_bridge_tower}
+           'motel_sign': spr_motel_sign, 'gas_station': spr_gas_station, 'bridge_tower': spr_bridge_tower,
+           'dark_castle': spr_dark_castle}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
@@ -1648,10 +1685,11 @@ SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'bo
                  'jeep': 0.62, 'rally_car': 0.48, 'dirt_bike': 0.55, 'dust_cloud': 0.62, 'speedboat': 0.44,
                  'narrowboat': 0.9, 'boat_bow': 0.42, 'hover_car': 0.36, 'neon_bike': 0.52, 'taxi': 0.5, 'brick_ring': 3.25, 'coaster_car': 0.55,
                  'mine_frame': 2.2, 'mine_cart': 0.38, 'starfighter': 0.4, 'race_car': 0.3, 'car_oncoming': 0.48,
-                 'motel_sign': 4.2, 'gas_station': 2.6, 'bridge_tower': 10.0}
+                 'motel_sign': 4.2, 'gas_station': 2.6, 'bridge_tower': 10.0, 'dark_castle': 30.0}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
                  'speedboat': {'shadow': False}, 'narrowboat': {'shadow': False}, 'boat_bow': {'shadow': False},
                  'brick_ring': {'shadow': False}, 'mine_frame': {'shadow': False}, 'starfighter': {'shadow': False},
-                 'motel_sign': {'shadow': False}, 'gas_station': {'shadow': False}, 'bridge_tower': {'shadow': False}}
+                 'motel_sign': {'shadow': False}, 'gas_station': {'shadow': False}, 'bridge_tower': {'shadow': False},
+                 'dark_castle': {'shadow': False}}

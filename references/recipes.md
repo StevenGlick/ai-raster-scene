@@ -249,6 +249,18 @@ Both carriageways in one road (`lanes` 4), a `jersey_barrier` down the middle as
 
 The deck is the road over `void`, the bay far `below`; `bridge_tower`s down the `middle` every span (40) from 0 at `scale` 10, and the cables `walls` of `suspension_cables` along both edges, `"tile": [40, 10]` - one tile a span, so the main cable sags from tower to tower; a guard rail and lamps along the deck, a `dawn` sky over the `city`. See `examples/suspension_bridge.py`.
 
+### A dark road to a dark castle
+
+An old paved road (`ruin_paving` tinted, a `ragged` edge) across `black_sand`, then a lava field (`lava_field` with the band's `tile` 8, so its glowing cracks are big); dead trees `tint`ed black, broken columns, robed statues and bones along it, `brazier`s every 9 each with its fire's `light`; a `knight` walking ahead (`view` back), the `dark_castle` at the road's end (`scale` 34, a thin `fog` so it shows) with an `ash_plume` behind it, the `blood` sky and the `ashfall` preset. See `examples/dark_road.py`.
+
+### A rope bridge between floating islands
+
+The road is the bridge: `planks` 1.1 wide, its `sections` sagging in the middle and rising to the far side, rails of `railing` as `walls`, the ground `void` so the `dream` sky's clouds carry on below; `floating_rock`s by density at every height (`z` -8 to 6), a big one under the bridge's far end with a `stone_arch` on it, crows below, a traveller crossing. See `examples/rope_bridge.py`.
+
+### An underworld river
+
+A dark river (`water` tinted black-green) between banks of bones, the cavern's `walls` of `stone_dark` with a `ragged` top under a high `ceiling` of `rock` (`light` 0.35, so the walls still show); robed statues every 8 with a `brazier` at each one's feet and its fire's light - the water mirrors the flames - green wisps over it (`orb`s, `additive`, `fullbright`, tinted), a `stone_arch` spanning the river with braziers either side; your ferry's `boat_bow` and its lantern. See `examples/underworld_river.py`.
+
 ### A highway at night, and a tunnel
 
 Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.
