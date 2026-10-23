@@ -23,15 +23,17 @@ import world as WD
 
 # the keys a road and a roadside row take (render.lint_scene checks them; a road camera's are in render.SHOT_KEYS)
 ROAD_KEYS = {'sections', 'width', 'surface', 'lanes', 'lines', 'edges', 'centre', 'rumble', 'shoulder', 'ground',
-             'stripe', 'bands', 'segment', 'distance', 'edge', 'roofs', 'walls', 'ceiling', 'below'}
-WALL_KEYS = {'side', 'offset', 'height', 'texture', 'from', 'to', 'z', 'tile', 'light', 'ragged', 'seed'}
+             'stripe', 'bands', 'segment', 'distance', 'edge', 'roofs', 'walls', 'ceiling', 'below', 'wet',
+             'ripple'}
+WALL_KEYS = {'side', 'offset', 'height', 'texture', 'from', 'to', 'z', 'tile', 'light', 'ragged', 'seed', 'blocks',
+             'gaps'}
 CEILING_KEYS = {'from', 'to', 'height', 'texture', 'tile', 'light'}
 BELOW_KEYS = {'depth', 'texture', 'tile', 'haze'}
 ROADSIDE_KEYS = {'type', 'every', 'density', 'side', 'offset', 'scale', 'jitter', 'from', 'to', 'flip', 'z', 'tint',
                  'light', 'seed', 'variant', 'view', 'opacity', 'blend', 'fullbright', 'shadow', 'clear'}
 SCATTER_KEYS = {'of', 'density', 'side', 'offset', 'from', 'to', 'sizes', 'clump', 'scale', 'seed', 'clear', 'tint'}
 DECAL_KEYS = {'tex', 'at', 'x', 'size', 'angle', 'opacity', 'tint', 'flip', 'density', 'every', 'side', 'offset',
-              'from', 'to', 'seed', 'clump'}
+              'from', 'to', 'seed', 'clump', 'reflect'}
 # named sets of marks for a row of `decals`, as `scatter` has its sets of props (repeats are weights)
 DECAL_SETS = {
     'wear': ['crack', 'crack', 'road_patch', 'oil_stain', 'stain'],             # an old road
@@ -44,6 +46,7 @@ DECAL_SETS = {
 # marks that lie along the road (a row of them is not turned at random)
 ALONG = {'tyre_marks', 'lane_arrow', 'zebra_crossing', 'road_patch', 'rover_tracks', 'hazard_stripe', 'manhole'}
 NEAR = 0.15                         # nothing nearer the camera than this is drawn
+ADDITIVE = ('additive', 'add')     # a sprite's `blend` that adds its light (the docs name the first)
 TEX = 64                            # texels to a unit, as on the raycaster's walls and floors
 
 
@@ -115,11 +118,13 @@ def _side_spec(g):
     out, edge = [], 0.0
     for b in g:
         edge = edge + float(b['width']) if 'width' in b else math.inf
-        out.append((edge, b.get('texture', 'grass'), _col(b.get('tint'))))
+        tex = b.get('texture', 'grass')
+        name = tex.get('base') if isinstance(tex, dict) else tex
+        out.append((edge, tex, _col(b.get('tint')), float(b.get('reflect', assets.TEXTURE_REFLECT.get(name, 0.0)))))
         if math.isinf(edge):
             break
     if not math.isinf(out[-1][0]):
-        out.append((math.inf, out[-1][1], out[-1][2]))
+        out.append((math.inf,) + out[-1][1:])
     return out
 
 
@@ -156,6 +161,12 @@ class RoadRenderer:
         self.ragged = float(e.get('ragged', 0.0))        # how far the edge wanders, in units
         self.blend = float(e.get('blend', 0.0))          # how wide a band the road and the ground mix in
         self.surface = assets.get_texture(spec.get('surface', 'asphalt'))[0]
+        surf = spec.get('surface', 'asphalt')
+        surf = surf.get('base') if isinstance(surf, dict) else surf
+        self.surface_alpha = assets.get_alpha(surf)            # a see-through road: a coaster's rails and ties
+        # how mirror-like the road is: water mirrors by its own nature, a road by how `wet` it is
+        self.wet = float(spec.get('wet', assets.TEXTURE_REFLECT.get(surf, 0.0)))
+        self.ripple = float(spec.get('ripple', 1.0))
         g = spec.get('ground', 'grass')
         sides = g if isinstance(g, dict) and ('left' in g or 'right' in g) else {'left': g, 'right': g}
         self.sides = {k: _side_spec(sides.get(k, 'grass')) for k in ('left', 'right')}
@@ -172,6 +183,8 @@ class RoadRenderer:
         self.walls = []
         for n, wl in enumerate(spec.get('walls') or []):
             tex = wl.get('texture', 'concrete')
+            texs = tex if isinstance(tex, list) else [tex]          # a street: each building its own facade
+            tex = texs[0]
             tile = wl.get('tile', 1.0)
             self.walls.append({'sides': {'both': (-1, 1), 'left': (-1,), 'right': (1,)}[wl.get('side', 'both')],
                                'offset': float(wl.get('offset', 0.5)), 'height': float(wl.get('height', 1.0)),
@@ -179,6 +192,9 @@ class RoadRenderer:
                                'tile': (float(tile[0]), float(tile[1])) if isinstance(tile, list) else
                                        (float(tile), float(tile)),
                                'ragged': float(wl.get('ragged', 0.0)), 'seed': int(wl.get('seed', n)),
+                               'blocks': float(wl.get('blocks', 0.0)), 'gaps': float(wl.get('gaps', 0.0)),
+                               'texs': [(assets.get_texture(t), assets.get_alpha(t.get('base') if isinstance(t, dict)
+                                                                                 else t)) for t in texs],
                                'from': float(wl.get('from', 0.0)), 'to': float(wl.get('to', 1e9)),
                                'tex': assets.get_texture(tex), 'alpha': assets.get_alpha(tex.get('base') if
                                                                                          isinstance(tex, dict) else tex),
@@ -346,7 +362,8 @@ class RoadRenderer:
             th = math.radians(angle)
             out.append({'tex': tex, 'at': float(at), 'x': float(x), 'w': size, 'h': size * rgba.shape[0] / rgba.shape[1],
                         'c': math.cos(th), 's': math.sin(th), 'opacity': float(spec.get('opacity', 1.0)),
-                        'tint': _col(spec.get('tint')), 'flip': flip})
+                        'tint': _col(spec.get('tint')), 'flip': flip,
+                        'reflect': float(spec.get('reflect', assets.DECAL_REFLECT.get(tex, 0.0)))})
 
         for n, spec in enumerate(scene.get('decals') or []):
             texs = spec.get('tex', 'crack')
@@ -402,15 +419,35 @@ class RoadRenderer:
 
     def _headlights(self, cam, at, camx):
         """A shot's vehicle with `headlights` (a colour, or true for white): two pools of light on the road ahead
-        of it."""
+        of it; and the `light` it carries (a lantern at a boat's bow), placed from the vehicle."""
         v = cam.get('vehicle') or {}
         hl = v.get('headlights')
-        if not hl:
-            return []
-        c = _col(None if hl is True else hl, (1.0, 0.95, 0.82)) * float(v.get('beam', 1.0))
         ahead = at + float(v.get('ahead', 2.4))
-        return [{'at': ahead + 3.0, 'x': camx + float(v.get('x', 0.0)) + side * 0.5, 'z': 0.35, 'r': 4.5, 'c': c}
-                for side in (-1, 1)]
+        vx = camx + float(v.get('x', 0.0))
+        out = []
+        if hl:
+            c = _col(None if hl is True else hl, (1.0, 0.95, 0.82)) * float(v.get('beam', 1.0))
+            out += [{'at': ahead + 3.0, 'x': vx + side * 0.5, 'z': 0.35, 'r': 4.5, 'c': c} for side in (-1, 1)]
+        L = v.get('light')
+        if isinstance(L, dict):
+            out.append({'at': ahead + float(L.get('at', 0.0)), 'x': vx + float(L.get('x', 0.0)),
+                        'z': float(L.get('z', 0.5)), 'r': float(L.get('radius', 3.0)),
+                        'c': _col(L.get('color'), (1, 0.85, 0.6)) * float(L.get('intensity', 1.0))})
+        return out
+
+    def _vehicle_marks(self, cam, at, camx):
+        """A shot's vehicle's `wake` (true, or {"size", "opacity"}): foam spread on the water behind it."""
+        v = cam.get('vehicle') or {}
+        wk = v.get('wake')
+        if not wk:
+            return []
+        wk = wk if isinstance(wk, dict) else {}
+        size = float(wk.get('size', 1.2))
+        rgba, _ = assets.get_decal('wake')
+        length = size * rgba.shape[0] / rgba.shape[1]
+        return [{'tex': 'wake', 'at': at + float(v.get('ahead', 2.4)) - length / 2 + 0.05,
+                 'x': camx + float(v.get('x', 0.0)), 'w': size, 'h': length, 'c': 1.0, 's': 0.0,
+                 'opacity': float(wk.get('opacity', 0.9)), 'tint': _col(None), 'flip': False, 'reflect': 0.0}]
 
     # ------------------------------------------------------------------ the frame
 
@@ -524,14 +561,20 @@ class RoadRenderer:
         depth = np.full((H, W), np.inf, np.float32)
         void = self.sides['left'] is None or self.sides['right'] is None
         self._sky(img, emis, cam, W, H, focal, horizon, mid, below=void)
+        self._sky_img, self._sky_emis = img.copy(), emis.copy()          # what the water mirrors
+        self._refl = np.zeros((H, W), np.float32)                         # how mirror-like each pixel's ground is
+        self._ripple_k = max(1.0, W / 320.0)
         if not void:                           # beyond the farthest segment, the land lost in the haze
             far = np.arange(H) + 0.5 >= horizon
             haze = self.fog_c if self.fog_c is not None else self._ground_colour_far()
             img[far] = haze
         self.frame_lamps = self.lamps + self._headlights(cam, at, camx)
+        self._frame_decals = self.decals + self._vehicle_marks(cam, at, camx)
+        self._horizon_now = horizon
         if self.below:
             self._below(img, depth, P, at, camy, camx, focal, horizon, mid, W, H)
         self._ground(img, emis, depth, P, at, camx, focal, mid, W, H)
+        self._gdepth = depth.copy()
         for c in self.ceilings:
             self._ceiling(img, emis, depth, P, c, at, camy, camx, focal, horizon, mid, W, H)
         for wl in self.walls:
@@ -592,7 +635,17 @@ class RoadRenderer:
                 along = at + z
                 base = P['yc1'][k] + (P['y2'][k] - P['yc1'][k]) * (z - zn) / max(zf - zn, 1e-9) + wl['z']
                 h = np.full(c1 - c0, wl['height'])
-                if field is not None:                 # the top wanders, the same at a place every render
+                face = np.zeros(c1 - c0, int)
+                u0 = np.zeros(c1 - c0)
+                if wl['blocks'] > 0:                  # buildings: each block its own height, facade and start
+                    bi = np.floor(along / wl['blocks'])
+                    rnd = _hash01(bi, np.full_like(bi, sgn), wl['seed'])
+                    h = np.maximum(0.0, h + wl['ragged'] * (2 * rnd - 1))
+                    face = (_hash01(bi, np.full_like(bi, sgn), wl['seed'] + 7) * len(wl['texs'])).astype(int)
+                    u0 = bi * wl['blocks']
+                    if wl['gaps'] > 0:                # an alley: the block left out
+                        h = np.where(_hash01(bi, np.full_like(bi, sgn), wl['seed'] + 13) < wl['gaps'], 0.0, h)
+                elif field is not None:               # the top wanders, the same at a place every render
                     h = np.maximum(0.0, h + wl['ragged'] * (2 * WD.sample_noise(
                         field, along / max(36.0, 12 * wl['ragged']),
                         np.full_like(along, 0.13 + 0.29 * wl['seed'] + 0.5 * (sgn > 0))) - 1))
@@ -607,14 +660,34 @@ class RoadRenderer:
                 if not m.any():
                     continue
                 ri, ci = np.nonzero(m)
-                tu = (along[ci] * tu_k).astype(int) % TEX
+                tu = ((along[ci] - u0[ci]) * tu_k).astype(int) % TEX
                 tv = (TEX - 1 - (hy[ri, ci] * tv_k).astype(int)) % TEX
-                if alpha is not None:
-                    keep = alpha[tv, tu] > 0.5
-                    ri, ci, tu, tv = ri[keep], ci[keep], tu[keep], tv[keep]
+                fc = face[ci]
+                if len(wl['texs']) > 1:               # the street's facades, each building its own
+                    rgb = np.zeros((len(ri), 3), np.float32)
+                    gl = np.zeros(len(ri), np.float32)
+                    keep = np.ones(len(ri), bool)
+                    for f, ((tx, ex), al) in enumerate(wl['texs']):
+                        q = fc == f
+                        if not q.any():
+                            continue
+                        rgb[q] = tx[tv[q], tu[q]]
+                        if ex is not None:
+                            gl[q] = ex[tv[q], tu[q]]
+                        if al is not None:
+                            keep[q] = al[tv[q], tu[q]] > 0.5
+                    ri, ci, tu, tv, rgb, gl = ri[keep], ci[keep], tu[keep], tv[keep], rgb[keep], gl[keep]
                     if not len(ri):
                         continue
-                rgb = tex[tv, tu]
+                    ems = gl
+                else:
+                    if alpha is not None:
+                        keep = alpha[tv, tu] > 0.5
+                        ri, ci, tu, tv = ri[keep], ci[keep], tu[keep], tv[keep]
+                        if not len(ri):
+                            continue
+                    rgb = tex[tv, tu]
+                    ems = None if em is None else em[tv, tu]
                 zc = z[ci]
                 L = flat[None, :] * self._roof_k(along[ci])[:, None]
                 for lamp in self.frame_lamps:
@@ -625,8 +698,8 @@ class RoadRenderer:
                     L = L + (np.clip(1 - d / lamp['r'], 0, 1) ** 2)[:, None] * lamp['c']
                 col = rgb * L
                 glow = np.zeros_like(col)
-                if em is not None:
-                    glow = em[tv, tu][:, None] * rgb * 1.6
+                if ems is not None:
+                    glow = ems[:, None] * rgb * 1.6
                     col = col + glow
                 if self.fog_c is not None and self.fog_d > 0:
                     fg = np.exp(-self.fog_d * zc)[:, None]
@@ -635,6 +708,55 @@ class RoadRenderer:
                 img[r0 + ri, c0 + ci] = col
                 emis[r0 + ri, c0 + ci] = glow
                 depth[r0 + ri, c0 + ci] = zc
+                if self._refl[:, c0:c1].any():
+                    self._reflect_wall(img, emis, depth, wl, flat, z, along, base, h, ybot, ytop, u0, face, c0, c1,
+                                       camy, horizon, focal, H)
+
+    def _reflect_wall(self, img, emis, depth, wl, flat, z, along, base, h, ybot, ytop, u0, face, c0, c1, camy,
+                      horizon, focal, H):
+        """A wall's mirror image on the water at its foot: each column turned upside down under it, as tall as the
+        wall stands, darkened a little, blended by how mirror-like the water is - where the water still shows."""
+        r0 = max(0, int(math.floor(ybot.min())))
+        r1 = min(H, int(math.ceil((2 * ybot - ytop).max())))
+        if r1 <= r0:
+            return
+        ys = np.arange(r0, r1)[:, None] + 0.5
+        src = 2 * ybot[None, :] - ys                                     # the row it mirrors
+        hy = (camy + (horizon - src) * (z / focal)[None, :]) - base[None, :]
+        k = self._refl[r0:r1, c0:c1]
+        m = (hy >= 0) & (hy < h[None, :]) & (k > 0) & ((self._gdepth[r0:r1, c0:c1] == depth[r0:r1, c0:c1]))
+        if not m.any():
+            return
+        ri, ci = np.nonzero(m)
+        tu = ((along[ci] - u0[ci]) * TEX / wl['tile'][0]).astype(int) % TEX
+        tv = (TEX - 1 - (hy[ri, ci] * TEX / wl['tile'][1]).astype(int)) % TEX
+        (tex, em), al = wl['texs'][0] if len(wl['texs']) == 1 else (wl['tex'], wl['alpha'])
+        if len(wl['texs']) > 1:
+            rgb = np.zeros((len(ri), 3), np.float32)
+            gl = np.zeros(len(ri), np.float32)
+            for f, ((tx, ex), _) in enumerate(wl['texs']):
+                q = face[ci] == f
+                rgb[q] = tx[tv[q], tu[q]]
+                if ex is not None:
+                    gl[q] = ex[tv[q], tu[q]]
+        else:
+            if al is not None:
+                keep = al[tv, tu] > 0.5
+                ri, ci, tu, tv = ri[keep], ci[keep], tu[keep], tv[keep]
+            rgb = tex[tv, tu]
+            gl = None if em is None else em[tv, tu]
+        L = flat[None, :] * self._roof_k(along[ci])[:, None]
+        col = rgb * L * 0.8
+        glow = np.zeros_like(col) if gl is None else gl[:, None] * rgb * 1.6 * 0.8
+        col = col + glow
+        if self.fog_c is not None and self.fog_d > 0:
+            fg = np.exp(-self.fog_d * z[ci])[:, None]
+            col = col * fg + self.fog_c * (1 - fg)
+            glow = glow * fg
+        w = k[ri, ci][:, None]
+        rows, cols = r0 + ri, c0 + ci
+        img[rows, cols] = img[rows, cols] * (1 - w) + col * w
+        emis[rows, cols] = emis[rows, cols] * (1 - w) + glow * w
 
     def _ceiling(self, img, emis, depth, P, c, at, camy, camx, focal, horizon, mid, W, H):
         """A ceiling over a stretch of road, `height` over it and following its rises: filled as the road is,
@@ -716,7 +838,7 @@ class RoadRenderer:
         past = np.abs(X) - self.half                 # out from the road's edge: the valley in bands along it
         col = np.zeros(X.shape + (3,), np.float32)
         lo = 0.0
-        for hi, spec, tint in b['bands']:
+        for hi, spec, tint, _ in b['bands']:
             m = (past < hi) & (past >= lo) if lo > 0 else past < hi
             if m.any():
                 col[m] = assets.get_texture(spec)[0][tv[m], tu[m]] * tint
@@ -816,11 +938,14 @@ class RoadRenderer:
             edge_in = edge_in + (n - 0.5) * self.blend
         out = np.zeros(ax.shape + (3,), np.float32)
         lightk = np.zeros(ax.shape + (3,), np.float32)
+        refl = np.zeros(ax.shape, np.float32)
         tv = (A * TEX).astype(int) % TEX
         tu = (X * TEX).astype(int) % TEX
         on = edge_in < 0
         lift = np.broadcast_to(np.where(band, 1 + self.bands / 2, 1 - self.bands / 2), X.shape)
         out[on] = self.surface[tv[on], tu[on]] * lift[on][:, None]
+        refl[on] = self.wet
+        holes = on & (self.surface_alpha[tv, tu] < 0.5) if self.surface_alpha is not None else None
         # the markings: dashed lane lines on the light bands, solid edge and centre lines
         if self.lines is not None and self.lanes > 1:
             for j in range(1, self.lanes):
@@ -861,16 +986,19 @@ class RoadRenderer:
                 void |= m
                 continue
             lo = 0.0
-            for hi, spec, tint in bands:
+            for hi, spec, tint, rk in bands:
                 b = m & (past >= lo) & (past < hi)
                 if b.any():
                     tex = assets.get_texture(spec)[0]
                     em = assets.get_texture(spec)[1]
                     out[b] = tex[tv[b], tu[b]] * tint * np.broadcast_to(shade, b.shape)[b][:, None]
+                    refl[b] = rk
                     if em is not None:
                         lightk[b] = em[tv[b], tu[b]][:, None] * tex[tv[b], tu[b]] * 1.6
                 lo = hi
-        self._stamp(out, lightk, A, X, along, ~void)
+        if holes is not None:                     # through a see-through road, whatever lies beyond it
+            void |= holes
+        self._stamp(out, lightk, A, X, along, ~void, refl)
         # the light on it: ambient and sun alike over open ground, and the lamps along the road
         L = np.broadcast_to(self._light_flat(), out.shape).copy()
         for a0, a1, k in self.roofs:              # under a roof the sky's light is gone; the lamps still reach
@@ -886,6 +1014,8 @@ class RoadRenderer:
             L[rr] += f[..., None] * lamp['c']
         col = out * L + lightk
         emis_g = lightk.copy()
+        if refl.any():                       # water and wet road mirror the sky about the horizon, rippling
+            col, emis_g = self._mirror_sky(col, emis_g, refl, rows, A, X)
         if self.fog_c is not None and self.fog_d > 0:
             fog = np.exp(-self.fog_d * z)[:, None, None]
             col = col * fog + self.fog_c * (1 - fog)
@@ -895,15 +1025,36 @@ class RoadRenderer:
         img[rows[rr_], cc_] = col[rr_, cc_]
         emis[rows[rr_], cc_] = emis_g[rr_, cc_]
         depth[rows[rr_], cc_] = z[rr_]
+        self._refl[rows[rr_], cc_] = refl[rr_, cc_]
 
-    def _stamp(self, out, lightk, A, X, along, keep):
+    def _ripple(self, rows, A, X):
+        """How far sideways (pixels) the mirror image shifts at each place: a few small waves across the water."""
+        return np.round(self.ripple * self._ripple_k * (np.sin(A * 3.1 + X * 0.7) * 0.9 +
+                                                        np.sin(A * 7.3 - X * 1.9 + 1.3) * 0.6)).astype(int)
+
+    def _mirror_sky(self, col, emis_g, refl, rows, A, X):
+        """The sky's mirror image on the reflective pixels: each takes the sky's colour at the row as far above the
+        horizon as it lies below it (and the sky's light, so the sun glints on the sea)."""
+        H, W = self._sky_img.shape[:2]
+        m = refl > 0
+        ri, ci = np.nonzero(m)
+        mr = np.clip(np.round(2 * self._horizon_now - (rows[ri] + 0.5)).astype(int), 0, H - 1)
+        mc = np.clip(ci + self._ripple(rows[ri], A[ri, ci], X[ri, ci]), 0, W - 1)
+        k = refl[ri, ci][:, None]
+        roof = self._roof_k(A[ri, ci])[:, None]          # under a roof the sky is not there to be mirrored
+        col[ri, ci] = col[ri, ci] * (1 - k) + self._sky_img[mr, mc] * k * roof
+        emis_g[ri, ci] = emis_g[ri, ci] + self._sky_emis[mr, mc] * k * roof
+        return col, emis_g
+
+    def _stamp(self, out, lightk, A, X, along, keep, refl=None):
         """The decals, lying flat on the road and the ground: each pixel's place (along, across) inside one picks
         its texel, blended over the surface by the decal's alpha."""
-        if not self.decals:
+        decals = getattr(self, '_frame_decals', self.decals)
+        if not decals:
             return
         lo, hi = float(along.min()), float(along.max())
         ddefs = self.s.get('decal_defs')
-        for d in self.decals:
+        for d in decals:
             r = 0.5 * math.hypot(d['w'], d['h'])
             if d['at'] + r < lo or d['at'] - r > hi:
                 continue
@@ -929,6 +1080,8 @@ class RoadRenderer:
             rows = rr[ri]
             rgb = px[:, :3] * d['tint']
             out[rows, ci] = out[rows, ci] * (1 - a) + rgb * a
+            if refl is not None and d['reflect'] > 0:          # a puddle mirrors where it lies
+                refl[rows, ci] = np.maximum(refl[rows, ci], d['reflect'] * a[:, 0])
             if em is not None and em.max() > 0:                  # a glowing mark (a rune) lights itself
                 lightk[rows, ci] += em[tv, tu][:, None] * rgb * a * 1.6
 
@@ -949,6 +1102,7 @@ class RoadRenderer:
         for sp in cam.get('extra_sprites', []) if only is None else []:
             items.append(dict(sp, at=float(sp.get('at', 0.0)), x=float(sp.get('x', 0.0))))
         flat = self._light_flat()
+        refl_on = only is None and bool(self._refl.any()) if hasattr(self, '_refl') else False
         drawn = []
         for it in items:
             z = it['at'] - at
@@ -1018,18 +1172,67 @@ class RoadRenderer:
                 glow = glow * fg
             op = float(it.get('opacity', 1.0))
             blend = it.get('blend', 'alpha')
+            if refl_on:
+                self._reflect_prop(img, emis, depth, rgba, em, tint, L, full, op, blend, z, top, bot, left, hpx, wpx,
+                                   bool(it.get('flip')), H, W)
             reg = img[r0:r1, c0:c1]
-            if blend == 'add':
+            if blend in ADDITIVE:
                 reg[a] = reg[a] + colour[a] * op
             else:
                 reg[a] = reg[a] * (1 - op) + colour[a] * op
             ereg = emis[r0:r1, c0:c1]
-            if blend == 'add':
+            if blend in ADDITIVE:
                 ereg[a] = ereg[a] + glow[a] * op
             else:                               # an opaque prop hides the light behind it as it hides the rest
                 ereg[a] = ereg[a] * (1 - op) + glow[a] * op
-            if blend != 'add' and op >= 0.99:
+            if blend not in ADDITIVE and op >= 0.99:
                 depth[r0:r1, c0:c1][a] = z
+
+    def _reflect_prop(self, img, emis, depth, rgba, em, tint, L, full, op, blend, z, top, bot, left, hpx, wpx, flip,
+                      H, W):
+        """A prop's mirror image on the water (or the wet road) in front of it: its picture turned upside down under
+        its foot, as tall as it stands, rippling, darkened a little and blended by how mirror-like each pixel's
+        ground is - only where that ground still shows (nothing nearer stands over it)."""
+        r0, r1 = max(0, int(math.ceil(bot - 0.5))), min(H, int(math.ceil(bot + hpx - 0.5)))
+        c0, c1 = max(0, int(math.floor(left))), min(W, int(math.ceil(left + wpx)))
+        if r1 <= r0 or c1 <= c0:
+            return
+        k = self._refl[r0:r1, c0:c1]
+        if not k.any():
+            return
+        hh, ww = rgba.shape[:2]
+        ys = np.arange(r0, r1) + 0.5
+        vv = (((2 * bot - ys) - top) / hpx * hh).astype(int).clip(0, hh - 1)
+        shift = np.round(self.ripple * self._ripple_k * np.sin(ys * 0.9 + z * 3.0) * 1.2).astype(int)
+        cols = np.arange(c0, c1)[None, :] - shift[:, None]
+        uu = ((cols + 0.5 - left) / wpx * ww).astype(int).clip(0, ww - 1)
+        if flip:
+            uu = ww - 1 - uu
+        sub = rgba[vv[:, None], uu]
+        e = em[vv[:, None], uu]
+        if e.ndim == 2:
+            e = e[..., None]
+        a = (sub[..., 3] > 0.5) & (k > 0)
+        a &= (self._gdepth[r0:r1, c0:c1] == depth[r0:r1, c0:c1])    # the water still shows there
+        if not a.any():
+            return
+        rgb = sub[..., :3] * np.where(e > 0, 1.0, tint)
+        lit = rgb if full else rgb * L
+        colour = np.where(e > 0, np.maximum(lit, rgb * np.clip(e, 0, 1)), lit) * 0.82
+        glow = (rgb * np.clip(e, 0, 1) if not full else rgb) * 0.82
+        if self.fog_c is not None and self.fog_d > 0:
+            fg = math.exp(-self.fog_d * z)
+            colour = colour * fg + self.fog_c * (1 - fg)
+            glow = glow * fg
+        w = (k * op)[..., None] * a[..., None]
+        reg = img[r0:r1, c0:c1]
+        ereg = emis[r0:r1, c0:c1]
+        if blend in ADDITIVE:
+            reg += colour * w
+            ereg += glow * w
+        else:
+            reg[:] = reg * (1 - w) + colour * w
+            ereg[:] = ereg * (1 - w) + glow * w
 
     def _contact_shadow(self, img, depth, it, z, s, cx, bot, clip, rise, shape, W, H):
         """A soft dark disc on the ground under a prop's foot, as the raycaster's contact shadow: as wide as the

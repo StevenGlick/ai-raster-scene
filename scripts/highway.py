@@ -240,6 +240,30 @@ def spr_tunnel_ring():
     return rgba, em
 
 
+def spr_brick_ring():
+    """One ring of a brick barrel vault, end on - a canal tunnel's: an arched opening, the vault's brick seen edge on
+    round it in a band, dark brick beyond, moss and wet streaks down it. A row of them down the `middle` every unit
+    makes the vault; at its own size the opening is 2.6 wide and its crown 2.2 over its foot (the water)."""
+    w, h = 300, 150
+    yy, xx, up, inside, lining = _tunnel_card(w, h, 120, 46, 100)
+    rgba = np.zeros((h, w, 4), np.float32)
+    rng = np.random.default_rng(12)
+    course = (yy // 5).astype(int)
+    joint = ((yy % 5) == 0) | (((xx + (course % 2) * 6) % 12) == 0)             # brick courses
+    rgba[..., :3] = [0.2, 0.13, 0.1]
+    rgba[joint, :3] = [0.12, 0.1, 0.09]
+    tone = 0.85 + 0.3 * rng.random((h // 5 + 1, w // 12 + 2))
+    k = tone[course, ((xx + (course % 2) * 6) // 12).astype(int)]
+    rgba[lining, :3] = (np.array([0.5, 0.3, 0.22]) * k[lining][:, None])           # the vault's face, edge on
+    rgba[lining & joint, :3] = [0.26, 0.22, 0.18]
+    moss = _noise(h, w, 9, 14) > 0.6
+    rgba[moss & ~inside, :3] = rgba[moss & ~inside, :3] * 0.6 + np.array([0.16, 0.26, 0.1]) * 0.4
+    wet = (_noise(h, w, 3, 15) > 0.7) & (yy > 100)
+    rgba[wet & ~inside, :3] *= 0.7
+    rgba[..., 3] = (~inside).astype(np.float32)
+    return rgba, np.zeros((h, w), np.float32)
+
+
 def spr_tunnel_portal():
     """A road tunnel's mouth: a face of concrete round the opening, a darker band over it, set into a grassy
     hillside that rises over it and runs off to both sides (wider than the rings, which it hides). Stand it at the
@@ -786,6 +810,405 @@ TEXTURES = {'guard_rail': lambda n: tex_guard_rail(n), 'jersey_barrier': lambda 
             'cliff_face': lambda n: tex_cliff_face(n), 'power_lines': lambda n: tex_power_lines(n)}
 TEXTURE_NOISE = {'guard_rail': 0.3, 'jersey_barrier': 1.0, 'cliff_face': 1.0, 'power_lines': 0.0}
 
+# ------------------------------------------------------------------ off the road
+
+OLIVE = ramp('#6a6a3a', dark=0.35, light=1.5, warm=0.05)
+MUD = ramp('#7a5a3a', dark=0.4, light=1.3, warm=0.06)
+RALLY = ramp('#e8e4dc', dark=0.45, light=1.25)
+RALLY_BLUE = ramp('#1e48a8', dark=0.35, light=1.6, cool=0.08)
+LEATHER = ramp('#2a2a30', dark=0.5, light=2.2)
+HELMET = ramp('#d8301e', dark=0.35, light=1.6, warm=0.05)
+DUST = (0.72, 0.6, 0.46)
+
+
+def spr_jeep():
+    """An open-top four-by-four seen from behind, as you follow it down a dirt track: olive paint, a roll bar over
+    the two in it, a spare wheel on the tailgate, small square tail lights, fat tyres, mud thrown up its back."""
+    w, h = 56, 48
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (2, 42):                                              # the tyres, chunky
+        cv.box(x, 30, 12, 17, z=0.6, top=0.6, bevel=2.4, mat=3)
+        for y in range(32, 46, 3):
+            cv.stroke([(x + 1, y), (x + 11, y)], 0.6, dome=0.3, mode='carve')
+    cv.ellipse(19, 7, 4.2, 4.6, z=1.6, dome=0.9, mat=5)                          # the driver's head
+    cv.ellipse(37, 7.5, 4.0, 4.4, z=1.6, dome=0.9, mat=5)                        # the passenger's,
+    cv.ellipse(37, 5.2, 6.2, 1.6, z=1.9, dome=0.5, mat=6)                        # under a bush hat
+    cv.ellipse(37, 4.0, 3.6, 2.4, z=2.0, dome=0.8, mat=6)
+    cv.box(8, 3, 3, 16, z=1.5, top=0.5, bevel=0.8, mat=4)                        # the roll bar
+    cv.box(45, 3, 3, 16, z=1.5, top=0.5, bevel=0.8, mat=4)
+    cv.box(8, 2, 40, 3, z=1.6, top=0.5, bevel=0.8, mat=4)
+    cv.box(3, 16, 50, 18, z=1.2, top=0.6, bevel=2.0, mat=0)                      # the tub
+    cv.box(5, 16, 46, 2.5, z=1.4, top=0.5, bevel=0.8, mat=0, tone=0.08)          # its rim
+    cv.ellipse(28, 26, 8.5, 8.5, z=1.9, dome=0.7, mat=3)                         # the spare wheel
+    cv.ellipse(28, 26, 3.4, 3.4, z=2.0, dome=0.3, mat=7)
+    cv.box(5, 21, 6, 4, z=1.5, top=0.2, bevel=0.4, mat=1)                        # the tail lights
+    cv.box(45, 21, 6, 4, z=1.5, top=0.2, bevel=0.4, mat=1)
+    cv.box(2, 33, 52, 4, z=1.4, top=0.4, bevel=1.0, mat=4)                       # the bumper
+    rng = np.random.default_rng(7)
+    for _ in range(26):                                            # mud up its back
+        x, y = rng.uniform(4, 52), rng.uniform(27, 35)
+        cv.ellipse(x, y, rng.uniform(0.8, 2.2), rng.uniform(0.6, 1.4), z=1.55, dome=0.3, mat=2)
+    return _prop(cv, [OLIVE, TAIL, MUD, TYRE, TRIM, HAIR_D, ramp('#9a8a5a', dark=0.4, light=1.4), CHROME],
+                 em=_tail_em(cv, [1]), relief=1.0, cavity=0.45, shadow=0.45)
+
+
+def spr_rally_car():
+    """A rally car seen from behind, flat out on the dirt: a white hatchback in a blue livery, a wing on its roof,
+    mud flaps, a bank of lights, its tail lights glowing, mud sprayed up its back."""
+    w, h = 52, 44
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (3, 39):
+        cv.box(x, 30, 10, 13, z=0.6, top=0.5, bevel=2.0, mat=3)
+    cv.polygon([(11, 6), (41, 6), (45, 17), (7, 17)], z=1.0, top=0.8, bevel=1.4, mat=0)        # the roof
+    cv.polygon([(12, 8), (40, 8), (43, 17), (9, 17)], z=1.3, top=0.3, bevel=0.8, mat=4)        # the rear window
+    cv.box(6, 2, 40, 3, z=1.5, top=0.6, bevel=0.8, mat=5)                        # the wing
+    cv.box(9, 4, 3, 4, z=1.4, top=0.5, bevel=0.5, mat=5)
+    cv.box(40, 4, 3, 4, z=1.4, top=0.5, bevel=0.5, mat=5)
+    cv.box(3, 17, 46, 15, z=1.3, top=0.5, bevel=2.2, mat=0)                      # its back
+    cv.box(3, 23, 46, 3, z=1.45, top=0.3, bevel=0.6, mat=5)                      # the livery's stripe
+    cv.box(5, 19, 10, 4, z=1.6, top=0.2, bevel=0.5, mat=1)
+    cv.box(37, 19, 10, 4, z=1.6, top=0.2, bevel=0.5, mat=1)
+    cv.box(19.5, 26.5, 13, 4, z=1.6, top=0.1, bevel=0.4, mat=2)
+    for x in (4, 41):                                              # mud flaps
+        cv.box(x, 34, 7, 7, z=1.2, top=0.3, bevel=0.5, mat=6)
+    rng = np.random.default_rng(9)
+    for _ in range(30):
+        x, y = rng.uniform(3, 49), rng.uniform(26, 37)
+        cv.ellipse(x, y, rng.uniform(0.8, 2.0), rng.uniform(0.6, 1.3), z=1.7, dome=0.3, mat=7)
+    return _prop(cv, [RALLY, TAIL, PLATE, TYRE, GLASS, RALLY_BLUE, TRIM, MUD], em=_tail_em(cv, [1]),
+                 relief=1.0, cavity=0.45, shadow=0.45)
+
+
+def spr_dirt_bike():
+    """A dirt bike and its rider seen from behind, standing on the pegs: a red helmet, a dark jacket, the knobbly
+    rear tyre, the tail light under the seat."""
+    w, h = 24, 44
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(9, 27, 6, 16, z=0.8, top=0.6, bevel=2.0, mat=3)                       # the rear tyre
+    for y in range(29, 42, 3):
+        cv.stroke([(9.5, y), (14.5, y)], 0.6, dome=0.3, mode='carve')
+    cv.box(8, 24, 8, 4, z=1.2, top=0.5, bevel=1.0, mat=4)                        # the mudguard
+    cv.box(10, 25, 4, 2, z=1.5, top=0.2, bevel=0.3, mat=1)                       # the tail light
+    cv.stroke([(5, 33), (2, 34)], 1.6, z=1.0, dome=0.5, mat=4)                   # the pegs, the boots on them
+    cv.stroke([(19, 33), (22, 34)], 1.6, z=1.0, dome=0.5, mat=4)
+    cv.stroke([(6, 22), (5, 32)], 3.0, z=1.3, dome=0.8, mat=5)                   # the legs
+    cv.stroke([(18, 22), (19, 32)], 3.0, z=1.3, dome=0.8, mat=5)
+    cv.ellipse(12, 15, 7.5, 8.5, z=1.6, dome=0.8, mat=5)                         # the back, crouched
+    cv.stroke([(5, 12), (1, 15)], 2.2, z=1.5, dome=0.7, mat=5)                   # arms out to the bars
+    cv.stroke([(19, 12), (23, 15)], 2.2, z=1.5, dome=0.7, mat=5)
+    cv.ellipse(12, 5, 4.6, 4.8, z=2.0, dome=0.9, mat=6)                          # the helmet
+    return _prop(cv, [OLIVE, TAIL, PLATE, TYRE, TRIM, LEATHER, HELMET], em=_tail_em(cv, [1]),
+                 relief=1.0, cavity=0.45, shadow=0.45)
+
+
+def spr_dust_cloud():
+    """Dust thrown up behind a car on a dirt road: a low cloud of puffs, billowing out and up, lit on top and
+    dusky underneath. Give it an `opacity` of 0.6 to 0.85 and set it a little behind the car."""
+    w, h = 64, 32
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    rng = np.random.default_rng(21)
+    for _ in range(22):                                            # puffs: big and low in the middle, smaller out
+        cx = rng.uniform(8, 56)
+        spread = abs(cx - 32) / 32
+        cy = rng.uniform(16, 27) - (1 - spread) * 6
+        r = rng.uniform(4.5, 8.5) * (1.1 - spread * 0.5)
+        cv.ellipse(cx, cy, r, r * 0.8, z=1.0 + rng.uniform(0, 0.6), dome=0.9, mat=0)
+    return _prop(cv, [ramp('#c4aa86', dark=0.5, light=1.25, warm=0.04)], outline=False, relief=1.2, cavity=0.3,
+                 shadow=0.3)
+
+
+# ------------------------------------------------------------------ on the water
+
+HULL_W = ramp('#e8e6e0', dark=0.45, light=1.25)
+HULL_R = ramp('#b02a24', dark=0.35, light=1.5)
+NARROW = ramp('#24503a', dark=0.35, light=1.6)            # a narrowboat's green
+NARROW_R = ramp('#9a2a1e', dark=0.35, light=1.5)
+WOOD = ramp('#7a5434', dark=0.4, light=1.5, warm=0.06)
+BRASS = ramp('#c8a040', dark=0.4, light=1.6, warm=0.08)
+
+
+def spr_speedboat():
+    """A speedboat seen from behind, as you follow it over the water: a white hull with a red stripe, the
+    outboard motor on its transom, the driver in it, the water churned white at its stern. Set it a little into
+    the water (`z` -0.05); the wake on the water behind it is a decal (`wake`)."""
+    w, h = 52, 36
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.ellipse(26, 9, 4.2, 4.6, z=1.6, dome=0.9, mat=4)                          # the driver's head
+    cv.box(18, 10, 16, 8, z=1.3, top=0.6, bevel=1.4, mat=5)                      # his shoulders, a windscreen
+    cv.polygon([(4, 14), (48, 14), (45, 28), (7, 28)], z=1.2, top=0.7, bevel=2.2, mat=0)       # the transom
+    cv.box(5, 20, 42, 2.4, z=1.35, top=0.3, bevel=0.5, mat=1)                    # the stripe
+    cv.box(21, 15, 10, 13, z=1.6, top=0.7, bevel=1.6, mat=2)                     # the outboard
+    cv.box(23.5, 27, 5, 6, z=1.5, top=0.5, bevel=1.0, mat=2)                     # its leg, into the water
+    rng = np.random.default_rng(4)
+    for _ in range(40):                                            # white water at the stern
+        x, y = rng.uniform(4, 48), rng.uniform(29, 35)
+        cv.ellipse(x, y, rng.uniform(0.8, 2.4), rng.uniform(0.6, 1.4), z=1.0, dome=0.4, mat=3)
+    return _prop(cv, [HULL_W, HULL_R, TRIM, ramp('#f2f6f8', dark=0.6, light=1.1), HAIR_D, GLASS],
+                 relief=1.0, cavity=0.4, shadow=0.4)
+
+
+def spr_narrowboat():
+    """A narrowboat seen from its stern, going ahead of you down a canal: green paint and red trim, the brass of
+    its tiller, the steerer standing at it in a cap, the chimney of its stove beyond him smoking."""
+    w, h = 40, 52
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(29, 2, 3, 12, z=0.9, top=0.6, bevel=0.8, mat=4)                       # the chimney
+    cv.ellipse(30.5, 2, 2.6, 1.4, z=1.0, dome=0.5, mat=4)
+    cv.box(6, 12, 28, 18, z=1.0, top=0.6, bevel=1.6, mat=0)                      # the cabin's end
+    cv.box(15, 15, 10, 13, z=1.15, top=0.3, bevel=0.8, mat=1)                    # its doors
+    cv.ellipse(20, 15, 3.6, 3.9, z=1.7, dome=0.9, mat=5)                         # the steerer's head
+    cv.box(15, 18, 10, 12, z=1.6, top=0.6, bevel=1.6, mat=6)                     # his coat
+    cv.stroke([(20, 26), (32, 22)], 1.4, z=1.9, dome=0.5, mat=3)                 # the tiller
+    cv.polygon([(3, 30), (37, 30), (34, 44), (6, 44)], z=1.2, top=0.7, bevel=2.0, mat=0)       # the counter
+    cv.box(4, 31, 32, 2.2, z=1.4, top=0.3, bevel=0.4, mat=1)                     # its red band
+    cv.box(18, 42, 4, 8, z=1.3, top=0.5, bevel=0.8, mat=2)                       # the rudder
+    return _prop(cv, [NARROW, NARROW_R, WOOD, BRASS, TRIM, HAIR_D, ramp('#3a3226', dark=0.4, light=1.8)],
+                 relief=1.0, cavity=0.4, shadow=0.4)
+
+
+def spr_boat_bow():
+    """The bow of your own boat, from inside it: its two gunwales running forward to the stem, the boards of its
+    floor between, a lantern on a post at the bow, lit. A shot's `vehicle` for a boat ride: `"ahead": 0.9`,
+    `"z": -0.12`, with a `light` for the lantern."""
+    w, h = 64, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(2, 39), (62, 39), (35, 8), (29, 8)], z=0.6, top=0.4, bevel=2.0, mat=0)        # the floor, boards
+    for x in (12, 22, 32, 42, 52):
+        cv.stroke([(x, 39), (32, 9)], 0.5, dome=0.3, mode='carve')
+    cv.stroke([(1, 39), (29, 7.5)], 3.2, z=1.4, dome=0.7, taper=(1.0, 0.5), mat=1)              # the gunwales
+    cv.stroke([(63, 39), (35, 7.5)], 3.2, z=1.4, dome=0.7, taper=(1.0, 0.5), mat=1)
+    cv.box(30.6, 2, 2.8, 8, z=1.6, top=0.5, bevel=0.6, mat=1)                   # the lantern's post
+    cv.box(29, 0, 6, 4, z=1.9, top=0.5, bevel=0.8, mat=2)                        # the lantern
+    cv.box(30, 1, 4, 2.4, z=2.0, top=0.2, bevel=0.3, mat=3)                      # its flame
+    rgba, _ = _prop(cv, [WOOD, ramp('#5a3c22', dark=0.4, light=1.6), BRASS, ramp('#ffd080', dark=0.8, light=1.1)],
+                    relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [3])
+
+
+def dec_wake():
+    """A boat's wake on the water behind it: a V of white foam spreading back from the stern, churned white water
+    down its middle, breaking up as it spreads. Lay it behind the boat (`at` about its length back), `size` about
+    three times the boat's width."""
+    h, w = 96, 64
+    yy, xx = _grid(h, w)
+    t = yy / h                                                     # 0 at the stern, 1 far behind it
+    spread = 4 + t * 26
+    n = _noise(h, w, 4, 33)
+    arms = np.clip(1.6 - np.abs(np.abs(xx - 32) - spread) / (1.2 + t * 2.4), 0, 1)
+    churn = np.clip(1 - np.abs(xx - 32) / (3 + t * 9), 0, 1) * (1 - t) ** 0.6
+    a = np.maximum(arms * (0.55 + 0.5 * n) * (1 - t) ** 0.4, churn * (0.6 + 0.4 * n))
+    a = np.where(a > 0.25, a, 0)
+    rgb = np.zeros((h, w, 3), np.float32) + [0.92, 0.95, 0.96]
+    return _decal(rgb, np.clip(a * 1.1, 0, 1))
+
+
+# ------------------------------------------------------------------ the neon city (wall textures)
+
+LIT = [(1.0, 0.78, 0.5), (0.62, 0.8, 1.0), (1.0, 0.42, 0.78), (0.4, 1.0, 0.92), (1.0, 0.9, 0.7)]
+
+
+def tex_tower_windows(name):
+    """A tower's face at night, for a wall of buildings along a road: dark panels, a grid of windows four across
+    and four up to a tile, some lit - warm, cool, a few in neon pink and cyan - most dark, a blind half down in
+    one or two. Its lit windows glow."""
+    rng = _rng(name)
+    rgb = np.zeros((T, T, 3), np.float32) + [0.1, 0.11, 0.14]
+    rgb *= (0.85 + 0.3 * fbm(T, rng, 8, 2))[..., None]
+    em = np.zeros((T, T), np.float32)
+    yy, xx = np.mgrid[0:T, 0:T]
+    rgb[(yy % 16) == 15] *= 0.6                                         # the floors' lines
+    for gy in range(4):
+        for gx in range(4):
+            y0, x0 = gy * 16 + 3, gx * 16 + 3
+            win = (yy >= y0) & (yy < y0 + 10) & (xx >= x0) & (xx < x0 + 10)
+            if rng.random() < 0.55:
+                c = np.array(LIT[int(rng.choice(5, p=[0.36, 0.3, 0.12, 0.1, 0.12]))], np.float32)
+                k = rng.uniform(0.55, 1.0)
+                rgb[win] = c * k * (0.85 + 0.2 * rng.random((10, 10)))[(yy[win] - y0), (xx[win] - x0)][:, None]
+                em[win] = k
+                if rng.random() < 0.25:                                 # a blind half down
+                    blind = win & (yy < y0 + int(rng.integers(3, 7))) & ((yy - y0) % 2 == 0)
+                    rgb[blind] *= 0.45
+                    em[blind] *= 0.3
+            else:
+                rgb[win] = [0.05, 0.06, 0.09]
+                rgb[win & (xx - x0 + yy - y0 < 4)] = [0.16, 0.18, 0.24]   # the sky caught in the glass
+    return np.clip(rgb, 0, 1), em
+
+
+def tex_shopfront(name, glow=(1.0, 0.25, 0.7)):
+    """A shop at the foot of a building in the neon city, for a wall along a street: its window lit warm with
+    shelves in it, a shutter rolled half down, over it a sign board outlined in a neon tube (`glow`) with glyphs
+    on it, a scrap of concrete above. One shop to a tile; its window, its sign and its tube glow."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    g = np.array(glow, np.float32)
+    rgb = np.zeros((T, T, 3), np.float32) + [0.16, 0.16, 0.18]
+    rgb *= (0.8 + 0.35 * fbm(T, rng, 6, 3))[..., None]
+    em = np.zeros((T, T), np.float32)
+    sign = (yy >= 8) & (yy < 22) & (xx >= 3) & (xx < 61)
+    rgb[sign] = g * 0.22
+    tube = sign & ((yy == 8) | (yy == 21) | (xx == 3) | (xx == 60))
+    rgb[tube] = np.minimum(g * 1.3, 1.0)
+    em[tube] = 1.0
+    for k in range(5):                                                  # glyphs on the board
+        x0 = 8 + k * 10 + int(rng.integers(0, 3))
+        stroke = sign & (np.abs(xx - x0 - 2) < 1) & (yy >= 11) & (yy < 19)
+        stroke |= sign & (yy == 11 + int(rng.integers(0, 6))) & (xx >= x0) & (xx < x0 + 5)
+        stroke |= sign & (np.abs((xx - x0) - (yy - 11) * 0.6) < 0.8) & (yy >= 11) & (yy < 19) & (rng.random() < 0.5)
+        rgb[stroke] = [1.0, 0.95, 0.85]
+        em[stroke] = 0.9
+    win = (yy >= 28) & (yy < 60) & (xx >= 6) & (xx < 58)
+    rgb[win] = np.array([1.0, 0.78, 0.52], np.float32) * (0.45 + 0.3 * fbm(T, rng, 4, 2)[win])[:, None]
+    em[win] = 0.5
+    shelves = win & ((yy - 28) % 8 == 7)
+    rgb[shelves] *= 0.5
+    goods = win & ((yy - 28) % 8 < 7) & ((yy - 28) % 8 > 3) & (rng.random((T, T)) < 0.45)
+    rgb[goods] = np.array(LIT, np.float32)[rng.integers(0, 5, goods.sum())] * 0.8
+    shutter = win & (yy < 28 + int(rng.integers(6, 14)))
+    rgb[shutter] = [0.42, 0.43, 0.46]
+    rgb[shutter & ((yy % 2) == 0)] *= 0.7
+    em[shutter] = 0.0
+    frame = ((yy >= 26) & (yy < 28) & (xx >= 4) & (xx < 60)) | (((xx == 4) | (xx == 5) | (xx == 58) | (xx == 59))
+                                                             & (yy >= 26) & (yy < 62))
+    rgb[frame] = [0.08, 0.08, 0.09]
+    return np.clip(rgb, 0, 1), em
+
+
+# ------------------------------------------------------------------ the neon city (vehicles)
+
+NIGHT_BODY = ramp('#2a2c3a', dark=0.4, light=2.4, cool=0.12)
+NEON_C = ramp('#40f0ff', dark=0.7, light=1.15)
+NEON_P = ramp('#ff40c0', dark=0.7, light=1.15)
+TAXI = ramp('#f0c020', dark=0.4, light=1.3, warm=0.06)
+
+
+def spr_hover_car():
+    """A hover car seen from behind, as you race it through the neon city: a low dark wedge of a body edged in
+    cyan light, a red light bar across its tail, twin jets glowing blue, and under it, where wheels would be, the
+    glow it floats on. Stand it a little off the road (`z` 0.06)."""
+    w, h = 60, 30
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.ellipse(30, 22.5, 26, 4.5, z=0.4, dome=0.4, mat=4)                        # the glow under it
+    cv.polygon([(14, 3), (46, 3), (54, 12), (6, 12)], z=1.0, top=0.8, bevel=1.6, mat=0)        # the canopy
+    cv.polygon([(16, 4.5), (44, 4.5), (50, 11.5), (10, 11.5)], z=1.3, top=0.3, bevel=0.8, mat=5)  # its glass
+    cv.polygon([(3, 11), (57, 11), (55, 21), (5, 21)], z=1.2, top=0.6, bevel=2.2, mat=0)       # the body
+    cv.box(6, 13, 48, 2.2, z=1.5, top=0.2, bevel=0.4, mat=1)                     # the tail's light bar
+    cv.box(3, 11, 54, 1.2, z=1.45, top=0.2, bevel=0.3, mat=2)                    # its cyan edge
+    for x in (14, 46):                                             # the jets
+        cv.ellipse(x, 18, 4.2, 2.6, z=1.6, dome=0.5, mat=3)
+    return _prop(cv, [NIGHT_BODY, TAIL, NEON_C, ramp('#60a0ff', dark=0.7, light=1.2), ramp('#40d0ff', dark=0.8,
+                                                                                         light=1.1), GLASS],
+                 em=_tail_em(cv, [1, 2, 3, 4]), relief=1.0, cavity=0.4, shadow=0.4)
+
+
+def spr_neon_bike():
+    """A motorbike of the neon city and its rider, seen from behind: a long low bike lined in pink light, the rider
+    crouched over it in a dark jacket and a white helmet, a red bar of tail light."""
+    w, h = 28, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(10, 25, 8, 14, z=0.8, top=0.6, bevel=2.2, mat=3)                      # the back wheel, fat
+    cv.box(6, 21, 16, 7, z=1.2, top=0.6, bevel=1.8, mat=0)                       # the tail
+    cv.box(7, 22, 14, 1.6, z=1.5, top=0.2, bevel=0.3, mat=1)                     # its light bar
+    cv.stroke([(6, 27), (6, 21)], 0.8, z=1.4, dome=0.4, mat=2)                   # pink lines down its flanks
+    cv.stroke([(22, 27), (22, 21)], 0.8, z=1.4, dome=0.4, mat=2)
+    cv.ellipse(14, 15, 8.5, 7.5, z=1.6, dome=0.8, mat=4)                         # the rider, crouched
+    cv.stroke([(6, 12), (2, 15)], 2.2, z=1.5, dome=0.7, mat=4)
+    cv.stroke([(22, 12), (26, 15)], 2.2, z=1.5, dome=0.7, mat=4)
+    cv.ellipse(14, 6.5, 4.6, 4.8, z=2.0, dome=0.9, mat=5)                        # the helmet
+    cv.box(10.5, 6, 7, 1.6, z=2.3, top=0.2, bevel=0.3, mat=2)                    # its band of light
+    return _prop(cv, [NIGHT_BODY, TAIL, NEON_P, TYRE, LEATHER, WHITE], em=_tail_em(cv, [1, 2]),
+                 relief=1.0, cavity=0.45, shadow=0.45)
+
+
+def spr_taxi():
+    """A city taxi seen from behind: yellow, a chequered band along its flank, the TAXI sign on its roof lit, its
+    tail lights glowing."""
+    import lettering
+    w, h = 52, 46
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (3, 40):
+        cv.box(x, 33, 9, 12, z=0.6, top=0.5, bevel=2.0, mat=3)
+    cv.box(18, 2, 16, 6, z=1.6, top=0.6, bevel=0.8, mat=5)                       # the roof sign
+    cv.polygon([(10, 8), (42, 8), (46, 18), (6, 18)], z=1.0, top=0.8, bevel=1.4, mat=0)        # the roof
+    cv.polygon([(11, 10), (41, 10), (44, 18), (8, 18)], z=1.3, top=0.3, bevel=0.8, mat=4)      # the rear window
+    cv.box(3, 18, 46, 16, z=1.3, top=0.5, bevel=2.2, mat=0)                      # its back
+    cv.box(5, 21, 10, 4.5, z=1.7, top=0.2, bevel=0.5, mat=1)
+    cv.box(37, 21, 10, 4.5, z=1.7, top=0.2, bevel=0.5, mat=1)
+    cv.box(19.5, 25.5, 13, 4, z=1.6, top=0.1, bevel=0.4, mat=2)
+    cv.box(3, 33, 46, 3.6, z=1.6, top=0.4, bevel=1.0, mat=6)
+    rgba, _ = _prop(cv, [TAXI, TAIL, PLATE, TYRE, GLASS, ramp('#fff4c0', dark=0.8, light=1.1), TRIM],
+                    relief=1.0, cavity=0.45, shadow=0.45)
+    em = _tail_em(cv, [1, 5])
+    word = lettering.mask('TAXI', 1, False)
+    mh, mw = word.shape
+    y0, x0 = 5 - mh // 2, 26 - mw // 2
+    rgba[y0:y0 + mh, x0:x0 + mw][word, :3] = [0.15, 0.12, 0.05]
+    chq = np.zeros(rgba.shape[:2], bool)                           # the chequered band
+    yy, xx = np.mgrid[0:h, 0:w]
+    chq = (yy >= 28) & (yy < 31) & (xx >= 4) & (xx < 48) & (((xx // 2) + (yy // 2)) % 2 == 0)
+    rgba[chq & (rgba[..., 3] > 0.5), :3] = [0.1, 0.1, 0.1]
+    return rgba, em
+
+
+# ------------------------------------------------------------------ the fairground
+
+COASTER_RED = ramp('#d02a2a', dark=0.35, light=1.5, warm=0.05)
+SHIRT_B = ramp('#3a68c0', dark=0.4, light=1.5)
+SHIRT_Y = ramp('#e8c040', dark=0.4, light=1.3)
+SKIN = ramp('#d8a07a', dark=0.45, light=1.25, warm=0.05)
+
+
+def tex_coaster_track(name):
+    """A roller coaster's track, for a road scene's `surface`: two steel rails half a unit either side of the middle,
+    the ties across between them every quarter unit, and nothing else - the ground far below shows through it.
+    Give the road a `width` of about 1.4."""
+    yy, xx = np.mgrid[0:T, 0:T]
+    rgb = np.zeros((T, T, 3), np.float32)
+    rail = (np.abs(xx - 31.5) < 3.2)                       # at the tile's middle: x = +-0.5 from the road's
+    ties = ((yy % 16) < 4)                                 # every quarter unit
+    rgb[ties] = [0.36, 0.26, 0.18]
+    rgb[ties & ((yy % 16) == 0)] = [0.48, 0.36, 0.24]
+    rgb[rail] = [0.62, 0.64, 0.68]
+    rgb[rail & (np.abs(xx - 31.5) < 1.2)] = [0.86, 0.88, 0.9]          # its top, catching the light
+    return rgb, None, (rail | ties).astype(np.float32)
+
+
+def spr_coaster_car():
+    """The front car of a roller coaster seen from behind, from the seat behind it: red, its lap bar down, two
+    riders with their arms thrown up."""
+    w, h = 56, 48
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x0, mat in ((17, 4), (39, 5)):                                 # the riders' arms, up
+        cv.stroke([(x0 - 8, 22), (x0 - 12, 10), (x0 - 13, 2)], 2.6, z=1.4, dome=0.7, taper=(1.0, 0.7), mat=6)
+        cv.stroke([(x0 + 8, 22), (x0 + 12, 10), (x0 + 13, 2)], 2.6, z=1.4, dome=0.7, taper=(1.0, 0.7), mat=6)
+        cv.ellipse(x0 - 13, 2.5, 2.0, 2.0, z=1.6, dome=0.8, mat=6)
+        cv.ellipse(x0 + 13, 2.5, 2.0, 2.0, z=1.6, dome=0.8, mat=6)
+        cv.ellipse(x0, 25, 8, 6.5, z=1.3, dome=0.8, mat=mat)                     # their backs
+        cv.ellipse(x0, 15.5, 4.4, 4.8, z=1.6, dome=0.9, mat=7 if x0 == 17 else 8)  # their heads
+    cv.box(3, 27, 50, 14, z=1.2, top=0.6, bevel=2.4, mat=0)                      # the car's back
+    cv.box(5, 27, 46, 2.4, z=1.4, top=0.4, bevel=0.6, mat=1)                     # its rim
+    cv.box(3, 37, 50, 3, z=1.5, top=0.3, bevel=0.6, mat=2)                       # a stripe
+    for x in (6, 44):
+        cv.box(x, 40, 6, 6, z=1.0, top=0.5, bevel=1.2, mat=3)                    # wheels on the rails
+    return _prop(cv, [COASTER_RED, TRIM, ramp('#f0d040', dark=0.4, light=1.3), CHROME, SHIRT_B, SHIRT_Y, SKIN,
+                      HAIR_D, HAIR_B], relief=1.0, cavity=0.45, shadow=0.45)
+
+
+def tex_coaster_frame(name):
+    """The steel frame under a roller coaster's track, for walls standing down from it to the ground: uprights,
+    cross braces and girders, white, open between (see-through)."""
+    yy, xx = np.mgrid[0:T, 0:T]
+    up = (xx % 32) < 3
+    girder = (yy % 32) < 3
+    brace = (np.abs(((xx % 32) - (yy % 32))) < 1.6) | (np.abs(((xx % 32) + (yy % 32)) - 32) < 1.6)
+    a = up | girder | brace
+    rgb = np.zeros((T, T, 3), np.float32) + [0.86, 0.86, 0.84]
+    rgb[up & ((xx % 32) == 2)] = [0.6, 0.6, 0.62]
+    rgb[brace & ~up & ~girder] *= 0.9
+    return rgb, None, a.astype(np.float32)
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -794,7 +1217,14 @@ DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies 
 DECALS = {'oil_stain': dec_oil_stain, 'tyre_marks': dec_tyre_marks, 'road_patch': dec_road_patch,
           'pothole': dec_pothole, 'leaf_litter': dec_leaf_litter, 'manhole': dec_manhole,
           'lane_arrow': dec_lane_arrow, 'zebra_crossing': dec_zebra_crossing, 'sand_drift': dec_sand_drift,
-          'pebbles': dec_pebbles, 'start_line': dec_start_line}
+          'pebbles': dec_pebbles, 'start_line': dec_start_line, 'wake': dec_wake}
+TEXTURES.update({'tower_windows': lambda n: tex_tower_windows(n), 'tower_windows_b': lambda n: tex_tower_windows(n),
+                 'shopfront': lambda n: tex_shopfront(n),
+                 'shopfront_b': lambda n: tex_shopfront(n, (0.25, 0.95, 1.0)),
+                 'shopfront_c': lambda n: tex_shopfront(n, (1.0, 0.7, 0.2)),
+                 'coaster_track': lambda n: tex_coaster_track(n), 'coaster_frame': lambda n: tex_coaster_frame(n)})
+TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront': 0.4, 'shopfront_b': 0.4,
+                      'shopfront_c': 0.4, 'coaster_track': 0.2, 'coaster_frame': 0.2})
 VARIANTS = {'traffic_light': (3, _traffic_light)}
 
 SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_sedan': spr_car_sedan,
@@ -803,12 +1233,20 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'tunnel_portal': spr_tunnel_portal, 'trash_bag': spr_trash_bag, 'old_tyre': spr_old_tyre,
            'trash': spr_trash, 'reflector_post': spr_reflector_post, 'highway_lamp': spr_highway_lamp,
            'sign_gantry': spr_sign_gantry, 'speed_sign': spr_speed_sign, 'traffic_light': spr_traffic_light,
-           'tyre_stack': spr_tyre_stack, 'road_barrier': spr_road_barrier, 'start_lights': spr_start_lights}
+           'tyre_stack': spr_tyre_stack, 'road_barrier': spr_road_barrier, 'start_lights': spr_start_lights,
+           'jeep': spr_jeep, 'rally_car': spr_rally_car, 'dirt_bike': spr_dirt_bike, 'dust_cloud': spr_dust_cloud,
+           'speedboat': spr_speedboat, 'narrowboat': spr_narrowboat, 'boat_bow': spr_boat_bow,
+           'hover_car': spr_hover_car, 'neon_bike': spr_neon_bike, 'taxi': spr_taxi, 'brick_ring': spr_brick_ring,
+           'coaster_car': spr_coaster_car}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
                  'reflector_post': 0.34, 'highway_lamp': 3.6, 'sign_gantry': 3.2, 'speed_sign': 0.95,
-                 'traffic_light': 1.5, 'tyre_stack': 0.32, 'road_barrier': 0.36, 'start_lights': 3.0}
+                 'traffic_light': 1.5, 'tyre_stack': 0.32, 'road_barrier': 0.36, 'start_lights': 3.0,
+                 'jeep': 0.62, 'rally_car': 0.48, 'dirt_bike': 0.55, 'dust_cloud': 0.62, 'speedboat': 0.44,
+                 'narrowboat': 0.9, 'boat_bow': 0.42, 'hover_car': 0.36, 'neon_bike': 0.52, 'taxi': 0.5, 'brick_ring': 3.25, 'coaster_car': 0.55}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
-                 'start_lights': {'shadow': False}}
+                 'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
+                 'speedboat': {'shadow': False}, 'narrowboat': {'shadow': False}, 'boat_bow': {'shadow': False},
+                 'brick_ring': {'shadow': False}}

@@ -44,9 +44,9 @@ def canyon_run():
         {'tex': 'drifts', 'density': 0.05, 'size': [0.5, 1.0], 'seed': 2},
     ]
     sprites = [
-        {'type': 'rally_car', 'at': 15, 'x': 0.15},
-        {'type': 'dust_cloud', 'at': 14.2, 'x': 0.0, 'scale': 1.1, 'opacity': 0.8},
-        {'type': 'dust_cloud', 'at': 13.4, 'x': 0.5, 'scale': 0.8, 'opacity': 0.6, 'flip': True},
+        {'type': 'rally_car', 'at': 11, 'x': 0.6},
+        {'type': 'dust_cloud', 'at': 10.4, 'x': 0.2, 'scale': 0.55, 'opacity': 0.7},     # its dust, low behind it
+        {'type': 'dust_cloud', 'at': 9.9, 'x': 1.0, 'scale': 0.42, 'opacity': 0.55, 'flip': True},
         {'type': 'cow_skull', 'at': 7, 'x': -1.6},
     ]
     return road_scene(
@@ -62,9 +62,9 @@ def canyon_run():
         camera={'at': 2.0, 'x': 0.0, 'height': 0.8, 'fov': 64, 'pitch': 0.1},
         shots=[
             {'at': 2.0, 'x': 0.0, 'height': 0.8, 'fov': 64, 'pitch': 0.1, 'post': LOOK,
-             'vehicle': {'type': 'jeep', 'ahead': 2.5}},
+             'vehicle': {'type': 'jeep', 'ahead': 2.9}},
             {'at': 31.0, 'x': 0.1, 'height': 0.8, 'fov': 64, 'pitch': 0.08, 'roll': -7, 'yaw': -5, 'post': LOOK,
-             'vehicle': {'type': 'jeep', 'ahead': 2.5}},
+             'vehicle': {'type': 'jeep', 'ahead': 2.9}},
         ],
         supersample=2,
     )

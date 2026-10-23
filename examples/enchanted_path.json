@@ -209,7 +209,7 @@
     0.08,
     0.14
    ],
-   "blend": "add",
+   "blend": "additive",
    "tint": [
     0.6,
     1.0,

@@ -1,0 +1,171 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    8,
+    0,
+    0
+   ],
+   [
+    30,
+    0,
+    22
+   ],
+   [
+    4,
+    0,
+    0.4
+   ],
+   [
+    20,
+    0.15,
+    -22
+   ],
+   [
+    22,
+    0.9,
+    1.0
+   ],
+   [
+    16,
+    -0.7,
+    7
+   ],
+   [
+    14,
+    0.2,
+    -6
+   ],
+   [
+    160,
+    0.4,
+    0
+   ]
+  ],
+  "width": 1.4,
+  "surface": "coaster_track",
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "ground": "void",
+  "below": {
+   "depth": 2.5,
+   "tile": 33,
+   "haze": 0.6,
+   "texture": [
+    {
+     "width": 24,
+     "texture": "city_park"
+    },
+    {
+     "width": 30,
+     "texture": "pasture"
+    },
+    {
+     "texture": "farmland"
+    }
+   ]
+  },
+  "walls": [
+   {
+    "side": "both",
+    "offset": -0.12,
+    "z": -60,
+    "height": 59.9,
+    "texture": "coaster_frame",
+    "tile": [
+     3.0,
+     3.0
+    ],
+    "from": 8
+   }
+  ],
+  "ceiling": {
+   "height": 2.2,
+   "texture": "planks",
+   "tile": 1.0,
+   "to": 7,
+   "light": 0.5
+  },
+  "distance": 200
+ },
+ "camera": {
+  "at": 41.8,
+  "x": 0.0,
+  "height": 0.75,
+  "fov": 66,
+  "pitch": -0.55
+ },
+ "title": "The roller coaster - at the top of the lift hill, the big drop falling away below",
+ "sky": "day",
+ "skyline": "city",
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 250,
+   "elevation": 40,
+   "intensity": 0.85
+  }
+ ],
+ "ambient": [
+  0.6,
+  0.62,
+  0.68
+ ],
+ "fog": {
+  "color": [
+   0.72,
+   0.8,
+   0.9
+  ],
+  "density": 0.004
+ },
+ "shots": [
+  {
+   "at": 41.8,
+   "x": 0.0,
+   "height": 0.75,
+   "fov": 66,
+   "pitch": -0.55,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.6,
+     "radius": 2.0
+    }
+   ],
+   "vehicle": {
+    "type": "coaster_car",
+    "ahead": 1.7,
+    "scale": 0.44
+   }
+  },
+  {
+   "at": 66.0,
+   "x": 0.0,
+   "height": 0.75,
+   "fov": 66,
+   "pitch": 0.0,
+   "roll": 14,
+   "yaw": 6,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.6,
+     "radius": 2.0
+    }
+   ],
+   "vehicle": {
+    "type": "coaster_car",
+    "ahead": 1.25,
+    "scale": 0.5
+   }
+  }
+ ],
+ "supersample": 2
+}

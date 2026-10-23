@@ -39,7 +39,7 @@ def enchanted_path():
         {'type': 'glowshroom', 'every': 8, 'offset': [0.5, 1.6], 'scale': [0.7, 1.2], 'jitter': 2.0, 'from': 5,
          'light': {'color': TEAL, 'radius': 2.4, 'intensity': 0.8, 'z': 0.5, 'x': 0.4}, 'seed': 4},
         {'type': 'orb', 'side': 'middle', 'density': 0.35, 'offset': [-3.0, 3.0], 'z': [0.4, 1.1],
-         'scale': [0.08, 0.14], 'blend': 'add', 'tint': [0.6, 1.0, 0.85], 'seed': 5},
+         'scale': [0.08, 0.14], 'blend': 'additive', 'tint': [0.6, 1.0, 0.85], 'seed': 5},
     ]
     scatter = [{'of': ['mushrooms', 'mushrooms', 'glowshroom', 'glow_fern'], 'density': 0.5, 'offset': [0.0, 1.2],
                 'sizes': ['tiny', 'small'], 'seed': 1}]

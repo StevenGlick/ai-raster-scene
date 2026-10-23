@@ -3,7 +3,7 @@ with the valley far below.
 
 On the left the mountain rises sheer from the road (a `cliff_face` wall with a `ragged` top), marker posts and
 stones along its foot. On the right a steel `guard_rail` and then nothing - the ground there is `void`, and far
-below lies the valley (`below`, in bands along it: forest, a river, pasture, fields - the landscape textures, seen
+below lies the valley (`below`, in bands along it: woods, a river, pasture, pine forest - the landscape textures, seen
 from the air at their own scale), its far side a wall of rock 240 units off with a
 `ragged` ridge, hazy with the distance. A goat on the verge, a car ahead, a sign before the bend. The second shot stops at the
 rail and looks out over the valley.
@@ -25,8 +25,8 @@ def mountain_pass():
         'width': 3.0, 'lanes': 2, 'surface': 'asphalt', 'edges': '#e4e4e4', 'rumble': False,
         'ground': {'left': [{'width': 0.7, 'texture': 'gravel'}, {'texture': 'rock_floor'}], 'right': 'void'},
         'below': {'depth': 70, 'tile': 33, 'haze': 0.5,                        # the valley floor, in bands
-                  'texture': [{'width': 30, 'texture': 'forest_canopy'}, {'width': 8, 'texture': 'river_water'},
-                              {'texture': 'pasture'}]},
+                  'texture': [{'width': 60, 'texture': 'forest_canopy'}, {'width': 8, 'texture': 'river_water'},
+                              {'width': 50, 'texture': 'pasture'}, {'texture': 'pine_canopy'}]},
         'walls': [
             {'side': 'left', 'offset': 0.7, 'height': 9, 'texture': 'cliff_face', 'tile': 3.5, 'ragged': 3},
             {'side': 'right', 'offset': 0.2, 'height': 0.3, 'texture': 'guard_rail', 'tile': [1, 0.3]},

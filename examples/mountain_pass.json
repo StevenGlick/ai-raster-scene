@@ -65,7 +65,7 @@
    "haze": 0.5,
    "texture": [
     {
-     "width": 30,
+     "width": 60,
      "texture": "forest_canopy"
     },
     {
@@ -73,7 +73,11 @@
      "texture": "river_water"
     },
     {
+     "width": 50,
      "texture": "pasture"
+    },
+    {
+     "texture": "pine_canopy"
     }
    ]
   },

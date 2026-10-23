@@ -1,0 +1,736 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    20,
+    0,
+    0
+   ],
+   [
+    60,
+    0.18,
+    0.2
+   ],
+   [
+    60,
+    -0.22,
+    0.0
+   ],
+   [
+    300,
+    0.1,
+    0.0
+   ]
+  ],
+  "width": 3.0,
+  "lanes": 2,
+  "surface": "asphalt",
+  "lines": "#e8e8e8",
+  "edges": "#d8c040",
+  "rumble": false,
+  "wet": 0.3,
+  "ripple": 0.5,
+  "ground": [
+   {
+    "width": 2.4,
+    "texture": "concrete_floor",
+    "reflect": 0.18
+   },
+   {
+    "texture": "concrete"
+   }
+  ],
+  "walls": [
+   {
+    "side": "both",
+    "offset": 2.4,
+    "height": 1.5,
+    "texture": [
+     "shopfront",
+     "shopfront_b",
+     "shopfront_c"
+    ],
+    "tile": [
+     2.0,
+     1.5
+    ],
+    "blocks": 2.0,
+    "seed": 4
+   },
+   {
+    "side": "both",
+    "offset": 2.55,
+    "z": 1.5,
+    "height": 12,
+    "ragged": 6,
+    "texture": [
+     "tower_windows",
+     "tower_windows_b"
+    ],
+    "tile": [
+     1.4,
+     1.4
+    ],
+    "blocks": 4.0,
+    "gaps": 0.1,
+    "seed": 5
+   },
+   {
+    "side": "both",
+    "offset": 16,
+    "height": 44,
+    "ragged": 16,
+    "texture": [
+     "tower_windows_b",
+     "tower_windows"
+    ],
+    "tile": [
+     3.2,
+     3.2
+    ],
+    "blocks": 9,
+    "seed": 6
+   }
+  ],
+  "bands": 0.02,
+  "distance": 220
+ },
+ "camera": {
+  "at": 2.0,
+  "x": -2.55,
+  "height": 0.55,
+  "fov": 64,
+  "pitch": 0.12,
+  "yaw": 3
+ },
+ "title": "The neon avenue - walking an avenue of the neon city in the rain, traffic on the road and in the air",
+ "sky": "night",
+ "skyline": "city",
+ "ambient": [
+  0.17,
+  0.15,
+  0.25
+ ],
+ "fog": {
+  "color": [
+   0.2,
+   0.15,
+   0.3
+  ],
+  "density": 0.02
+ },
+ "lights": [
+  {
+   "at": 3,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.3,
+    0.75
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 8,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    0.3,
+    0.95,
+    1.0
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 13,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.7,
+    0.25
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 18,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.3,
+    0.75
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 23,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    0.3,
+    0.95,
+    1.0
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 28,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.7,
+    0.25
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 33,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.3,
+    0.75
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 38,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    0.3,
+    0.95,
+    1.0
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 43,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.7,
+    0.25
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 48,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.3,
+    0.75
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 53,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    0.3,
+    0.95,
+    1.0
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 58,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.7,
+    0.25
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 63,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.3,
+    0.75
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 68,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    0.3,
+    0.95,
+    1.0
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 73,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.7,
+    0.25
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 78,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.3,
+    0.75
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 83,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    0.3,
+    0.95,
+    1.0
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 88,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.7,
+    0.25
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 93,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.3,
+    0.75
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 98,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    0.3,
+    0.95,
+    1.0
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 103,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.7,
+    0.25
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 108,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.3,
+    0.75
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 113,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    0.3,
+    0.95,
+    1.0
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 118,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.7,
+    0.25
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 123,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.3,
+    0.75
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 128,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    0.3,
+    0.95,
+    1.0
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 133,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.7,
+    0.25
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 138,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.3,
+    0.75
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 143,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    0.3,
+    0.95,
+    1.0
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 148,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.7,
+    0.25
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 153,
+   "x": 3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    1.0,
+    0.3,
+    0.75
+   ],
+   "intensity": 1.2
+  },
+  {
+   "at": 158,
+   "x": -3.5,
+   "z": 1.3,
+   "radius": 3.6,
+   "color": [
+    0.3,
+    0.95,
+    1.0
+   ],
+   "intensity": 1.2
+  }
+ ],
+ "roadside": [
+  {
+   "type": [
+    "neon_sign",
+    "neon_fish",
+    "neon_cocktail",
+    "hologram"
+   ],
+   "every": 7,
+   "offset": [
+    1.9,
+    2.1999999999999997
+   ],
+   "z": [
+    1.7,
+    3.2
+   ],
+   "scale": [
+    0.7,
+    1.2
+   ],
+   "flip": true,
+   "seed": 1
+  },
+  {
+   "type": "lantern_span",
+   "side": "middle",
+   "every": 13,
+   "offset": 0.0,
+   "from": 10,
+   "z": 3.2,
+   "scale": 4.6
+  },
+  {
+   "type": "wires_span",
+   "side": "middle",
+   "every": 17,
+   "offset": 0.0,
+   "from": 11,
+   "z": 3.8,
+   "scale": 7.5
+  },
+  {
+   "type": "highway_lamp",
+   "side": "right",
+   "every": 14,
+   "offset": -0.15,
+   "from": 9,
+   "flip": true,
+   "light": {
+    "color": [
+     0.8,
+     0.9,
+     1.0
+    ],
+    "radius": 5.0,
+    "intensity": 0.9,
+    "z": 3.4,
+    "x": 1.0
+   }
+  }
+ ],
+ "scatter": [
+  {
+   "of": "crowd",
+   "side": "both",
+   "density": 0.07,
+   "offset": [
+    0.3,
+    2.1
+   ],
+   "sizes": [
+    "medium"
+   ],
+   "clump": 0.2,
+   "seed": 2,
+   "clear": 5
+  }
+ ],
+ "decals": [
+  {
+   "tex": "city",
+   "density": 0.05,
+   "size": [
+    0.5,
+    1.0
+   ],
+   "seed": 1
+  },
+  {
+   "tex": "zebra_crossing",
+   "at": 15,
+   "x": 0,
+   "size": 3.0
+  },
+  {
+   "tex": "puddle_shine",
+   "density": 0.06,
+   "side": "both",
+   "offset": [
+    0.2,
+    2.4
+   ],
+   "size": [
+    0.4,
+    0.9
+   ],
+   "seed": 3
+  }
+ ],
+ "sprites": [
+  {
+   "type": "traffic_light",
+   "at": 14.2,
+   "x": -1.8,
+   "variant": 0
+  },
+  {
+   "type": "traffic_light",
+   "at": 14.2,
+   "x": 1.8,
+   "variant": 0,
+   "flip": true
+  },
+  {
+   "type": "noodle_stall",
+   "at": 7.5,
+   "x": -3.3499999999999996,
+   "scale": 1.2,
+   "light": {
+    "color": [
+     1.0,
+     0.7,
+     0.25
+    ],
+    "radius": 2.4,
+    "intensity": 1.0,
+    "z": 1.0
+   }
+  },
+  {
+   "type": "steam",
+   "at": 10,
+   "x": 0.4,
+   "scale": 1.4,
+   "opacity": 0.35
+  },
+  {
+   "type": "steam",
+   "at": 24,
+   "x": -0.7,
+   "scale": 1.6,
+   "opacity": 0.35
+  },
+  {
+   "type": "taxi",
+   "at": 11,
+   "x": 0.75
+  },
+  {
+   "type": "hover_car",
+   "at": 20,
+   "x": -0.8,
+   "z": 4.5,
+   "tint": [
+    1.0,
+    0.7,
+    1.0
+   ]
+  },
+  {
+   "type": "hover_car",
+   "at": 31,
+   "x": 0.9,
+   "z": 5.6
+  },
+  {
+   "type": "hover_car",
+   "at": 44,
+   "x": -0.6,
+   "z": 6.4,
+   "tint": [
+    1.0,
+    0.9,
+    0.6
+   ]
+  }
+ ],
+ "shots": [
+  {
+   "at": 2.0,
+   "x": -2.55,
+   "height": 0.55,
+   "fov": 64,
+   "pitch": 0.12,
+   "yaw": 3,
+   "post": [
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 2.0,
+     "radius": 2.4,
+     "spread": 0.6
+    },
+    {
+     "fx": "rain",
+     "density": 1.3,
+     "length": 8,
+     "opacity": 0.3,
+     "angle": 10,
+     "color": [
+      0.75,
+      0.8,
+      1.0
+     ]
+    },
+    {
+     "fx": "splashes"
+    }
+   ]
+  }
+ ],
+ "supersample": 2
+}

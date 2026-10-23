@@ -1847,8 +1847,25 @@ def check_road():
     rr, img = frame(scene([[100, 0, 0]], road={'ground': {'left': 'grass', 'right': 'void'},
                                                'below': {'depth': 20, 'texture': 'farmland', 'tile': 20}}))
     assert np.isfinite(rr.depth[60, 155]) and rr.depth[60, 155] > 20, 'past the edge, the land far below'
+
+    # 9. water mirrors: a buoy on the sea stands over its reflection (one on concrete does not); a street of
+    #    buildings: blocks of their own heights, and with every block an alley there is no street at all
+    def buoy(surface):
+        flat = {'surface': surface, 'ground': surface, 'lines': False, 'bands': 0.0}
+        _, a = frame(scene([[100, 0, 0]], road=flat, sprites=[{'type': 'buoy', 'at': 6, 'x': 0, 'scale': 1.0}]))
+        _, b = frame(scene([[100, 0, 0]], road=flat))
+        return np.abs(a - b).max(-1)
+    sea, dry = buoy('sea'), buoy('concrete')
+    assert dry[57:66, 70:90].max() > 0.05 and sea[57:66, 70:90].max() > 0.05, 'the buoy stands on both'
+    assert sea[71:76, 70:90].max() > 0.05 and dry[71:76, 70:90].max() < 1e-6, 'only the sea mirrors it'
+    street = {'side': 'left', 'offset': 1.0, 'height': 1.6, 'texture': 'tower_windows', 'blocks': 2, 'ragged': 1.2}
+    rr, img = frame(scene([[100, 0, 0]], road={'walls': [street]}))
+    tops = [int(np.argmax(np.isfinite(rr.depth[:, c]))) for c in range(0, 60, 2)]
+    assert len(set(tops)) > 4, ('buildings of their own heights', tops)
+    rr, img = frame(scene([[100, 0, 0]], road={'walls': [dict(street, gaps=1.0)]}))
+    assert np.abs(img - open_).max() < 1e-6, 'all alleys, no street'
     print('ok road scenes (bends, crests, a void floor, roofs, roll, a vehicle, the linter, scatter, decals, walls, '
-          'ceilings, a drop)')
+          'ceilings, a drop, water, a street)')
 
 
 def check_docs():
