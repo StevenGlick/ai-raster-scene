@@ -1,0 +1,163 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    3.2,
+    0,
+    0
+   ],
+   [
+    3,
+    0,
+    -1.6
+   ],
+   [
+    10,
+    0.1,
+    -7
+   ],
+   [
+    6,
+    -0.2,
+    -0.4
+   ],
+   [
+    200,
+    0.1,
+    0
+   ]
+  ],
+  "width": 0.9,
+  "surface": {
+   "base": "water",
+   "tint": [
+    0.7,
+    0.85,
+    0.9
+   ]
+  },
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "ripple": 0.8,
+  "ground": [
+   {
+    "width": 0.6,
+    "texture": "pine_needles"
+   },
+   {
+    "texture": "grass"
+   }
+  ],
+  "walls": [
+   {
+    "side": "both",
+    "offset": 0.0,
+    "height": 0.35,
+    "texture": {
+     "base": "planks",
+     "tint": [
+      0.8,
+      0.6,
+      0.45
+     ]
+    },
+    "tile": [
+     1.0,
+     0.35
+    ]
+   }
+  ],
+  "distance": 200
+ },
+ "camera": {
+  "at": 2.6,
+  "x": 0.0,
+  "height": 0.45,
+  "fov": 66,
+  "pitch": -0.4
+ },
+ "title": "The log flume - at the lip of the big drop in a log boat, the flume plunging away to the pool below",
+ "sky": "day",
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 240,
+   "elevation": 40,
+   "intensity": 0.9
+  }
+ ],
+ "ambient": [
+  0.6,
+  0.62,
+  0.68
+ ],
+ "fog": {
+  "color": [
+   0.78,
+   0.84,
+   0.92
+  ],
+  "density": 0.004,
+  "sky_mix": 0.2
+ },
+ "roadside": [
+  {
+   "type": "pine",
+   "density": 0.9,
+   "offset": [
+    0.8,
+    10.0
+   ],
+   "scale": [
+    1.8,
+    3.0
+   ],
+   "seed": 1
+  }
+ ],
+ "sprites": [
+  {
+   "type": "surf",
+   "at": 22.5,
+   "x": 0.0,
+   "z": 0.0,
+   "scale": 1.2
+  },
+  {
+   "type": "ferris_wheel",
+   "at": 60,
+   "x": 14,
+   "z": -8,
+   "scale": 12
+  }
+ ],
+ "shots": [
+  {
+   "at": 2.6,
+   "x": 0.0,
+   "height": 0.45,
+   "fov": 66,
+   "pitch": -0.4,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.5,
+     "radius": 2.0
+    }
+   ],
+   "vehicle": {
+    "type": "log_boat",
+    "ahead": 0.7,
+    "z": -0.02,
+    "scale": 0.3
+   }
+  }
+ ],
+ "supersample": 2
+}

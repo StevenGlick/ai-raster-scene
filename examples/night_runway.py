@@ -1,11 +1,12 @@
-"""The night runway: a road scene (road.py) - from the cockpit, lined up on a runway at night, its edge lights
+"""The night runway: a road scene (road.py) - from the cockpit, lined up on a runway at nightfall, its edge lights
 running away in two rows to the horizon, the airliner ahead just lifting off, the tower lit beside the field.
 
 The runway is the road: wide grey concrete, a dashed centre line, white edges, the threshold's bars at your feet
 (`zebra_crossing`); `runway_light`s every 1.5 down both edges (white), down the middle (small) and along the
 taxiway out to the right (blue), red across the far end. The airliner lifts off ahead, its lights lit; the
 `control_tower` and the terminal's lit windows (a low wall of `tower_windows`) off to the right; the city's
-glow on the horizon. Your own cockpit around the view (`cockpit`, the shot's vehicle).
+glow on the horizon under the last of the dusk. Your own cockpit around the view (`cockpit`, the shot's
+vehicle).
 Run:  python night_runway.py  -> writes night_runway.json next to this file.
 """
 import os
@@ -44,17 +45,17 @@ def night_runway():
     decals = [{'tex': 'zebra_crossing', 'at': 3.0, 'x': 0, 'size': 6.0}]
     return road_scene(
         road,
-        title='The night runway - from the cockpit on a runway at night, its lights to the horizon, an airliner lifting off',
-        sky='night',
+        title='The night runway - from the cockpit on a runway at nightfall, its lights to the horizon, an airliner lifting off',
+        sky='dusk',
         skyline={'type': 'city', 'height': 0.6},
-        ambient=[0.22, 0.24, 0.32],
-        fog={'color': [0.12, 0.14, 0.22], 'density': 0.006},
+        ambient=[0.32, 0.3, 0.38],
+        fog={'color': [0.3, 0.24, 0.32], 'density': 0.005},
         roadside=roadside,
         sprites=sprites,
         decals=decals,
         camera={'at': 1.0, 'x': 0.0, 'height': 0.9, 'fov': 64, 'pitch': 0.02},
         shots=[{'at': 1.0, 'x': 0.0, 'height': 0.9, 'fov': 64, 'pitch': 0.02, 'post': LOOK,
-                'vehicle': {'type': 'cockpit', 'ahead': 0.9, 'z': 0.46, 'scale': 1.0}}],
+                'vehicle': {'type': 'cockpit', 'ahead': 0.9, 'z': 0.36, 'scale': 1.04}}],
         supersample=2,
     )
 

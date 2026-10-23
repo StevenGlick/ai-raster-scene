@@ -58,24 +58,24 @@
   "fov": 64,
   "pitch": 0.02
  },
- "title": "The night runway - from the cockpit on a runway at night, its lights to the horizon, an airliner lifting off",
- "sky": "night",
+ "title": "The night runway - from the cockpit on a runway at nightfall, its lights to the horizon, an airliner lifting off",
+ "sky": "dusk",
  "skyline": {
   "type": "city",
   "height": 0.6
  },
  "ambient": [
-  0.22,
-  0.24,
-  0.32
+  0.32,
+  0.3,
+  0.38
  ],
  "fog": {
   "color": [
-   0.12,
-   0.14,
-   0.22
+   0.3,
+   0.24,
+   0.32
   ],
-  "density": 0.006
+  "density": 0.005
  },
  "roadside": [
   {
@@ -236,8 +236,8 @@
    "vehicle": {
     "type": "cockpit",
     "ahead": 0.9,
-    "z": 0.46,
-    "scale": 1.0
+    "z": 0.36,
+    "scale": 1.04
    }
   }
  ],

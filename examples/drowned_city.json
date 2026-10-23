@@ -1,0 +1,208 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    20,
+    0,
+    0
+   ],
+   [
+    40,
+    0.08,
+    0
+   ],
+   [
+    300,
+    -0.05,
+    0
+   ]
+  ],
+  "width": 3.4,
+  "surface": {
+   "base": "water",
+   "tint": [
+    0.6,
+    0.62,
+    0.6
+   ]
+  },
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "ripple": 0.3,
+  "ground": {
+   "base": "water",
+   "tint": [
+    0.6,
+    0.62,
+    0.6
+   ]
+  },
+  "walls": [
+   {
+    "side": "both",
+    "offset": 0.6,
+    "height": 12,
+    "ragged": 5,
+    "texture": [
+     "ruined_tower",
+     "ruined_tower_b",
+     "ruined_tower"
+    ],
+    "tile": [
+     3.0,
+     3.0
+    ],
+    "blocks": 4.0,
+    "gaps": 0.25,
+    "seed": 3
+   },
+   {
+    "side": "both",
+    "offset": 9,
+    "height": 22,
+    "ragged": 9,
+    "texture": [
+     "ruined_tower",
+     "ruined_tower_b",
+     "ruined_tower"
+    ],
+    "tile": [
+     4.0,
+     4.0
+    ],
+    "blocks": 6.0,
+    "gaps": 0.3,
+    "seed": 4
+   }
+  ],
+  "distance": 300
+ },
+ "camera": {
+  "at": 1.0,
+  "x": 0.0,
+  "height": 0.5,
+  "fov": 64,
+  "pitch": 0.12
+ },
+ "title": "The drowned city - by boat down a flooded avenue of an abandoned city at sunset, the towers overgrown",
+ "sky": "sunset",
+ "sky_objects": [
+  {
+   "type": "sun",
+   "azimuth": 270,
+   "elevation": 5,
+   "size": 3.0
+  }
+ ],
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 270,
+   "elevation": 7,
+   "intensity": 0.8,
+   "color": [
+    1.0,
+    0.72,
+    0.48
+   ],
+   "disc": false
+  }
+ ],
+ "ambient": [
+  0.52,
+  0.46,
+  0.46
+ ],
+ "fog": {
+  "color": [
+   0.86,
+   0.6,
+   0.48
+  ],
+  "density": 0.008,
+  "sky_mix": 0.3
+ },
+ "roadside": [
+  {
+   "type": [
+    "driftwood",
+    "log",
+    "barrel",
+    "driftwood"
+   ],
+   "density": 0.25,
+   "offset": [
+    -1.6,
+    0.4
+   ],
+   "z": -0.08,
+   "scale": [
+    0.3,
+    0.5
+   ],
+   "seed": 1
+  },
+  {
+   "type": "lamp_post",
+   "side": "left",
+   "every": 11,
+   "offset": -0.3,
+   "from": 5,
+   "z": -0.7,
+   "scale": 0.9
+  }
+ ],
+ "sprites": [
+  {
+   "type": "crow",
+   "at": 14,
+   "x": -1.0,
+   "z": 3.0,
+   "scale": 0.5
+  },
+  {
+   "type": "crow",
+   "at": 18,
+   "x": 1.5,
+   "z": 4.2,
+   "scale": 0.45,
+   "flip": true
+  },
+  {
+   "type": "crow",
+   "at": 22,
+   "x": 0.2,
+   "z": 5.0,
+   "scale": 0.4
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": 0.0,
+   "height": 0.5,
+   "fov": 64,
+   "pitch": 0.12,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.7,
+     "radius": 2.2
+    }
+   ],
+   "vehicle": {
+    "type": "boat_bow",
+    "ahead": 1.25,
+    "z": -0.1,
+    "scale": 0.5
+   }
+  }
+ ],
+ "supersample": 2
+}

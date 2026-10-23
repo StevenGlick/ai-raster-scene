@@ -308,7 +308,8 @@ The runway is the road, flat and straight: `concrete` 6 wide, a dashed centre li
 `edges`, the threshold's bars a `zebra_crossing` decal 6 across. `runway_light`s every 1.5 down both edges, smaller
 every unit down the `middle`, blue along a taxiway, red across the far end; an `airliner` lifting off ahead (`z`
 1.0) with a light of its own, the `control_tower`, the terminal as a low wall of `tower_windows`, the `city`
-skyline. The view is from the `cockpit` (the shot's vehicle), with `bloom` from the lights. See
+skyline under a `dusk` sky (at full night the runway was a dark band under the cockpit). The view is from the
+`cockpit` (the shot's vehicle), with `bloom` from the lights. See
 `examples/night_runway.py`.
 
 ### A bayou by skiff
@@ -430,6 +431,51 @@ side with the `sea` far `below`; `wet` 0.32 so the road shines, `reflector_post`
 headland ahead (`z` -6, `scale` 10), its `lighthouse_beam` at the lantern's height thrown back across the view
 (`flip`); the `storm` sky, the `rain` post effect slanting, `lightning` far out, your car's headlights. See
 `examples/storm_coast.py`.
+
+### A volcano road
+
+A dirt road through the jungle at night (`jungle_floor` either side) with bands of `lava_flow` out in the fields
+(`tile` 4 - it glows); jungle trees and palms `tint`ed dark against the glow; the `erupting_volcano` at the road's far
+end (`scale` 56) with a big red light of its own, an `ash_plume` over it, `fireball`s in the sky; the `blood` sky and
+`ashfall`. See `examples/volcano_road.py`.
+
+### A metro ride
+
+Indoors: the track (`rail_track`) under a low `ceiling` of `concrete` (`light` 0); the tunnel as `walls` of
+`tunnel_cables` with `wall_lamp`s, broken by a station (the walls `from`/`to`): `metro_tiles` set back behind the
+platforms' faces (a low `concrete` wall 0.42 high), `ceiling_lamp`s under the ceiling, the `crowd` on the platforms
+(`z` 0.42), a `signal_light`. The `metro_cab` as the vehicle with `headlights` - they light the tunnel. Put the
+camera at the station's mouth: from deeper in, the tunnel's walls hide the platforms. See `examples/metro_ride.py`.
+
+### A drowned city
+
+The avenue is under still `water` (tinted, `ripple` 0.3) for the road and the ground; the towers rise out of it as
+`walls` in `blocks` - `ruined_tower`, `_b` - with `gaps` 0.25 (fallen ones; the low sun comes through) and a `ragged`
+top, a second rank behind taller still; all of it is doubled in the water. `driftwood`, logs and barrels floating
+(`z` -0.08), a `lamp_post` drowned to its lamp, crows; your `boat_bow`; a `sunset` sky with the sun low at the end of
+the avenue. See `examples/drowned_city.py`.
+
+### A log flume
+
+The flume is the road: `water` 0.9 wide between low `walls` of `planks` at its edges (`offset` 0, 0.35 high), the
+`sections` level to the lip and then dropping steeply (7 down over 10); pines by density on `pine_needles` and
+grass, a `surf` sprite for the splash at the bottom, a `ferris_wheel` over the trees; the `log_boat` as the vehicle
+with the camera at the lip pitched hard down the drop (`pitch` -0.4). See `examples/log_flume.py`.
+
+### A pilgrims' path in the mountains
+
+A stony path (`gravel` tinted, the edge ragged) climbing gently; thin turf (`dry_grass` tinted down), scree
+(`rock_floor`) and then `snow` in bands; `prayer_flags` across the path every 6 (`side` `middle`, `z` 1.4), a
+`stupa` beside it every 18, stones scattered; a `monk` walking ahead (`view` back); `snow_peak`s far round the
+valley (not too big, or they fill the sky) over a `mountains` skyline, a deep blue `day` sky, almost no haze. See
+`examples/pilgrim_path.py`.
+
+### A balloon flight
+
+The balloon's way is a road too narrow to see (`width` 0.002) over `void` ground, the land far `below` (`depth` 26,
+`desert_floor` at landscape scale), mesas as a red `mountains` skyline; `balloon`s scattered by density with a
+spread of `z` (-12 to 8) and a few placed near, the sun low in a `dawn` sky; the `basket_rim` as the vehicle (`ahead`
+0.6, `z` 0.3) under a camera pitched a little down. See `examples/balloon_flight.py`.
 
 ### A highway at night, and a tunnel
 

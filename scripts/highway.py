@@ -3229,6 +3229,228 @@ def spr_lighthouse_beam():
     return rgba, rgba[..., 3] * 0.9
 
 
+# ------------------------------------------------------------------ the eruption
+
+def spr_erupting_volcano():
+    """A volcano erupting at night: the dark cone, fire fountaining from its crater, rivers of lava running down its
+    flanks in glowing threads, the crater's rim lit from inside. A billboard for the horizon, 25 tall at its own
+    size; set an `ash_plume` over it and a red light near its top."""
+    w, h = 128, 72
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    rng = np.random.default_rng(121)
+    cv.polygon([(0, 72), (52, 18), (76, 18), (128, 72)], z=1.0, top=0.4, bevel=0.8, mat=0)          # the cone
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    cone = cv.id > 0
+    n = _noise(h, w, 6, 122)
+    cv.tone[cone] = ((n - 0.5) * 0.3)[cone]
+    lava = np.zeros((h, w), bool)
+    for k in range(6):                                                              # the rivers of lava
+        x = 54 + k * 4.0 + rng.uniform(-1, 1)
+        for y in range(19, 72):
+            x += rng.uniform(-0.9, 0.9) + (x - 64) * 0.035
+            if 0 <= int(x) < w:
+                lava[y, int(x)] = True
+                if y > 40 and int(x) + 1 < w:
+                    lava[y, int(x) + 1] = True
+    cv.mat[lava & cone] = 1
+    cv.box(53, 16, 22, 3, z=1.2, top=0.3, bevel=0.6, mat=2)                         # the crater's lit rim
+    for k in range(9):                                                              # the fire fountaining up
+        a = np.radians(rng.uniform(-30, 30) - 90)
+        L = rng.uniform(7, 16)
+        cv.stroke([(64, 17), (64 + np.cos(a) * L, 17 + np.sin(a) * L)], rng.uniform(1.6, 3.0), z=1.4, dome=0.5,
+                  taper=(1.0, 0.3), mat=2)
+    rgba, _ = _prop(cv, [ramp('#2a2224', dark=0.5, light=1.8), ramp('#ff6a1a', dark=0.8, light=1.2),
+                         ramp('#ffb040', dark=0.8, light=1.15)], relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [1, 2])
+
+
+# ------------------------------------------------------------------ the metro
+
+def tex_tunnel_cables(name):
+    """The wall of a metro tunnel: sooty concrete in its ring segments, bundles of cables slung along it in their
+    brackets, a stain of water down it here and there. For walls along a track underground."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    rgb = np.array([0.34, 0.33, 0.32], np.float32) * (0.7 + 0.45 * fbm(T, rng, 6, 3))[..., None]
+    rgb[(xx % 32) < 2] *= 0.6                                                       # the rings' joints
+    for y0 in (22, 27, 32):                                                         # the cables
+        cab = np.abs(yy - y0 - 1.2 * np.sin(xx / 64 * 2 * np.pi)) < 1.2
+        rgb[cab] = [0.1, 0.1, 0.11]
+        rgb[cab & (np.abs(yy - y0 - 1.2 * np.sin(xx / 64 * 2 * np.pi) + 0.6) < 0.4)] = [0.22, 0.22, 0.24]
+    br = ((xx % 16) < 2) & (yy >= 20) & (yy < 36)
+    rgb[br] = [0.4, 0.38, 0.3]                                                      # their brackets
+    stain = (vnoise(T, 8, rng) > 0.7) & (yy > 36)
+    rgb[stain] *= 0.7
+    return np.clip(rgb, 0, 1), None
+
+
+def tex_metro_tiles(name):
+    """A metro station's wall: white tiles in their grid, a band of colour along at shoulder height with the
+    station's name lettered in it now and then, a lamp's glow on the glaze."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    rgb = np.array([0.88, 0.88, 0.84], np.float32) * (0.9 + 0.12 * fbm(T, rng, 6, 2))[..., None]
+    rgb[((xx % 8) == 7) | ((yy % 8) == 7)] *= 0.72                                 # the grout
+    band = (yy >= 24) & (yy < 36)
+    rgb[band] = np.array([0.12, 0.42, 0.62], np.float32) * (0.9 + 0.12 * fbm(T, rng, 6, 2)[band])[:, None]
+    for k in range(5):                                                              # the station's name
+        x0 = 8 + k * 9
+        rgb[band & (np.abs(xx - x0 - 2) < 1) & (yy >= 27) & (yy < 33)] = [0.95, 0.95, 0.9]
+        rgb[band & (yy == 27 + int(rng.integers(0, 6))) & (xx >= x0) & (xx < x0 + 5)] = [0.95, 0.95, 0.9]
+    return np.clip(rgb, 0, 1), None
+
+
+def _signal_light(k):
+    w, h = 10, 24
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(1.5, 1, 7, 16, z=1.2, top=0.6, bevel=1.0, mat=0)                          # the head
+    cv.box(4.2, 16, 1.6, 8, z=1.0, top=0.5, bevel=0.4, mat=0)                       # its bracket
+    lit = [ramp('#ff3020', dark=0.7, light=1.2), ramp('#30ff70', dark=0.7, light=1.2)]
+    dim = [ramp('#3a0e0c', dark=0.6, light=1.4), ramp('#0c3018', dark=0.6, light=1.4)]
+    cv.ellipse(5, 5, 2.3, 2.3, z=1.5, dome=0.5, mat=1)
+    cv.ellipse(5, 12, 2.3, 2.3, z=1.5, dome=0.5, mat=2)
+    lamps = [lit[0] if k == 0 else dim[0], lit[1] if k == 1 else dim[1]]
+    rgba, _ = _prop(cv, [ramp('#1e1e22', dark=0.5, light=2.0)] + lamps, relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [1 + k])
+
+
+def spr_signal_light():
+    """A signal on a metro tunnel's wall: two lamps in a black head on a bracket, the red one lit (`variant` 1, the
+    green)."""
+    return _signal_light(0)
+
+
+def spr_metro_cab():
+    """The cab of your own metro train, from the driver's seat: the console across the bottom of the view with its
+    dials and a screen glowing, the windscreen's frame round the view, the controller's handle by your hand. A
+    shot's `vehicle`, close and bigger than the view."""
+    w, h = 96, 64
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(0, 0), (96, 0), (96, 5), (0, 5)], z=1.2, top=0.5, bevel=1.0, mat=0)               # the roof's edge
+    cv.polygon([(0, 0), (9, 0), (12, 64), (0, 64)], z=1.3, top=0.5, bevel=1.4, mat=0)               # the pillars
+    cv.polygon([(96, 0), (87, 0), (84, 64), (96, 64)], z=1.3, top=0.5, bevel=1.4, mat=0)
+    cv.polygon([(0, 50), (96, 50), (96, 64), (0, 64)], z=1.1, top=0.5, bevel=1.2, mat=1)            # the console
+    for x in (20, 30, 66, 76):                                                      # its dials
+        cv.ellipse(x, 56, 3.4, 3.4, z=1.2, dome=0.3, mat=2)
+    cv.box(40, 53, 16, 7, z=1.2, top=0.3, bevel=0.5, mat=3)                         # its screen, glowing
+    cv.stroke([(84, 64), (80, 52)], 2.0, z=1.6, dome=0.6, mat=0)                    # the controller's handle
+    cv.ellipse(79.5, 51, 2.4, 2.0, z=1.7, dome=0.8, mat=4)
+    rgba, _ = _prop(cv, [ramp('#2a2c34', dark=0.5, light=1.9), ramp('#3a3e48', dark=0.45, light=1.8),
+                         ramp('#d8d4c8', dark=0.5, light=1.2), ramp('#40d0ff', dark=0.7, light=1.15),
+                         ramp('#c8282a', dark=0.4, light=1.4)], relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [3]) * 0.6
+
+
+# ------------------------------------------------------------------ the drowned city
+
+def tex_ruined_tower(name, tone=(0.56, 0.54, 0.5)):
+    """The face of an abandoned tower block gone back to nature, for walls along a flooded street: weathered
+    concrete (`tone`) in floor bands, its windows dark empty holes four to a tile across, some with a scrap of
+    blind or a broken frame, ivy climbing from below and hanging from the ledges, rust streaks under the sills."""
+    rng = _rng(name)
+    yy, xx = np.mgrid[0:T, 0:T]
+    p = np.array(tone, np.float32)
+    rgb = p * (0.72 + 0.4 * fbm(T, rng, 6, 3))[..., None]
+    rgb[(yy % 16) >= 14] *= 0.7                                                     # the floor slabs
+    for gy in range(4):
+        for gx in range(4):
+            y0, x0 = gy * 16 + 3, gx * 16 + 3
+            win = (yy >= y0) & (yy < y0 + 9) & (xx >= x0) & (xx < x0 + 10)
+            rgb[win] = [0.05, 0.05, 0.06]
+            if rng.random() < 0.3:                                                  # a broken frame left
+                rgb[win & ((xx - x0) == 5)] = [0.3, 0.3, 0.3]
+            if rng.random() < 0.2:                                                  # a scrap of blind
+                rgb[win & (yy < y0 + 3)] = [0.6, 0.55, 0.45]
+            streak = (xx >= x0 + 2) & (xx < x0 + 4) & (yy >= y0 + 9) & (yy < y0 + 14)
+            rgb[streak] *= [0.85, 0.7, 0.55]                                         # rust under the sill
+    ivy = (fbm(T, rng, 8, 3) + (yy / T) * 0.55) > 0.95                               # ivy, thicker low down
+    ivy |= (fbm(T, rng, 16, 2) > 0.74) & ((yy % 16) > 9)                             # and hanging from ledges
+    rgb[ivy] = np.array([0.18, 0.34, 0.14], np.float32) * (0.7 + 0.6 * fbm(T, rng, 16, 2)[ivy])[:, None]
+    return np.clip(rgb, 0, 1), None
+
+
+# ------------------------------------------------------------------ the log flume
+
+def spr_log_boat():
+    """The front of your own log-flume boat, from its seat: a hollowed log's nose curving up ahead of you, its bark
+    rough along the sides, the grab bar across in front, water running off the nose. A shot's `vehicle` for a
+    flume ride."""
+    w, h = 64, 36
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(4, 36), (60, 36), (44, 6), (20, 6)], z=1.0, top=0.6, bevel=5.0, mat=0)            # the log's nose
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    body = cv.id > 0
+    cv.tone[body] = (0.16 * np.sin(xx * 0.9 + yy * 0.3) - 0.12)[body]                # the bark's ridges
+    cv.ellipse(32, 8, 7, 2.6, z=1.4, dome=0.5, mat=1)                               # the cut end, pale
+    cv.polygon([(14, 36), (50, 36), (40, 16), (24, 16)], z=0.6, top=0.3, bevel=1.0, mat=2)          # the hollow
+    cv.stroke([(6, 30), (16, 26), (48, 26), (58, 30)], 2.6, z=1.8, dome=0.7, mat=3)  # the grab bar
+    return _prop(cv, [ramp('#4a3220', dark=0.4, light=1.7, warm=0.05), ramp('#c8a070', dark=0.45, light=1.3),
+                      ramp('#3a2a20', dark=0.5, light=1.6), CHROME], relief=1.0, cavity=0.4, shadow=0.4)
+
+
+# ------------------------------------------------------------------ the pilgrims' path
+
+FLAG_C = [ramp('#2a5ad8', dark=0.4, light=1.4, cool=0.06), ramp('#ecebe4', dark=0.5, light=1.15),
+          ramp('#d82a22', dark=0.4, light=1.4), ramp('#2a9a4a', dark=0.4, light=1.4),
+          ramp('#f0c020', dark=0.4, light=1.3, warm=0.05)]
+
+
+def spr_prayer_flags():
+    """A string of prayer flags slung across a mountain path: small squares of cloth in blue, white, red, green and
+    yellow in turn along a sagging line, faded and lifting in the wind. A long card to hang across the way at `z` 1.5
+    or so (`side` middle), or run up to a pole."""
+    w, h = 160, 28
+    cv = Canvas(w, h, wrap=False, ground=-9)
+
+    def sag(x):
+        return 3 + 28 * (x / w) * (1 - x / w)
+    for k, x in enumerate(np.arange(4, w - 6, 7.5)):                                # the flags, the colours in turn
+        y = sag(x) + 0.6
+        lift = 1.6 * np.sin(k * 1.3)
+        cv.polygon([(x, y), (x + 6, y + 0.4), (x + 6 + lift * 0.3, y + 6), (x + lift * 0.3, y + 5.6)], z=1.0,
+                   top=0.4, bevel=0.6, mat=1 + k % 5)
+    cv.stroke([(t, sag(t)) for t in np.linspace(0, w, 48)], 0.8, z=1.3, dome=0.3, mat=0)        # the line
+    return _prop(cv, [ramp('#3a3530', dark=0.5, light=1.6)] + FLAG_C, relief=1.0, cavity=0.3, shadow=0.4)
+
+
+def spr_stupa():
+    """A whitewashed stupa by a mountain path: a stepped square base, the white dome on it, the gilded spire of rings
+    rising from its top to a finial, a painted band round the dome's shoulder."""
+    w, h = 48, 72
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(4, 60, 40, 12, z=1.0, top=0.6, bevel=1.2, mat=0)                         # the base, stepped
+    cv.box(8, 52, 32, 9, z=1.1, top=0.6, bevel=1.0, mat=0)
+    cv.ellipse(24, 46, 15, 12, z=1.4, dome=0.9, mat=0)                              # the dome
+    cv.box(10, 41, 28, 2.0, z=1.5, top=0.3, bevel=0.3, mat=2)                       # its painted band
+    cv.box(18, 30, 12, 6, z=1.5, top=0.6, bevel=0.8, mat=0)                         # the harmika
+    for k in range(9):                                                              # the spire's rings
+        r = 5 - k * 0.45
+        cv.ellipse(24, 28 - k * 2.3, r, 1.2, z=1.6, dome=0.6, mat=1)
+    cv.ellipse(24, 5, 2.0, 2.4, z=1.7, dome=0.9, mat=1)                             # the finial
+    return _prop(cv, [ramp('#f0ece4', dark=0.45, light=1.12), GILT, ramp('#b8282a', dark=0.4, light=1.4)],
+                 relief=1.0, cavity=0.4, shadow=0.4)
+
+
+# ------------------------------------------------------------------ the balloon flight
+
+def spr_basket_rim():
+    """The rim of your own balloon's basket, from inside it: the wicker edge padded in leather across the bottom of
+    the view, the burner's frame rising at either side and the ropes going up from it. A shot's `vehicle` for a
+    balloon flight, close and wider than the view."""
+    w, h = 112, 48
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x in (10, 102):                                                             # the frame's posts and ropes
+        cv.stroke([(x, 48), (x + (6 if x < 50 else -6), 0)], 2.4, z=1.2, dome=0.6, mat=2)
+        cv.stroke([(x, 36), (x + (16 if x < 50 else -16), 0)], 0.8, z=1.1, dome=0.3, mat=3)
+    cv.polygon([(0, 34), (112, 34), (112, 48), (0, 48)], z=1.0, top=0.6, bevel=1.2, mat=0)          # the wicker
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    wicker = (cv.id > 0) & (cv.mat == 0)
+    cv.tone[wicker] = (0.14 * np.sign(np.sin(xx * 1.4 + (yy // 3) * 1.6)) - 0.04)[wicker]   # the weave
+    cv.stroke([(0, 34), (112, 34)], 3.4, z=1.6, dome=0.8, mat=1)                    # the leather edge
+    return _prop(cv, [ramp('#b08850', dark=0.4, light=1.4, warm=0.05), ramp('#5a3a22', dark=0.45, light=1.7),
+                      CHROME, ramp('#d8c8a8', dark=0.45, light=1.25)], relief=1.0, cavity=0.4, shadow=0.4)
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
@@ -3258,17 +3480,22 @@ TEXTURES.update({'tower_windows': lambda n: tex_tower_windows(n), 'tower_windows
                  'peppermint': lambda n: tex_peppermint(n), 'frosting': lambda n: tex_frosting(n),
                  'wheat_field': lambda n: tex_wheat_field(n), 'western_front': lambda n: tex_western_front(n),
                  'western_front_b': lambda n: tex_western_front(n, (0.72, 0.56, 0.3)),
-                 'western_front_c': lambda n: tex_western_front(n, (0.46, 0.52, 0.56))})
+                 'western_front_c': lambda n: tex_western_front(n, (0.46, 0.52, 0.56)),
+                 'tunnel_cables': lambda n: tex_tunnel_cables(n), 'metro_tiles': lambda n: tex_metro_tiles(n),
+                 'ruined_tower': lambda n: tex_ruined_tower(n),
+                 'ruined_tower_b': lambda n: tex_ruined_tower(n, (0.62, 0.52, 0.44))})
 TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront': 0.4, 'shopfront_b': 0.4,
                       'shopfront_c': 0.4, 'coaster_track': 0.2, 'coaster_frame': 0.2, 'rail_track': 0.6,
                       'grandstand': 0.3, 'suspension_cables': 0.0, 'canal_house': 0.3, 'canal_house_b': 0.3,
                       'canal_house_c': 0.3, 'canal_footing': 0.4, 'piste': 0.15, 'ski_fence': 0.0, 'chairlift': 0.0,
                       'city_night': 0.0, 'light_lane': 0.0, 'tulip_field': 0.2, 'tulip_field_b': 0.2,
                       'tulip_field_c': 0.2, 'tulip_field_d': 0.2, 'peppermint': 0.1, 'frosting': 0.2,
-                      'wheat_field': 0.3, 'western_front': 0.4, 'western_front_b': 0.4, 'western_front_c': 0.4})
+                      'wheat_field': 0.3, 'western_front': 0.4, 'western_front_b': 0.4, 'western_front_c': 0.4,
+                      'tunnel_cables': 0.6, 'metro_tiles': 0.2, 'ruined_tower': 0.5, 'ruined_tower_b': 0.5})
 VARIANTS = {'traffic_light': (3, _traffic_light), 'car_compact': (4, _car_compact), 'car_sedan': (4, _car_sedan),
             'billboard': (3, _billboard), 'race_car': (4, _race_car), 'car_oncoming': (4, _car_oncoming),
-            'mooring_pole': (3, _mooring_pole), 'slalom_gate': (2, _slalom_gate), 'gumdrop': (4, _gumdrop)}
+            'mooring_pole': (3, _mooring_pole), 'slalom_gate': (2, _slalom_gate), 'gumdrop': (4, _gumdrop),
+            'signal_light': (2, _signal_light)}
 
 SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_sedan': spr_car_sedan,
            'box_truck': spr_box_truck, 'curve_sign': spr_curve_sign, 'billboard': spr_billboard,
@@ -3299,7 +3526,10 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'acacia': spr_acacia, 'giraffe': spr_giraffe, 'elephant': spr_elephant, 'zebra': spr_zebra,
            'flying_saucer': spr_flying_saucer, 'tractor_beam': spr_tractor_beam, 'cow': spr_cow,
            'ferris_wheel': spr_ferris_wheel, 'carousel': spr_carousel, 'horse': spr_horse,
-           'lighthouse_tower': spr_lighthouse_tower, 'lighthouse_beam': spr_lighthouse_beam}
+           'lighthouse_tower': spr_lighthouse_tower, 'lighthouse_beam': spr_lighthouse_beam,
+           'erupting_volcano': spr_erupting_volcano, 'signal_light': spr_signal_light, 'metro_cab': spr_metro_cab,
+           'log_boat': spr_log_boat, 'prayer_flags': spr_prayer_flags, 'stupa': spr_stupa,
+           'basket_rim': spr_basket_rim}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
@@ -3320,7 +3550,8 @@ SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'bo
                  'porthole': 1.0, 'dog_team': 0.4, 'log_cabin': 1.8, 'galleon': 4.0, 'sea_fort': 4.0,
                  'bowsprit': 0.75, 'acacia': 2.4, 'giraffe': 1.8, 'elephant': 1.1, 'zebra': 0.5,
                  'flying_saucer': 1.6, 'tractor_beam': 4.0, 'cow': 0.5, 'ferris_wheel': 6.0, 'carousel': 2.2, 'horse': 0.6, 'lighthouse_tower': 7.0,
-                 'lighthouse_beam': 1.6}
+                 'lighthouse_beam': 1.6, 'erupting_volcano': 25.0, 'signal_light': 0.5,
+                 'metro_cab': 1.0, 'log_boat': 0.4, 'prayer_flags': 0.4, 'stupa': 2.4, 'basket_rim': 0.4}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
@@ -3342,4 +3573,7 @@ PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}
                  'sea_fort': {'shadow': False}, 'bowsprit': {'shadow': False}, 'flying_saucer': {'shadow': False},
                  'tractor_beam': {'shadow': False, 'blend': 'additive'}, 'ferris_wheel': {'shadow': False},
                  'carousel': {'shadow': False}, 'lighthouse_tower': {'shadow': False},
-                 'lighthouse_beam': {'shadow': False, 'blend': 'additive'}}
+                 'lighthouse_beam': {'shadow': False, 'blend': 'additive'}, 'erupting_volcano': {'shadow': False},
+                 'signal_light': {'shadow': False}, 'metro_cab': {'shadow': False},
+                 'log_boat': {'shadow': False}, 'prayer_flags': {'shadow': False, 'planes': 1},
+                 'basket_rim': {'shadow': False}}
