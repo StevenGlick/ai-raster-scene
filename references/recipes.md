@@ -558,6 +558,41 @@ side so the road leads to it (`scale` 34 at 150 - smaller it is lost on the hori
 floodlights were on it; cars pulled over on the shoulder and people by them (`crowd`); your convertible from behind
 with its `headlights`, a `dusk` sky. See `examples/launch_day.py`.
 
+### An airship voyage
+
+As the balloon flight, from your own `airship_deck` (`ahead` 0.7, `scale` 0.24, its `z` setting the rail just
+under the horizon): the course too narrow to see, the `ground` `void`, the clouds `below` (`cloud_floor`, `depth`
+16). `floating_rock` islands at every height (a `roadside` row with `z` spread, and two big ones placed) with
+`island_falls` pouring off their edges - their tops at the grass's near edge, about 0.85 of the island's height up -
+`airship`s in their colours at every distance, gulls; the sun just up in a `dawn` sky. (The tall `waterfall` is a
+cliff's - stood under an island it is a slab of glass.) See `examples/airship_voyage.py`.
+
+### A ride through a medieval market
+
+A `cobble` street with a strip of `flagstone` either side; the houses are one wall each side of `timber_house`,
+`_b` and `_c` in `blocks` of 2.0 with a `tile` of `[2.0, 2.6]` and the wall 2.6 tall - each block exactly one tile,
+so each is its own house with its own gable on the sky. Stalls (`market_stall`, `fruit_stall`) from some way up the
+street (the nearest ones fill the view), `banner`s on the houses at `z` 1.4, barrels, sacks and hay along the
+fronts; the townspeople are the characters (`villager`, `farmer`, `shopkeeper`, `monk`, `child`, a `knight`
+walking away), a `cart`, a `well`; the `castle_hill` at the end. Your `horse_neck` as the shot's `vehicle`, the
+camera a rider's height (0.8). See `examples/market_ride.py`.
+
+### A mountain pass at night, the city below
+
+The mountain pass's road (the cliff on one side, a `guard_rail` and the `void` drop on the other) under a `night`
+sky, and far `below` the city at night: `city_night`, its lights glowing in the dark (`tile` 18 shows its avenues as
+a grid - smaller it is noise; `haze` 0.35 fades the far side). A rival car ahead, reflector posts and a curve sign
+for the headlights to find, your convertible with its `headlights`; bloom from the lights. See
+`examples/night_pass.py`.
+
+### A road through the giant redwoods
+
+A two-lane road with a yellow centre line through `pine_needles` and `moss`; `redwood_trunk`s in a row near the
+road (`every` 10, `offset` 1.0-1.8, from 10 on - where the road bends a near one stands in front of you) and more
+back in the wood (`density` 0.1 out to 16), ferns and `undergrowth` between; a high `ceiling` of `canopy` (16 up,
+`light` 0.7) closes the sky; `light_shaft`s slant down through a green-gold `fog`. Your convertible from behind.
+See `examples/redwood_road.py`.
+
 ### A highway at night, and a tunnel
 
 Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.

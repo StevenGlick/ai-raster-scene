@@ -231,6 +231,10 @@ SHOTS = {
     'road_neon_canal': ('neon_canal', 1),
     'road_lanterns': ('lantern_river', 1),
     'road_launch': ('launch_day', 1),
+    'road_airship': ('airship_voyage', 1),
+    'road_market': ('market_ride', 1),
+    'road_night_pass': ('night_pass', 1),
+    'road_redwood': ('redwood_road', 1),
     # where it started: the three concept drawings, made scenes (the drawings are in docs/origins)
     'storm_island': ('storm_island', 1),
     'storm_town': ('storm_island', 2),

@@ -842,13 +842,20 @@ class RoadRenderer:
         tv = np.repeat(((along * TEX / b['tile']).astype(int) % TEX)[:, None], W, 1)
         past = np.abs(X) - self.half                 # out from the road's edge: the valley in bands along it
         col = np.zeros(X.shape + (3,), np.float32)
+        glow = None
         lo = 0.0
         for hi, spec, tint, *_ in b['bands']:
             m = (past < hi) & (past >= lo) if lo > 0 else past < hi
             if m.any():
-                col[m] = assets.get_texture(spec)[0][tv[m], tu[m]] * tint
+                tex = assets.get_texture(spec)
+                col[m] = tex[0][tv[m], tu[m]] * tint
+                if tex[1] is not None:                 # a city's lights, lava: they glow down there in the dark
+                    glow = np.zeros_like(col) if glow is None else glow
+                    glow[m] = col[m] * tex[1][tv[m], tu[m]][:, None] * 1.6
             lo = hi
         col = col * self._light_flat()
+        if glow is not None:
+            col = col + glow
         if self.fog_c is not None and self.fog_d > 0:           # `haze` thins the air down there (or thickens it)
             fg = np.exp(-self.fog_d * b['haze'] * z)[:, None, None]
             col = col * fg + self.fog_c * (1 - fg)

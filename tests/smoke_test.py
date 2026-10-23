@@ -1877,6 +1877,9 @@ def check_road():
                                                'below': {'depth': 20, 'texture': 'farmland', 'tile': 20}},
                           sprites=[{'type': 'pine', 'at': 60, 'x': 30, 'z': -20, 'scale': 16}]))
     assert np.abs(tall - img).max() > 0.1, 'a tree standing far below, past the void side, is seen'
+    town = {'ground': {'left': 'grass', 'right': 'void'}, 'below': {'depth': 20, 'texture': 'city_night', 'tile': 20}}
+    _, lit = frame(scene([[100, 0, 0]], road=town, sky='night', ambient=[0.1, 0.1, 0.15]))
+    assert lit[56:, 110:].max() > 0.3, "a city's lights glow far below in the dark"
 
     # 9. water mirrors: a buoy on the sea stands over its reflection (one on concrete does not); a street of
     #    buildings: blocks of their own heights, and with every block an alley there is no street at all

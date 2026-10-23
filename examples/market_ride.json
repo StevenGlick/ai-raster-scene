@@ -1,0 +1,224 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    16,
+    0,
+    0
+   ],
+   [
+    30,
+    0.12,
+    0.25
+   ],
+   [
+    30,
+    -0.1,
+    0.1
+   ],
+   [
+    200,
+    0.0,
+    0.0
+   ]
+  ],
+  "width": 2.4,
+  "surface": "cobble",
+  "lines": false,
+  "rumble": false,
+  "bands": 0.0,
+  "ground": [
+   {
+    "width": 0.7,
+    "texture": "flagstone"
+   },
+   {
+    "texture": "cobble"
+   }
+  ],
+  "walls": [
+   {
+    "side": "both",
+    "offset": 0.7,
+    "height": 2.6,
+    "tile": [
+     2.0,
+     2.6
+    ],
+    "blocks": 2.0,
+    "seed": 3,
+    "texture": [
+     "timber_house",
+     "timber_house_b",
+     "timber_house_c"
+    ]
+   }
+  ],
+  "distance": 120
+ },
+ "camera": {
+  "at": 1.0,
+  "x": 0.0,
+  "height": 0.8,
+  "fov": 64,
+  "pitch": 0.04
+ },
+ "title": "The market ride - riding up a medieval town's high street on market day toward the castle on its hill",
+ "sky": "day",
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 300,
+   "elevation": 40,
+   "intensity": 0.9,
+   "color": [
+    1.0,
+    0.95,
+    0.85
+   ]
+  }
+ ],
+ "ambient": [
+  0.62,
+  0.62,
+  0.66
+ ],
+ "fog": {
+  "color": [
+   0.78,
+   0.84,
+   0.92
+  ],
+  "density": 0.003
+ },
+ "roadside": [
+  {
+   "type": [
+    "market_stall",
+    "fruit_stall"
+   ],
+   "every": 5.5,
+   "offset": [
+    0.05,
+    0.25
+   ],
+   "from": 9,
+   "to": 40,
+   "flip": true,
+   "seed": 1
+  },
+  {
+   "type": "banner",
+   "every": 6,
+   "offset": 0.6499999999999999,
+   "z": 1.4,
+   "from": 6,
+   "flip": true,
+   "seed": 2
+  },
+  {
+   "type": [
+    "barrel",
+    "sack",
+    "hay_bale",
+    "crate"
+   ],
+   "density": 0.5,
+   "offset": [
+    0.0,
+    0.6
+   ],
+   "scale": [
+    0.2,
+    0.32
+   ],
+   "from": 3,
+   "seed": 4
+  }
+ ],
+ "sprites": [
+  {
+   "type": "villager",
+   "at": 5.5,
+   "x": -1.2
+  },
+  {
+   "type": "farmer",
+   "at": 7.5,
+   "x": 1.1,
+   "flip": true
+  },
+  {
+   "type": "shopkeeper",
+   "at": 11.5,
+   "x": -1.0
+  },
+  {
+   "type": "monk",
+   "at": 13,
+   "x": 0.35,
+   "view": "back"
+  },
+  {
+   "type": "child",
+   "at": 6.4,
+   "x": -0.7
+  },
+  {
+   "type": "knight",
+   "at": 17,
+   "x": -0.3,
+   "view": "back"
+  },
+  {
+   "type": "villager",
+   "at": 15,
+   "x": 0.9,
+   "flip": true
+  },
+  {
+   "type": "cart",
+   "at": 24,
+   "x": 0.5
+  },
+  {
+   "type": "well",
+   "at": 30,
+   "x": -1.1
+  },
+  {
+   "type": "castle_hill",
+   "at": 70,
+   "x": 0.0,
+   "scale": 21
+  }
+ ],
+ "shots": [
+  {
+   "at": 1.0,
+   "x": 0.0,
+   "height": 0.8,
+   "fov": 64,
+   "pitch": 0.04,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.4,
+     "radius": 2.0
+    }
+   ],
+   "vehicle": {
+    "type": "horse_neck",
+    "ahead": 0.7,
+    "z": 0.5,
+    "scale": 0.26
+   }
+  }
+ ],
+ "supersample": 2
+}
