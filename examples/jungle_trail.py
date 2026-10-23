@@ -32,6 +32,12 @@ def jungle_trail():
         {'type': ['monstera', 'fern', 'heliconia', 'fern', 'monstera'], 'density': 1.8, 'offset': [0.0, 2.2],
          'scale': [0.4, 1.0], 'seed': 4},
     ]
+    scatter = [{'of': 'jungle', 'density': 0.7, 'offset': [0.0, 1.6], 'sizes': ['tiny', 'small', 'medium'],
+                'seed': 1}]
+    decals = [                                      # puddles in the ruts, and the trail's stones
+        {'tex': ['puddle', 'puddle', 'puddle_shine', 'stain'], 'density': 0.14, 'size': [0.4, 0.9], 'seed': 1},
+        {'tex': 'pebbles', 'density': 0.06, 'size': [0.3, 0.5], 'seed': 2},
+    ]
     sprites = [
         {'type': 'explorer', 'at': 8.0, 'x': 0.1, 'view': 'back', 'id': 'explorer'},
         {'type': 'stone_arch', 'at': 17.0, 'x': 0.0, 'scale': 3.2},
@@ -46,6 +52,8 @@ def jungle_trail():
         ambient=[0.42, 0.48, 0.4],
         fog={'color': [0.55, 0.66, 0.5], 'density': 0.03},
         roadside=roadside,
+        scatter=scatter,
+        decals=decals,
         sprites=sprites,
         camera={'at': 1.0, 'x': 0.0, 'height': 0.52, 'fov': 62, 'pitch': 0.02},
         shots=[

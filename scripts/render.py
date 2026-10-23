@@ -2484,6 +2484,10 @@ def lint_scene(scene):
         check(scene['road'], road.ROAD_KEYS, 'road')
         for i, row in enumerate(scene.get('roadside') or []):
             check(row, road.ROADSIDE_KEYS, f'roadside {i + 1}')
+        for i, row in enumerate(scene.get('scatter') or []):
+            check(row, road.SCATTER_KEYS, f'scatter {i + 1}')
+        for i, row in enumerate(scene.get('decals') or []):
+            check(row, road.DECAL_KEYS, f'decal {i + 1}')
     return out
 
 

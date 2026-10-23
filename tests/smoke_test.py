@@ -1810,11 +1810,24 @@ def check_road():
     _, b = frame(sc, roll=8, vehicle={'type': 'sports_car', 'ahead': 2.6})
     assert np.array_equal(a, b) and a.shape == (100, 160, 3) and a.min() >= 0 and a[:4].mean() > 0.05
 
-    # 6. the linter: a misspelt road key, a misspelt roadside key
-    warn = R.lint_scene({'road': {'sectons': []}, 'roadside': [{'typ': 'palm'}], 'camera': {'at': 0}})
+    # 6. the linter: a misspelt road key, a misspelt roadside key, scatter and decal keys
+    warn = R.lint_scene({'road': {'sectons': []}, 'roadside': [{'typ': 'palm'}], 'camera': {'at': 0},
+                         'scatter': [{'of': 'verge', 'densty': 1}], 'decals': [{'tex': 'crack', 'sise': 1}]})
     assert any("'sectons'" in w and 'sections' in w for w in warn), warn
     assert any("'typ'" in w for w in warn), warn
-    print('ok road scenes (bends, crests, a void floor, roofs, roll, a vehicle, the linter)')
+    assert any("'densty'" in w for w in warn) and any("'sise'" in w for w in warn), warn
+
+    # 7. scatter along the verges - beside the road, clear of the camera, the same every time - and a mark on it
+    sc = scene([[200, 0, 0]], scatter=[{'of': 'verge', 'density': 1.0, 'offset': [0, 2], 'seed': 1}])
+    got = RD.RoadRenderer(sc).items
+    assert len(got) > 300 and all(abs(it['x']) >= 2 for it in got), 'scattered beside the road'
+    assert not any(0.5 <= it['at'] <= 2.5 for it in got), 'the few units in front of the camera are clear'
+    assert [(i['type'], i['at']) for i in RD.RoadRenderer(sc).items] == [(i['type'], i['at']) for i in got]
+    _, plain = frame(scene([[200, 0, 0]]))
+    _, marked = frame(scene([[200, 0, 0]], decals=[{'tex': 'manhole', 'at': 4, 'x': 0, 'size': 1.5}]))
+    diff = np.abs(marked - plain).max(-1)
+    assert diff[70:, 60:100].max() > 0.1 and diff[:50].max() < 1e-6, 'the manhole lies on the road ahead'
+    print('ok road scenes (bends, crests, a void floor, roofs, roll, a vehicle, the linter, scatter, decals)')
 
 
 def check_docs():

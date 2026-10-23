@@ -262,12 +262,251 @@ def spr_tunnel_portal():
     return rgba, np.zeros((h, w), np.float32)
 
 
+BAG = ramp('#17181b', dark=0.55, light=3.4, cool=0.12)          # black plastic, with a shine to it
+RUBBER = ramp('#202022', dark=0.55, light=2.0)
+PAPER = ramp('#d8d4c4', dark=0.55, light=1.2)
+CAN = ramp('#b8282a', dark=0.4, light=1.6)
+BOTTLE = ramp('#3a6a3a', dark=0.4, light=1.9, cool=0.08)
+
+
+def spr_trash_bag():
+    """A black rubbish bag, knotted at its neck and slumped where it was left: a lump of something inside, a crease
+    or two, a shine on the plastic."""
+    w, h = 26, 18
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.ellipse(13, 12, 11.5, 5.8, z=1.0, dome=0.8, mat=0)                        # the body, slumped
+    cv.ellipse(8.5, 9.5, 6, 4.8, z=1.3, dome=0.8, mat=0)                         # lumps of what is in it
+    cv.ellipse(17, 9, 5.5, 4.4, z=1.25, dome=0.8, mat=0)
+    cv.polygon([(11.5, 3.2), (14.5, 3.2), (14.8, 6), (11.2, 6)], z=1.4, top=0.5, bevel=0.6, mat=0)   # the neck
+    cv.stroke([(13, 3.4), (9.5, 1.8), (8, 2.6)], 1.3, z=1.5, dome=0.5, taper=(1.0, 0.5), mat=0)      # its ears
+    cv.stroke([(13, 3.4), (16.5, 1.6), (18, 2.4)], 1.3, z=1.5, dome=0.5, taper=(1.0, 0.5), mat=0)
+    for pts in ([(5, 12), (8.5, 15)], [(15, 11), (18, 15)], [(12.5, 9), (12, 12)]):
+        cv.stroke(pts, 0.7, dome=0.3, mode='carve')
+    return _prop(cv, [BAG], relief=1.3, cavity=0.55, shadow=0.5)
+
+
+def spr_old_tyre():
+    """An old tyre dumped by the road, propped on its edge: worn tread round its rim, the hole through it."""
+    w, h = 20, 20
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.ellipse(10, 10, 9, 9, z=1.0, dome=0.7, mat=0)
+    for k in range(16):                                            # the tread's blocks
+        a = k * np.pi / 8
+        cv.stroke([(10 + 7.6 * np.cos(a), 10 + 7.6 * np.sin(a)), (10 + 9.2 * np.cos(a), 10 + 9.2 * np.sin(a))],
+                  0.8, dome=0.3, mode='carve')
+    rgba, em = _prop(cv, [RUBBER], relief=1.2, cavity=0.55, shadow=0.45)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32) + 0.5
+    r = np.hypot(xx - 10, yy - 10)
+    rgba[r < 4.2, 3] = 0.0                                          # the hole
+    rim = (r >= 4.2) & (r < 5.0)
+    rgba[rim, :3] *= 0.55
+    return rgba, em
+
+
+def spr_trash():
+    """Litter: a crumpled sheet of paper, a red can and a green bottle on their sides - a few pixels of colour
+    in the grass at the side of a road."""
+    w, h = 18, 8
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.ellipse(4.5, 4.8, 3.6, 2.8, z=1.0, dome=0.8, rough=0.5, rng=np.random.default_rng(3), mat=0)   # the paper
+    cv.box(8.5, 4, 3.6, 3, z=1.0, top=0.6, bevel=1.0, mat=1)                                         # the can
+    cv.box(12, 4.4, 5.2, 2.6, z=1.0, top=0.7, bevel=1.1, mat=2)                                      # the bottle
+    cv.box(16.6, 5.1, 1.4, 1.2, z=1.0, top=0.6, bevel=0.4, mat=2)
+    return _prop(cv, [PAPER, CAN, BOTTLE], relief=1.0, cavity=0.4, shadow=0.4)
+
+
+# ------------------------------------------------------------------ marks on the road (decals)
+
+def _noise(h, w, cell, seed):
+    """Smooth value noise, 0-1, h x w, its blobs about `cell` px across."""
+    rng = np.random.default_rng(seed)
+    g = rng.random((h // cell + 3, w // cell + 3)).astype(np.float32)
+    big = np.asarray(Image.fromarray(g, 'F').resize((g.shape[1] * cell, g.shape[0] * cell), Image.BICUBIC))
+    return np.clip(big[cell:cell + h, cell:cell + w], 0, 1)
+
+
+def _decal(rgb, a, em=None):
+    h, w = a.shape
+    rgba = np.zeros((h, w, 4), np.float32)
+    rgba[..., :3] = rgb
+    rgba[..., 3] = np.clip(a, 0, 1)
+    return rgba, np.zeros((h, w), np.float32) if em is None else em.astype(np.float32)
+
+
+def _grid(h, w):
+    return np.mgrid[0:h, 0:w].astype(np.float32) + 0.5
+
+
+def dec_oil_stain():
+    """Oil dripped where cars stand: a dark blotch soaked into the road, darkest at its heart, a faint blue sheen
+    at its rim."""
+    h = w = 32
+    yy, xx = _grid(h, w)
+    r = np.hypot((xx - 16) / 1.3, yy - 16) / 11 + (_noise(h, w, 6, 41) - 0.5) * 0.55
+    a = np.clip((1 - r) * 2.0, 0, 1) * (0.55 + 0.3 * _noise(h, w, 3, 42))
+    rim = np.clip(1 - np.abs(r - 0.82) / 0.1, 0, 1)
+    rgb = np.array([0.045, 0.045, 0.05], np.float32) + rim[..., None] * np.array([0.04, 0.05, 0.11], np.float32)
+    return _decal(rgb, a)
+
+
+def dec_tyre_marks():
+    """Skid marks: two streaks of rubber laid down the road where a car braked hard, wavering a little, heaviest
+    in the middle and fading at both ends. A `size` of 1 is a car's track across, and four units long."""
+    h, w = 128, 32
+    yy, xx = _grid(h, w)
+    t = yy / h
+    sway = np.sin(t * 4.0 + 0.6) * 1.6 + np.sin(t * 11.0) * 0.4
+    a = np.zeros((h, w), np.float32)
+    for cx in (7.5, 24.5):
+        a = np.maximum(a, np.clip(2.4 - np.abs(xx - cx - sway), 0, 1))
+    fade = np.clip(np.minimum(t, 1 - t) * 4.5, 0, 1)
+    return _decal(np.array([0.035, 0.035, 0.04], np.float32), a * fade * (0.5 + 0.5 * _noise(h, w, 3, 8)) * 0.8)
+
+
+def dec_road_patch():
+    """A patch in the road: a square of newer, darker asphalt where it was dug up, its seams sealed with tar."""
+    h, w = 36, 52
+    yy, xx = _grid(h, w)
+    n = _noise(h, w, 4, 12)
+    inside = (xx > 2.2 + n * 1.5) & (xx < w - 2.2 - n * 1.5) & (yy > 2.2 + n) & (yy < h - 2.2 - n)
+    seam = ~inside & (xx > 0.6 + n) & (xx < w - 0.6 - n) & (yy > 0.6) & (yy < h - 0.6)
+    rgb = np.zeros((h, w, 3), np.float32) + [0.15, 0.15, 0.16]
+    rgb[np.random.default_rng(13).random((h, w)) < 0.12] = [0.24, 0.24, 0.25]
+    rgb[seam] = [0.05, 0.05, 0.055]
+    return _decal(rgb, (inside | seam).astype(np.float32) * 0.92)
+
+
+def dec_pothole():
+    """A pothole: the road broken through to the dark under it, a rim of crumbled asphalt round it, a crack or
+    two running out from it."""
+    h = w = 32
+    yy, xx = _grid(h, w)
+    n = _noise(h, w, 4, 23)
+    r = np.hypot((xx - 16) / 1.35, yy - 16) / 8.5 + (n - 0.5) * 0.5
+    hole, rim = r < 0.72, (r >= 0.72) & (r < 1.0)
+    rgb = np.zeros((h, w, 3), np.float32) + [0.07, 0.065, 0.06]
+    rgb[hole] *= (0.55 + 0.6 * np.clip((yy[hole] - 10) / 14, 0, 1))[:, None]      # its far wall in shadow
+    rgb[rim] = (np.array([0.3, 0.29, 0.28]) * (0.75 + 0.5 * n[rim])[:, None])
+    crack = Image.new('L', (w, h), 0)
+    d = ImageDraw.Draw(crack)
+    for pts in (((27, 15), (30, 12), (31.5, 7)), ((5, 18), (2, 21), (1, 26)), ((15, 27), (13, 31))):
+        d.line(pts, fill=255, width=1)
+    ck = (np.asarray(crack) > 0) & ~hole & ~rim
+    rgb[ck] = [0.05, 0.045, 0.04]
+    return _decal(rgb, hole * 0.95 + rim * 0.85 * (n > 0.3) + ck * 0.8)
+
+
+def dec_leaf_litter():
+    """Fallen leaves in autumn colours, lying thick in the middle and thinning out round it."""
+    h = w = 48
+    S = 4
+    im = Image.new('RGBA', (w * S, h * S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    rng = np.random.default_rng(31)
+    cols = [(170, 72, 28), (196, 112, 34), (214, 160, 52), (140, 58, 30), (122, 92, 40), (188, 84, 40)]
+    for _ in range(95):
+        r, th = rng.random() ** 0.7 * 21, rng.random() * 2 * np.pi
+        cx, cy = 24 + np.cos(th) * r, 24 + np.sin(th) * r * 0.9
+        ln, ang = rng.uniform(2.0, 3.6), rng.random() * np.pi
+        t = np.linspace(0, 2 * np.pi, 9)[:-1]
+        px, py = np.cos(t) * ln, np.sin(t) * ln * 0.5
+        pts = [((cx + px[k] * np.cos(ang) - py[k] * np.sin(ang)) * S,
+                (cy + px[k] * np.sin(ang) + py[k] * np.cos(ang)) * S) for k in range(8)]
+        c = cols[int(rng.integers(len(cols)))]
+        k = rng.uniform(0.8, 1.1)
+        d.polygon(pts, fill=(int(c[0] * k), int(c[1] * k), int(c[2] * k), 255))
+    rgba = np.asarray(im.resize((w, h), Image.BOX), np.float32) / 255
+    rgba[..., :3] /= np.maximum(rgba[..., 3:4], 1e-3)
+    rgba[..., 3] = np.clip(rgba[..., 3] * 1.4, 0, 1)
+    return rgba, np.zeros((h, w), np.float32)
+
+
+def dec_manhole():
+    """A manhole cover: a disc of cast iron set in the road, a ring round it, a raised grid across it."""
+    h = w = 24
+    yy, xx = _grid(h, w)
+    r = np.hypot(xx - 12, yy - 12)
+    disc, ring = r < 10.5, (r >= 9.2) & (r < 10.5)
+    xi, yi = xx.astype(int), yy.astype(int)
+    grid = disc & ~ring & (((xi + yi) % 4 == 0) | ((xi - yi) % 4 == 0))
+    rgb = np.zeros((h, w, 3), np.float32) + [0.2, 0.19, 0.18]
+    rgb[ring] = [0.12, 0.115, 0.11]
+    rgb[grid] = [0.3, 0.29, 0.27]
+    return _decal(rgb, disc.astype(np.float32))
+
+
+def dec_lane_arrow():
+    """An arrow painted on a lane, pointing straight on, worn by the traffic over it. It lies along the road: a
+    `size` of 0.45 makes it 1.8 units long."""
+    h, w = 64, 16
+    yy, xx = _grid(h, w)
+    shaft = (np.abs(xx - 8) < 2.1) & (yy > 22) & (yy < 62)
+    head = (yy >= 2) & (yy < 24) & (np.abs(xx - 8) < (yy - 2) * 0.34)
+    a = (shaft | head) * (0.5 + 0.42 * _noise(h, w, 3, 61))
+    return _decal(np.array([0.9, 0.9, 0.86], np.float32), a)
+
+
+def dec_zebra_crossing():
+    """A zebra crossing: broad white bars side by side across the road, worn grey where the wheels run. Lay it at
+    `x` 0 with a `size` of the road's width."""
+    h, w = 24, 96
+    yy, xx = _grid(h, w)
+    bars = ((xx - 1) % 10) < 5.6
+    wheels = 0.75 + 0.25 * np.cos(xx / w * 2 * np.pi * 4)          # where the tyres run, the paint is worn
+    a = bars * (0.45 + 0.4 * _noise(h, w, 3, 71)) * wheels
+    return _decal(np.array([0.9, 0.9, 0.87], np.float32), a)
+
+
+def dec_sand_drift():
+    """Sand blown over the road: a pale drift with ripples in it, thinning out to stray grains at its edges."""
+    h, w = 32, 64
+    yy, xx = _grid(h, w)
+    r = np.hypot((xx - 32) / 30, (yy - 16) / 13) + (_noise(h, w, 8, 51) - 0.5) * 0.6
+    a = np.clip((1 - r) * 2.5, 0, 1)
+    grains = (np.random.default_rng(53).random((h, w)) < 0.18) & (r < 1.3)
+    ripple = np.sin(xx * 0.85 + _noise(h, w, 6, 52) * 6) > 0.55
+    rgb = np.zeros((h, w, 3), np.float32) + [0.84, 0.74, 0.54]
+    rgb[ripple] *= 0.9
+    return _decal(rgb, np.maximum(a * 0.9, grains * 0.7))
+
+
+def dec_pebbles():
+    """Gravel spilled over a path: small stones in greys and browns, each with a lit side and a shadow."""
+    h, w = 32, 48
+    yy, xx = _grid(h, w)
+    rng = np.random.default_rng(81)
+    rgb = np.zeros((h, w, 3), np.float32)
+    a = np.zeros((h, w), np.float32)
+    cols = np.array([[0.52, 0.5, 0.47], [0.42, 0.38, 0.33], [0.6, 0.57, 0.52], [0.36, 0.34, 0.32]], np.float32)
+    for _ in range(70):
+        r, th = rng.random() ** 0.6 * 20, rng.random() * 2 * np.pi
+        cx, cy = 24 + np.cos(th) * r * 1.1, 16 + np.sin(th) * r * 0.65
+        rs = rng.uniform(0.7, 1.7)
+        d = np.hypot(xx - cx, (yy - cy) * 1.25) / rs
+        m = d < 1
+        lit = np.clip(1.15 - 0.35 * ((xx - cx + rs * 0.4) ** 2 + (yy - cy + rs * 0.4) ** 2) / rs ** 2, 0.6, 1.2)
+        rgb[m] = cols[int(rng.integers(len(cols)))] * lit[m][:, None]
+        a[m] = 1.0
+    return _decal(rgb, a)
+
+
+DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
+    'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
+    'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
+    'street': ['trash_bag', 'trash_bag', 'trash', 'trash', 'old_tyre', 'traffic_cone'],
+}
+DECALS = {'oil_stain': dec_oil_stain, 'tyre_marks': dec_tyre_marks, 'road_patch': dec_road_patch,
+          'pothole': dec_pothole, 'leaf_litter': dec_leaf_litter, 'manhole': dec_manhole,
+          'lane_arrow': dec_lane_arrow, 'zebra_crossing': dec_zebra_crossing, 'sand_drift': dec_sand_drift,
+          'pebbles': dec_pebbles}
+
 SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_sedan': spr_car_sedan,
            'box_truck': spr_box_truck, 'curve_sign': spr_curve_sign, 'billboard': spr_billboard,
            'checkpoint': spr_checkpoint, 'traffic_cone': spr_traffic_cone, 'tunnel_ring': spr_tunnel_ring,
-           'tunnel_portal': spr_tunnel_portal}
+           'tunnel_portal': spr_tunnel_portal, 'trash_bag': spr_trash_bag, 'old_tyre': spr_old_tyre,
+           'trash': spr_trash}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
-                 'tunnel_portal': 5.775}
+                 'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}}

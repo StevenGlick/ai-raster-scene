@@ -41,6 +41,13 @@ def enchanted_path():
         {'type': 'orb', 'side': 'middle', 'density': 0.35, 'offset': [-3.0, 3.0], 'z': [0.4, 1.1],
          'scale': [0.08, 0.14], 'blend': 'add', 'tint': [0.6, 1.0, 0.85], 'seed': 5},
     ]
+    scatter = [{'of': ['mushrooms', 'mushrooms', 'glowshroom', 'glow_fern'], 'density': 0.5, 'offset': [0.0, 1.2],
+                'sizes': ['tiny', 'small'], 'seed': 1}]
+    decals = [                                      # moss between the cobbles, and now and then a rune, glowing
+        {'tex': 'moss_patch', 'density': 0.2, 'size': [0.3, 0.6], 'seed': 1},
+        {'tex': 'rune_mark', 'every': 11, 'from': 4, 'offset': [-0.4, 0.4], 'size': 0.4, 'opacity': 0.8,
+         'tint': [0.3, 1.0, 0.85], 'seed': 2},
+    ]
     sprites = [{'type': 'witch', 'at': 7.5, 'x': 0.1, 'view': 'back', 'id': 'witch',
                 'light': {'color': [1.0, 0.78, 0.5], 'radius': 2.2, 'intensity': 0.7, 'z': 0.7}}]   # her lantern
     return road_scene(
@@ -54,6 +61,8 @@ def enchanted_path():
         ambient=[0.12, 0.13, 0.22],
         fog={'color': [0.06, 0.09, 0.18], 'density': 0.045},
         roadside=roadside,
+        scatter=scatter,
+        decals=decals,
         sprites=sprites,
         camera={'at': 1.0, 'x': 0.0, 'height': 0.5, 'fov': 62, 'pitch': 0.03},
         shots=[

@@ -38,6 +38,14 @@ def night_highway():
         {'type': 'tunnel_ring', 'side': 'middle', 'every': 1.2, 'offset': 0.0, 'from': TUNNEL[0] + 0.6,
          'to': TUNNEL[1]},
     ]
+    scatter = [                                     # litter along the kerb, weeds through the concrete
+        {'of': 'street', 'density': 0.08, 'offset': [0.0, 1.3], 'sizes': ['small', 'medium'], 'seed': 1},
+        {'of': ['dry_tuft', 'grass_tuft'], 'density': 0.5, 'offset': [0.1, 1.5], 'to': TUNNEL[0] - 1, 'seed': 2},
+    ]
+    decals = [                                      # the wear of a city road: oil, patches, a manhole, cracks
+        {'tex': 'city', 'density': 0.06, 'size': [0.5, 1.0], 'seed': 1},
+        {'tex': 'tyre_marks', 'at': 6.5, 'x': -0.6, 'size': 0.55, 'opacity': 0.75},
+    ]
     sprites = [
         {'type': 'tunnel_portal', 'at': TUNNEL[0], 'x': 0.0},
         {'type': 'car_sedan', 'at': 12, 'x': -LANE, 'tint': [0.5, 0.5, 0.6]},
@@ -57,6 +65,8 @@ def night_highway():
         fog={'color': [0.08, 0.08, 0.13], 'density': 0.012},
         lights=lights,
         roadside=roadside,
+        scatter=scatter,
+        decals=decals,
         sprites=sprites,
         camera={'at': 2.0, 'x': 0.0, 'height': 0.75, 'fov': 64, 'pitch': 0.1},
         shots=[

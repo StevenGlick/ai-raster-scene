@@ -35,6 +35,12 @@ def forest_path():
          'seed': 5},
         {'type': ['stump', 'rocks', 'mushrooms'], 'density': 0.12, 'offset': [0.3, 3.0], 'seed': 6},
     ]
+    scatter = [                                     # stones and the odd mushroom on the path's edges
+        {'of': ['rocks', 'rocks', 'mushrooms', 'grass_tuft'], 'side': 'road', 'density': 0.2, 'offset': [-0.75, 0.75],
+         'sizes': ['tiny', 'small'], 'seed': 1},
+        {'of': 'forest', 'density': 0.35, 'offset': [0.2, 3.0], 'sizes': ['tiny', 'small', 'medium'], 'seed': 2},
+    ]
+    decals = [{'tex': 'trail', 'density': 0.5, 'size': [0.35, 0.7], 'seed': 1}]    # pebbles and leaves on it
     sprites = [
         {'type': 'villager', 'at': 9.0, 'x': 0.15, 'view': 'back', 'id': 'walker'},
         {'type': 'deer', 'at': 21.0, 'x': -2.6},
@@ -48,6 +54,8 @@ def forest_path():
         ambient=[0.5, 0.52, 0.48],
         fog={'color': [0.78, 0.8, 0.74], 'density': 0.035},
         roadside=roadside,
+        scatter=scatter,
+        decals=decals,
         sprites=sprites,
         camera={'at': 1.0, 'x': -0.1, 'height': 0.52, 'fov': 62, 'pitch': 0.04},
         shots=[

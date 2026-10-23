@@ -166,6 +166,52 @@
    "seed": 6
   }
  ],
+ "scatter": [
+  {
+   "of": [
+    "rocks",
+    "rocks",
+    "mushrooms",
+    "grass_tuft"
+   ],
+   "side": "road",
+   "density": 0.2,
+   "offset": [
+    -0.75,
+    0.75
+   ],
+   "sizes": [
+    "tiny",
+    "small"
+   ],
+   "seed": 1
+  },
+  {
+   "of": "forest",
+   "density": 0.35,
+   "offset": [
+    0.2,
+    3.0
+   ],
+   "sizes": [
+    "tiny",
+    "small",
+    "medium"
+   ],
+   "seed": 2
+  }
+ ],
+ "decals": [
+  {
+   "tex": "trail",
+   "density": 0.5,
+   "size": [
+    0.35,
+    0.7
+   ],
+   "seed": 1
+  }
+ ],
  "sprites": [
   {
    "type": "villager",

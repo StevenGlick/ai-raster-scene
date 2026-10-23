@@ -135,6 +135,18 @@
    "seed": 4
   }
  ],
+ "decals": [
+  {
+   "tex": "crack",
+   "density": 0.03,
+   "size": [
+    0.4,
+    0.8
+   ],
+   "opacity": 0.5,
+   "seed": 1
+  }
+ ],
  "sprites": [
   {
    "type": "dreamer",

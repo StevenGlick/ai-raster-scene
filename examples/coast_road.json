@@ -124,6 +124,86 @@
    "scale": 2.6
   }
  ],
+ "scatter": [
+  {
+   "of": "beach",
+   "side": "left",
+   "density": 0.22,
+   "offset": [
+    0.4,
+    6.0
+   ],
+   "seed": 1
+  },
+  {
+   "of": "beach",
+   "side": "right",
+   "density": 0.12,
+   "offset": [
+    1.0,
+    5.0
+   ],
+   "seed": 2
+  },
+  {
+   "of": [
+    "dry_tuft",
+    "dry_tuft",
+    "grass_tuft"
+   ],
+   "density": 0.7,
+   "offset": [
+    0.0,
+    1.4
+   ],
+   "seed": 3
+  }
+ ],
+ "decals": [
+  {
+   "tex": "sand_drift",
+   "density": 0.05,
+   "offset": [
+    -2.1,
+    -1.2
+   ],
+   "size": [
+    0.8,
+    1.6
+   ],
+   "seed": 1
+  },
+  {
+   "tex": "sand_drift",
+   "density": 0.05,
+   "offset": [
+    1.2,
+    2.1
+   ],
+   "size": [
+    0.8,
+    1.6
+   ],
+   "seed": 2
+  },
+  {
+   "tex": "wear",
+   "density": 0.03,
+   "size": [
+    0.5,
+    1.0
+   ],
+   "opacity": 0.8,
+   "seed": 3
+  },
+  {
+   "tex": "tyre_marks",
+   "at": 9.5,
+   "x": 0.5,
+   "size": 0.55,
+   "opacity": 0.8
+  }
+ ],
  "sprites": [
   {
    "type": "car_compact",

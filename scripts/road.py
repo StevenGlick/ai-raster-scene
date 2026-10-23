@@ -19,12 +19,27 @@ from PIL import Image, ImageDraw
 
 import assets
 import prefabs
+import world as WD
 
 # the keys a road and a roadside row take (render.lint_scene checks them; a road camera's are in render.SHOT_KEYS)
 ROAD_KEYS = {'sections', 'width', 'surface', 'lanes', 'lines', 'edges', 'centre', 'rumble', 'shoulder', 'ground',
              'stripe', 'bands', 'segment', 'distance', 'edge', 'roofs'}
 ROADSIDE_KEYS = {'type', 'every', 'density', 'side', 'offset', 'scale', 'jitter', 'from', 'to', 'flip', 'z', 'tint',
                  'light', 'seed', 'variant', 'view', 'opacity', 'blend', 'fullbright', 'shadow', 'clear'}
+SCATTER_KEYS = {'of', 'density', 'side', 'offset', 'from', 'to', 'sizes', 'clump', 'scale', 'seed', 'clear', 'tint'}
+DECAL_KEYS = {'tex', 'at', 'x', 'size', 'angle', 'opacity', 'tint', 'flip', 'density', 'every', 'side', 'offset',
+              'from', 'to', 'seed', 'clump'}
+# named sets of marks for a row of `decals`, as `scatter` has its sets of props (repeats are weights)
+DECAL_SETS = {
+    'wear': ['crack', 'crack', 'road_patch', 'oil_stain', 'stain'],             # an old road
+    'ruin': ['pothole', 'pothole', 'crack', 'crack', 'puddle', 'road_patch'],    # a road gone to ruin
+    'city': ['oil_stain', 'oil_stain', 'manhole', 'crack', 'stain', 'road_patch'],
+    'trail': ['pebbles', 'pebbles', 'stain', 'leaf_litter'],                    # a dirt path
+    'fall': ['leaf_litter', 'leaf_litter', 'leaf_litter', 'pebbles'],
+    'drifts': ['sand_drift', 'sand_drift', 'pebbles', 'crack'],                 # a desert road
+}
+# marks that lie along the road (a row of them is not turned at random)
+ALONG = {'tyre_marks', 'lane_arrow', 'zebra_crossing', 'road_patch', 'rover_tracks', 'hazard_stripe', 'manhole'}
 NEAR = 0.15                         # nothing nearer the camera than this is drawn
 TEX = 64                            # texels to a unit, as on the raycaster's walls and floors
 
@@ -156,6 +171,7 @@ class RoadRenderer:
         self._skies = {}
         self.items = self._place(scene)
         self.lamps = self._lamps(scene)
+        self.decals = self._decals(scene)
 
     # ------------------------------------------------------------------ what stands along the road
 
@@ -205,6 +221,7 @@ class RoadRenderer:
                     elif 'flip' in it:
                         it.pop('flip')
                     out.append(it)
+        out += self._scatter(scene, cams)
         for sp in scene.get('sprites', []):
             out.append(dict(sp, at=float(sp.get('at', 0.0)), x=float(sp.get('x', 0.0))))
         for it in out:
@@ -212,6 +229,129 @@ class RoadRenderer:
             d = assets.sprite_defaults(it['type'], self.defs)
             for k2, v in d.items():
                 it.setdefault(k2, v)
+        return out
+
+    def _band(self, spec, sgn, default):
+        """A row's band across the road: (from, to) in x - out from the edge for a side, from the centre line for
+        the road itself (sgn 0)."""
+        off = spec.get('offset', default)
+        o0, o1 = (float(off), float(off)) if not isinstance(off, list) else (float(off[0]), float(off[1]))
+        return min(o0, o1), max(o0, o1)
+
+    def _spread(self, rng, n, a0, a1, o0, o1, sgn, edge, clump):
+        """`n` spots in a band - along from a0 to a1, out (or across) from o0 to o1 - drawn from a pool weighted
+        by the scatter noise field, so they gather in drifts and leave clearings (`clump` 0 for none). Returns
+        their (at, x), x from the centre line."""
+        pool = max(4 * n, 32)
+        ca, co = rng.uniform(a0, a1, pool), rng.uniform(o0, o1, pool)
+        xs = co if sgn == 0 else sgn * (edge + co)
+        if clump > 0:
+            w = WD.sample_noise(WD.noise_field(), ca / WD.SCATTER_PERIOD, xs / WD.SCATTER_PERIOD).astype(np.float64)
+            w = np.clip(w, 0.02, 1.0) ** clump
+        else:
+            w = np.ones(pool)
+        picks = np.sort(rng.choice(pool, size=min(n, pool), replace=False, p=w / w.sum()))
+        return ca[picks], xs[picks]
+
+    def _scatter(self, scene, cams):
+        """`scatter` along the road, as on a map: what - a named set, a prop or a list (`of`) - so many to a square
+        unit (`density`) in a band beside the road or on it (`side`, `offset`, `from`, `to`), in size classes
+        (`sizes`), weighted by a noise field so they gather in drifts and leave clearings (`clump`). The same every
+        render; the few units in front of each camera are left `clear` (default 1.5)."""
+        out = []
+        L = self.road.length
+        edge = self.half + (self.rumble['width'] if self.rumble else 0.0)
+        for n, spec in enumerate(scene.get('scatter') or []):
+            rng = np.random.default_rng(int(scene.get('seed', 0)) * 7919 + int(spec.get('seed', n)) * 104729 + 29)
+            items = assets.debris_items(spec.get('of', 'verge'))
+            for name in sorted(set(items)):
+                try:
+                    assets.get_sprite(name, self.defs)
+                except KeyError:
+                    raise KeyError(f"scatter 'of' names {name!r}, which is neither a scatter set "
+                                   f"({', '.join(sorted(assets.DEBRIS_SETS))}) nor a prop") from None
+            sizes = spec.get('sizes') or assets.SIZE_WEIGHTS
+            names = list(sizes)
+            bad = [c for c in names if c not in assets.SIZE_CLASSES]
+            if bad:
+                raise KeyError(f"scatter 'sizes' has unknown class(es) {bad}; classes are "
+                               f"{', '.join(assets.SIZE_CLASSES)}")
+            wts = np.array([float(sizes[c]) for c in names] if isinstance(sizes, dict) else [1.0] * len(names))
+            wts = wts / wts.sum()
+            a0, a1 = float(spec.get('from', 1.0)), min(L, float(spec.get('to', L)))
+            sides = {'both': (-1, 1), 'left': (-1,), 'right': (1,), 'road': (0,)}[spec.get('side', 'both')]
+            clear = float(spec.get('clear', 1.5))
+            for sgn in sides:
+                o0, o1 = self._band(spec, sgn, [-self.half, self.half] if sgn == 0 else [0.0, 2.5])
+                count = int(round(float(spec.get('density', 0.4)) * max(0.0, a1 - a0) * max(o1 - o0, 0.2)))
+                if count <= 0:
+                    continue
+                for at, x in zip(*self._spread(rng, count, a0, a1, o0, o1, sgn, edge, float(spec.get('clump', 1.4)))):
+                    name = items[int(rng.integers(len(items)))]
+                    cls = names[int(rng.choice(len(names), p=wts))]
+                    flip = bool(rng.random() < 0.5)
+                    if any(c - 0.5 <= at <= c + clear for c in cams):
+                        continue
+                    it = {'type': name, 'at': float(at), 'x': float(x),
+                          'scale': assets.size_scale(name, cls, self.defs) * float(spec.get('scale', 1.0))}
+                    if flip:
+                        it['flip'] = True
+                    if spec.get('tint') is not None:
+                        it['tint'] = spec['tint']
+                    out.append(it)
+        return out
+
+    def _decals(self, scene):
+        """The marks lying on the road and the ground (`decals`): placed ones by `at` and `x`, and rows of them -
+        `density` so many to a square unit, or one `every` so many units - on the road (`side` 'road', the
+        default) or the ground beside it, weighted by the scatter's noise so they gather. `tex` a decal, a set
+        (DECAL_SETS) or a list; `size` its width across (or [min, max]), its length along the image's; `angle` in
+        degrees (a row's are turned at random, but marks that lie along the road stay with it); `opacity`, `tint`,
+        `flip`."""
+        out = []
+        L = self.road.length
+        edge = self.half + (self.rumble['width'] if self.rumble else 0.0)
+        ddefs = scene.get('decal_defs')
+
+        def one(tex, at, x, size, angle, spec, flip):
+            rgba, _ = assets.get_decal(tex, ddefs)
+            th = math.radians(angle)
+            out.append({'tex': tex, 'at': float(at), 'x': float(x), 'w': size, 'h': size * rgba.shape[0] / rgba.shape[1],
+                        'c': math.cos(th), 's': math.sin(th), 'opacity': float(spec.get('opacity', 1.0)),
+                        'tint': _col(spec.get('tint')), 'flip': flip})
+
+        for n, spec in enumerate(scene.get('decals') or []):
+            texs = spec.get('tex', 'crack')
+            texs = [t2 for t in ([texs] if isinstance(texs, str) else texs) for t2 in DECAL_SETS.get(t, [t])]
+            for t in set(texs):
+                assets.get_decal(t, ddefs)
+            sz = spec.get('size', 1.0)
+            if 'density' not in spec and 'every' not in spec:          # one, placed
+                one(texs[0], spec.get('at', 0.0), spec.get('x', 0.0), float(sz if not isinstance(sz, list) else sz[0]),
+                    float(spec.get('angle', 0.0)), spec, bool(spec.get('flip', False)))
+                continue
+            rng = np.random.default_rng(int(scene.get('seed', 0)) * 7919 + int(spec.get('seed', n)) * 104729 + 61)
+            a0, a1 = float(spec.get('from', 0.0)), min(L, float(spec.get('to', L)))
+            sides = {'both': (-1, 1), 'left': (-1,), 'right': (1,), 'road': (0,)}[spec.get('side', 'road')]
+            for sgn in sides:
+                o0, o1 = self._band(spec, sgn, [-self.half, self.half] if sgn == 0 else [0.0, 2.0])
+                if 'every' in spec:
+                    ats = np.arange(a0, a1, float(spec['every']))
+                    xs = rng.uniform(o0, o1, len(ats))
+                    xs = xs if sgn == 0 else sgn * (edge + xs)
+                else:
+                    count = int(round(float(spec['density']) * max(0.0, a1 - a0) * max(o1 - o0, 0.2)))
+                    if count <= 0:
+                        continue
+                    ats, xs = self._spread(rng, count, a0, a1, o0, o1, sgn, edge, float(spec.get('clump', 1.0)))
+                for at, x in zip(ats, xs):
+                    t = texs[int(rng.integers(len(texs)))]
+                    size = float(rng.uniform(sz[0], sz[1])) if isinstance(sz, list) else float(sz)
+                    spin = float(rng.uniform(0, 360))
+                    flip = bool(rng.random() < 0.5)
+                    angle = float(spec['angle']) if 'angle' in spec else (spin if t not in ALONG else 0.0)
+                    one(t, at, x, size, angle, spec, flip if t not in ALONG else bool(spec.get('flip', False)))
+        out.sort(key=lambda d: d['at'])
         return out
 
     def _lamps(self, scene):
@@ -506,6 +646,7 @@ class RoadRenderer:
                     if em is not None:
                         lightk[b] = em[tv[b], tu[b]][:, None] * tex[tv[b], tu[b]] * 1.6
                 lo = hi
+        self._stamp(out, lightk, A, X, along, ~void)
         # the light on it: ambient and sun alike over open ground, and the lamps along the road
         L = np.broadcast_to(self._light_flat(), out.shape).copy()
         for a0, a1, k in self.roofs:              # under a roof the sky's light is gone; the lamps still reach
@@ -530,6 +671,42 @@ class RoadRenderer:
         img[rows[rr_], cc_] = col[rr_, cc_]
         emis[rows[rr_], cc_] = emis_g[rr_, cc_]
         depth[rows[rr_], cc_] = z[rr_]
+
+    def _stamp(self, out, lightk, A, X, along, keep):
+        """The decals, lying flat on the road and the ground: each pixel's place (along, across) inside one picks
+        its texel, blended over the surface by the decal's alpha."""
+        if not self.decals:
+            return
+        lo, hi = float(along.min()), float(along.max())
+        ddefs = self.s.get('decal_defs')
+        for d in self.decals:
+            r = 0.5 * math.hypot(d['w'], d['h'])
+            if d['at'] + r < lo or d['at'] - r > hi:
+                continue
+            rr = np.nonzero(np.abs(along - d['at']) < r)[0]
+            if not len(rr):
+                continue
+            dx = X[rr] - d['x']
+            da = A[rr] - d['at']
+            u = (dx * d['c'] + da * d['s']) / d['w'] + 0.5
+            v = 0.5 - (da * d['c'] - dx * d['s']) / d['h']
+            m = (u >= 0) & (u < 1) & (v >= 0) & (v < 1) & keep[rr]
+            if not m.any():
+                continue
+            rgba, em = assets.get_decal(d['tex'], ddefs)
+            hh, ww = rgba.shape[:2]
+            ri, ci = np.nonzero(m)
+            tu = (u[ri, ci] * ww).astype(int).clip(0, ww - 1)
+            if d['flip']:
+                tu = ww - 1 - tu
+            tv = (v[ri, ci] * hh).astype(int).clip(0, hh - 1)
+            px = rgba[tv, tu]
+            a = px[:, 3:4] * d['opacity']
+            rows = rr[ri]
+            rgb = px[:, :3] * d['tint']
+            out[rows, ci] = out[rows, ci] * (1 - a) + rgb * a
+            if em is not None and em.max() > 0:                  # a glowing mark (a rune) lights itself
+                lightk[rows, ci] += em[tv, tu][:, None] * rgb * a * 1.6
 
     def _props(self, img, emis, depth, P, cam, at, camy, camx, focal, horizon, mid, W, H, only=None):
         """Everything standing along the road, far to near: each scaled by its distance, standing on the road's

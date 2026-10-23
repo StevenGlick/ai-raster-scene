@@ -36,6 +36,17 @@ def coast_road():
         {'type': ['palm', 'palm_lean'], 'every': 7, 'offset': 1.0, 'scale': [3.0, 3.8], 'flip': True},
         {'type': 'billboard', 'every': 45, 'side': 'left', 'offset': 3.5, 'from': 25, 'scale': 2.6},
     ]
+    scatter = [                                     # the beach's flotsam, and tufts of dune grass by the road
+        {'of': 'beach', 'side': 'left', 'density': 0.22, 'offset': [0.4, 6.0], 'seed': 1},
+        {'of': 'beach', 'side': 'right', 'density': 0.12, 'offset': [1.0, 5.0], 'seed': 2},
+        {'of': ['dry_tuft', 'dry_tuft', 'grass_tuft'], 'density': 0.7, 'offset': [0.0, 1.4], 'seed': 3},
+    ]
+    decals = [                                      # sand blown over the kerbs, a worn road, a skid into the bend
+        {'tex': 'sand_drift', 'density': 0.05, 'offset': [-2.1, -1.2], 'size': [0.8, 1.6], 'seed': 1},
+        {'tex': 'sand_drift', 'density': 0.05, 'offset': [1.2, 2.1], 'size': [0.8, 1.6], 'seed': 2},
+        {'tex': 'wear', 'density': 0.03, 'size': [0.5, 1.0], 'opacity': 0.8, 'seed': 3},
+        {'tex': 'tyre_marks', 'at': 9.5, 'x': 0.5, 'size': 0.55, 'opacity': 0.8},
+    ]
     sprites = [
         {'type': 'car_compact', 'at': 15, 'x': -LANE},
         {'type': 'car_sedan', 'at': 31, 'x': LANE},
@@ -54,6 +65,8 @@ def coast_road():
         ambient=[0.74, 0.66, 0.64],
         fog={'color': [0.92, 0.66, 0.5], 'density': 0.0035},
         roadside=roadside,
+        scatter=scatter,
+        decals=decals,
         sprites=sprites,
         camera={'at': 2.0, 'x': 0.0, 'height': 0.75, 'fov': 64, 'pitch': 0.1},
         shots=[

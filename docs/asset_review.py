@@ -214,7 +214,11 @@ def usage():
                     found += [('Scatter sets', 'wreckage')] + [_sprite(n) for n in assets.DEBRIS_SETS['wreckage']]
                 if part.get('grime_decals', True):
                     found += [('Decals', d) for d in assets.GRIME_WALL_DECALS + assets.GRIME_FLOOR_DECALS]
-            found += [('Decals', d.get('tex')) for d in part.get('decals') or []]
+            for d in part.get('decals') or []:            # a road scene's row names a list, or a set of marks
+                import road
+                tex = d.get('tex')
+                for t in tex if isinstance(tex, list) else [tex]:
+                    found += [('Decals', t2) for t2 in road.DECAL_SETS.get(t, [t])]
             if part.get('contact_shadows', 1) and (part.get('sprites') or part.get('scatter')
                                                    or part.get('roadside')):
                 found.append(('Decals', 'contact_shadow'))
