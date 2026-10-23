@@ -3647,7 +3647,7 @@ def city_block(pl):
     list, default a mix), `lit` the share of their windows lit; tall ones step back and carry masts. `seed` draws
     another. Set it at the middle of the cell."""
     rng = np.random.default_rng(int(pl.get('seed', 1)))
-    n, built = int(pl.get('count', 2)), float(pl.get('built', 1.0))
+    n, built = max(1, int(pl.get('count', 2))), float(pl.get('built', 1.0))
     lo, hi = (float(v) for v in pl.get('height', [0.08, 0.35]))
     styles = pl.get('style') or BLOCK_STYLES
     styles = [styles] if isinstance(styles, str) else list(styles)
@@ -4069,7 +4069,8 @@ def mountain(pl):
     N = 18
     ang = (np.arange(N) + rng.uniform(-0.25, 0.25, N)) * 2 * np.pi / N
     spurs = rng.uniform(0, 2 * np.pi, int(pl.get('ridges', 4)))
-    near = np.min(np.abs((ang[:, None] - spurs[None, :] + np.pi) % (2 * np.pi) - np.pi), axis=1)
+    near = (np.min(np.abs((ang[:, None] - spurs[None, :] + np.pi) % (2 * np.pi) - np.pi), axis=1) if len(spurs)
+            else np.full(N, np.inf))                                   # no spurs: a smooth mountain
     ridge = np.exp(-(near / 0.35) ** 2)                                # 1 along a spur, 0 in the gullies
     top = np.array([*(rng.uniform(-0.3, 0.3, 2) * R), H])
     stretch = float(pl.get('length', 2 * R)) / (2 * R)

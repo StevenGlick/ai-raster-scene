@@ -1706,6 +1706,7 @@ def check_objects():
     lamps = build(type='village', count=6, seed=2, lit=0.8, snow=True)
     assert max(pn['em'].max() for pn in lamps['panels']) > 0.9, 'a village with its lamps lit'
     mesa = mountain(top=0.5, rock='sandstone', snowline=0)
+    assert mountain(ridges=0)['panels'] and build(type='city_block', count=0)['panels'], 'no spurs; no plots asked'
     zc = np.array([c for pn in mesa['panels'] for c in (pn['o'], pn['o'] + pn['u'], pn['o'] + pn['v'])])[:, 2]
     assert abs(zc.max() - 2.5) < 1e-6 and (np.abs(zc - 2.5) < 1e-6).sum() >= 18, 'a mesa cut flat at its top'
     vz, hz = ends(build(type='village', count=8, seed=2)), ends(build(type='village', count=8, seed=2, church=False))
