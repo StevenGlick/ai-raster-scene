@@ -522,6 +522,42 @@ dusk) drifting below you; a `sunset` sky, the sun low; your own `dragon_neck` as
 (`scale` about a third of its `ahead`, its `z` setting the head just under the horizon). See
 `examples/dragon_flight.py`.
 
+### An overgrown highway
+
+A motorway years after everyone left: `asphalt` tinted pale, its `lines` a dull colour; the years in decals -
+`crack`s thick on it, `pothole`s, `moss_patch`es, `vines` creeping in; weeds up through the road (`scatter` of
+`overgrown`, `side` `road`, `clump` 0.8, `scale` 0.7) and `undergrowth` on the verges; the guard rails `guard_rail`
+tinted rust. Trees crowd in (keep them a little back, or they hide the way ahead), a birch grows up through the
+road; `wrecked_car`s where they stopped, a doe and her fawn on the asphalt, the `broken_overpass` across the way, a
+`city` skyline unlit in the haze, a `golden` sky. See `examples/overgrown_highway.py`.
+
+### A water taxi in the neon city
+
+The neon avenue's street with the street turned to water: the canal is the road (`water` tinted violet, `ripple`
+0.5), a ledge of wet `concrete_floor` either side (`reflect` 0.18), then the same walls - `shopfront`s in `blocks` at
+the water's edge, `tower_windows` over them, taller towers behind - and coloured lamps along both sides. Signs hung
+out over the water, `lantern_span`s (start them some way off, or the nearest fill the sky) and `wires_span`s across
+it, a `holo_ad`, another boat ahead with a `light`, `hover_car`s overhead; the water mirrors it all. Your
+`water_taxi` as the shot's `vehicle` (`ahead` 1.25, `z` -0.1, `scale` 0.5 - nearer and lower it falls out of the
+view); bloom from the lights, and `rain`. See `examples/neon_canal.py`.
+
+### A river of lanterns
+
+A wide river (`width` 6, `water` tinted night blue) between grass banks; `floating_lantern`s scattered over the water
+(a `roadside` row with `side` middle, `density` 3, `offset` across its width), every third or so carrying a warm
+`light` so the water glows round them; `sky_lantern`s rising over the river and the banks at every height (`z`
+spread, `scale` 0.35-0.6: smaller they are specks); `cherry_tree`s along both banks, a `torii` standing in the water
+ahead with a light at its foot; a dark `mountains` skyline, the moon. Your `boat_bow` and its lantern; `bloom` 1.0.
+See `examples/lantern_river.py`.
+
+### Launch day
+
+A straight causeway across a lagoon at dusk: `asphalt` with its lines, `ground` bands of a grass shoulder and then
+`water` tinted to the dusk; reeds and a few palms along it. The `rocket_pad` at the road's end, a little off to the
+side so the road leads to it (`scale` 34 at 150 - smaller it is lost on the horizon), `fullbright` as if the
+floodlights were on it; cars pulled over on the shoulder and people by them (`crowd`); your convertible from behind
+with its `headlights`, a `dusk` sky. See `examples/launch_day.py`.
+
 ### A highway at night, and a tunnel
 
 Edge lines, a `gravel` shoulder, concrete beyond; `lamp_post`s every 9 down both sides, each with a sodium `light` hung out over the road (radius 6.5, intensity 1.5), so the road lies in pools of orange; cars ahead `tint`ed dark - a tint darkens a car, not its tail lights, which glow. Where it bends into a hill a `tunnel_portal` stands across it, `tunnel_ring`s every 1.2 down the `middle` carry the tunnel on, `roofs` cover that stretch, and lights every 4 at 2.8 along its roof; your car's `headlights` on. From inside, the rings make the tube and their lamps a line down its roof, the city at the far end. See `examples/night_highway.py`.

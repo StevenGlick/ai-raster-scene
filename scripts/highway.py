@@ -3702,10 +3702,206 @@ def spr_dragon():
     return _dragon(0)
 
 
+# ------------------------------------------------------------------ the overgrown highway
+
+WRECK_PAINT = [ramp('#8a5a48', dark=0.45, light=1.3, warm=0.04), ramp('#5a7486', dark=0.45, light=1.3),
+               ramp('#b8b090', dark=0.45, light=1.2)]
+WRECK_RUST = ramp('#7a3a1c', dark=0.4, light=1.5, warm=0.06)
+WRECK_MOSS = ramp('#4a6a2a', dark=0.4, light=1.5)
+OVERPASS_CONCRETE = ramp('#9a968c', dark=0.45, light=1.3)
+
+
+def _rust(cv, mat, into, amount, seed):
+    """Patches of rust eating into everything drawn in `mat`: `amount` of it, in blotches."""
+    rng = np.random.default_rng(seed)
+    n = np.asarray(Image.fromarray((rng.random((cv.h // 3 + 2, cv.w // 3 + 2)) * 255).astype(np.uint8)).resize(
+        (cv.w, cv.h), Image.BICUBIC), np.float32) / 255
+    m = (cv.id > 0) & (cv.mat == mat) & (n > 1 - amount)
+    cv.mat[m] = into
+
+
+def _wrecked_car(k):
+    w, h = 52, 44
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    for x, top in ((2, 35), (40, 34)):
+        cv.box(x, top, 10, 44 - top, z=0.6, top=0.4, bevel=2.0, mat=3)                    # flat tyres
+    cv.polygon([(10, 7), (42, 6), (46, 17), (6, 18)], z=1.0, top=0.8, bevel=1.4, mat=0)       # the roof, sagging
+    cv.polygon([(11, 9), (41, 8), (44, 17), (8, 18)], z=1.3, top=0.3, bevel=0.8, mat=4)       # the rear window
+    cv.polygon([(18, 10), (30, 9), (34, 14), (27, 17), (20, 16), (16, 13)], z=1.2, top=0.1, bevel=0.4, mat=4,
+               tone=-0.45)                                                                     # smashed through
+    for a, b in [((30, 9), (36, 17)), ((18, 10), (12, 17)), ((34, 14), (42, 12))]:
+        cv.stroke([a, b], 0.6, z=1.4, dome=0.2, mat=4, tone=0.3)                              # the cracks
+    cv.polygon([(3, 18), (49, 17), (49, 23), (3, 24)], z=1.4, top=0.9, bevel=1.6, mat=0, tone=0.06)  # the trunk
+    cv.polygon([(3, 23), (49, 22), (49, 34), (3, 36)], z=1.3, top=0.5, bevel=2.2, mat=0)      # its back
+    cv.box(5, 25, 11, 4.5, z=1.7, top=0.2, bevel=0.5, mat=1)                                  # tail lights, dead
+    cv.polygon([(36, 24), (47, 24), (46, 28), (38, 29)], z=1.5, top=0.2, bevel=0.5, mat=1, tone=-0.2)
+    cv.polygon([(3, 33), (30, 34), (49, 38), (49, 41), (28, 38), (3, 37)], z=1.6, top=0.4, bevel=1.0, mat=5)  # bumper
+    _rust(cv, 0, 6, 0.42 + 0.06 * k, 30 + k)
+    cv.ellipse(20, 8, 8, 2.6, z=1.6, dome=0.6, rough=0.5, rng=np.random.default_rng(3 + k), mat=7)   # moss
+    cv.ellipse(36, 7, 5, 2.0, z=1.6, dome=0.6, rough=0.5, rng=np.random.default_rng(4 + k), mat=7)
+    rng = np.random.default_rng(10 + k)
+    for x0 in (8, 24, 40):                                                          # a vine down its back
+        pts = [(x0 + rng.uniform(-2, 2), 8 + i * 4) for i in range(int(rng.integers(3, 7)))]
+        cv.stroke(pts, 1.2, z=1.9, dome=0.4, taper=(1.0, 0.5), mat=7)
+    for i in range(16):                                                             # weeds round its wheels
+        x = rng.uniform(0, w)
+        hgt = rng.uniform(5, 12)
+        cv.stroke([(x, 44), (x + rng.uniform(-3, 3), 44 - hgt)], 1.2, z=2.0, dome=0.4, taper=(1.0, 0.2), mat=7,
+                  tone=float(rng.uniform(-0.15, 0.15)))
+    return _prop(cv, [WRECK_PAINT[k], ramp('#5a1c16', dark=0.5, light=1.5), PLATE, TYRE, GLASS, WRECK_RUST,
+                      WRECK_RUST, WRECK_MOSS],
+                 relief=1.0, cavity=0.45, shadow=0.45)
+
+
+def spr_wrecked_car():
+    """A car left on the road years ago, from behind: rusted through in patches, its tyres flat, the back window
+    smashed, the tail lights dead and the bumper hanging; moss on the roof, a vine down its back, weeds round its
+    wheels. Faded red, or `variant` 1 blue, 2 cream."""
+    return _wrecked_car(0)
+
+
+def spr_broken_overpass():
+    """A motorway overpass broken in the middle, over the road ahead: its deck on two concrete piers, snapped with
+    the rebar sticking out of both ends, one half sagging; a slab hangs by its bars, vines hang from the deck and
+    climb the piers, a green sign hangs askew, rubble lies under the gap. Stand it across the road."""
+    w, h = 200, 96
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    rng = np.random.default_rng(7)
+    for x in (18, 160):                                                             # the piers
+        cv.box(x, 28, 22, 68, z=1.0, top=0.6, bevel=2.0, mat=0)
+        cv.box(x - 6, 24, 34, 7, z=1.3, top=0.6, bevel=1.2, mat=0, tone=0.08)
+    cv.polygon([(0, 8), (90, 8), (96, 13), (91, 19), (95, 26), (0, 26)], z=1.5, top=0.8, bevel=1.4, mat=0)  # deck
+    cv.polygon([(108, 13), (200, 7), (200, 25), (106, 32), (102, 26), (107, 20)], z=1.5, top=0.8, bevel=1.4,
+               mat=0)                                                               # the other half, sagging
+    cv.box(0, 2, 90, 7, z=1.8, top=0.6, bevel=1.0, mat=0, tone=0.1)                 # the parapets
+    cv.polygon([(110, 8), (200, 1), (200, 8), (110, 14)], z=1.8, top=0.6, bevel=1.0, mat=0, tone=0.1)
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    under = (cv.id > 0) & (yy > 20) & (yy < 33) & ((xx < 100) | (xx > 100))
+    cv.tone[under] -= 0.22                                                          # the deck's shaded underside
+    cv.polygon([(82, 27), (93, 27), (91, 42), (80, 40)], z=1.4, top=0.5, bevel=1.0, mat=0)   # a slab hanging
+    for a, b in [((95, 11), (102, 8)), ((93, 17), (101, 20)), ((94, 23), (99, 30)), ((107, 17), (100, 14)),
+                 ((104, 25), (98, 29)), ((85, 26), (84, 29)), ((89, 26), (90, 29))]:
+        cv.stroke([a, b], 0.9, z=2.0, dome=0.3, mat=1)                              # rebar
+    cv.polygon([(46, 13), (76, 15), (75, 29), (45, 27)], z=2.0, top=0.4, bevel=0.8, mat=3)   # the sign, askew
+    for y in (18, 22):
+        cv.stroke([(50, y), (68, y + 1.2)], 1.2, z=2.2, dome=0.2, mat=4)
+    cv.stroke([(56, 9), (56, 14)], 0.8, z=2.1, dome=0.3, mat=1)
+    cv.stroke([(68, 9), (68, 15)], 0.8, z=2.1, dome=0.3, mat=1)
+    for x in list(rng.uniform(4, 88, 9)) + list(rng.uniform(112, 196, 8)):          # vines from the deck
+        y0 = 26 if x < 100 else 26 + (x - 106) * -0.07 + 6
+        pts = [(x + np.sin(i * 1.3 + x) * 1.2, y0 + i * 3) for i in range(int(rng.integers(3, 9)))]
+        cv.stroke(pts, 1.4, z=2.3, dome=0.4, taper=(1.0, 0.4), mat=2)
+    for x in (18, 160):                                                             # ivy up the piers
+        for i in range(10):
+            cv.ellipse(x + rng.uniform(0, 22), rng.uniform(50, 94), rng.uniform(2, 4), rng.uniform(2, 3.5), z=1.6,
+                       dome=0.5, rough=0.4, rng=rng, mat=2, tone=float(rng.uniform(-0.1, 0.1)))
+    for i in range(14):                                                             # rubble under the gap
+        cv.polygon([(p[0] + 100 + rng.uniform(-26, 26), p[1] + rng.uniform(84, 92)) for p in
+                    [(-4, 4), (3, 3), (5, -2), (-2, -4)]], z=1.2, top=0.5, bevel=0.8, mat=0,
+                   tone=float(rng.uniform(-0.15, 0.1)))
+    return _prop(cv, [OVERPASS_CONCRETE, WRECK_RUST, WRECK_MOSS, ramp('#2a6a3a', dark=0.4, light=1.4),
+                      ramp('#e8e8e0', dark=0.5, light=1.1)], relief=1.0, cavity=0.45, shadow=0.4)
+
+
+# ------------------------------------------------------------------ the neon canal
+
+def spr_water_taxi():
+    """The bow of your water taxi, from its seat: a sleek hull in taxi yellow running forward to a point, a band of
+    black and white checks down its middle, dark trim along its edges with a strip of cyan light inside each, the
+    fare's little glowing display by your hand, a lamp at the bow - the strips, the display and the lamp glow. A
+    shot's `vehicle` for the neon city's canals, set as the `boat_bow` is."""
+    w, h = 64, 40
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(2, 39), (62, 39), (35, 6), (29, 6)], z=0.8, top=0.6, bevel=2.4, mat=0)          # the hull
+    for k in range(10):                                                             # the checks down its middle
+        y0 = 39 - k * 3.3
+        hw = 4.2 - k * 0.3
+        for j, (a, b) in enumerate(((32 - hw, 32), (32, 32 + hw))):
+            cv.polygon([(a, y0), (b, y0), (b, y0 - 3.3), (a, y0 - 3.3)], z=1.3, top=0.1, bevel=0.2,
+                       mat=1 if (k + j) % 2 else 4)
+    cv.stroke([(1, 39), (29, 5.5)], 3.0, z=1.6, dome=0.7, taper=(1.0, 0.5), mat=2)  # the trim
+    cv.stroke([(63, 39), (35, 5.5)], 3.0, z=1.6, dome=0.7, taper=(1.0, 0.5), mat=2)
+    cv.stroke([(5, 39), (30.2, 8)], 1.1, z=1.5, dome=0.3, mat=3)                    # its strips of light
+    cv.stroke([(59, 39), (33.8, 8)], 1.1, z=1.5, dome=0.3, mat=3)
+    cv.box(6, 26, 10, 7, z=1.8, top=0.5, bevel=0.8, mat=5)                          # the fare display
+    cv.box(7.2, 27.2, 7.6, 4.6, z=2.0, top=0.1, bevel=0.3, mat=3)
+    cv.box(29.6, 2, 4.8, 4, z=1.9, top=0.5, bevel=0.6, mat=6)                       # the bow lamp
+    rgba, _ = _prop(cv, [TAXI, ramp('#1a1a1e', dark=0.6, light=2.2), ramp('#34343e', dark=0.5, light=1.9), NEON_C,
+                         ramp('#e8e8e4', dark=0.5, light=1.15), ramp('#22222a', dark=0.5, light=2.0),
+                         ramp('#fff4d8', dark=0.8, light=1.05)], relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [3, 6])
+
+
+# ------------------------------------------------------------------ the lantern river
+
+def spr_floating_lantern():
+    """A paper lantern set floating on a river at night: a small square shade of warm paper on a wooden float, its
+    thin frame dark at the corners, the candle inside lighting it - the paper glows. Scatter them on the water (`z`
+    0, a `light` on a few), the water doubles them."""
+    w, h = 24, 24
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.polygon([(1, 19), (23, 19), (21, 24), (3, 24)], z=0.8, top=0.5, bevel=1.0, mat=0)        # the float
+    cv.polygon([(5, 4), (19, 4), (20, 19), (4, 19)], z=1.2, top=0.3, bevel=0.8, mat=1)          # the paper shade
+    yy, xx = np.mgrid[0:h, 0:w] + 0.5
+    paper = (cv.id > 0) & (cv.mat == 1)
+    cv.tone[paper] = (0.1 * np.exp(-((xx - 12) ** 2 + (yy - 14) ** 2) / 30) - 0.04 * (yy < 7))[paper]
+    for x0, x1 in ((5, 4), (19, 20), (12, 12)):
+        cv.stroke([(x0, 4), (x1, 19)], 0.9, z=1.5, dome=0.3, mat=2)                 # the frame
+    cv.stroke([(5, 4), (19, 4)], 1.0, z=1.5, dome=0.3, mat=2)
+    cv.stroke([(4.5, 11.5), (19.5, 11.5)], 0.7, z=1.5, dome=0.3, mat=2)
+    rgba, _ = _prop(cv, [ramp('#5a3a22', dark=0.45, light=1.6), ramp('#ffe2a8', dark=0.75, light=1.08, warm=0.04),
+                         ramp('#3a2a1c', dark=0.5, light=1.8)], relief=1.0, cavity=0.3, shadow=0.4)
+    em = _tail_em(cv, [1]) * 0.9
+    return rgba, em
+
+
+# ------------------------------------------------------------------ launch day
+
+def spr_rocket_pad():
+    """A rocket on its launch pad, ready: the tall white rocket with two boosters strapped to it and black bands
+    round it, fins at its foot, the steel service tower beside it with its arms reaching across, lights up the tower
+    (they glow), vapour venting white round its base, the concrete pad and its flame trench. Far off at a road's
+    end, `scale` 20 or more."""
+    w, h = 96, 160
+    cv = Canvas(w, h, wrap=False, ground=-9)
+    cv.box(0, 146, 96, 14, z=0.8, top=0.5, bevel=1.4, mat=4)                        # the pad
+    cv.box(34, 150, 30, 10, z=0.9, top=0.2, bevel=0.6, mat=4, tone=-0.5)            # the flame trench
+    for x in (8, 26):                                                               # the service tower
+        cv.box(x, 12, 4, 136, z=1.0, top=0.5, bevel=0.8, mat=1)
+    for y in range(16, 146, 10):
+        cv.stroke([(9, y), (29, y + 10)], 1.2, z=1.1, dome=0.3, mat=1)
+        cv.stroke([(29, y), (9, y + 10)], 1.2, z=1.1, dome=0.3, mat=1)
+        cv.stroke([(8, y), (30, y)], 1.4, z=1.2, dome=0.3, mat=1)
+    for y in (40, 92):                                                              # its arms across
+        cv.box(30, y, 16, 4, z=1.3, top=0.4, bevel=0.6, mat=1)
+    cv.box(6, 6, 28, 8, z=1.3, top=0.4, bevel=0.6, mat=1)                           # the crane on top
+    for x, y0 in ((36, 74), (62, 74)):                                              # the boosters
+        cv.box(x, y0, 9, 70, z=1.5, top=0.8, bevel=3.0, mat=0)
+        cv.polygon([(x, y0), (x + 9, y0), (x + 4.5, y0 - 12)], z=1.6, top=0.6, bevel=1.4, mat=0)
+    cv.box(44, 24, 17, 120, z=1.8, top=1.0, bevel=5.0, mat=0)                       # the rocket
+    cv.polygon([(44, 25), (61, 25), (56, 8), (52.5, 2), (49, 8)], z=1.9, top=0.8, bevel=3.0, mat=0)     # its nose
+    for y in (30, 64, 108):
+        cv.box(44, y, 17, 4, z=1.85, top=0.6, bevel=1.4, mat=2)                     # black bands
+    for x0, x1 in ((44, 39), (61, 66)):
+        cv.polygon([(x0, 128), (x0, 144), (x1, 146), (x1, 138)], z=1.9, top=0.5, bevel=0.8, mat=2)   # fins
+    rng = np.random.default_rng(5)
+    for i in range(14):                                                             # vapour round its foot
+        cv.ellipse(52 + rng.uniform(-30, 30), 146 + rng.uniform(-8, 4), rng.uniform(5, 10), rng.uniform(3, 6),
+                   z=2.2, dome=0.8, mat=3, tone=float(rng.uniform(-0.08, 0.08)))
+    for x, y in ((10, 30), (28, 52), (10, 78), (28, 104), (10, 128), (20, 8)):      # lights up the tower
+        cv.box(x - 1, y - 1, 3, 3, z=1.6, top=0.2, bevel=0.3, mat=5)
+    rgba, _ = _prop(cv, [ramp('#ecebe6', dark=0.5, light=1.12), ramp('#b8482a', dark=0.4, light=1.5),
+                         ramp('#22222a', dark=0.5, light=2.0), ramp('#e4e6ea', dark=0.7, light=1.08),
+                         ramp('#8a8880', dark=0.45, light=1.3), ramp('#fff0c8', dark=0.8, light=1.05)],
+                    relief=1.0, cavity=0.4, shadow=0.4)
+    return rgba, _tail_em(cv, [5])
+
+
 DEBRIS_SETS = {                       # for a road scene's `scatter`: what lies along a verge
     'verge': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'flowers', 'rocks', 'bush'],
     'alpine': ['rocks', 'rocks', 'rocks', 'boulder', 'grass_tuft', 'grass_tuft', 'flowers'],
     'street': ['trash_bag', 'trash_bag', 'trash', 'trash', 'old_tyre', 'traffic_cone'],
+    'overgrown': ['grass_tuft', 'grass_tuft', 'grass_tuft', 'dry_tuft', 'dry_tuft', 'fern', 'flowers'],   # through it
 }
 DECALS = {'oil_stain': dec_oil_stain, 'tyre_marks': dec_tyre_marks, 'road_patch': dec_road_patch,
           'pothole': dec_pothole, 'leaf_litter': dec_leaf_litter, 'manhole': dec_manhole,
@@ -3750,7 +3946,7 @@ TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront':
 VARIANTS = {'traffic_light': (3, _traffic_light), 'car_compact': (4, _car_compact), 'car_sedan': (4, _car_sedan),
             'billboard': (3, _billboard), 'race_car': (4, _race_car), 'car_oncoming': (4, _car_oncoming),
             'mooring_pole': (3, _mooring_pole), 'slalom_gate': (2, _slalom_gate), 'gumdrop': (4, _gumdrop),
-            'signal_light': (2, _signal_light), 'dragon': (3, _dragon)}
+            'signal_light': (2, _signal_light), 'dragon': (3, _dragon), 'wrecked_car': (3, _wrecked_car)}
 
 SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_sedan': spr_car_sedan,
            'box_truck': spr_box_truck, 'curve_sign': spr_curve_sign, 'billboard': spr_billboard,
@@ -3786,7 +3982,10 @@ SPRITES = {'sports_car': spr_sports_car, 'car_compact': spr_car_compact, 'car_se
            'log_boat': spr_log_boat, 'prayer_flags': spr_prayer_flags, 'stupa': spr_stupa,
            'basket_rim': spr_basket_rim, 'tractor': spr_tractor, 'hay_wagon': spr_hay_wagon,
            'sleigh_horse': spr_sleigh_horse, 'christmas_tree': spr_christmas_tree, 'tram': spr_tram,
-           'dragon_neck': spr_dragon_neck, 'dragon': spr_dragon}
+           'dragon_neck': spr_dragon_neck, 'dragon': spr_dragon,
+           'wrecked_car': spr_wrecked_car, 'broken_overpass': spr_broken_overpass,
+           'water_taxi': spr_water_taxi, 'floating_lantern': spr_floating_lantern,
+           'rocket_pad': spr_rocket_pad}
 SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'box_truck': 1.05, 'curve_sign': 0.95,
                  'billboard': 2.6, 'checkpoint': 2.6, 'traffic_cone': 0.24, 'tunnel_ring': 3.6,
                  'tunnel_portal': 5.775, 'trash_bag': 0.16, 'old_tyre': 0.22, 'trash': 0.05,
@@ -3810,7 +4009,8 @@ SPRITE_HEIGHT = {'sports_car': 0.42, 'car_compact': 0.44, 'car_sedan': 0.48, 'bo
                  'lighthouse_beam': 1.6, 'erupting_volcano': 25.0, 'signal_light': 0.5,
                  'metro_cab': 1.0, 'log_boat': 0.4, 'prayer_flags': 0.4, 'stupa': 2.4, 'basket_rim': 0.4, 'tractor': 0.75,
                  'hay_wagon': 0.4, 'sleigh_horse': 0.5, 'christmas_tree': 1.6, 'tram': 0.8,
-                 'dragon_neck': 0.24, 'dragon': 3.0}
+                 'dragon_neck': 0.24, 'dragon': 3.0, 'wrecked_car': 0.46, 'broken_overpass': 4.0,
+                 'water_taxi': 0.42, 'floating_lantern': 0.22, 'rocket_pad': 20.0}
 PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}, 'tunnel_ring': {'shadow': False},
                  'tunnel_portal': {'shadow': False}, 'sign_gantry': {'shadow': False},
                  'start_lights': {'shadow': False}, 'dust_cloud': {'shadow': False, 'opacity': 0.75},
@@ -3836,4 +4036,8 @@ PROP_DEFAULTS = {'checkpoint': {'shadow': False}, 'billboard': {'shadow': False}
                  'signal_light': {'shadow': False}, 'metro_cab': {'shadow': False},
                  'log_boat': {'shadow': False}, 'prayer_flags': {'shadow': False, 'planes': 1},
                  'basket_rim': {'shadow': False}, 'hay_wagon': {'shadow': False}, 'sleigh_horse': {'shadow': False},
-                 'dragon_neck': {'shadow': False}, 'dragon': {'shadow': False, 'planes': 1}}
+                 'dragon_neck': {'shadow': False}, 'dragon': {'shadow': False, 'planes': 1},
+                 'broken_overpass': {'shadow': False, 'planes': 1}, 'water_taxi': {'shadow': False},
+                 'floating_lantern': {'shadow': False, 'aura': {'color': [1.0, 0.72, 0.36], 'strength': 0.5,
+                                                                  'radius': 0.3}},
+                 'rocket_pad': {'shadow': False, 'planes': 1}}

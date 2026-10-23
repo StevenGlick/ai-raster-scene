@@ -1,0 +1,191 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    30,
+    0,
+    0
+   ],
+   [
+    60,
+    0.05,
+    0
+   ],
+   [
+    300,
+    -0.02,
+    0
+   ]
+  ],
+  "width": 2.4,
+  "lanes": 2,
+  "surface": "asphalt",
+  "lines": "#e8e8e8",
+  "rumble": false,
+  "bands": 0.02,
+  "ground": [
+   {
+    "width": 0.6,
+    "texture": "grass"
+   },
+   {
+    "texture": {
+     "base": "water",
+     "tint": [
+      0.62,
+      0.52,
+      0.62
+     ]
+    }
+   }
+  ],
+  "distance": 260
+ },
+ "camera": {
+  "at": 2.0,
+  "x": -0.55,
+  "height": 0.75,
+  "fov": 64,
+  "pitch": 0.1
+ },
+ "title": "Launch day - driving the causeway at dusk toward the rocket floodlit on its pad, people out to watch",
+ "sky": "dusk",
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 250,
+   "elevation": 2,
+   "intensity": 0.5,
+   "color": [
+    1.0,
+    0.7,
+    0.5
+   ],
+   "disc": false
+  }
+ ],
+ "ambient": [
+  0.42,
+  0.38,
+  0.48
+ ],
+ "fog": {
+  "color": [
+   0.5,
+   0.42,
+   0.5
+  ],
+  "density": 0.004,
+  "sky_mix": 0.25
+ },
+ "roadside": [
+  {
+   "type": "reeds",
+   "density": 0.5,
+   "offset": [
+    0.2,
+    1.0
+   ],
+   "scale": [
+    0.3,
+    0.5
+   ],
+   "seed": 1
+  },
+  {
+   "type": [
+    "palm",
+    "palm_lean"
+   ],
+   "density": 0.04,
+   "offset": [
+    0.3,
+    0.6
+   ],
+   "scale": [
+    1.8,
+    2.4
+   ],
+   "seed": 2
+  }
+ ],
+ "sprites": [
+  {
+   "type": "rocket_pad",
+   "at": 150,
+   "x": 6.0,
+   "scale": 34,
+   "fullbright": true
+  },
+  {
+   "type": "car_sedan",
+   "at": 9,
+   "x": 1.65,
+   "variant": 1
+  },
+  {
+   "type": "car_compact",
+   "at": 15,
+   "x": 1.7,
+   "variant": 3
+  },
+  {
+   "type": "car_sedan",
+   "at": 24,
+   "x": 1.7,
+   "variant": 2
+  },
+  {
+   "type": "crowd",
+   "at": 10.5,
+   "x": 1.9,
+   "scale": 0.6
+  },
+  {
+   "type": "crowd",
+   "at": 11.2,
+   "x": 2.2,
+   "scale": 0.6,
+   "flip": true
+  },
+  {
+   "type": "crowd",
+   "at": 16.6,
+   "x": 2.0,
+   "scale": 0.6
+  },
+  {
+   "type": "crowd",
+   "at": 26,
+   "x": 2.1,
+   "scale": 0.6
+  }
+ ],
+ "shots": [
+  {
+   "at": 2.0,
+   "x": -0.55,
+   "height": 0.75,
+   "fov": 64,
+   "pitch": 0.1,
+   "post": [
+    {
+     "fx": "bloom",
+     "strength": 0.7,
+     "radius": 2.2
+    }
+   ],
+   "vehicle": {
+    "type": "sports_car",
+    "ahead": 2.6,
+    "headlights": true
+   }
+  }
+ ],
+ "supersample": 2
+}
