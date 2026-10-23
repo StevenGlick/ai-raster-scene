@@ -698,8 +698,8 @@ foot. See `examples/brass_city.py`.
 
 ### A winter market at night
 
-The market ride's street turned to a snowy night: `cobble` tinted cold, `snow` either side, the `timber_house`
-walls in `blocks`; the stalls with warm `light`s of their own (a roadside row's `light` lights every one), gaslit
+The market ride's street turned to a snowy night: `cobble` tinted cold, `snow` either side, the houses
+`timber_house_night` - their windows lit - in `blocks`; the stalls with warm `light`s of their own (a roadside row's `light` lights every one), gaslit
 `lamp_post`s; the townspeople; the `christmas_tree` in the square ahead with a light at its foot; the `castle_hill`
 tinted to the night; `snow` falling and bloom from the lights. See `examples/winter_market.py`.
 

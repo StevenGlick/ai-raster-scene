@@ -74,9 +74,9 @@
     "blocks": 2.0,
     "seed": 3,
     "texture": [
-     "timber_house",
-     "timber_house_b",
-     "timber_house_c"
+     "timber_house_night",
+     "timber_house_night_b",
+     "timber_house_night_c"
     ]
    }
   ],

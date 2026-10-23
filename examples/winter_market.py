@@ -2,10 +2,10 @@
 in the snow, the half-timbered houses' windows lit, market stalls glowing along both sides, people out among them,
 the town's great fir dressed with lights in the square ahead, the castle lit on its hill.
 
-The market ride's street at night: `cobble` under `snow` drifts, the `timber_house` walls in `blocks`; the stalls
-(`market_stall`, `fruit_stall`) with warm `light`s, `lamp_post`s; the townspeople (`villager`, `child`, `farmer`,
-`monk`); the `christmas_tree` in the square (its lights glow); the `castle_hill` far off, `fullbright` with its own
-lights in the dark; snow falling, a `night` sky.
+The market ride's street at night: `cobble` under `snow` drifts, the houses `timber_house_night` (their windows
+lit) in `blocks`; the stalls (`market_stall`, `fruit_stall`) with warm `light`s, `lamp_post`s; the townspeople
+(`villager`, `child`, `farmer`, `monk`); the `christmas_tree` in the square (its lights glow); the `castle_hill` far
+off, tinted to the night; snow falling, a `night` sky.
 Run:  python winter_market.py  -> writes winter_market.json next to this file.
 """
 import os
@@ -27,7 +27,7 @@ def winter_market():
         'bands': 0.0,
         'ground': [{'width': WALK, 'texture': SNOWY}, {'texture': SNOWY}],
         'walls': [{'side': 'both', 'offset': WALK, 'height': 2.6, 'tile': [2.0, 2.6], 'blocks': 2.0, 'seed': 3,
-                   'texture': ['timber_house', 'timber_house_b', 'timber_house_c']}],
+                   'texture': ['timber_house_night', 'timber_house_night_b', 'timber_house_night_c']}],
         'distance': 120,
     }
     roadside = [

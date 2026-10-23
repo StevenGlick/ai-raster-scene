@@ -3979,11 +3979,11 @@ def spr_island_falls():
 
 # ------------------------------------------------------------------ the market ride
 
-def tex_timber_house(name, plaster=(0.9, 0.86, 0.74)):
+def tex_timber_house(name, plaster=(0.9, 0.86, 0.74), lit=False):
     """A half-timbered house's face for a medieval street, gable and all, for walls in `blocks` one tile wide and
     one tall: plaster (`plaster`) between dark oak posts, beams and braces, leaded windows - a box of flowers under
     one - a plank door; the gable at the top against the sky (see-through round it), its king post and its little
-    window. The gables make the street's skyline."""
+    window. The gables make the street's skyline. `lit`: at night, most of its windows lit warm (they glow)."""
     rng = _rng(name)
     yy, xx = np.mgrid[0:T, 0:T]
     p = np.array(plaster, np.float32)
@@ -4005,10 +4005,12 @@ def tex_timber_house(name, plaster=(0.9, 0.86, 0.74)):
         beam |= (yy >= 21) & (yy < 42) & (t >= 0) & (t <= 1) & (np.abs(yy - (21 + t * 20)) < 1.3) & (x0 == 44)
     rgb[beam] = oak[beam]
     glass = np.zeros((T, T), bool)
+    panes = []
     for x0, y0, wd, ht in ((7, 24, 11, 11), (25, 24, 13, 11), (46, 48, 11, 10), (6, 48, 11, 10), (29, 9, 5, 5)):
         win = (xx >= x0) & (xx < x0 + wd) & (yy >= y0) & (yy < y0 + ht)
         rim = win & ((xx == x0) | (xx == x0 + wd - 1) | (yy == y0) | (yy == y0 + ht - 1))
         glass |= win & ~rim
+        panes.append(win & ~rim)
         rgb[rim] = oak[rim] * 1.2
     lead = (((xx + yy) % 4) == 0) | (((xx - yy) % 4) == 0)
     rgb[glass] = np.where(lead[glass][:, None], [0.42, 0.42, 0.44], [0.14, 0.16, 0.22])
@@ -4019,7 +4021,17 @@ def tex_timber_house(name, plaster=(0.9, 0.86, 0.74)):
     door = (xx >= 26) & (xx < 38) & (yy >= 47)                                      # the door, in planks
     rgb[door] = np.array([0.36, 0.22, 0.12]) * (0.85 + 0.15 * ((xx[door] % 3) != 0))[:, None]
     rgb[door & (yy == 55) & (xx > 34)] = [0.2, 0.2, 0.22]
-    return np.clip(rgb, 0, 1), None, inside.astype(np.float32)
+    if not lit:
+        return np.clip(rgb, 0, 1), None, inside.astype(np.float32)
+    em = np.zeros((T, T), np.float32)
+    lamp = _rng(name + ' lamps')                                                    # which windows are lit
+    for pane in panes:
+        if lamp.random() < 0.8:
+            warm = pane & ~lead
+            rgb[warm] = [0.98, 0.76, 0.4]
+            rgb[pane & lead] = [0.34, 0.24, 0.16]
+            em[warm] = 0.9
+    return np.clip(rgb, 0, 1), em, inside.astype(np.float32)
 
 
 def spr_horse_neck():
@@ -4382,7 +4394,10 @@ TEXTURES.update({'tower_windows': lambda n: tex_tower_windows(n), 'tower_windows
                  'timber_house': lambda n: tex_timber_house(n),
                  'timber_house_b': lambda n: tex_timber_house(n, (0.88, 0.74, 0.5)),
                  'timber_house_c': lambda n: tex_timber_house(n, (0.9, 0.74, 0.7)),
-                 'lavender_field': lambda n: tex_lavender_field(n)})
+                 'lavender_field': lambda n: tex_lavender_field(n),
+                 'timber_house_night': lambda n: tex_timber_house(n, lit=True),
+                 'timber_house_night_b': lambda n: tex_timber_house(n, (0.88, 0.74, 0.5), lit=True),
+                 'timber_house_night_c': lambda n: tex_timber_house(n, (0.9, 0.74, 0.7), lit=True)})
 TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront': 0.4, 'shopfront_b': 0.4,
                       'shopfront_c': 0.4, 'coaster_track': 0.2, 'coaster_frame': 0.2, 'rail_track': 0.6,
                       'grandstand': 0.3, 'suspension_cables': 0.0, 'canal_house': 0.3, 'canal_house_b': 0.3,
@@ -4392,7 +4407,8 @@ TEXTURE_NOISE.update({'tower_windows': 0.4, 'tower_windows_b': 0.4, 'shopfront':
                       'wheat_field': 0.3, 'western_front': 0.4, 'western_front_b': 0.4, 'western_front_c': 0.4,
                       'tunnel_cables': 0.6, 'metro_tiles': 0.2, 'ruined_tower': 0.5, 'ruined_tower_b': 0.5,
                       'townhouse': 0.3, 'townhouse_b': 0.3, 'townhouse_c': 0.3,
-                      'timber_house': 0.3, 'timber_house_b': 0.3, 'timber_house_c': 0.3, 'lavender_field': 0.2})
+                      'timber_house': 0.3, 'timber_house_b': 0.3, 'timber_house_c': 0.3, 'lavender_field': 0.2,
+                      'timber_house_night': 0.3, 'timber_house_night_b': 0.3, 'timber_house_night_c': 0.3})
 VARIANTS = {'traffic_light': (3, _traffic_light), 'car_compact': (4, _car_compact), 'car_sedan': (4, _car_sedan),
             'billboard': (3, _billboard), 'race_car': (4, _race_car), 'car_oncoming': (4, _car_oncoming),
             'mooring_pole': (3, _mooring_pole), 'slalom_gate': (2, _slalom_gate), 'gumdrop': (4, _gumdrop),
