@@ -22,9 +22,9 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | | count | good | polish | rework | new |
 |---|---|---|---|---|---|
 | Textures | 239 | 239 | 0 | 0 | 0 |
-| Props | 326 | 326 | 0 | 0 | 0 |
+| Props | 335 | 335 | 0 | 0 | 0 |
 | Characters | 33 | 33 | 0 | 0 | 0 |
-| Decals | 27 | 27 | 0 | 0 | 0 |
+| Decals | 29 | 29 | 0 | 0 | 0 |
 | Skies | 14 | 14 | 0 | 0 | 0 |
 | Skylines | 6 | 6 | 0 | 0 | 0 |
 | Sky objects | 7 | 7 | 0 | 0 | 0 |
@@ -39,8 +39,8 @@ The smoke test fails while this file is out of date. Sheets show textures tiled 
 | GUI widgets | 18 | 18 | 0 | 0 | 0 |
 | Post presets | 20 | 20 | 0 | 0 | 0 |
 | Palettes | 9 | 9 | 0 | 0 | 0 |
-| Example scenes | 78 | 78 | 0 | 0 | 0 |
-| **all** | **904** | **904** | **0** | **0** | **0** |
+| Example scenes | 81 | 81 | 0 | 0 | 0 |
+| **all** | **918** | **918** | **0** | **0** | **0** |
 <!-- /summary -->
 
 ## Pass plan
@@ -81,18 +81,18 @@ New scenes:
 | `brick_dark` | good |  | clockwork_city, neon_bar, neon_rooftop, neon_street, night_market, rain_alley |  |
 | `brick_yellow` | good |  | - |  |
 | `stone` | good |  | claude_study, garden_encounter, gui_menus, hospital_garden, post_presets | Even block sizes; a few varied heights would help on long walls. |
-| `stone_dark` | good |  | cathedral_ruin, garden_encounter, gui_menus, gui_themes, gui_trade, haunted_house, hospital_garden, library_medium, mansion_library, post_presets, rainy_street |  |
+| `stone_dark` | good |  | cathedral_ruin, garden_encounter, gui_menus, gui_themes, gui_trade, haunted_house, hospital_garden, library_medium, mansion_library, post_presets, rainy_street, window_garden |  |
 | `stone_pale` | good |  | cathedral_ruin, chapel_graveyard, dream_world, garden_encounter, glass_chapel, gui_menus, hospital_garden, post_presets |  |
-| `castle` | good |  | castle_keep | Mortar grid is very regular; chip a few corners. |
+| `castle` | good |  | canal_tunnel, castle_keep | Mortar grid is very regular; chip a few corners. |
 | `moss_stone` | good |  | autumn_lane, coast_lighthouse |  |
 | `menhir` | good |  | - | Drawn with the toolkit in basics.py: one weathered stone face - broad swells, rain runnels, long cracks, lichen rosettes - moss at its foot. |
 | `menhir_top` | good |  | - | Drawn with the toolkit in basics.py: the upper courses of a standing stone: greyer, more lichen, no moss. |
 | `slime_brick` | good |  | sewer_tunnels |  |
-| `plaster` | good |  | rainy_street, village_green, village_hours | Redrawn with the toolkit in basics.py: smooth render mottled where patched, a hairline crack, faint streaks; no band, so it stacks storey on storey. |
+| `plaster` | good |  | rainy_street, village_green, village_hours, window_garden | Redrawn with the toolkit in basics.py: smooth render mottled where patched, a hairline crack, faint streaks; no band, so it stacks storey on storey. |
 | `plaster_white` | good |  | autumn_garden, garden_encounter, gui_menus, hospital_garden, post_presets | Redrawn with the toolkit in basics.py: the same render in white. |
 | `hospital_wall` | good |  | ghost_corridor, gui_hud, hospital_corridor |  |
 | `ivy` | good |  | rainy_street | Redrawn with the toolkit in basics.py: red brick with woody stems climbing and branching and clusters of dark leaves, the newest brighter. |
-| `concrete` | good |  | aquarium, bunker_lab, capsule_hotel, garden_encounter, gui_lantern, gui_menus, hospital_garden, neon_bar, neon_rooftop, post_presets, sewer_tunnels, tunnel_encounter, underground_waterway |  |
+| `concrete` | good |  | aquarium, bunker_lab, capsule_hotel, garden_encounter, gui_lantern, gui_menus, hospital_garden, neon_bar, neon_rooftop, post_presets, sewer_tunnels, tunnel_encounter, underground_waterway, window_garden |  |
 | `marble` | good |  | cathedral_ruin, chapel_graveyard, dream_chess, dream_world, glass_chapel, gui_themes, gui_trade, library_medium, mansion_library |  |
 | `marble_dark` | good |  | aquarium | Redrawn with the toolkit in basics.py: dark slabs with long, thin, continuous veins of white and grey drifting across them. |
 | `rock` | good |  | basalt_coast, castle_keep, coast_lighthouse, crystal_cave, doomed, fjord, garden_encounter, gui_lantern, gui_menus, hospital_garden, moon_base, post_presets, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: masses of every size, each a facet tilted to the light, split by crevices that wander, widen and close; finer cracks, grain. |
@@ -106,14 +106,14 @@ New scenes:
 |---|---|---|---|---|
 | `wood_panel` | good |  | drowned_library, glass_chapel, haunted_house, mansion_library | Redrawn with the toolkit in basics.py: stiles and rails framing two raised panels per unit, all one dark wood, the bevels catching the light, figure streaked along the grain. |
 | `planks` | good |  | bayou, ghost_town, sky_islands, winter_woods |  |
-| `boards` | good |  | autumn_garden, bayou, coast_lighthouse, ghost_town, gold_mine, rain_alley, tropical_beach |  |
+| `boards` | good |  | autumn_garden, bayou, coast_lighthouse, ghost_town, gold_mine, rain_alley, tropical_beach, window_garden |  |
 | `logs` | good |  | coast_lighthouse, fjord, winter_lake |  |
 | `door_wood` | good |  | autumn_garden, bayou, dream_chess, dream_world, fjord, haunted_house, salt_flat, winter_lake |  |
 | `bookshelf` | good |  | claude_study, drowned_library, gui_themes, gui_trade, library_medium, mansion_library |  |
 | `bark` | good |  | - | Redrawn with the toolkit in forest.py: long wavy ridges split by deep dark furrows; tiles without a seam. |
 | `bark_pine` | good |  | - | Redrawn with the toolkit in forest.py: a mosaic of tall plates (nearest-seed cells) with dark fissures and flaking. |
-| `wood_floor` | good |  | claude_study, drowned_library, gui_lantern, gui_themes, gui_trade, haunted_house, library_medium, mansion_library, saloon, tunnel_encounter, underground_waterway |  |
-| `shingle` | good |  | bayou, chapel_graveyard, coast_lighthouse, rainy_street, winter_lake | Redrawn with the toolkit in basics.py: courses of staggered slates, each tipped up to its foot so it throws a shadow on the course below, chipped corners, moss in the joints. |
+| `wood_floor` | good |  | claude_study, drowned_library, gui_lantern, gui_themes, gui_trade, haunted_house, library_medium, mansion_library, saloon, tunnel_encounter, underground_waterway, window_garden |  |
+| `shingle` | good |  | bayou, chapel_graveyard, coast_lighthouse, rainy_street, storm_island, winter_lake | Redrawn with the toolkit in basics.py: courses of staggered slates, each tipped up to its foot so it throws a shadow on the course below, chipped corners, moss in the joints. |
 
 ### Metal and sci-fi
 
@@ -179,23 +179,23 @@ New scenes:
 
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
-| `foliage` | good |  | - | Redrawn with the toolkit in forest.py: small leaves at three depths over a dark tangle of twigs. The wall behind a `forest` fringe. |
+| `foliage` | good |  | window_garden | Redrawn with the toolkit in forest.py: small leaves at three depths over a dark tangle of twigs. The wall behind a `forest` fringe. |
 | `foliage_autumn` | good |  | - | The same leaves in orange, gold and red over dark brown. |
 | `forest_deep` | good |  | haunted_house, woodland_night | Trunks at four depths in the dark, the farthest thinnest and darkest, boughs and a few leaves catching light; sways repeat with the tile. The wall behind a `forest` fringe: gaps between the cards read as more wood. |
 | `forest_deep_autumn` | good |  | autumn_garden, autumn_lane | Drawn with the toolkit in forest.py: forest_deep with the leaves hanging in the dark turned a deep rust. |
 | `forest_deep_snow` | good |  | winter_woods | Drawn with the toolkit in forest.py: forest_deep with snow lying on the boughs between the dark trunks. |
 | `swamp_deep` | good |  | bayou | Drawn with the toolkit in swamp.py: grey trunks at four depths in the murk with curtains of Spanish moss between them. |
 | `hedge` | good |  | garden_encounter, gui_menus, hospital_garden, post_presets | Redrawn with the toolkit in basics.py: small leaves packed in three depths, the face kept flat by the shears, thin patches darker. |
-| `grass` | good |  | autumn_garden, basalt_coast, cathedral_ruin, chapel_graveyard, dream_world, fjord, garden_encounter, glass_chapel, gui_menus, hospital_garden, misty_moor, palm_house, post_presets, village_green, village_hours | Redrawn with the toolkit in basics.py: blades stroked in clumps, dark at the roots and bright at the tips, yellow-green tufts, a daisy or two. |
+| `grass` | good |  | autumn_garden, basalt_coast, cathedral_ruin, chapel_graveyard, dream_world, fjord, garden_encounter, glass_chapel, gui_menus, hospital_garden, misty_moor, palm_house, post_presets, village_green, village_hours, window_garden | Redrawn with the toolkit in basics.py: blades stroked in clumps, dark at the roots and bright at the tips, yellow-green tufts, a daisy or two. |
 | `moss` | good |  | autumn_lane | Redrawn with the toolkit in forest.py: crowded cushions with fine bobbles, a stone showing here and there. |
 | `mud` | good |  | woodland_night |  |
 | `bog` | good |  | bayou | Drawn with the toolkit in swamp.py: black peat with cushions of sphagnum in green and rust, standing puddles. |
 | `dirt` | good |  | autumn_lane, castle_keep, haunted_house | Redrawn with the toolkit in basics.py: soil broken into clods, pebbles, a root or two, darker damp patches. |
-| `gravel` | good |  | autumn_garden, basalt_coast, chapel_graveyard, coast_lighthouse, fjord, garden_encounter, gui_menus, haunted_house, hospital_garden, palm_house, post_presets | Redrawn with the toolkit in basics.py: rounded pebbles in three stone colours, each lit on top with a shadow under it. |
+| `gravel` | good |  | autumn_garden, basalt_coast, chapel_graveyard, coast_lighthouse, fjord, garden_encounter, gui_menus, haunted_house, hospital_garden, palm_house, post_presets, window_garden | Redrawn with the toolkit in basics.py: rounded pebbles in three stone colours, each lit on top with a shadow under it. |
 | `sand` | good |  | coast_lighthouse | Redrawn with the toolkit in basics.py: wind ripples with a lit face and a shaded lee, wandering, a shell fragment or two, dark grains. |
 | `snow` | good |  | aurora_palace, winter_lake, winter_woods | Redrawn with the toolkit in basics.py: drifts sculpted by the wind, their lee sides in blue shadow, faint ripples, glitter. |
 | `ice` | good | mirror 0.38 | winter_lake, winter_woods | Redrawn with the toolkit in basics.py: clear blue with gentle depth, straight fractures with a branch each and a dark side, strings of bubbles, frost. |
-| `water` | good | mirror 0.5 | alien_world, autumn_garden, coast_lighthouse, drowned_library, gui_lantern, sewer_tunnels, temple_inside, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: a deep teal in slow swells and a broken net of light where the ripples gather it; kept dark, so reflections read. |
+| `water` | good | mirror 0.5 | alien_world, autumn_garden, canal_tunnel, coast_lighthouse, drowned_library, gui_lantern, sewer_tunnels, temple_inside, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: a deep teal in slow swells and a broken net of light where the ripples gather it; kept dark, so reflections read. |
 | `swamp_water` | good | mirror 0.42 | bayou | Drawn with the toolkit in swamp.py: black-brown water with a skin of duckweed drifting in patches and a few floating leaves; mirror 0.42. |
 | `seabed` | good |  | aquarium, kelp_forest, neon_bar, sunken_temple | Drawn with the toolkit in sea.py: pale sand in gentle ripples, shell and pebble, and a broken net of caustic light over it. |
 | `water_surface` | good | glows | aquarium, neon_bar | Drawn with the toolkit in sea.py: the surface from below, rippled and glowing with a net of brighter lines; for an underwater roof. |
@@ -219,13 +219,13 @@ New scenes:
 | `tile_floor` | good |  | bunker_lab, derelict_ship, neon_street |  |
 | `tile_white` | good |  | capsule_hotel |  |
 | `tile_green` | good |  | - |  |
-| `cobble` | good |  | clockwork_city, garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, village_green, village_hours | Redrawn with the toolkit in basics.py: a Voronoi mosaic of 36 rounded stones a tile in grey and brown, dark grit and moss in the joints; the repeat no longer shows. |
+| `cobble` | good |  | clockwork_city, garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, storm_island, village_green, village_hours | Redrawn with the toolkit in basics.py: a Voronoi mosaic of 36 rounded stones a tile in grey and brown, dark grit and moss in the joints; the repeat no longer shows. |
 | `asphalt` | good |  | neon_rooftop, neon_street, rain_alley, rainy_street |  |
 | `carpet` | good |  | castle_keep, chapel_graveyard, claude_study, gui_themes, gui_trade, haunted_house, library_medium, mansion_library |  |
 | `carpet_green` | good |  | - |  |
-| `flagstone` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, glass_chapel, haunted_house, neon_street, night_market, rain_alley |  |
+| `flagstone` | good |  | canal_tunnel, castle_keep, cathedral_ruin, chapel_graveyard, claude_study, glass_chapel, haunted_house, neon_street, night_market, rain_alley |  |
 | `obsidian` | good | mirror 0.45 | dream_world, neon_bar, space_station |  |
-| `concrete_floor` | good |  | 78 scenes |  |
+| `concrete_floor` | good |  | 81 scenes |  |
 | `rock_floor` | good |  | crystal_cave, doomed, gold_mine, gui_lantern, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: flatter, smaller masses in brown with grit in the cracks. |
 
 ### Ceilings
@@ -233,7 +233,7 @@ New scenes:
 | texture | status | traits | used in | notes |
 |---|---|---|---|---|
 | `acoustic` | good |  | ghost_corridor, gui_hud, hospital_corridor | Redrawn with the toolkit in basics.py: four bevelled tiles a unit in a grid of runners, pitted with fissures and pin-holes, a water stain. |
-| `ceiling_plaster` | good |  | gui_themes, gui_trade, library_medium | Redrawn with the toolkit in basics.py: the plaster render in a darker tone, with no band across it. |
+| `ceiling_plaster` | good |  | gui_themes, gui_trade, library_medium, window_garden | Redrawn with the toolkit in basics.py: the plaster render in a darker tone, with no band across it. |
 | `beams` | good |  | castle_keep, cathedral_ruin, chapel_graveyard, claude_study, haunted_house | Redrawn with the toolkit in basics.py: two oak beams a unit, proud of the limewash: a lit edge, a side in shadow and a soft shadow on the plaster; grain and checks. |
 
 ### Fabric and interior
@@ -251,9 +251,9 @@ New scenes:
 |---|---|---|---|---|
 | `window_lit` | good | glows | garden_encounter, gui_menus, haunted_house, hospital_garden, neon_rooftop, post_presets, rainy_street | Simple; a silhouette in one pane now and then would add life. |
 | `window_dark` | good |  | garden_encounter, gui_menus, gui_themes, gui_trade, haunted_house, hospital_garden, library_medium, mansion_library, neon_rooftop, post_presets, rainy_street |  |
-| `window_lit_plaster` | good | glows | bayou, garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, winter_lake |  |
-| `window_dark_plaster` | good |  | garden_encounter, ghost_corridor, gui_hud, gui_menus, hospital_corridor, hospital_garden, post_presets, rainy_street |  |
-| `window_teal` | good | glows | garden_encounter, gui_menus, hospital_garden, post_presets |  |
+| `window_lit_plaster` | good | glows | bayou, garden_encounter, gui_menus, hospital_garden, post_presets, rainy_street, window_garden, winter_lake |  |
+| `window_dark_plaster` | good |  | garden_encounter, ghost_corridor, gui_hud, gui_menus, hospital_corridor, hospital_garden, post_presets, rainy_street, window_garden |  |
+| `window_teal` | good | glows | garden_encounter, gui_menus, hospital_garden, post_presets, window_garden |  |
 | `stained_glass` | good | glows | castle_keep, chapel_graveyard | The sun comes in through it coloured, as through the glass chapel's lancets. |
 | `lancet_window` | good | glows | glass_chapel | New: a tall lancet with a pointed head in pale stone - a column of ruby in a border of cobalt and gold, a medallion at its middle and another in its head, leaded. The panes glow, and a sun standing in front of it comes in through them coloured: its pattern on the floor, coloured beams in the fog (render.sun_tint). |
 | `rose_window` | good | glows | glass_chapel | New: a great round of stained glass in pale stone - twelve petals of ruby and cobalt round a gold heart, a ring of small panes outside them, stone tracery and lead between. It lets the sun in coloured too. |
@@ -331,8 +331,8 @@ Drawn in `scripts/landscape.py` for a map cell of about 100 m, seen from a giant
 |---|---|---|---|---|
 | `city_street` | good |  | kaiju_country | Drawn in landscape.py for a map cell of about 100 m: half a street along each edge - asphalt, kerbs, a dashed centre line along the top and left edges, zebra crossings at the corners - pale pavements with street trees, the block's own paving inside, where its `city_block` stands. The country town in kaiju_country. |
 | `city_street_lit` | good | glows | kaiju_harbor, strait_bridge, volcano_island | The streets at night: sodium lamps along the pavements, cars' lights in the lanes, white coming and red going - they glow. |
-| `harbor_water` | good | mirror 0.35 | kaiju_harbor, strait_bridge, volcano_island | Open water from high up: dark blue-grey, a slow swell and short waves catching the light, all lying one way; it reflects. |
-| `quay` | good |  | kaiju_harbor, strait_bridge, volcano_island | Big pale concrete slabs with dark joints, tyre marks and stains, a yellow line along it, the dots of the mooring bollards. |
+| `harbor_water` | good | mirror 0.35 | kaiju_harbor, storm_island, strait_bridge, volcano_island | Open water from high up: dark blue-grey, a slow swell and short waves catching the light, all lying one way; it reflects. |
+| `quay` | good |  | kaiju_harbor, storm_island, strait_bridge, volcano_island | Big pale concrete slabs with dark joints, tyre marks and stains, a yellow line along it, the dots of the mooring bollards. |
 | `container_yard` | good |  | kaiju_harbor | Blocks of shipping containers in rows, each its own colour - rust red, blue, green, grey, white, orange - their tops catching the light, a line of shadow under each row, lanes between the blocks. |
 | `city_park` | good |  | kaiju_harbor | Lawns of two greens, pale gravel paths crossing them, clumps of tree crowns, each dark with a lit side. |
 | `farmland` | good |  | giant_valley, kaiju_country | A patchwork of fields - wheat, ploughed earth, pasture, rapeseed, young crops, stubble - each with its rows running its own way, between hedgerows with trees in them. The layout is slid and wraps, so the fields cross the cell's edges; the six layouts (`farmland` to `farmland_f`) mixed at random read as one countryside. |
@@ -344,7 +344,7 @@ Drawn in `scripts/landscape.py` for a map cell of about 100 m, seen from a giant
 | `forest_canopy` | good |  | giant_valley, kaiju_country, strait_bridge, volcano_island | Broadleaf woods from above: big round crowns of many greens packed close, each lit on its upper left, dark gaps between; it wraps cell to cell. |
 | `pine_canopy` | good |  | giant_valley | Pines from above: small dark blue-green crowns, close as bristles. |
 | `river_water` | good | mirror 0.5 | giant_valley | A river from high up: green-grey water, lighter than the sea, the current drawn out in long streaks; it reflects. |
-| `pasture` | good |  | giant_valley, strait_bridge | Grass in broad patches of lighter and darker green, the stripes of the last mowing faint across it, a lone tree or two. |
+| `pasture` | good |  | giant_valley, storm_island, strait_bridge | Grass in broad patches of lighter and darker green, the stripes of the last mowing faint across it, a lone tree or two. |
 | `road_ew` | good |  | kaiju_country | A country road at landscape scale across a cell of farmland: two lanes of asphalt, a dashed white line, pale edge lines, grass verges and a hedgerow with trees either side; its ends meet the next cell's. |
 | `road_ns` | good |  | kaiju_country | The road down the cell. |
 | `road_x` | good |  | kaiju_country | A crossroads, both roads, no hedge across either. |
@@ -365,7 +365,7 @@ Drawn in `scripts/landscape.py` for a map cell of about 100 m, seen from a giant
 | `ocean` | good | mirror 0.12 | archipelago | Deep tropical sea from high up: saturated blue, a long swell, rare single-texel whitecaps (two-texel dashes read as floating slabs from a boat); it reflects a little. |
 | `lagoon` | good | mirror 0.1 | archipelago | Clear turquoise over pale sand, light rippling on the bottom, a coral head here and there. |
 | `reef_flat` | good |  | archipelago | Coral heads and spurs from above - brown, olive, a purple one - with channels of sand and turquoise between (the lagoon under it). |
-| `white_sand` | good |  | archipelago | White coral sand, faintly rippled, wetter in patches, a line of wrack here and there. |
+| `white_sand` | good |  | archipelago, storm_island | White coral sand, faintly rippled, wetter in patches, a line of wrack here and there. |
 | `palm_canopy` | good |  | archipelago | Coconut palms from above: stars of fronds, lit on one side, pale sand and shadow between. |
 
 ### Not yet sorted
@@ -384,7 +384,7 @@ Drawn in `scripts/landscape.py` for a map cell of about 100 m, seen from a giant
 | `glasshouse` | good | see-through | palm_house | Drawn with the toolkit in glasshouse.py: white cast-iron uprights and transoms, a kick panel at the foot, open panes between (see-through). From outside, walls of it read as a cage: shoot a glasshouse from inside. |
 | `encaustic` | good | mirror 0.12 | palm_house | Encaustic tiles: a diamond in each square of terracotta, cream centres alternating black and blue, faint black joints. |
 
-## Props (326)
+## Props (335)
 
 Camera-facing sprites. "tall" is the default height in world units (a wall is 1); "no shadow" props hang, float or burn, so they get no contact shadow.
 
@@ -441,8 +441,8 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `portrait` | good | 0.75 tall, glows, no shadow | haunted_house, mansion_library | Drawn with the toolkit in haunted.py: an oval beaded gilt frame round a pale, unsmiling face, black coat and white collar; the eyes glow faintly. |
 | `grandfather_clock` | good | 1.6 tall | haunted_house, mansion_library, salt_flat | Drawn with the toolkit in haunted.py: a mahogany case: hood with a broken pediment and finial, a dial near midnight, a glass door on the pendulum. |
 | `balustrade` | good | 0.5 tall | haunted_house | Drawn with the toolkit in haunted.py: turned balusters every eighth of a unit between handrail and base rail, newel posts; three units a card. |
-| `lamp_post` | good | 1.6 tall, glows | clockwork_city, garden_encounter, gui_menus, hospital_garden, post_presets, rain_alley, rainy_street | Thin at a distance. |
-| `lantern` | good | 0.3 tall, glows, no shadow | 20 scenes |  |
+| `lamp_post` | good | 1.6 tall, glows | clockwork_city, garden_encounter, gui_menus, hospital_garden, post_presets, rain_alley, rainy_street, window_garden | Thin at a distance. |
+| `lantern` | good | 0.3 tall, glows, no shadow | 21 scenes |  |
 | `sconce` | good | 0.32 tall, glows, no shadow | castle_keep, claude_study, rainy_street, saloon |  |
 
 ### Nature
@@ -450,7 +450,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | prop | status | traits | used in | notes |
 |---|---|---|---|---|
 | `boulder` | good | 0.55 tall | chapel_graveyard, kelp_forest, sunken_temple | Redrawn with the toolkit in forest.py: a settled rock with a lesser lobe and cracks, moss over its top, lichen spots. Drawn 4 ways (variants), one picked per placement. |
-| `bush` | good | 0.5 tall | cathedral_ruin, chapel_graveyard, coast_lighthouse, palm_house, woodland_night | Redrawn with the toolkit in forest.py: leaf clusters on fanned twigs, lit on top, dark underneath. Drawn 4 ways (variants), one picked per placement. |
+| `bush` | good | 0.5 tall | cathedral_ruin, chapel_graveyard, coast_lighthouse, palm_house, window_garden, woodland_night | Redrawn with the toolkit in forest.py: leaf clusters on fanned twigs, lit on top, dark underneath. Drawn 4 ways (variants), one picked per placement. |
 | `bush_autumn` | good | 0.5 tall | autumn_garden, autumn_lane | Drawn with the toolkit in forest.py: the bush in rust red and orange. Drawn 4 ways (variants), one picked per placement. |
 | `bush_snow` | good | 0.45 tall | winter_woods | Drawn with the toolkit in forest.py: a lumpy cushion of snow, blue in its hollows, twigs poking up through it. |
 | `birch` | good | 3 tall | fjord, palm_house, sky_islands, village_green, village_hours, woodland_night | White trunk and a second stem banded with black, an airy crown of small leaves in drooping clumps. Drawn 3 ways (variants), one picked per placement. |
@@ -508,7 +508,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `signpost` | good | 1.3 tall | coast_lighthouse |  |
 | `statue` | good | 1.5 tall | garden_encounter, gui_menus, hospital_garden, mansion_library, post_presets, sky_islands | Redrawn with the toolkit in basics.py: a draped woman in weathered marble raising a wreath, folds catching the light, on a moulded plinth with lichen. |
 | `monolith` | good | 2.2 tall | alien_world |  |
-| `rowboat` | good | 0.3 tall | bayou, coast_lighthouse, gui_lantern, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: a clinker hull of lapped strakes, the top one painted a faded teal, a lighter gunwale, the bow rising, an oar along it. |
+| `rowboat` | good | 0.3 tall | bayou, coast_lighthouse, gui_lantern, storm_island, tunnel_encounter, underground_waterway | Redrawn with the toolkit in basics.py: a clinker hull of lapped strakes, the top one painted a faded teal, a lighter gunwale, the bow rising, an oar along it. |
 | `anchor` | good | 0.75 tall | kelp_forest | Drawn with the toolkit in sea.py: an iron anchor: ring, stock, shank, curved arms and spade flukes, rusted and grown over. |
 | `wreck_mast` | good | 3.6 tall | kelp_forest | Drawn with the toolkit in sea.py: a snapped mast leaning, a yard askew, torn rigging, furred with weed. |
 | `buoy` | good | 0.5 tall, glows | coast_lighthouse | Redrawn with the toolkit in basics.py: a red can with a white band, a lattice cage carrying its lit lamp, ripples at the waterline. |
@@ -630,7 +630,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `door_frame` | good | 1.1 tall | dream_chess, dream_world, salt_flat |  |
 | `floating_rock` | good | 1.6 tall, no shadow | dream_world, sky_islands |  |
 | `koi` | good | 0.35 tall, no shadow | dream_chess, dream_world, drowned_library, hall_of_doors |  |
-| `orb` | good | 0.2 tall, glows, aura, no shadow | coast_lighthouse, dream_world, strait_bridge |  |
+| `orb` | good | 0.2 tall, glows, aura, no shadow | coast_lighthouse, dream_world, storm_island, strait_bridge |  |
 | `pocket_watch` | good | 0.8 tall, no shadow | dream_world |  |
 | `sky_whale` | good | 2 tall, glows, no shadow | dream_world, drowned_library, salt_flat |  |
 
@@ -662,7 +662,7 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `windpump` | good | 4.2 tall | ghost_town | Drawn with the toolkit in desert.py: a lattice tower of four splayed legs, cross-braced, a wheel of galvanised blades with its tail vane. |
 | `water_trough` | good | 0.4 tall | - | Drawn with the toolkit in desert.py: grey boards on short legs, water near the brim. |
 | `wagon_wheel` | good | 0.55 tall | ghost_town | Drawn with the toolkit in desert.py: an iron-shod rim, twelve spokes, a heavy hub. |
-| `cypress` | good | 4 tall | ancient_ruins |  |
+| `cypress` | good | 4 tall | ancient_ruins, window_garden |  |
 | `saguaro` | good | 3.2 tall | ghost_town, gold_mine, red_canyon | Drawn with the toolkit in desert.py: a ribbed column with two arms bending up, spines along the ribs, white blossoms on the crown. |
 | `prickly_pear` | good | 0.6 tall | ghost_town, gold_mine, red_canyon | Drawn with the toolkit in desert.py: oval pads growing out of one another, spines, magenta fruit along the top. Drawn 3 ways (variants), one picked per placement. |
 | `tumbleweed` | good | 0.45 tall | ghost_town, gold_mine, red_canyon, saloon | Drawn with the toolkit in desert.py: a loose ball of wiry dry stems, the light coming through. Drawn 3 ways (variants), one picked per placement. |
@@ -720,10 +720,10 @@ Camera-facing sprites. "tall" is the default height in world units (a wall is 1)
 | `jungle_card_2` | good | 3.4 tall | jungle_temple, tropical_beach | A few trees with bushes in front. |
 | `jungle_card_3` | good | 4 tall | jungle_temple, tropical_beach | More trees, tall ones with crowns. |
 | `jungle_card_4` | good | 4.6 tall | jungle_temple, tropical_beach | The back: a dense wall of trunks, crowns, palms and bushes. Repeats every 8 units. |
-| `forest_card_1` | good | 1.2 tall | haunted_house, woodland_night | The front of a forest fringe: bushes, ferns and grass. |
-| `forest_card_2` | good | 3 tall | haunted_house, woodland_night | Young spruce and birch with bushes in front. |
-| `forest_card_3` | good | 4 tall | haunted_house, woodland_night | Spruce, oak and birch with gaps between them. |
-| `forest_card_4` | good | 4.8 tall | haunted_house, woodland_night | The back: a dense wall of spruce and oak over undergrowth, darkest. Repeats every 8 units. |
+| `forest_card_1` | good | 1.2 tall | haunted_house, window_garden, woodland_night | The front of a forest fringe: bushes, ferns and grass. |
+| `forest_card_2` | good | 3 tall | haunted_house, window_garden, woodland_night | Young spruce and birch with bushes in front. |
+| `forest_card_3` | good | 4 tall | haunted_house, window_garden, woodland_night | Spruce, oak and birch with gaps between them. |
+| `forest_card_4` | good | 4.8 tall | haunted_house, window_garden, woodland_night | The back: a dense wall of spruce and oak over undergrowth, darkest. Repeats every 8 units. |
 | `autumn_card_1` | good | 1.2 tall | autumn_garden, autumn_lane | The front of an autumn fringe: turned bushes, ferns and grass. |
 | `autumn_card_2` | good | 3 tall | autumn_garden, autumn_lane | Young gold birch and a spruce with turned bushes in front. |
 | `autumn_card_3` | good | 4 tall | autumn_garden, autumn_lane | Oak, birch and spruce with gaps between them. |
@@ -751,7 +751,7 @@ At landscape scale, a map cell about 100 m: a kaiju is the height of a person in
 | `kaiju_roar` | good | 0.62 tall, glows | kaiju_harbor | Roaring: its head thrown back, its jaws open on two rows of teeth, its plates glowing a cold blue. The lower jaw is hinged at the cheek into the neck (there was a gap behind it), and the glow sits deep in the mouth (a big pale throat read as a hole). |
 | `kaiju_wading` | good | 0.463 tall, glows | kaiju_harbor, strait_bridge | The roaring kaiju with the sea up to its thighs, stopping in a ring of surf where the water meets it - stand it on a water cell and it never floats. The surf is thin broken foam: close up, a solid band read as a plinth. |
 | `blaze` | good | 0.24 tall, glows, no shadow | kaiju_country, kaiju_harbor, volcano_island | A building ablaze from a giant's height: flame tongues of red, orange and a white-yellow heart over embers, all glowing (additive). |
-| `smoke_plume` | good | 1.2 tall, glows, no shadow | kaiju_country, kaiju_harbor, volcano_island | Ninety billows heaped into a column a hundred metres and more, widening and leaning with the wind, dark brown-grey with paler tops, lit orange at its foot by the fire under it. |
+| `smoke_plume` | good | 1.2 tall, glows, no shadow | kaiju_country, kaiju_harbor, storm_island, volcano_island | Ninety billows heaped into a column a hundred metres and more, widening and leaning with the wind, dark brown-grey with paler tops, lit orange at its foot by the fire under it. |
 | `tanks` | good | 0.071 tall | kaiju_harbor | A column of four tanks, side on, facing left, olive drab on dark tracks, their guns raised toward something tall. Redrawn at twice the resolution in the landscapes loop: road wheels in the tracks, a sloped glacis, a turret with its cupola. |
 | `tanks_firing` | good | 0.071 tall, glows | kaiju_country, kaiju_harbor | The tanks with a burst at every muzzle - a white-hot core, flame thrown forward, smoke rolling off it (the old flash, a pale blob, read as a white box close up). |
 | `helicopter` | good | 0.05 tall, glows, no shadow | kaiju_country, kaiju_harbor, strait_bridge | An army helicopter, side on: an olive body, a tail boom, skids, the blur of its rotor, a lamp burning at its nose. Float it with `z`; kaiju_harbor's hold the monster in `ray`s. |
@@ -762,6 +762,22 @@ At landscape scale, a map cell about 100 m: a kaiju is the height of a person in
 | `ferry` | good | 0.28 tall, glows | archipelago, strait_bridge, volcano_island | A car ferry, side on: a white hull with a blue band, two decks of windows (lit), a squat funnel. |
 | `sailboat` | good | 0.16 tall | archipelago, strait_bridge, volcano_island | A yacht under main and jib, side on, white against the water. |
 | `giant_moth` | good | 0.72 tall, glows, no shadow | kaiju_harbor | The kaiju's rival, a giant moth seen from in front: four wings spread, each forewing with a pale band, a dark band and a ringed eye-spot, veins pressed into them, every wing rimmed in glowing blue-white (a slightly larger glowing copy of the wing under it); a furry thorax, a ringed abdomen, feathery antennae, glowing eyes. 0.72 tall. Over the bay in kaiju_harbor's sixth shot. |
+
+### The spooky island
+
+The pieces of the three drawings the project began from (spooky.py): the canal tunnel, the window garden, the storm island.
+
+| prop | status | traits | used in | notes |
+|---|---|---|---|---|
+| `vault_arch` | good | 1.6 tall, no shadow | canal_tunnel | Drawn in spooky.py: brickwork in the card's upper corners down to a ring of voussoirs, the courses beyond darkening toward the crown, open inside the arch. A card (`planes` 1): set across a tunnel every 1.3 they frame each other into the canal tunnel's vault. |
+| `broken_casement` | good | 1 tall, no shadow | window_garden | A card 2 wide: plaster round a window of dark wood, its middle bar snapped and the transom broken, a shard left in each corner - clear but for glints across it and along its broken edge - a sill under it. Stood just inside a gap in the window garden's wall at `scale` 1.5. |
+| `rose_bush` | good | 0.42 tall | window_garden | Drawn with the toolkit: a mound of dark leaves, red roses open over it. |
+| `robed_statue` | good | 1.9 tall | window_garden | A hooded figure in pale stone on a pedestal, its robe carved in folds, its hands folded, the face a shadow in the cowl. Light its front: in the window garden the moon is behind it. |
+| `tattered_curtain` | good | 1.45 tall, no shadow | window_garden | Dusty red velvet hanging in folds from rings on an iron rod, its hem rotted ragged, a tear and moth holes. A card: one each side of the window garden's window. |
+| `wall_lamp` | good | 0.2 tall, glows, aura, no shadow | canal_tunnel | A round bulkhead lamp, a warm glass behind an iron cage; it glows, with an aura. Give it a light half a cell out from the wall - on the wall it only grazes it. |
+| `iron_cabinet` | good | 0.7 tall | canal_tunnel | Riveted iron: two doors one over the other in a dark frame, hinges down one side, a rivet at each corner, a round black lock plate with its keyhole, rust weeping from the rivets. |
+| `punt` | good | 0.2 tall | - | A flat-bottomed boat seen from its stern, a billboard - for a boat ahead down a canal. The canal tunnel uses a `ship_hull` in 3D instead, so its boat holds up from the side. |
+| `storm_cloud` | good | 6 tall, no shadow | storm_island | A bank of storm cloud for a sky at landscape scale: heavy puffs on a flat dark underside, their tops pale. `fullbright` - drawn in its own colours, as the sky is; eight of them far off and high over the storm island hide the `storm` sky's stars. |
 
 ### Not yet sorted
 
@@ -831,7 +847,7 @@ Pixel-art grids written as text in `scripts/characters.py`, each with a back vie
 | `monk` | good | autumn_garden, glass_chapel | Shaven head, a brown robe with its cowl down on the shoulders, hands folded, a rope belt with a hanging end, sandals. |
 | `villager` | good | village_green, village_hours | A red kerchief over brown hair, a green dress under a white apron, a basket on her arm. From behind, her hair and the dress. |
 
-## Decals (27)
+## Decals (29)
 
 Stamps blended into floors, walls and ceilings. `grime` stamps some of them on its own, and `contact_shadow` goes under every prop that stands on the ground.
 
@@ -840,7 +856,7 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `puddle` | good | coast_lighthouse, rainy_street, woodland_night |  |
 | `puddle_dark` | good | bunker_lab, castle_keep, cathedral_ruin, derelict_ship, sewer_tunnels, woodland_night |  |
 | `puddle_shine` | good | coast_lighthouse, neon_street, night_market, rain_alley, rainy_street, sewer_tunnels |  |
-| `stain` | good | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, sewer_tunnels, woodland_night | A ragged edge, darker along the tide line where it dried, blotchy inside, drops round it and short runs from its foot. |
+| `stain` | good | bunker_lab, canal_tunnel, cathedral_ruin, coast_lighthouse, derelict_ship, sewer_tunnels, woodland_night | A ragged edge, darker along the tide line where it dried, blotchy inside, drops round it and short runs from its foot. |
 | `stain_rust` | good | bunker_lab, cathedral_ruin, coast_lighthouse, derelict_ship, orbital_hangar, rainy_street, sewer_tunnels | As stain, in rust. |
 | `splatter` | good | doomed |  |
 | `splatter_dark` | good | bunker_lab, castle_keep, cathedral_ruin, derelict_ship, sewer_tunnels |  |
@@ -848,11 +864,11 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | `moss_patch` | good | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, jungle_temple, rainy_street, sewer_tunnels, temple_inside, woodland_night | A cushion of rounded clumps lit along their tops and dark under them, speckled, a few stray tufts round it. |
 | `crack` | good | bunker_lab, castle_keep, cathedral_ruin, coast_lighthouse, derelict_ship, rainy_street, sewer_tunnels |  |
 | `scorch` | good | bunker_lab, cathedral_ruin, derelict_ship, sewer_tunnels, tropical_beach |  |
-| `leak` | good | bunker_lab, castle_keep, cathedral_ruin, derelict_ship, rainy_street, sewer_tunnels |  |
+| `leak` | good | bunker_lab, canal_tunnel, castle_keep, cathedral_ruin, derelict_ship, rainy_street, sewer_tunnels |  |
 | `cobweb` | good | bunker_lab, castle_keep, temple_inside |  |
 | `rune_mark` | good | - |  |
 | `drain` | good | bunker_lab, neon_street, night_market, rainy_street, sewer_tunnels |  |
-| `contact_shadow` | good | 76 scenes |  |
+| `contact_shadow` | good | 79 scenes |  |
 | `pad_marking` | good | moon_base, orbital_hangar | A painted landing ring with an H and a dashed outer ring, worn in patches. |
 | `rover_tracks` | good | moon_base | Drawn with the toolkit in moon.py: two tracks of chevron treads pressed into dust. |
 | `hazard_stripe` | good | orbital_hangar | A band of yellow and black diagonal stripes, worn through in places. |
@@ -874,14 +890,16 @@ Stamps blended into floors, walls and ceilings. `grime` stamps some of them on i
 | decal | status | used in | notes |
 |---|---|---|---|
 | `wanted_poster` | good | saloon | Yellowed paper with a torn corner: WANTED over a sketched face in a hat, $500. |
+| `glass_shards` | good | window_garden | Jagged shards of a window on a floor, pale, a glint at each one's sharpest corner. |
+| `sigil` | good | canal_tunnel | Painted in red on a wall: a circle, a triangle in it, a line down through both, the paint run in drips. Not the glowing `rune_mark`. |
 
 ## Skies (14)
 
 | sky | status | used in | notes |
 |---|---|---|---|
-| `night` | good | 24 scenes |  |
+| `night` | good | 25 scenes |  |
 | `dusk` | good | autumn_garden, autumn_lane, coast_lighthouse, misty_moor |  |
-| `storm` | good | coast_lighthouse, rain_alley, rainy_street | Could use darker cloud masses. |
+| `storm` | good | coast_lighthouse, rain_alley, rainy_street, storm_island | Could use darker cloud masses. |
 | `day` | good | 22 scenes |  |
 | `overcast` | good | doomed, winter_woods |  |
 | `blood` | good | - |  |
@@ -949,7 +967,7 @@ The cards a `fringe` wall stands in front of its open faces, back to front.
 | set | status | cards | used in | notes |
 |---|---|---|---|---|
 | `jungle` | good | jungle_card_4, jungle_card_3, jungle_card_2, jungle_card_1 | jungle_temple, tropical_beach | Four cards: bushes alone at the front, a dense wall of trees, crowns and bushes at the back. |
-| `forest` | good | forest_card_4, forest_card_3, forest_card_2, forest_card_1 | haunted_house, woodland_night | Four cards: bushes, ferns and grass at the front, a dense wall of spruce and oak at the back. Keep the wall behind lower (2-2.6) than the trees. |
+| `forest` | good | forest_card_4, forest_card_3, forest_card_2, forest_card_1 | haunted_house, window_garden, woodland_night | Four cards: bushes, ferns and grass at the front, a dense wall of spruce and oak at the back. Keep the wall behind lower (2-2.6) than the trees. |
 | `forest_autumn` | good | autumn_card_4, autumn_card_3, autumn_card_2, autumn_card_1 | autumn_garden, autumn_lane | The forest fringe in October: oak, birch and bush turned, the spruce among them still green. |
 | `forest_snow` | good | winter_card_4, winter_card_3, winter_card_2, winter_card_1 | winter_woods | The forest fringe in winter: snowy spruce, bare oak and birch with snow on their limbs, bushes under snow. |
 | `swamp` | good | swamp_card_4, swamp_card_3, swamp_card_2, swamp_card_1 | bayou | Four cards: cattails and knees, then young cypresses, then a looser stand, then a dense one. The bayou spreads them three cells deep with `wander`. |
@@ -998,9 +1016,9 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `car` | good | rain_alley | A saloon from panels, laid out as the user drew it: the overall box with the car's outline on its sides, hood and trunk lid across it at the belt (body 60%, glass 40%), the roof, glass windows with seats, dashboard and steering wheel inside, four wheels set in under the body in dark wells, a floor pan and a soft shadow; `paint`, `lights`. Proportions and handles tuned with the user. |
 | `noodle_stand` | good | neon_street | Counter, awning, valance, noren and sign as panels; bowls, pot, tray, lanterns and stools as billboards, with its own lamp and lantern lights. |
 | `rock_wall` | good | aquarium, basalt_coast, crystal_cave, fjord, ghost_town, gold_mine, neon_bar, red_canyon | Laid out as the user drew it: overlapping pieces along a wall's foot, each in plan a rounded mass of a few broad faces jutting from the wall (the user's sharper zigzag read as spikes; a few spikes and notches are left), each its own height, a trim of faces along its top cut by one long smooth wavy edge, a flat top (inset a texel, so it never shows past the faces), plants on the rim. Kinds `stone`, `reef`, `sandstone`, `snow`, `cave`, `lumen` (glowing moss); `lining` lines every wall face of some map cells. The faces cut from one solid block of stone. Seen from above its tops are flat with the trim standing round them, as Build's were. |
-| `boulder` | good | aquarium, autumn_garden, autumn_lane, coast_lighthouse, crystal_cave, kelp_forest, misty_moor, neon_bar, red_canyon, sunken_temple, winter_lake, winter_woods, woodland_night | A low-poly mass, every face a triangle: an irregular foot, a belly, drawn-in shoulders, a peak off its centre; closed from every side. Plants on top by count. |
-| `column` | good | ancient_ruins, autumn_garden, basalt_coast, castle_keep, cathedral_ruin, gold_mine, hall_of_doors, palm_house, sky_islands, sunken_temple, temple_inside, tropical_beach | A column or a post: a prism of `sides` faces (an octagon by default), tapering if `top` is under 1, a plinth (`base`) and a capital if asked; stone cut from the solid rock as rock is, or `wood` - weathered timber, the grain running up it, dark and grown over below `wet` where it stands in water. Built for the pier's piles first; the cathedral's piers are `ashlar` (dressed stone in drums) with plinths and capitals, one `broken` off ragged. The ruins' columns are Greek: `flutes` (20 faces, each hollowed, so it takes the light on one side and shadow on the other) and `doric` (an echinus widening under a square abacus), in `marble` laid in drums; `fill` lifts a backlit column's dark side. |
-| `beam` | good | ancient_ruins, autumn_garden, castle_keep, cathedral_ruin, drowned_library, gold_mine, hall_of_doors, palm_house, sky_islands, sunken_temple, temple_inside | A squared timber or stone lintel lying level, `length` along the way it faces, its underside at the placement's `z`; timber's grain runs along it. Wall plates on the cathedral's piers, and one fallen on the floor; the architraves and cornices over the ruins' columns. |
+| `boulder` | good | aquarium, autumn_garden, autumn_lane, coast_lighthouse, crystal_cave, kelp_forest, misty_moor, neon_bar, red_canyon, storm_island, sunken_temple, winter_lake, winter_woods, woodland_night | A low-poly mass, every face a triangle: an irregular foot, a belly, drawn-in shoulders, a peak off its centre; closed from every side. Plants on top by count. |
+| `column` | good | ancient_ruins, autumn_garden, basalt_coast, canal_tunnel, castle_keep, cathedral_ruin, gold_mine, hall_of_doors, palm_house, sky_islands, storm_island, sunken_temple, temple_inside, tropical_beach | A column or a post: a prism of `sides` faces (an octagon by default), tapering if `top` is under 1, a plinth (`base`) and a capital if asked; stone cut from the solid rock as rock is, or `wood` - weathered timber, the grain running up it, dark and grown over below `wet` where it stands in water. Built for the pier's piles first; the cathedral's piers are `ashlar` (dressed stone in drums) with plinths and capitals, one `broken` off ragged. The ruins' columns are Greek: `flutes` (20 faces, each hollowed, so it takes the light on one side and shadow on the other) and `doric` (an echinus widening under a square abacus), in `marble` laid in drums; `fill` lifts a backlit column's dark side. |
+| `beam` | good | ancient_ruins, autumn_garden, canal_tunnel, castle_keep, cathedral_ruin, drowned_library, gold_mine, hall_of_doors, palm_house, sky_islands, storm_island, sunken_temple, temple_inside | A squared timber or stone lintel lying level, `length` along the way it faces, its underside at the placement's `z`; timber's grain runs along it. Wall plates on the cathedral's piers, and one fallen on the floor; the architraves and cornices over the ruins' columns. |
 | `crystal_cluster` | good | alien_world, aurora_palace, crystal_cave | The user's idea: crystals whose facets refract. Hexagonal prisms with pointed tips from a bed of rock, every facet a panel with its own clarity (clear across the middle, milky toward the base, bright edges) and its own bend: drawn with the glass, each facet shows the frame drawn so far shifted by one offset from the way it is turned (Renderer._bend), so it shows one coherent piece of what is behind, the colours parting a little at the edges. Strongest with glowing things behind. |
 
 ### Not yet sorted
@@ -1009,16 +1027,16 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 |---|---|---|---|
 | `trough` | good | ghost_town | A horse trough of weathered boards (`_wood` with `boards`: a seam between each, each its own tone), a rim, still water a hand below it, a soft shadow. Replaces the `water_trough` billboard in the ghost town. |
 | `shed_roof` | good | - | A roof of boards sloping down to its front edge, the boards running down the slope. The western facade builds one over every porch (ghost_town), sloping from the front down to the fascia so it shows from the street. |
-| `gable_roof` | good | autumn_garden, chapel_graveyard, fjord, haunted_house, palm_house, winter_lake | A gabled roof of boards with gable ends of upright boards, `walls` under it (`inset` back from its front). The western facade builds one behind every false front (ghost_town): the building's body, low enough for the front to hide. |
+| `gable_roof` | good | autumn_garden, chapel_graveyard, fjord, haunted_house, palm_house, storm_island, winter_lake | A gabled roof of boards with gable ends of upright boards, `walls` under it (`inset` back from its front). The western facade builds one behind every false front (ghost_town): the building's body, low enough for the front to hide. |
 | `market_stand` | good | village_green, village_hours | The market stall in 3D, as the noodle stand: a trestle table of weathered boards with a striped skirt (the awning's valance, in step), four poles, a striped awning sloping down to the front with a scalloped valance round it; on the table three trays heaped with `goods` in 3D (produce painted as rock is, each apple, cabbage, loaf or potato a round lump of its own, `PRODUCE`), a full `crate` and a shut one by it, a sack (a billboard); `paint` stripes its awning. Replaces the `market_stall` billboard in the village, where a second, blue, stands across the street. |
 | `saloon_bar` | good | saloon | A saloon's counter in 3D, 0.38 tall: raised mahogany panels between pilasters, a polished top overhanging the drinkers' side, the bartender's shelves behind, a brass foot rail on brackets, bottles on it. |
 | `rails` | good | gold_mine | A narrow track: two iron rails on wooden sleepers every 0.22, their tops worn bright. |
 | `ore_cart` | good | gold_mine | A riveted iron tub gone to rust (`_iron_side`: rivets along its lip and foot, rust running down) on a low frame and four small wheels set to the rails, ore heaped in it. |
 | `keel` | good | dream_world, sky_islands | The rock under a floating island in 3D: an irregular ring at the foot of the cliff drawing in by uneven steps - each corner its own reach - to a point off its centre, crags hanging from its flanks; `island` rock (grey and brown in beds) painted at half a wall's texels, lit from above so its underside is in shade. Replaces the `island_keel` billboards. |
 | `chess_piece` | good | dream_chess, dream_world | A chess piece in 3D, turned (`_lathe`: each pair of profile points a frustum of 16 faces, smoothly shaded round with a convex `tilt`) in polished marble (`_polished`: lit by the way each texel faces, a sheen toward the light, veins), white or black; the rook's battlements, the queen's coronet and ball, the king's crown and cross; the knight's head carved side on from a slab, its eyes nicked in. Replaces the billboards in dream_chess. |
-| `ship_hull` | good | kelp_forest | A wooden ship's hull in 3D, open: a square stern, the sides curving out from the keel and in to a pointed bow whose stem sweeps up, the gunwale rising toward both ends; planked along its length (`_timber` boards), ribs inside; `heel` lists it, `broken` staves in its starboard side. The kelp forest's wreck. |
+| `ship_hull` | good | canal_tunnel, kelp_forest | A wooden ship's hull in 3D, open: a square stern, the sides curving out from the keel and in to a pointed bow whose stem sweeps up, the gunwale rising toward both ends; planked along its length (`_timber` boards), ribs inside; `heel` lists it, `broken` staves in its starboard side. The kelp forest's wreck. |
 | `longship` | good | fjord | A longship: the `ship_hull`'s planked hull, stem and stern posts curling up and over, a six-sided mast, a yard and a square sail in red and cream stripes (bellied lighter in the middle; `"sail": false` furls it), round shields at the gunwale down both sides. |
-| `lighthouse` | good | coast_lighthouse, strait_bridge | A round tower of whitewashed masonry tapering up, smoothly shaded (`lime_white`, `_painted`), a red band (`lime_red`), a gallery on corbels with an iron rail of posts, a lantern room of ten glass panes (the `glass` cover's painter, translucent) with the lamp lit in it (an `orb` and a light), a domed iron cap with a ball. |
+| `lighthouse` | good | coast_lighthouse, storm_island, strait_bridge | A round tower of whitewashed masonry tapering up, smoothly shaded (`lime_white`, `_painted`), a red band (`lime_red`), a gallery on corbels with an iron rail of posts, a lantern room of ten glass panes (the `glass` cover's painter, translucent) with the lamp lit in it (an `orb` and a light), a domed iron cap with a ball. |
 | `stone_lantern` | good | autumn_garden | A garden's stone lantern: a hexagonal foot, a round shaft (smooth), a platform, a firebox of four posts with a flame showing between them and a little light, a wide six-sided roof, a finial. |
 | `standing_stone` | good | misty_moor | A standing stone: a rough slab of `menhir` rock set on end (`size`, `depth`, `height`), its broad faces nearly flat, swelling and drawing in as it rises, leaning a few degrees, its top sloping down from one shoulder with the corners knocked off; low and wide, an altar slab. |
 | `gear` | good | clockwork_city | A gear: a toothed wheel of `brass` (`size`, `depth`, `teeth`, `spokes`), its faces cut to the teeth, rim, spokes and boss, each a shade of its own, the sides of its teeth standing out; verdigris in patches. |
@@ -1035,13 +1053,13 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `screen` | good | neon_bar | A picture of another shot, of another scene file or of this one, rendered once with its own effects and palette and laid on the screen keeping its pixels (render.screen_texture), lit: on a `tv` (a boxy set on legs, rabbit ears), a `monitor`, a flat screen on a `wall`, or bare; `crt` scanlines. Snow with nothing to show, or within another screen. The neon bar's screen over the bar; an arcade cabinet's `show` lays one on its screen. |
 | `sign` | good | neon_bar | Lettering on a board in 3D (scripts/lettering.py): any text, a newline for a second line, in a style - painted (wood grain, a painted line inside the edge, flaking), neon (tubes and a halo, glowing, with its light), plaque (brass, engraved, screws), carved (cut in stone), chalk (a blackboard), gilt (gold leaf), poster (ink on paper); as tall as asked, as wide as its words; reads from both sides. The neon bar's name on its wall. |
 | `pew` | good | glass_chapel | A chapel's pew in 3D, oak: built on its side's profile - the back leaning a little back with a pale cap along its top, the seat, boarded down to the floor behind it - and a carved end board at each end, scrolled over at the top, a panel sunk in it, a roundel above; each face's boards their own tone. |
-| `tower` | good | - | A building at landscape scale: a box - two with a `setback` - whose faces are floors of two texels, a row of windows over a band of wall, in five styles (office, glass, apartment, brick, dark); a lobby of dark glass, a parapet catching the light; `lit` windows lit in runs, warm or cool; a flat roof with its plant on it, or a helicopter pad; a mast. Used through `city_block`. |
+| `tower` | good | storm_island | A building at landscape scale: a box - two with a `setback` - whose faces are floors of two texels, a row of windows over a band of wall, in five styles (office, glass, apartment, brick, dark); a lobby of dark glass, a parapet catching the light; `lit` windows lit in runs, warm or cool; a flat roof with its plant on it, or a helicopter pad; a mast. Used through `city_block`. |
 | `city_block` | good | kaiju_country, kaiju_harbor, strait_bridge, volcano_island | A city block's buildings: `count` plots a side inside the pavements, each built (`built`) to a `tower` of a height drawn toward the low end of `height`, in a style from `style`; the tall ones step back and carry masts and pads. kaiju_harbor's whole city is city blocks, tall downtown and low toward its edges. |
-| `searchlight` | good | kaiju_harbor | A searchlight's beam: two additive panels crossed along it, brightest along its middle and fading to its edges and along its length, opening six times as wide - in a thin fog with a bloom it reads as a beam from any side. |
+| `searchlight` | good | kaiju_harbor, storm_island | A searchlight's beam: two additive panels crossed along it, brightest along its middle and fading to its edges and along its length, opening six times as wide - in a thin fog with a bloom it reads as a beam from any side. |
 | `ray` | good | kaiju_harbor | A ray from a point to a point (`to`), drawn as the searchlight's beam is, twice as wide where it lands: the kaiju's breath striking a tower, the helicopters' lamps on the monster. |
-| `mountain` | good | archipelago, giant_valley, kaiju_country, mesa_desert, strait_bridge, volcano_island, winter_valley | A mountain of triangles of solid rock - the new `alpine` kind: grey bands, meadow where it lies gently, snow above a wandering `snowline` and over everything near the summit. Rings of points from a broad foot steepen up its flanks, then round over into a broken crown about an off-centre summit (a cone's point was too sharp); spurs (`ridges`) bulge out with gullies between, one flank steeper than the other; `length` draws it out into a ridge; `top` cuts it flat for a mesa; a `crater` sinks one into its top and `lava` runs down its flanks, painted texel by texel as bands that wander as they fall and widen below (rock kinds `volcanic` and `lava`); a `cliff` stands it on a slope of talus with walls all but sheer to a flat top - a butte, a spire. |
-| `village` | good | archipelago, giant_valley, kaiju_country, mesa_desert, winter_valley | Cottages - plaster or stone walls with small windows, roofs of tile, slate or thatch, a chimney - along a winding street, a few farms off by themselves, and a church with a square tower and a spire near the middle. `lit` puts lamps in its windows, `snow` lays its roofs under snow (winter_valley). |
-| `cable` | good | kaiju_country | A cable slung between two points with a sag at its middle: two dark strips crossed along it, in segments, so it shows from any side. Power lines from pylon to pylon in kaiju_country. |
+| `mountain` | good | archipelago, giant_valley, kaiju_country, mesa_desert, storm_island, strait_bridge, volcano_island, winter_valley | A mountain of triangles of solid rock - the new `alpine` kind: grey bands, meadow where it lies gently, snow above a wandering `snowline` and over everything near the summit. Rings of points from a broad foot steepen up its flanks, then round over into a broken crown about an off-centre summit (a cone's point was too sharp); spurs (`ridges`) bulge out with gullies between, one flank steeper than the other; `length` draws it out into a ridge; `top` cuts it flat for a mesa; a `crater` sinks one into its top and `lava` runs down its flanks, painted texel by texel as bands that wander as they fall and widen below (rock kinds `volcanic` and `lava`); a `cliff` stands it on a slope of talus with walls all but sheer to a flat top - a butte, a spire. |
+| `village` | good | archipelago, giant_valley, kaiju_country, mesa_desert, storm_island, winter_valley | Cottages - plaster or stone walls with small windows, roofs of tile, slate or thatch, a chimney - along a winding street, a few farms off by themselves, and a church with a square tower and a spire near the middle. `lit` puts lamps in its windows, `snow` lays its roofs under snow (winter_valley). |
+| `cable` | good | canal_tunnel, kaiju_country | A cable slung between two points with a sag at its middle: two dark strips crossed along it, in segments, so it shows from any side. Power lines from pylon to pylon in kaiju_country. |
 | `bridge` | good | giant_valley, strait_bridge | A bridge at landscape scale. `suspension`: a steel deck with its road on top (lane lines), a truss under it, two towers of braced legs in `paint`, main cables slung from anchorages over the towers sagging nearly to the road, hangers down to it (strips, as a `cable`), lamps and red tower lights when `lit` (the hour turns them off by day). `stone`: the road on round arches - each side one panel with the arches cut out of it, a darker ring of voussoirs round each - and its parapet. The strait's bridge, and giant_valley's old bridge by the village. |
 
 ## Held items (8)
@@ -1161,7 +1179,7 @@ Things too big for a billboard, built in 3D out of flat panels (`scripts/objects
 | `mono` | good | - |  |
 | `bone` | good | - |  |
 
-## Example scenes (78)
+## Example scenes (81)
 
 The environments, judged on their gallery images and shots.
 
@@ -1282,10 +1300,14 @@ The environments, judged on their gallery images and shots.
 | `strait_bridge` | good | 5 | strait_golden, strait_quay, strait_above, strait_dusk, strait_kaiju | New: landscape scale - a suspension bridge across a sea strait, a town where it comes ashore, a cargo ship, a ferry and sailboats under it, a lighthouse on the far point; golden hour from the water and the quay, from the air, and dusk with its lamps lit. |
 | `winter_valley` | good | 4 | winter_lake, winter_village, winter_street, winter_morning | New: landscape scale at night under the `aurora` - a frozen lake, a village on its shore with snow on its roofs and its lamps lit, white mountains, pines under snow; across the ice, from the village street to the white peak, and the morning after. |
 | `archipelago` | good | 4 | archipelago_boat, archipelago_above, archipelago_atoll, archipelago_golden | New: landscape scale - tropical islands in a blue sea: a high island with a jungle hill (`tropical` rock) and a thatched village, a smaller one, a low atoll round its own lagoon, all ringed with sand, lagoon and reef; from a boat, from the air, from the atoll's beach, and golden hour. |
+| `canal_tunnel` | good | 3 | canal_tunnel, canal_boat, canal_moored | New: one of the three drawings the project began from - a canal under a brick vault (`vault_arch` cards), paired wall lamps, an iron cabinet, a painted sigil, pipes along the vault, a boat (a `ship_hull`) moored with a lantern at its bow; a shot from the boat. |
+| `storm_island` | good | 2 | storm_island, storm_town | New: the first drawing - an island town on a stormy night at landscape scale: a hill with a house on its flat top, tenements and cottages on the shore, a plateau of buildings, a lighthouse and its beam, lightning on the power station under `storm_cloud`s. The lighthouse's red band and the plateau's warning lights are lost to the palette in this dark frame. |
+| `window_garden` | good | 2 | garden_window, garden_statue | New: the second drawing - a moonlit garden through a broken casement between tattered curtains, glass on the floor; a robed statue on its pedestal, roses, a lamp post, a house with one window lit, a tower; and the statue under the moon. |
 
 ## Pass log
 
 - **2026-10-19, pass 0.** First full review of every asset, on review sheets and in the gallery. This file and `docs/asset_review.py` were added.
+- **2026-10-23, where it started.** The user's idea: the three drawings this project began from - concept art Claude drew out of plain shapes in a chat, for a game - made into scenes and set beside them in the README (the drawings are in `docs/origins`). `scripts/spooky.py`: `vault_arch`, `broken_casement`, `tattered_curtain`, `rose_bush`, `robed_statue`, `wall_lamp`, `iron_cabinet`, `punt` and `storm_cloud`; decals `glass_shards` and `sigil`. Scenes `storm_island` (landscape scale: a hill and its house, the town on the shore, a plateau of buildings, the lighthouse, a storm), `window_garden` (the garden through a broken casement) and `canal_tunnel` (a boat moored under a brick vault, and a shot from it).
 - **2026-10-22, the landscapes loop.** The user's three hours: the kaiju redrawn where it was wrong (the jaw hinged into the neck, no gap; the legs under the hips so the belly shows whole; thin surf), the mountains' points rounded into crowns (and `top` for mesas). New: the `cable` object, country roads (`road_ew`, `road_ns`, `road_x`), and a volcano from the mountain - `crater`, `lava` flows, rock kinds `volcanic` and `lava`, textures `lava_field`, `lava_flow`, `black_sand`, the `ash_plume`; buttes from the mountain (`cliff`) and the desert's ground (`desert_floor` in three layouts, `desert_road`). New scenes `kaiju_country`, `volcano_island` and `mesa_desert`; a fifth kaiju_harbor shot, eye to eye with the monster. Then: winter (`snow_fields`, `snow_forest`, `frozen_lake`; a `village` takes `lit` and `snow`), the `bridge` object (`suspension`, `stone`), ships (`cargo_ship`, `ferry`, `sailboat`); scenes `winter_valley` and `strait_bridge`; a stone bridge by giant_valley's village. Last: the tropics (`ocean`, `lagoon`, `reef_flat`, `white_sand`, `palm_canopy`, rock `tropical`, a village's `roof`) and the `archipelago`; a rival for the kaiju, the `giant_moth`.
 - **2026-10-22, landscape scale.** The user's idea: shrink the world and the camera is a giant's - a map cell about 100 m, so a kaiju 0.62 tall stands in a city as a person stands in a room. `scripts/landscape.py`: the city's ground (`city_street`, `city_street_lit`, `harbor_water`, `quay`, `container_yard`, `city_park`) and the country's (`farmland` in six layouts whose fields cross the cells' edges, `pasture`, `forest_canopy`, `pine_canopy`, `river_water`); the `kaiju` (standing, roaring, wading), `tanks`, `helicopter`, `jet`, `blaze`, `smoke_plume`, `pylon`. Objects: `tower` and `city_block` (floors of windows, lit at night and turned down by day by the `time`), `searchlight` and `ray` (beams of additive light), `mountain` (a new rock kind, `alpine`, its snow above a wandering line) and `village`. Objects and sprites take the `night` and `day` marks; the hour is applied after the prefabs and before the objects; a scatter takes `scale`. `examples/kaiju_harbor.py` and `examples/giant_valley.py`, four gallery shots each.
 - **2026-10-22, the time of day.** One key, `time`, sets a scene or a shot to an hour - `dawn`, `morning`, `noon`, `afternoon`, `golden`, `sunset`, `dusk`, `night` or a number (scripts/daylight.py): the sun where the clock has it, east to west, reddening as it sinks, and a moon after it; the sky; the ambient light and the fog darkened and tinted from the scene's own (taken to be right for the hour its sky shows); fewer of the facades' rooms showing a lamp by day; lights marked `"night": true` lit only from sunset to sunrise. A new `dawn` sky. `examples/village_hours.py`: the village street at eight times, a sheet in the gallery.

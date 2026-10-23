@@ -4,16 +4,17 @@
 
 **90s game pictures from a text file.** A tiny software raycaster in Python with a Doom/Wolfenstein/Build-engine look, plus everything that makes a frame read as a real game screen: rain-soaked streets whose windows have depth behind glass, layered jungle, fog and sunbeams, reflections in wet stone and water, pixel-art characters and translucent ghosts, a full retro GUI toolkit (dialog, choice menus, HUDs, inventories, title cards) and post-processing (CRT, VHS, Game Boy, night vision, rain, film looks). It can also shrink the world so the camera is a giant's - valleys, volcanoes, deserts and a kaiju loose in the harbour - and lay its shots out as comic pages.
 
-It ships as a Claude skill and works as Claude's retro imagination: ask for a picture of a place, a moment or a game screen, and Claude builds the scene, renders it, looks at the result, iterates, then hands you the image. It also works as a plain command-line tool.
+It ships as a Claude skill and works as Claude's retro imagination: ask for a picture of a place, a moment or a game screen, and Claude builds the scene, renders it, looks at the result, iterates, then hands you the image. It also works as a plain command-line tool. It began as three concept drawings Claude made out of plain shapes - [see where it started](#where-it-started), and the same places now.
 
 ![Sunset down the sacred way, between broken columns, to the temple on the headland](docs/gallery/ruins_way.png)
 
-*Every image on this page is rendered straight from a scene file in [`examples/`](examples/) - no hand-painted assets anywhere.*
+*Every image on this page is rendered straight from a scene file in [`examples/`](examples/) - no hand-painted assets anywhere - but for the three drawings it [started from](#where-it-started).*
 
-**On this page:** [What's new](#whats-new) · [Install](#install) · [A scene in 30 seconds](#a-scene-in-30-seconds) · [The gallery](#the-gallery) · [Landscape scale](#landscape-scale) · [Comic mode](#comic-mode) · [GUI toolkit](#gui-toolkit) · [Post-processing](#post-processing) · [Features](#features) · [Materials](#materials) · [Development](#development)
+**On this page:** [What's new](#whats-new) · [Where it started](#where-it-started) · [Install](#install) · [A scene in 30 seconds](#a-scene-in-30-seconds) · [The gallery](#the-gallery) · [Landscape scale](#landscape-scale) · [Comic mode](#comic-mode) · [GUI toolkit](#gui-toolkit) · [Post-processing](#post-processing) · [Features](#features) · [Materials](#materials) · [Development](#development)
 
 ## What's new
 
+- **[Where it started](#where-it-started)** - the three drawings this project grew from, made of plain shapes in a chat, beside the same three places rendered now: a storm over an island town, a garden through a broken window, a boat waiting in a canal tunnel.
 - **[Landscape scale](#landscape-scale)** - shrink the world and the camera is a giant's: a kaiju wading into a harbour city at night and a giant moth coming in over the bay to meet it, a volcano erupting over an island, buttes and mesas on a red plain, a winter valley under the aurora, a suspension bridge over a sea strait, a tropical archipelago.
 - **[Comic mode](#comic-mode)** - lay shots of any scenes out as a comic page or a storyboard. *It came from the bay* tells the kaiju's night in six panels.
 
@@ -21,6 +22,25 @@ It ships as a Claude skill and works as Claude's retro imagination: ask for a pi
 |---|---|
 | ![The giant moth comes in over the bay, the kaiju roaring up at it](docs/gallery/kaiju_moth.png) | ![A volcano erupting over a harbour town at night](docs/gallery/island_eruption.png) |
 | ![Down the highway into the mesa desert at golden hour](docs/gallery/desert_road.png) | ![A village under snow, the aurora over the white peak](docs/gallery/winter_street.png) |
+
+## Where it started
+
+This project began with three drawings. Working on a game, its author asked Claude, in a chat, for concept art drawn from the game's design doc - and Claude, which has no image generator, drew three scenes out of plain shapes: an island town on a stormy night, a moonlit garden through a broken window, a boat waiting in a canal tunnel. Not bad for rectangles and circles, and they showed how much further a proper renderer could take the same idea. This is that renderer. Here are the three drawings beside the same three places as it draws them now, each a scene file in [`examples/`](examples/) ([`storm_island`](examples/storm_island.py), [`window_garden`](examples/window_garden.py), [`canal_tunnel`](examples/canal_tunnel.py)):
+
+| Then: drawn with shapes, in a chat | Now: rendered from a scene file |
+|---|---|
+| ![The first drawing, in flat shapes: an island town at night - a hill with a house on top, tenements, a plateau of buildings, a lighthouse and its beam, lightning](docs/origins/island.png) | ![The storm island: the hill and its house over the tenements and cottages, the lighthouse sweeping the harbour, the plateau's power station struck by lightning under storm clouds](docs/gallery/storm_island.png) |
+| ![The second drawing, in flat shapes: a garden by moonlight through a broken window - a statue, roses, a lamp post, a house and a tower](docs/origins/garden.png) | ![The window onto the garden: tattered curtains either side of a broken casement, glass on the floor, the robed statue in the moonlight beyond](docs/gallery/garden_window.png) |
+| ![The third drawing, in flat shapes: a vaulted canal tunnel, a lamp on each wall, an iron cabinet, a sigil, a boat in the water](docs/origins/tunnel.png) | ![The canal tunnel: its arches running off into the dark under paired lamps, the cabinet, the sigil, a boat moored in the canal with a lantern at its bow](docs/gallery/canal_tunnel.png) |
+
+And from inside them:
+
+| | |
+|---|---|
+| ![The island town from the lighthouse: the tenements and cottages lit, the hill and its house against the storm](docs/gallery/storm_town.png) | ![The robed statue on its pedestal, the full moon over it and the cypresses](docs/gallery/garden_statue.png) |
+| ![Aboard: the boat's bow and its lantern, the canal running on under the lamps](docs/gallery/canal_boat.png) | ![The boat at its mooring, the rope to its post, the cabinet under the lamp](docs/gallery/canal_moored.png) |
+
+The pieces they needed - a vault's arch, a broken casement, tattered curtains, rose bushes, a robed statue, a round wall lamp, an iron cabinet, storm clouds, broken glass and a painted sigil - are their own kit, [`scripts/spooky.py`](scripts/spooky.py).
 
 ## Install
 
@@ -79,8 +99,9 @@ Rows are y (south is down), columns are x, one cell is one unit, eye height is 0
 
 ## The gallery
 
-Seventy-eight example scenes in [`examples/`](examples/), every one a single JSON file you can open, change and render:
+Eighty-one example scenes in [`examples/`](examples/), every one a single JSON file you can open, change and render:
 
+- **[Where it started](#where-it-started)** - the storm island · the window onto the garden · the canal tunnel
 - **[Cities](#cities)** - [streets in the rain](#city-streets) · [the neon city](#the-neon-city) · [a night market](#the-night-market) · [a bar](#the-bar) · [the rooftops](#the-rooftops) · [a capsule hotel](#the-capsule-hotel) · [a village](#the-village) · [a frontier town](#the-frontier-town) · [a clockwork city](#the-clockwork-city)
 - **[Woods and weather](#woods-and-weather)** - [the woods at night](#the-woods-at-night) · [autumn](#autumn) · [the autumn garden](#the-autumn-garden) · [winter](#winter) · [fog and light](#fog-and-light) · [the palm house](#the-palm-house) · [the bayou](#the-bayou)
 - **[Jungle, desert and coast](#jungle-desert-and-coast)** - [jungle, ruins and the beach](#jungle-ruins-and-the-beach) · [the glowing jungle](#the-glowing-jungle) · [the desert](#the-desert) · [the salt flat](#the-salt-flat) · [the fjord](#the-fjord) · [the basalt coast](#the-basalt-coast) · [the lighthouse](#the-lighthouse)
@@ -702,7 +723,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Volumetric fog**: mist that lies low and drifts in banks, halos round every lamp, and beams of sun or moonlight through windows, doorways, standing stones and trees; sunlight finds its way into roofed rooms through their doorways, windows and skylights
 - **Reflections**: water, ice, wet streets and puddles mirror the lamps, windows and figures beyond them
 - **The 90s look**: 320x200 framebuffer, Bayer-dithered 256-colour palette, chunky nearest-neighbour upscale, optional scanlines and 2x supersampling
-- **Sprites**: 326 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 33-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
+- **Sprites**: 335 procedural props - scenery, light fixtures, wall decorations, castle furnishings, jungle plants, classical ruins, beach gear, sci-fi gear, alien flora, dream objects, animals, debris and vegetation - a 33-character pixel-art cast, each with a back view for over-the-shoulder shots, any PNG, or new pixel art written as text grids right in the scene
 - **Planar sprites**: a plant can stand as fixed planes in the world instead of a billboard - a cross of two, or a star of three that cuts the ground round it into sixths - so it has body as the camera moves; the low plants do by default, and a prefab can mix billboards and planes (a billboard palm trunk under a star of fronds)
 - **Layered forest edges**: give the walls of a jungle or a wood a `fringe` and every face that looks onto open ground gets long cards of plants standing in front of it, sparse bushes at the front to a dense wall of trunks and crowns at the back, so the edge of the forest has real depth; with `wander` the layers follow a natural, rounded line instead of the grid's square corners
 - **City streets with depth**: give a block of buildings a `facade` and its fronts become separate buildings - different heights, brick, paint and windows - each drawn in layers: the wall, then frames and glass set back in it, curtains and blinds behind, and lit or dark rooms behind those, so the windows have real depth as the camera moves; the wall has its thickness, so from an angle every window and door shows its brick sides, lintel and sill
@@ -717,7 +738,7 @@ Streaks draw the brightest lights out into the little cross of a star filter, or
 - **Procedural scatter**: declare debris by set, density and size class and the loader expands it into hundreds of placed props, clumped by a noise field so it drifts and leaves bare patches instead of spreading evenly - and never piles up on a camera or in front of a speaker
 - **One grime dial**: raises surface variation, debris density and wall/floor wear together
 - **Surface variation**: a world-space noise field breaks up texture tiling on walls, floors and ceilings - anchored to the world, so it stays put as the camera moves instead of crawling like film grain, and scaled per material so plaster stays subtle while cobble and rust vary hard
-- **Decals**: 27 stamps (puddles, stains, splatter, vines, moss, cracks, scorch, leaks, cobwebs, glowing runes, surf foam, shells, starfish, lily pads, landing-pad markings, hazard stripes, wanted posters, contact shadows) blended into any floor, wall or ceiling, so surfaces get dirty without new textures
+- **Decals**: 29 stamps (puddles, stains, splatter, vines, moss, cracks, scorch, leaks, cobwebs, glowing runes, surf foam, shells, starfish, lily pads, landing-pad markings, hazard stripes, wanted posters, broken glass, a painted sigil, contact shadows) blended into any floor, wall or ceiling, so surfaces get dirty without new textures
 - **Sunken floors**: water cells sit below their banks, with the submerged edge shaded and sprites floating on the surface
 - **Translucency**: opacity, additive blending, soft auras and wobbling tails for ghosts, spirits and magic; translucent sprites render after opaque ones without writing depth
 - **GUI toolkit** in a hand-drawn pixel font: speech bubbles anchored over characters, dialog panels with portraits, choice menus with pointers and costs, title cards, objective panels, pickup toasts, interaction prompts, health bars, ammo counters, hotbars, inventories, crosshair, compass and a Doom-style automap traced from the level; a 1993 shooter's stone status bar with a face that bloodies as health falls; six themes (classic, parchment, terminal, blood, steel, doomed)
