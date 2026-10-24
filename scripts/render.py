@@ -328,9 +328,10 @@ def sun_tint(s_, x, y, z):
     return 1.0 if tint is None else tint.reshape(shape + (3,))
 
 
-def sun_visibility(s_, x, y, z, soft=0.12):
+def sun_visibility(s_, x, y, z, soft=0.12, casters=True):
     """0-1: how much of a sun or moon a point (x, y, z) sees, with a soft edge to its shadows
-    (`soft` is the height over which a shadow edge fades)."""
+    (`soft` is the height over which a shadow edge fades) - and, with `casters`, the props' own shadows
+    (sprite_casters)."""
     zl, zr, r = s_['zlit'], s_['zroof'], s_['res']
     iy = np.clip((np.asarray(y) * r).astype(int), 0, zl.shape[0] - 1)
     ix = np.clip((np.asarray(x) * r).astype(int), 0, zl.shape[1] - 1)
@@ -343,7 +344,99 @@ def sun_visibility(s_, x, y, z, soft=0.12):
                 np.clip(np.nan_to_num(hi - z, posinf=9.0, neginf=-9.0) / soft + 0.5, 0, 1)
             roof = np.maximum(roof, band)
     roof = np.where(z >= s_['ceil_h'], 1.0, roof)    # air above a roof is outdoors
-    return np.clip((z - zl[iy, ix]) / soft + 0.5, 0, 1) * roof
+    vis = np.clip((z - zl[iy, ix]) / soft + 0.5, 0, 1) * roof
+    return vis * caster_shade(s_, x, y, z) if casters and s_.get('casters') else vis
+
+
+def sprite_casters(world, scene, s_, strength=1.0):
+    """The props that throw the shadow of a sun or moon `s_` when a scene sets `sprite_shadows`: each a card of its
+    drawing - a billboard stood square to the light at its foot, a planar card where it stands - so a palm lays the
+    shadow of its fronds over a deck and up a white wall, and a lounger in it lies in the shade. Props that are not
+    solid enough to matter - glass, glowing, additive or see-through sprites, the ones without a contact shadow
+    (flames, hanging things), anything under half a unit tall - cast none, and nor do fringe cards or a shot's
+    `extra_sprites`; a sprite's own `casts` says otherwise. For caster_shade: the cards, and the box each one's
+    shadow can fall in. None if no prop casts."""
+    defs = scene.get('sprite_defs', {})
+    ux, uy, tan_el = s_['ux'], s_['uy'], s_['tan']
+    zmin = -1.0                                  # the lowest floor there can be (a drop is at most 0.9)
+    cards = []
+    for sp in list(scene.get('sprites', [])) + list(world.scatter_sprites):
+        sp = {**assets.sprite_defaults(sp['type'], defs), **sp}
+        own = sp.get('casts')
+        if own is False:
+            continue
+        name = assets.variant_name(sp, scene)
+        h = float(sp.get('scale', 1.0))
+        kind = name.split('~')[0] if isinstance(name, str) else name
+        if own is not True and (sp.get('glass') or sp.get('fullbright') or sp.get('blend', 'alpha') != 'alpha'
+                                or float(sp.get('opacity', 1.0)) < 1.0 or kind in assets.NO_CONTACT_SHADOW
+                                or h < 0.5):
+            continue
+        rgba = assets.get_sprite(name, defs)[0]
+        solid = rgba[..., 3] > 0.5
+        if not solid.any():
+            continue
+        if sp.get('flip'):
+            solid = solid[:, ::-1]
+        zb = float(sp.get('z', 0.0)) + world.base_z(float(sp['x']), float(sp['y']))
+        if int(sp.get('planes', 0)) > 0:
+            quads = plane_quads(sp, rgba)
+        else:                                    # a billboard turns to the light, as it turns to the camera
+            w = h * rgba.shape[1] / rgba.shape[0] * float(sp.get('stretch', 1.0))
+            x, y = float(sp['x']), float(sp['y'])
+            quads = [(x + uy * w / 2, y - ux * w / 2, x - uy * w / 2, y + ux * w / 2, 1.0)]
+        for x0, y0, x1, y1, rep in quads:
+            ln = math.hypot(x1 - x0, y1 - y0)
+            if ln < 1e-6:
+                continue
+            dx, dy = (x1 - x0) / ln, (y1 - y0) / ln
+            facing = -ux * dy + uy * dx          # how squarely the light meets the card (its normal is (-dy, dx))
+            if abs(facing) < 0.05:
+                continue                         # edge on to the light: a line of shadow at most
+            reach = (zb + h - zmin) / tan_el     # how far from its foot the card's shadow can fall
+            xs = (x0, x1, x0 - ux * reach, x1 - ux * reach)
+            ys = (y0, y1, y0 - uy * reach, y1 - uy * reach)
+            cards.append({'o': (x0, y0), 'd': (dx, dy), 'n': (-dy, dx), 'facing': facing, 'len': ln,
+                          'rep': float(rep), 'z': zb, 'h': h, 'mask': solid,
+                          'box': (min(xs), max(xs), min(ys), max(ys))})
+    if not cards:
+        return None
+    return {'cards': cards, 'box': np.array([c['box'] for c in cards], np.float64), 'strength': float(strength)}
+
+
+def caster_shade(s_, x, y, z):
+    """0-1: the light the props that cast (sprite_casters) leave points (x, y, z) - none (less the shadow's
+    `strength`) where the ray from a point toward the light passes through a solid texel of a card: toward the light
+    from the point, along the card and below its top. A card never shades itself or what stands at its own foot."""
+    C = s_.get('casters')
+    if C is None:
+        return 1.0
+    x, y, z = np.broadcast_arrays(np.asarray(x, np.float64), np.asarray(y, np.float64), np.asarray(z, np.float64))
+    if x.size == 0:
+        return 1.0
+    b = C['box']
+    near = (b[:, 1] >= x.min()) & (b[:, 0] <= x.max()) & (b[:, 3] >= y.min()) & (b[:, 2] <= y.max())
+    if not near.any():
+        return 1.0
+    ux, uy, tan_el = s_['ux'], s_['uy'], s_['tan']
+    dark = np.zeros(x.shape, bool)
+    for k in np.nonzero(near)[0]:
+        c = C['cards'][k]
+        rx, ry = x - c['o'][0], y - c['o'][1]
+        s = -(rx * c['n'][0] + ry * c['n'][1]) / c['facing']      # how far toward the light the card stands
+        u = (rx + ux * s) * c['d'][0] + (ry + uy * s) * c['d'][1]  # where along it the ray passes,
+        v = z + s * tan_el - c['z']                               # and how high above its foot
+        inside = (s > 1e-3) & (u >= 0) & (u < c['len']) & (v >= 0) & (v < c['h'])
+        if not inside.any():
+            continue
+        m = c['mask']
+        th, tw = m.shape
+        tu = ((u[inside] / c['len'] * c['rep']) % 1.0 * tw).astype(int).clip(0, tw - 1)
+        tv = ((1 - v[inside] / c['h']) * th).astype(int).clip(0, th - 1)
+        hit = np.zeros(x.shape, bool)
+        hit[inside] = m[tv, tu]
+        dark |= hit
+    return 1.0 - C['strength'] * dark.astype(np.float32)
 
 
 def _box4(a):
@@ -486,7 +579,7 @@ def screen_picture(spec, scene):
                 rr = make_renderer(sc2)[1]
                 frame = rr.render(cam)
                 pal, levels = post.palette_spec(rr.last_effects, sc2)
-                arr = post.quantize(frame, pal, float(sc2.get('dither', 1.0)), levels, rr.palette_ref)
+                arr = post.quantize(frame, pal, post.palette_dither(rr.last_effects, sc2), levels, rr.palette_ref)
                 _SCREENS[key] = arr.astype(np.float32) / 255.0
             finally:
                 _SCREEN_DEPTH[0] -= 1
@@ -538,6 +631,8 @@ class Renderer:
         self.W, self.H = scene.get('resolution', [320, 200])
         self.ambient = np.array(scene.get('ambient', [0.18, 0.18, 0.22]), np.float32)
         self.levels = int(scene.get('light_levels', 24))
+        # walls facing north and south drawn darker than east and west, the old raycasters' way of telling faces apart
+        self.side_k = float(scene.get('side_shade', 0.78))
         fog = scene.get('fog')
         self.fog_c = np.array(fog['color'], np.float32) if fog else None
         self.fog_d = float(fog.get('density', 0.1)) if fog else 0.0
@@ -573,6 +668,10 @@ class Renderer:
         self.lm, self.lres, self.lift, self.lm_top = build_lightmap(world, lights, scene.get('lightmap_res', 8))
         self.overbright = float(scene.get('overbright', 1.0))
         self.suns = [build_sun(world, L) for L in suns]
+        cast = scene.get('sprite_shadows', False)
+        if cast:                                     # the props throw the light's shadow too
+            for s_ in self.suns:
+                s_['casters'] = sprite_casters(world, scene, s_, 1.0 if cast is True else float(cast))
         rf = scene.get('reflections', True)
         rf = ({} if rf is True else {'amount': 0.0} if rf is False
               else rf if isinstance(rf, dict) else {'amount': rf})
@@ -892,7 +991,7 @@ class Renderer:
                 for s_, ph in zip(self.suns, phase):
                     # scaled so a beam seen side-on reads as a beam, and the air round a low
                     # sun glows without whiting out the frame
-                    light = light + ((0.6 * v['shafts'] * sun_visibility(s_, x, y, z, 0.35) * ph)[..., None] * s_['rgb']
+                    light = light + ((0.6 * v['shafts'] * sun_visibility(s_, x, y, z, 0.35, False) * ph)[..., None] * s_['rgb']
                                      * sun_tint(s_, x, y, z))
             L = L + (T * a)[..., None] * light
             T = T * (1 - a)
@@ -1440,7 +1539,7 @@ class Renderer:
                 v = ((1 - (z % 1.0)) * T).astype(int).clip(0, T - 1)
                 alb = rgb[v, u] * (0.85 - 0.55 * np.clip(-z / deep, 0, 1))[:, None]
                 if side == 1:
-                    alb = alb * 0.78
+                    alb = alb * self.side_k
                 hx = px + rdx[c] * dist - rdx[c] / rlen[c] * 0.04
                 hy = py + rdy[c] * dist - rdy[c] / rlen[c] * 0.04
                 ed = np.full(len(rows), dist * rlen[c])
@@ -1518,7 +1617,7 @@ class Renderer:
                 if dcls:
                     e = self._blend_wall_decals(alb, e, dcls, uf_raw, z)
             if side == 1:
-                alb = alb * 0.78
+                alb = alb * self.side_k
             hx = px + rdx[c] * dist - rdx[c] / rlen[c] * 0.04
             hy = py + rdy[c] * dist - rdy[c] / rlen[c] * 0.04
             dyn = sample_lm(self.lm, self.lres, np.array([hx]), np.array([hy]))
@@ -2260,7 +2359,7 @@ def finish(img, scene, effects=(), seed=0, ref=None):
     `ref` is the frame without its lens effects, which the palette is chosen from (Renderer.palette_ref)."""
     effects = list(effects)
     spec, levels = post.palette_spec(effects, scene)
-    arr = post.quantize(img, spec, float(scene.get('dither', 1.0)), levels, ref)
+    arr = post.quantize(img, spec, post.palette_dither(effects, scene), levels, ref)
     scale = int(scene.get('scale', 3))
     pim = Image.fromarray(arr, 'RGB')
     out = np.asarray(pim.resize((pim.width * scale, pim.height * scale), Image.NEAREST))
@@ -2434,7 +2533,7 @@ SCENE_KEYS = {
     'scatter', 'grime', 'grime_debris', 'grime_decals', 'surface_noise', 'decals', 'decal_defs',
     'palette', 'auto_levels', 'dither', 'scanlines', 'overbright', 'lightmap_res', 'max_distance',
     'supersample', 'overlays', 'ui', 'post', 'icon_defs', 'viewmodel_defs', 'seed',
-    'skyline', 'contact_shadows', 'heights', 'height_unit', 'reflections', 'sky_objects', 'wet',
+    'skyline', 'contact_shadows', 'sprite_shadows', 'side_shade', 'heights', 'height_unit', 'reflections', 'sky_objects', 'wet',
     'prefabs', 'prefab_defs', 'wireframes', 'objects', 'time', 'road', 'roadside',
     'title', 'description', 'notes',  # free-form metadata, never read
 }

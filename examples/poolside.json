@@ -1,0 +1,580 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  "oooooooooooooooooooooooooooooo",
+  "ooooooooooooooooooooRRRRRooooo",
+  "ooooooooooooooooooooRRRRRooooo",
+  "oo.......GGGGGGGGGGGRRRRR...oo",
+  "oo...LLLLGGGGGGGGGGGRRRRR...oo",
+  "oo...LLLLGGGGGGGGGGGRRRRR...oo",
+  "oh...LLLLGGGGGGGGGGGRRRRR...ho",
+  "oh...LLLLGGGGGGGGGGGRRRRR...ho",
+  "oh..........................ho",
+  "oh..........................ho",
+  "oh..........................ho",
+  "oh..........................ho",
+  "oh.......~~~~~~~~~~~~.......ho",
+  "oh.......~~~~~~~~~~~~.......ho",
+  "oh.......~~~~~~~~~~~~.......ho",
+  "oh.......~~~~~~~~~~~~.......ho",
+  "oh.......~~~~~~~~~~~~.......ho",
+  "oh.......~~~~~~~~~~~~.......ho",
+  "oh.......~~~~~~~~~~~~.......ho",
+  "oh.......~~~~~~~~~~~~.......ho",
+  "oh.......~~~~~~~~~~~~.......ho",
+  "oh.......~~~~~~~~~~~~.......ho",
+  "oh..........................ho",
+  "oh..........................ho",
+  "oh..........................ho",
+  "oh..........................ho",
+  "oh..........................ho",
+  "oh..........................ho",
+  "oh..........................ho",
+  "oh..........................ho",
+  "oh..........................ho",
+  "oh..........................ho",
+  "oh..........................ho",
+  "oh..........................ho"
+ ],
+ "legend": {
+  ".": {
+   "floor": "pool_deck",
+   "side": "pool_tile"
+  },
+  "~": {
+   "floor": "pool_water",
+   "drop": 0.1
+  },
+  "o": {
+   "floor": "grass"
+  },
+  "h": {
+   "wall": "hedge",
+   "h": 0.6,
+   "top": "hedge"
+  },
+  "G": {
+   "wall": [
+    "glass_wall",
+    "ribbon_window"
+   ],
+   "h": 2.0,
+   "top": "stucco"
+  },
+  "L": {
+   "wall": {
+    "base": "stucco",
+    "tint": [
+     0.98,
+     0.72,
+     0.76
+    ]
+   },
+   "h": 1.2,
+   "top": "stucco"
+  },
+  "R": {
+   "wall": [
+    "ribbon_window",
+    "stucco",
+    "stucco"
+   ],
+   "h": 2.7,
+   "top": "stucco"
+  }
+ },
+ "camera": {
+  "x": 21.6,
+  "y": 22.8,
+  "height": 0.5,
+  "look_at": [
+   11.0,
+   9.0,
+   0.8
+  ],
+  "fov": 70
+ },
+ "title": "Poolside - a white house by the pool, in the city-pop look",
+ "sky": "summer",
+ "ambient": [
+  0.44,
+  0.48,
+  0.68
+ ],
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 135,
+   "elevation": 40,
+   "color": [
+    1.0,
+    0.96,
+    0.88
+   ],
+   "intensity": 1.2
+  }
+ ],
+ "fog": {
+  "color": [
+   0.71,
+   0.88,
+   0.96
+  ],
+  "density": 0.003
+ },
+ "sprites": [
+  {
+   "x": 6.5,
+   "y": 13.5,
+   "type": "parasol",
+   "variant": 1
+  },
+  {
+   "x": 6.5,
+   "y": 16.9,
+   "type": "parasol",
+   "variant": 0
+  },
+  {
+   "x": 6.5,
+   "y": 20.3,
+   "type": "parasol",
+   "variant": 2
+  },
+  {
+   "x": 23.3,
+   "y": 15.5,
+   "type": "parasol",
+   "variant": 3
+  },
+  {
+   "x": 3.6,
+   "y": 24.4,
+   "type": "palm",
+   "scale": 4.2
+  },
+  {
+   "x": 4.2,
+   "y": 18.6,
+   "type": "palm_lean",
+   "scale": 3.8
+  },
+  {
+   "x": 3.4,
+   "y": 11.6,
+   "type": "palm",
+   "scale": 4.4,
+   "flip": true
+  },
+  {
+   "x": 18.6,
+   "y": 9.4,
+   "type": "palm",
+   "scale": 3.9,
+   "flip": true
+  },
+  {
+   "x": 25.8,
+   "y": 13.0,
+   "type": "palm",
+   "scale": 3.8
+  },
+  {
+   "x": 25.4,
+   "y": 23.0,
+   "type": "palm_lean",
+   "scale": 3.6,
+   "flip": true
+  },
+  {
+   "x": 11.4,
+   "y": 1.6,
+   "type": "palm",
+   "scale": 4.8
+  },
+  {
+   "x": 15.8,
+   "y": 0.9,
+   "type": "palm",
+   "scale": 5.2,
+   "flip": true
+  },
+  {
+   "x": 3.0,
+   "y": 1.2,
+   "type": "fan_palm",
+   "scale": 7.0
+  },
+  {
+   "x": 6.4,
+   "y": 0.6,
+   "type": "fan_palm"
+  },
+  {
+   "x": 27.0,
+   "y": 2.4,
+   "type": "fan_palm",
+   "scale": 7.4
+  },
+  {
+   "x": 8.6,
+   "y": 8.6,
+   "type": "agave"
+  },
+  {
+   "x": 19.4,
+   "y": 8.6,
+   "type": "agave"
+  }
+ ],
+ "objects": [
+  {
+   "type": "lounger",
+   "x": 7.0,
+   "y": 13.0,
+   "angle": 0,
+   "paint": "#15a6c2"
+  },
+  {
+   "type": "lounger",
+   "x": 7.0,
+   "y": 14.0,
+   "angle": 0,
+   "paint": "#15a6c2"
+  },
+  {
+   "type": "lounger",
+   "x": 7.0,
+   "y": 16.4,
+   "angle": 0,
+   "paint": "#f05a5a"
+  },
+  {
+   "type": "lounger",
+   "x": 7.0,
+   "y": 17.4,
+   "angle": 0,
+   "paint": "#f05a5a"
+  },
+  {
+   "type": "lounger",
+   "x": 7.0,
+   "y": 19.8,
+   "angle": 0,
+   "paint": "#ffc93a"
+  },
+  {
+   "type": "lounger",
+   "x": 7.0,
+   "y": 20.8,
+   "angle": 0,
+   "paint": "#ffc93a"
+  },
+  {
+   "type": "lounger",
+   "x": 22.8,
+   "y": 15.0,
+   "angle": 180,
+   "paint": "#2658c6"
+  },
+  {
+   "type": "lounger",
+   "x": 22.8,
+   "y": 16.0,
+   "angle": 180,
+   "paint": "#2658c6"
+  },
+  {
+   "type": "pool_ladder",
+   "x": 21.02,
+   "y": 13.4,
+   "angle": 180
+  },
+  {
+   "type": "pool_ladder",
+   "x": 8.98,
+   "y": 20.2,
+   "angle": 0
+  },
+  {
+   "type": "diving_board",
+   "x": 14.5,
+   "y": 11.3,
+   "angle": 90
+  },
+  {
+   "type": "beam",
+   "x": 14.5,
+   "y": 8.35,
+   "z": 0.96,
+   "length": 11.4,
+   "width": 0.7,
+   "depth": 0.08,
+   "material": "stucco",
+   "casts": true
+  },
+  {
+   "type": "beam",
+   "x": 14.5,
+   "y": 8.2,
+   "z": 2.0,
+   "length": 11.6,
+   "width": 0.4,
+   "depth": 0.07,
+   "material": "stucco"
+  }
+ ],
+ "decals": [
+  {
+   "tex": "pool_ring",
+   "surface": "floor",
+   "x": 14.4,
+   "y": 19.6,
+   "size": 0.5
+  }
+ ],
+ "reflections": {
+  "amount": 1.0,
+  "ripple": 0.35
+ },
+ "surface_noise": 0,
+ "light_levels": 0,
+ "side_shade": 1.0,
+ "sprite_shadows": true,
+ "post": [
+  "citypop"
+ ],
+ "shots": [
+  {
+   "x": 21.6,
+   "y": 22.8,
+   "height": 0.5,
+   "look_at": [
+    11.0,
+    9.0,
+    0.8
+   ],
+   "fov": 70
+  },
+  {
+   "x": 14.6,
+   "y": 24.2,
+   "height": 0.4,
+   "look_at": [
+    14.6,
+    8.0,
+    1.1
+   ],
+   "fov": 66
+  },
+  {
+   "x": 5.2,
+   "y": 25.4,
+   "height": 0.45,
+   "look_at": [
+    8.4,
+    11.0,
+    0.5
+   ],
+   "fov": 68
+  },
+  {
+   "x": 13.2,
+   "y": 23.2,
+   "height": 0.48,
+   "look_at": [
+    15.2,
+    15.6,
+    -0.3
+   ],
+   "fov": 62
+  },
+  {
+   "x": 21.6,
+   "y": 22.8,
+   "height": 0.5,
+   "look_at": [
+    11.0,
+    9.0,
+    0.8
+   ],
+   "fov": 70,
+   "overrides": {
+    "legend": {
+     ".": {
+      "floor": "pool_deck",
+      "side": "pool_tile"
+     },
+     "~": {
+      "floor": "pool_water_lit",
+      "drop": 0.1
+     },
+     "o": {
+      "floor": "grass"
+     },
+     "h": {
+      "wall": "hedge",
+      "h": 0.6,
+      "top": "hedge"
+     },
+     "G": {
+      "wall": [
+       "glass_wall_lit",
+       "ribbon_window_lit"
+      ],
+      "h": 2.0,
+      "top": "stucco"
+     },
+     "L": {
+      "wall": {
+       "base": "stucco",
+       "tint": [
+        0.98,
+        0.72,
+        0.76
+       ]
+      },
+      "h": 1.2,
+      "top": "stucco"
+     },
+     "R": {
+      "wall": [
+       "ribbon_window_lit",
+       "stucco",
+       "stucco"
+      ],
+      "h": 2.7,
+      "top": "stucco"
+     }
+    },
+    "sky": "sunset",
+    "ambient": [
+     0.34,
+     0.28,
+     0.44
+    ],
+    "lights": [
+     {
+      "type": "sun",
+      "azimuth": 226,
+      "elevation": 3,
+      "color": [
+       1.0,
+       0.5,
+       0.42
+      ],
+      "intensity": 0.4,
+      "disc_size": 3.0
+     },
+     {
+      "x": 11.5,
+      "y": 14.5,
+      "z": 0.05,
+      "radius": 4.0,
+      "color": [
+       0.35,
+       0.95,
+       1.0
+      ],
+      "intensity": 0.55
+     },
+     {
+      "x": 18.0,
+      "y": 14.5,
+      "z": 0.05,
+      "radius": 4.0,
+      "color": [
+       0.35,
+       0.95,
+       1.0
+      ],
+      "intensity": 0.55
+     },
+     {
+      "x": 11.5,
+      "y": 19.5,
+      "z": 0.05,
+      "radius": 4.0,
+      "color": [
+       0.35,
+       0.95,
+       1.0
+      ],
+      "intensity": 0.55
+     },
+     {
+      "x": 18.0,
+      "y": 19.5,
+      "z": 0.05,
+      "radius": 4.0,
+      "color": [
+       0.35,
+       0.95,
+       1.0
+      ],
+      "intensity": 0.55
+     },
+     {
+      "x": 11.0,
+      "y": 9.2,
+      "z": 0.6,
+      "radius": 3.0,
+      "color": [
+       1.0,
+       0.78,
+       0.5
+      ],
+      "intensity": 0.35
+     },
+     {
+      "x": 15.0,
+      "y": 9.2,
+      "z": 0.6,
+      "radius": 3.0,
+      "color": [
+       1.0,
+       0.78,
+       0.5
+      ],
+      "intensity": 0.35
+     },
+     {
+      "x": 18.5,
+      "y": 9.2,
+      "z": 0.6,
+      "radius": 3.0,
+      "color": [
+       1.0,
+       0.78,
+       0.5
+      ],
+      "intensity": 0.35
+     }
+    ],
+    "fog": {
+     "color": [
+      0.5,
+      0.36,
+      0.52
+     ],
+     "density": 0.006
+    },
+    "post": [
+     "citypop_dusk",
+     {
+      "fx": "bloom",
+      "source": "light",
+      "strength": 0.7,
+      "radius": 2.0,
+      "spread": 0.4
+     }
+    ]
+   }
+  }
+ ],
+ "supersample": 2
+}

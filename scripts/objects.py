@@ -1380,6 +1380,9 @@ IRONS = {
                           key=(-0.4, 0.45, 0.8), shade=(0.3, 0.6), rust=0.9),
     'brass': dict(ramps=[ramp('#b08a3c', dark=0.4, light=1.55, warm=0.06), ramp('#4f8a6e', dark=0.4, light=1.3)],
                   key=(-0.4, 0.45, 0.8), shade=(0.34, 0.62), rust=0.8),
+    # white stucco, for city pop's slabs and pilotis: clean, barely shaded, never chipped
+    'stucco': dict(ramps=[ramp('#f4f1ea', dark=0.6, light=1.04), ramp('#f4f1ea', dark=0.6, light=1.04)],
+                   key=(-0.4, 0.45, 0.8), shade=(0.66, 0.34), rust=9.0),
 }
 
 
@@ -4343,6 +4346,114 @@ def _lettering(text, style, color, ground, smooth, seed):
     return lettering.sign(text, style, color, ground, 4 if smooth else 2, smooth, seed=seed)
 
 
+# ------------------------------------------------------------------ by the pool (city pop)
+
+POOL_WHITE = '#f2f0ea'
+
+
+def _flat(colours, alpha=None):
+    """A panel's texture of flat colour: an (h, w, 3) array, solid unless `alpha` (h, w) says otherwise, giving off
+    no light - drawn clean for the city-pop palette to print flat."""
+    h, w = colours.shape[:2]
+    a = np.ones((h, w), np.float32) if alpha is None else alpha.astype(np.float32)
+    return np.concatenate([np.clip(colours, 0, 1), a[..., None]], -1).astype(np.float32), np.zeros((h, w), np.float32)
+
+
+def _fill(w, h, colour):
+    return np.array(np.broadcast_to(rgb(colour), (h, w, 3)), np.float32)
+
+
+def _post(lo, hi, tex):
+    """The four sides of a slim upright: a leg, a stand."""
+    return box(lo, hi, {'front': tex, 'back': tex, 'right': tex, 'left': tex})
+
+
+def lounger(pl):
+    """A sun lounger by a pool: a white frame on four short legs, a cushion striped lengthwise in `paint` and white,
+    its back raised at the far end. Faces +x: whoever lies on it looks that way."""
+    stripe = rgb(str(pl.get('paint', '#15a6c2')))
+    L, Wd, zf, zc = 0.36, 0.115, 0.115, 0.145
+    xh, xt, zt = -0.12, -0.3, 0.37                                # the hinge of the back, and its top
+    edge = _flat(_fill(8, 4, '#dcdce6'))
+    leg = _flat(_fill(4, 8, '#c9cde2'))
+    tw = _texels(2 * Wd)
+    band = (np.arange(tw) * 5 // tw) % 2 == 0                     # five stripes across it
+    def cushion(h):
+        c = _fill(tw, h, POOL_WHITE)
+        c[:, band] = stripe
+        return _flat(c)
+    side = _flat(_fill(8, 3, POOL_WHITE))
+    parts = box((-L, -Wd, zf - 0.03), (L, Wd, zf), {'front': edge, 'back': edge, 'right': edge, 'left': edge})
+    parts += box((xh, -Wd + 0.008, zf), (L - 0.008, Wd - 0.008, zc),
+                 {'top': cushion(_texels(L - xh)), 'front': side, 'right': side, 'left': side})
+    bl = math.hypot(xh - xt, zt - zc)
+    parts.append(quad(cushion(_texels(bl)), (xt, Wd - 0.008, zt), (xt, -Wd + 0.008, zt), (xh, Wd - 0.008, zc),
+                      cull=True))                                 # the raised back's face
+    parts.append(quad(_flat(_fill(8, 8, '#e6e6ee')), (xt - 0.012, -Wd, zt), (xt - 0.012, Wd, zt),
+                      (xh - 0.012, -Wd, zc - 0.012), cull=True))  # and its back
+    for sx in (-L + 0.035, L - 0.035):
+        for sy in (-Wd + 0.02, Wd - 0.02):
+            parts += _post((sx - 0.012, sy - 0.012, 0.0), (sx + 0.012, sy + 0.012, zf - 0.03), leg)
+    parts.append(shadow(0.0, 0.0, 0.6, 0.25))
+    return parts
+
+
+LADDER = {'foot': -0.15, 'reach': 0.0, 'top': 0.27, 'tube': 0.011, 'down': -0.14}
+
+
+@functools.lru_cache(maxsize=None)
+def _ladder_rail(w, h):
+    """One rail of a pool ladder side on: up from the deck, bent over the edge in a half circle and down into the
+    water - chrome, pale along its top, a dark line under it. The texture spans x -0.17 to 0.02 (column 0 at the deck)
+    and z 0.37 down to -0.14."""
+    c = LADDER
+    x = -0.17 + (np.arange(w) + 0.5) / w * 0.19
+    z = 0.37 - (np.arange(h) + 0.5) / h * 0.51
+    X, Z = np.meshgrid(x, z)
+    r = (c['reach'] - c['foot']) / 2
+    ax = c['foot'] + r
+    up = np.where(Z <= c['top'], np.minimum(np.where(Z >= 0, np.abs(X - c['foot']), 9.0), np.abs(X - c['reach'])), 9.0)
+    over = np.where(Z > c['top'], np.abs(np.hypot(X - ax, Z - c['top']) - r), 9.0)
+    d = np.minimum(up, over)
+    rail = d < c['tube']
+    out = np.where(Z > c['top'], np.hypot(X - ax, Z - c['top']) > r, X < np.where(np.abs(X - c['foot']) < np.abs(X - c['reach']), c['foot'], c['reach']))
+    colours = np.where(out[..., None], rgb('#f6f8fb'), rgb('#9aa6bc'))
+    return _flat(colours, rail)
+
+
+def pool_ladder(pl):
+    """A pool ladder's two chrome rails at the edge of a pool: each rises from the deck, bends over the edge and goes
+    down into the water. Faces +x: set it on the deck at the very edge, the pool on its +x side."""
+    tex = _ladder_rail(_fine(0.19), _fine(0.51))
+    parts = []
+    for y in (-0.1, 0.1):
+        parts.append(quad(tex, (-0.17, y, 0.37), (0.02, y, 0.37), (-0.17, y, -0.14)))
+    return parts
+
+
+def diving_board(pl):
+    """A springboard at the end of a pool: a long white board, its top a pale non-slip blue, on a white pedestal at
+    its back and a fulcrum part way along, reaching out over the water. Faces +x: set its foot on the deck a little
+    back from the edge, the board pointing out over the pool."""
+    L, Wd, z0, z1 = 1.2, 0.085, 0.165, 0.19
+    rng = np.random.default_rng(int(pl.get('seed', 3)))
+    top = _fill(_texels(2 * Wd), _texels(L), '#cfe2ea')
+    grit = rng.random(top.shape[:2]) < 0.08
+    top[grit] = rgb('#b6cfdc')
+    side = _fill(_texels(L), 3, POOL_WHITE)
+    side[-1:] = rgb('#2658c6')                                    # a blue line along its edge
+    end = _fill(_texels(2 * Wd), 3, POOL_WHITE)
+    white = _flat(_fill(8, 8, POOL_WHITE))
+    parts = box((0.0, -Wd, z0), (L, Wd, z1), {'top': _flat(top), 'right': _flat(side), 'left': _flat(side),
+                                              'front': _flat(end), 'back': _flat(end),
+                                              'bottom': _flat(_fill(8, 8, '#c9cde2'))})
+    parts += box((0.0, -0.07, 0.0), (0.24, 0.07, z0), {'front': white, 'back': white, 'right': white, 'left': white,
+                                                         'top': white})
+    parts += _post((0.42, -0.06, 0.0), (0.47, 0.06, z0), _flat(_fill(8, 8, '#2658c6')))
+    parts.append(shadow(0.15, 0.0, 0.5, 0.35))
+    return parts
+
+
 def sign(pl):
     """A sign with lettering on it (scripts/lettering.py): `text` (a newline starts another line) in a `style` -
     `painted` (a board, the default), `neon` (glowing tubes on a dark backing: it throws their light), `plaque`
@@ -4390,4 +4501,4 @@ OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'bo
            'card_table': card_table, 'saloon_chair': saloon_chair, 'piano': piano, 'pew': pew, 'tower': tower,
            'city_block': city_block, 'searchlight': searchlight, 'ray': ray, 'cable': cable, 'bridge': bridge, 'mountain': mountain, 'village': village,
            'portal': portal, 'screen': screen,
-           'sign': sign}
+           'sign': sign, 'lounger': lounger, 'pool_ladder': pool_ladder, 'diving_board': diving_board}

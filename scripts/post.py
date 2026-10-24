@@ -28,6 +28,21 @@ PALETTES = {
     'sepia': ['#140c06', '#33220f', '#55391c', '#77532c', '#9a7044', '#bb8f62', '#d8b488', '#f2dcb4'],
     'mono': ['#000000', '#ffffff'],
     'bone': ['#0b0b10', '#25252e', '#45434a', '#6a6460', '#948a7a', '#c0b49a', '#e8dcc0'],
+    # city pop, a screen print of an endless summer afternoon: cobalt to pale sky, white and its cool shadows,
+    # turquoise water, palm greens, sand and terracotta, a few hot accents (see citypop.py)
+    'citypop': ['#0e2a80', '#14379a', '#1c46b2', '#2658c6', '#336dd4', '#4584de', '#5c9ce6', '#79b4ee', '#9ccbf4',
+                '#c2e2f8', '#ffffff', '#f6f3ec', '#e6e6ee', '#d0d4e6', '#b6bed9', '#98a2c8', '#7a84b2', '#5c6696',
+                '#424a78', '#06708e', '#0b8aa8', '#15a6c2', '#2ec0d6', '#5cd6e2', '#95e8ec', '#cdf6f4', '#0a3426',
+                '#104a34', '#18643e', '#257f46', '#3b9a4e', '#5cb35a', '#8ccc6a', '#5a3c2a', '#7e5638', '#a87a52',
+                '#cfa77a', '#ead2a6', '#f6e6c4', '#c45a36', '#e7865a', '#d9302e', '#f05a5a', '#ff8fa0', '#ffc6cf',
+                '#ffc93a', '#f39a1e', '#0b1222', '#1a2238', '#2c3652'],
+    # and its dusk: indigo through violet and rose to a glowing horizon, lavender walls, a lit pool, warm windows, neon
+    'citypop_dusk': ['#0f1238', '#1a1a52', '#28216a', '#3c2a80', '#55318e', '#723896', '#93409a', '#b84c98',
+                     '#da5c90', '#f2767e', '#ff9a72', '#ffb874', '#ffd08a', '#ffe4ae', '#fff3d6', '#1c1a3c', '#2a2852',
+                     '#3c3a6a', '#545284', '#6e6c9e', '#8c88b8', '#b0aad0', '#04506e', '#0a7c9c', '#14a8c6',
+                     '#3cd2e4', '#86f0f2', '#d0fffb', '#ffcf70', '#ffb347', '#ff8c3a', '#fff0c2', '#ffe08f',
+                     '#ff4f9a', '#ff86c8', '#53e6ff', '#c06bff', '#07081a', '#0f1226', '#161a34', '#1f2a3e',
+                     '#24403e', '#2f5a4c', '#c8324a', '#e8586a', '#2e1c34', '#4a2840'],
 }
 RAMPS = {'gameboy', 'amber', 'phosphor', 'sepia', 'mono', 'bone'}  # mapped by luminance
 
@@ -61,6 +76,11 @@ PRESETS = {
     'ashfall': [{'fx': 'ash'}, {'fx': 'embers', 'count': 50},
                 {'fx': 'grade', 'tint': [1.1, 0.9, 0.82], 'saturation': 0.55}],
     'hurt': [{'fx': 'hurt'}],
+    # flat colour with no dither: each surface prints as one or two inks and a sky in bands (see citypop.py)
+    'citypop': [{'fx': 'grade', 'saturation': 1.15, 'contrast': 1.05},
+                {'fx': 'palette', 'name': 'citypop', 'dither': 0, 'auto_levels': False}],
+    'citypop_dusk': [{'fx': 'grade', 'saturation': 1.15, 'contrast': 1.04},
+                     {'fx': 'palette', 'name': 'citypop_dusk', 'dither': 0, 'auto_levels': False}],
 }
 
 WORLD = {'grade', 'bloom', 'vignette', 'grain', 'rain', 'snow', 'lightning', 'letterbox', 'hurt', 'fade',
@@ -612,6 +632,16 @@ def palette_spec(effects, scene):
             spec = e.get('name', e.get('colors', spec))
             levels = e.get('auto_levels', levels)
     return spec, levels
+
+
+def palette_dither(effects, scene):
+    """How strongly the frame is dithered before the palette: the scene's `dither`, unless a `palette` effect sets
+    its own (the `citypop` presets set 0, for flat colour)."""
+    d = scene.get('dither', 1.0)
+    for e in effects:
+        if e['fx'] == 'palette' and 'dither' in e:
+            d = e['dither']
+    return float(d)
 
 
 # ------------------------------------------------------------------ display stage (uint8, upscaled)

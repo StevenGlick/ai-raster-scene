@@ -1,0 +1,543 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "map": [
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,KKKKKKKK,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,KKKKKKKK,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,DDDDDDDDDD,,,,,,,,,,,,,",
+  ",,,,,,,,,,,DDDDDDDDDD,,,,,,,,,,,,,",
+  ",,,,,,,,,,,DDDDDDDDDD,,,,,,,,,,,,,",
+  ",,,,,llllllllllllllllllllllll,,,,,",
+  ",,,,,iiilllllllllllllllllllll,,,,,",
+  ",,,,,llllllllllllllllllllllll,,,,,",
+  "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+  "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+  "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+ ],
+ "legend": {
+  ",": {
+   "floor": {
+    "base": "stucco",
+    "tint": [
+     1.0,
+     0.86,
+     0.66
+    ]
+   }
+  },
+  "r": {
+   "floor": "blacktop"
+  },
+  "m": {
+   "floor": "blacktop_line"
+  },
+  "l": {
+   "floor": "blacktop"
+  },
+  "D": {
+   "wall": "diner_front",
+   "h": 1.0,
+   "top": "stucco"
+  },
+  "K": {
+   "wall": "stucco",
+   "h": 1.3,
+   "top": "stucco"
+  },
+  "i": {
+   "wall": "stucco",
+   "h": 0.06,
+   "top": "stucco"
+  }
+ },
+ "camera": {
+  "x": 16.8,
+  "y": 21.0,
+  "height": 0.5,
+  "look_at": [
+   18.4,
+   10.0,
+   2.6
+  ],
+  "fov": 70
+ },
+ "title": "Roadside diner - a stainless diner by the road, in the city-pop look",
+ "sky": "summer",
+ "skyline": {
+  "type": "mountains",
+  "height": 0.5
+ },
+ "ambient": [
+  0.44,
+  0.48,
+  0.68
+ ],
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 62,
+   "elevation": 48,
+   "color": [
+    1.0,
+    0.96,
+    0.88
+   ],
+   "intensity": 1.2
+  }
+ ],
+ "fog": {
+  "color": [
+   0.71,
+   0.88,
+   0.96
+  ],
+  "density": 0.004
+ },
+ "sprites": [
+  {
+   "x": 21.8,
+   "y": 12.9,
+   "type": "diner_sign"
+  },
+  {
+   "x": 5.6,
+   "y": 13.5,
+   "type": "gas_pump",
+   "variant": 0
+  },
+  {
+   "x": 6.6,
+   "y": 13.5,
+   "type": "gas_pump",
+   "variant": 1
+  },
+  {
+   "x": 8.0,
+   "y": 6.0,
+   "type": "fan_palm",
+   "scale": 7.2
+  },
+  {
+   "x": 12.5,
+   "y": 4.5,
+   "type": "fan_palm"
+  },
+  {
+   "x": 24.5,
+   "y": 6.0,
+   "type": "fan_palm",
+   "scale": 7.6
+  },
+  {
+   "x": 28.0,
+   "y": 9.5,
+   "type": "fan_palm",
+   "scale": 6.4
+  },
+  {
+   "x": 3.0,
+   "y": 9.0,
+   "type": "fan_palm",
+   "scale": 6.8
+  },
+  {
+   "x": 28.2,
+   "y": 13.2,
+   "type": "palm",
+   "scale": 3.8,
+   "flip": true
+  },
+  {
+   "x": 2.6,
+   "y": 12.6,
+   "type": "palm_lean",
+   "scale": 3.6
+  },
+  {
+   "x": 10.4,
+   "y": 11.6,
+   "type": "agave"
+  },
+  {
+   "x": 23.4,
+   "y": 11.6,
+   "type": "agave"
+  },
+  {
+   "x": 1.0,
+   "y": 4.6,
+   "type": "telegraph_pole"
+  },
+  {
+   "x": 7.0,
+   "y": 4.6,
+   "type": "telegraph_pole"
+  },
+  {
+   "x": 19.0,
+   "y": 4.6,
+   "type": "telegraph_pole"
+  },
+  {
+   "x": 25.0,
+   "y": 4.6,
+   "type": "telegraph_pole"
+  },
+  {
+   "x": 31.0,
+   "y": 4.6,
+   "type": "telegraph_pole"
+  }
+ ],
+ "objects": [
+  {
+   "type": "car",
+   "x": 13.4,
+   "y": 13.2,
+   "angle": 90,
+   "paint": "#5cd6e2"
+  },
+  {
+   "type": "car",
+   "x": 17.8,
+   "y": 13.0,
+   "angle": 76,
+   "paint": "#ff8fa0"
+  },
+  {
+   "type": "beam",
+   "x": 6.1,
+   "y": 13.5,
+   "z": 1.25,
+   "length": 3.4,
+   "width": 1.8,
+   "depth": 0.14,
+   "material": "stucco"
+  },
+  {
+   "type": "column",
+   "x": 4.8,
+   "y": 13.5,
+   "material": "stucco",
+   "sides": 8,
+   "radius": 0.06,
+   "height": 1.25,
+   "base": 0.0,
+   "capital": 0.0,
+   "sink": 0.0,
+   "casts": true,
+   "seed": 0
+  },
+  {
+   "type": "column",
+   "x": 7.4,
+   "y": 13.5,
+   "material": "stucco",
+   "sides": 8,
+   "radius": 0.06,
+   "height": 1.25,
+   "base": 0.0,
+   "capital": 0.0,
+   "sink": 0.0,
+   "casts": true,
+   "seed": 1
+  }
+ ],
+ "surface_noise": 0,
+ "light_levels": 0,
+ "side_shade": 1.0,
+ "sprite_shadows": true,
+ "post": [
+  "citypop"
+ ],
+ "shots": [
+  {
+   "x": 16.8,
+   "y": 21.0,
+   "height": 0.5,
+   "look_at": [
+    18.4,
+    10.0,
+    2.6
+   ],
+   "fov": 70
+  },
+  {
+   "x": 4.0,
+   "y": 15.6,
+   "height": 0.45,
+   "look_at": [
+    17.0,
+    10.6,
+    1.0
+   ],
+   "fov": 70
+  },
+  {
+   "x": 16.8,
+   "y": 21.0,
+   "height": 0.5,
+   "look_at": [
+    18.4,
+    10.0,
+    2.6
+   ],
+   "fov": 70,
+   "overrides": {
+    "legend": {
+     ",": {
+      "floor": {
+       "base": "stucco",
+       "tint": [
+        1.0,
+        0.86,
+        0.66
+       ]
+      }
+     },
+     "r": {
+      "floor": "blacktop"
+     },
+     "m": {
+      "floor": "blacktop_line"
+     },
+     "l": {
+      "floor": "blacktop"
+     },
+     "D": {
+      "wall": "diner_front_lit",
+      "h": 1.0,
+      "top": "stucco"
+     },
+     "K": {
+      "wall": "stucco",
+      "h": 1.3,
+      "top": "stucco"
+     },
+     "i": {
+      "wall": "stucco",
+      "h": 0.06,
+      "top": "stucco"
+     }
+    },
+    "sprites": [
+     {
+      "x": 21.8,
+      "y": 12.9,
+      "type": "diner_sign_lit"
+     },
+     {
+      "x": 5.6,
+      "y": 13.5,
+      "type": "gas_pump",
+      "variant": 0
+     },
+     {
+      "x": 6.6,
+      "y": 13.5,
+      "type": "gas_pump",
+      "variant": 1
+     },
+     {
+      "x": 8.0,
+      "y": 6.0,
+      "type": "fan_palm",
+      "scale": 7.2
+     },
+     {
+      "x": 12.5,
+      "y": 4.5,
+      "type": "fan_palm"
+     },
+     {
+      "x": 24.5,
+      "y": 6.0,
+      "type": "fan_palm",
+      "scale": 7.6
+     },
+     {
+      "x": 28.0,
+      "y": 9.5,
+      "type": "fan_palm",
+      "scale": 6.4
+     },
+     {
+      "x": 3.0,
+      "y": 9.0,
+      "type": "fan_palm",
+      "scale": 6.8
+     },
+     {
+      "x": 28.2,
+      "y": 13.2,
+      "type": "palm",
+      "scale": 3.8,
+      "flip": true
+     },
+     {
+      "x": 2.6,
+      "y": 12.6,
+      "type": "palm_lean",
+      "scale": 3.6
+     },
+     {
+      "x": 10.4,
+      "y": 11.6,
+      "type": "agave"
+     },
+     {
+      "x": 23.4,
+      "y": 11.6,
+      "type": "agave"
+     },
+     {
+      "x": 1.0,
+      "y": 4.6,
+      "type": "telegraph_pole"
+     },
+     {
+      "x": 7.0,
+      "y": 4.6,
+      "type": "telegraph_pole"
+     },
+     {
+      "x": 19.0,
+      "y": 4.6,
+      "type": "telegraph_pole"
+     },
+     {
+      "x": 25.0,
+      "y": 4.6,
+      "type": "telegraph_pole"
+     },
+     {
+      "x": 31.0,
+      "y": 4.6,
+      "type": "telegraph_pole"
+     }
+    ],
+    "sky": "sunset",
+    "ambient": [
+     0.38,
+     0.32,
+     0.48
+    ],
+    "lights": [
+     {
+      "type": "sun",
+      "azimuth": 200,
+      "elevation": 3,
+      "color": [
+       1.0,
+       0.55,
+       0.42
+      ],
+      "intensity": 0.45,
+      "disc_size": 3.0
+     },
+     {
+      "x": 21.8,
+      "y": 13.2,
+      "z": 3.6,
+      "radius": 6.0,
+      "color": [
+       1.0,
+       0.5,
+       0.78
+      ],
+      "intensity": 0.8
+     },
+     {
+      "x": 6.1,
+      "y": 13.5,
+      "z": 1.1,
+      "radius": 4.0,
+      "color": [
+       1.0,
+       0.9,
+       0.7
+      ],
+      "intensity": 0.9
+     },
+     {
+      "x": 13.0,
+      "y": 12.4,
+      "z": 0.6,
+      "radius": 3.5,
+      "color": [
+       1.0,
+       0.8,
+       0.55
+      ],
+      "intensity": 0.6
+     },
+     {
+      "x": 16.0,
+      "y": 12.4,
+      "z": 0.6,
+      "radius": 3.5,
+      "color": [
+       1.0,
+       0.8,
+       0.55
+      ],
+      "intensity": 0.6
+     },
+     {
+      "x": 19.0,
+      "y": 12.4,
+      "z": 0.6,
+      "radius": 3.5,
+      "color": [
+       1.0,
+       0.8,
+       0.55
+      ],
+      "intensity": 0.6
+     }
+    ],
+    "fog": {
+     "color": [
+      0.5,
+      0.36,
+      0.52
+     ],
+     "density": 0.006
+    },
+    "post": [
+     "citypop_dusk",
+     {
+      "fx": "bloom",
+      "source": "light",
+      "strength": 0.7,
+      "radius": 2.0,
+      "spread": 0.4
+     }
+    ]
+   }
+  }
+ ],
+ "supersample": 2
+}

@@ -159,6 +159,26 @@ Black cells ruled in light - `vector_grid` (a wall of squares), `vector_windows`
 
 `"ui": {"theme": "doomed"}`; in the shot's overlays a `statusbar` (`ammo`, `health` - the face bloodies below 80 - `armor`, `arms`, `keys`, `ammo_table`, `face`: `grin`/`ouch`), a `message` ("Picked up a clip.") and a `pistol` or `shotgun` viewmodel (`"fire": true`); aim with a 2-point `look_at` and `"pitch": -0.08`, `"light_levels": 16`, a near-black `fog`. The base: `nukage` sunk with `drop` and `"side": "slime_edge"`, `hex_floor` ledges and walkways, `green_trim` walls stacked storey on storey under a `tech_ceiling`, a `green_window`, `toxic_barrel`s, soldiers tinted sick green, a `corpse`, pickups, a `fireball`, `toxic_sign` decals. See `examples/doomed.py`.
 
+## City pop
+
+An endless summer afternoon after the paintings on Japanese city-pop record sleeves: clean shapes, flat colour, a deep cobalt sky, hard shadows, nobody about. Every one of these takes the `summer` sky, `"post": ["citypop"]`, `"surface_noise": 0`, `"light_levels": 0`, `"side_shade": 1` and `"sprite_shadows": true`; a strong sun (intensity about 1.2) from behind or beside the camera over a cool ambient (`[0.44, 0.48, 0.68]`) makes sunlit walls white and their shadows lavender. Keep the camera near what it looks at - a white deck or a lawn in the foreground prints as one flat colour - and look a little up, so the horizon sits low under a big sky. For dusk, a shot's `overrides` swap in the `_lit` textures, the `sunset` sky, a sun low on the horizon, a few warm point lights and `"post": ["citypop_dusk", {"fx": "bloom", "source": "light", "strength": 0.7, "radius": 2.0, "spread": 0.4}]`.
+
+### A poolside
+
+A white house across a turquoise pool: `pool_water` cells sunk with `drop` 0.1, the deck `pool_deck` with `pool_tile` as its `side` (the pool's wall below the waterline); the house of `glass_wall` under `ribbon_window` (two storeys), a tower of `stucco` with one storey of `ribbon_window`, a pavilion of `stucco` tinted pink; white `beam`s of `stucco` reaching out from its face for a balcony and an eave. Palms down one side, so the sun throws their shadows across the deck; `lounger`s in pairs facing the water with a `parasol` over each, a `pool_ladder` at the edge, a `diving_board` at the deep end, a `pool_ring` decal on the water, `agave`s by the doors, `fan_palm`s over the roof. At dusk `pool_water_lit` glows under the water: add turquoise point lights just above it. See `examples/poolside.py`.
+
+### A terrace over the sea
+
+`terracotta_tile` to a `white_railing` (see-through, so the sea shows between its rails) over `summer_sea` sunk with `drop` 0.4; planters of `stucco` with palms in them, a `bistro_set` under a `parasol`, a `lounger`; a beach of `white_sand` curving out along one side with palms on it; `yacht`s out at sea heeled over under sail, a `lighthouse_tower` far out on its rock, gulls, the `islands` skyline. The villa behind is `glass_wall` under `stucco`. For the sunset shot put the sun on the horizon behind the yachts. See `examples/seaside_terrace.py`.
+
+### A boulevard of palms
+
+A road scene: `blacktop` with white kerbs (`rumble` in white), `fan_palm` rows down both sides every 6, palms and parasols on the beach; on the land side `pool_deck` paving and a `lawn_stripes` lawn, hotels as `walls` in `blocks` of `ribbon_window` tiled a storey to a unit (`"tile": [1, 1]`), some tinted pink and peach; on the sea side the beach and `summer_sea`, `yacht`s out on it. Your car is the `sports_car`. At dusk the hotels are `ribbon_window_lit`. See `examples/coast_boulevard.py`.
+
+### A roadside diner
+
+A long low block of `diner_front` (one storey) with a `stucco` kitchen behind; a lot of `blacktop` in front with `car` objects in pastel paint; the road `blacktop` with its middle row `blacktop_line`; flat sand round it (`stucco` tinted `[1.0, 0.86, 0.66]`). The `diner_sign` on its pole at one end, `gas_pump`s on a low island under a canopy - a `beam` of `stucco` on two `column`s; `fan_palm`s and `telegraph_pole`s behind; the `mountains` skyline low and pale. At dusk swap in `diner_front_lit` and `diner_sign_lit` and hang a pink light by the sign. See `examples/roadside_diner.py`.
+
 ## Road scenes
 
 ### An arcade racer's road

@@ -1993,6 +1993,77 @@ def check_docs():
     print('ok docs match the code (asset lists, counts, scene keys, gallery, asset inventory)')
 
 
+def check_city_pop():
+    """Props throw the sun's shadow only where a scene asks (`sprite_shadows`), by their drawings and never on
+    themselves; `side_shade` 1 leaves north and south faces as bright as the rest; a palette effect's own `dither`
+    wins over the scene's, and with none the colours fall in bands; the `summer` sky heaps its cumulus on the
+    horizon; the city-pop presets print flat."""
+    sys.path.insert(0, os.path.join(ROOT, 'scripts'))
+    import post as P
+    import render as R
+    import skies
+
+    yard = {'map': ['.' * 16] * 10, 'legend': {'.': {'floor': 'pool_deck'}}, 'sky': 'summer', 'surface_noise': 0,
+            'ambient': [0.4, 0.4, 0.5], 'lights': [{'type': 'sun', 'azimuth': 180, 'elevation': 35}],
+            'sprites': [{'x': 4.0, 'y': 5.0, 'type': 'palm', 'scale': 3.5, 'variant': 0},
+                        {'x': 4.0, 'y': 8.0, 'type': 'grass_tuft'}],
+            'camera': {'x': 1.0, 'y': 5.0, 'angle': 0}}
+    xs = np.linspace(0.2, 15.8, 400)
+    line = (xs, np.full_like(xs, 5.0), np.zeros_like(xs))
+    plain = R.Renderer(R.World(yard), yard).suns[0]
+    assert 'casters' not in plain and np.allclose(R.sun_visibility(plain, *line), 1.0), \
+        'without sprite_shadows a palm throws no shadow'
+    cast = dict(yard, sprite_shadows=True)
+    s_ = R.Renderer(R.World(cast), cast).suns[0]
+    vis = R.sun_visibility(s_, *line)
+    east, west = vis[xs > 4.3], vis[xs < 3.7]
+    assert (east < 0.5).sum() > 20, 'a palm in a sun from the west lays its shadow over the ground to the east'
+    assert np.allclose(west, 1.0), 'and none toward the sun'
+    assert (east > 0.5).any(), 'the shadow has the gaps between its fronds, and an end'
+    assert np.allclose(R.caster_shade(s_, np.full(5, 4.0), np.full(5, 5.0), np.linspace(0.1, 3.0, 5)), 1.0), \
+        'a prop never shades itself'
+    assert len(s_['casters']['cards']) == 1, 'a tuft under half a unit tall throws no shadow'
+    off = dict(cast, sprites=[dict(yard['sprites'][0], casts=False)])
+    assert R.Renderer(R.World(off), off).suns[0].get('casters') is None, '"casts": false opts a prop out'
+    half = dict(cast, sprite_shadows=0.5)
+    v2 = R.sun_visibility(R.Renderer(R.World(half), half).suns[0], *line)
+    assert np.isclose(v2.min(), 0.5), 'a number sets how dark the shadows are'
+
+    # side_shade: a south face under a sun is as bright as the sun and the ambient make it
+    block = {'map': ['.......', '..###..', '.......', '.......', '.......'], 'sky': 'summer', 'surface_noise': 0,
+             'legend': {'#': {'wall': 'stucco', 'h': 1.0}, '.': {'floor': 'pool_deck'}}, 'light_levels': 0,
+             'ambient': [0.4, 0.4, 0.5], 'lights': [{'type': 'sun', 'azimuth': 90, 'elevation': 40}],
+             'camera': {'x': 3.5, 'y': 4.6, 'angle': 270, 'fov': 40}}
+
+    def face(scene):
+        r = R.Renderer(R.World(scene), scene)
+        img = r.render(R.prepare_shot(scene, R.merge_camera(scene, scene['camera'])))
+        return float(np.asarray(img, np.float32)[90:110, 140:180].mean())
+    dark, bright = face(block), face(dict(block, side_shade=1.0))
+    assert bright > dark * 1.15, 'side_shade 1 lifts the fixed darkening off a south face'
+
+    # a palette effect's own dither, and flat bands without one
+    assert P.palette_dither([{'fx': 'palette', 'name': 'citypop', 'dither': 0}], {'dither': 1.0}) == 0.0
+    assert P.palette_dither([{'fx': 'grade'}], {'dither': 0.5}) == 0.5
+    ramp = np.repeat(np.linspace(0.05, 0.6, 160)[None, :, None] * np.array([0.3, 0.5, 1.0]), 8, 0).astype(np.float32)
+    def runs(row):
+        row = row.astype(int)
+        return 1 + int((np.abs(np.diff(row, axis=0)).sum(1) > 0).sum()), len({tuple(c) for c in row})
+    n, colours = runs(P.quantize(ramp, 'citypop', dither=0.0, levels=False)[4])
+    assert n == colours, f'without dither a gradient falls into flat bands, each colour once ({n} runs, {colours})'
+    n, colours = runs(P.quantize(ramp, 'citypop', dither=1.0, levels=False)[4])
+    assert n > colours, 'with it the colours alternate where they meet'
+    fx = P.expand(['citypop'])
+    assert [e['fx'] for e in fx] == ['grade', 'palette'] and fx[1]['dither'] == 0
+    assert P.expand(['citypop_dusk'])[1]['name'] == 'citypop_dusk'
+
+    # the summer sky: cumulus heaped on the horizon, a clear cobalt overhead
+    sky = skies.make_sky('summer', 720, 120, seed=3)
+    white = (sky.min(axis=2) > 0.9)
+    assert white[-30:].sum() > 200 and white[:30].sum() == 0, 'cumulus on the horizon, none overhead'
+    print('ok city pop (props cast the sun\'s shadow, side_shade, a palette\'s own dither, the summer sky, presets)')
+
+
 def main():
     with tempfile.TemporaryDirectory() as tmp:
         scenes = sorted(glob.glob(os.path.join(ROOT, 'examples', '*.json')))
@@ -2025,6 +2096,7 @@ def main():
         check_objects()
         check_names()
         check_road()
+        check_city_pop()
         check_lettering_pages(tmp)
         check_docs()
         gs = os.path.join(tmp, 'gui_post.json')

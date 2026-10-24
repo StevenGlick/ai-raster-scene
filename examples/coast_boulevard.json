@@ -1,0 +1,390 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    20,
+    0,
+    0
+   ],
+   [
+    60,
+    -0.22,
+    0.5
+   ],
+   [
+    60,
+    0.3,
+    -0.7
+   ],
+   [
+    80,
+    -0.18,
+    0.4
+   ],
+   [
+    120,
+    0,
+    0
+   ]
+  ],
+  "width": 4.2,
+  "lanes": 4,
+  "surface": "blacktop",
+  "rumble": {
+   "width": 0.14,
+   "colors": [
+    "#f2f0ea",
+    "#f2f0ea"
+   ]
+  },
+  "ground": {
+   "left": [
+    {
+     "width": 1.4,
+     "texture": "pool_deck"
+    },
+    {
+     "texture": "lawn_stripes",
+     "tile": 2
+    }
+   ],
+   "right": [
+    {
+     "width": 1.4,
+     "texture": "pool_deck"
+    },
+    {
+     "width": 4.5,
+     "texture": "white_sand"
+    },
+    {
+     "texture": "summer_sea"
+    }
+   ]
+  },
+  "walls": [
+   {
+    "side": "left",
+    "offset": 3.2,
+    "height": 6.0,
+    "ragged": 3.0,
+    "blocks": 9,
+    "gaps": 0.3,
+    "seed": 4,
+    "tile": [
+     1,
+     1
+    ],
+    "from": 6,
+    "texture": [
+     "ribbon_window",
+     {
+      "base": "ribbon_window",
+      "tint": [
+       1.0,
+       0.82,
+       0.82
+      ]
+     },
+     "ribbon_window",
+     {
+      "base": "ribbon_window",
+      "tint": [
+       1.0,
+       0.9,
+       0.78
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "camera": {
+  "at": 2.0,
+  "x": -0.525,
+  "height": 0.75,
+  "fov": 64,
+  "pitch": 0.1
+ },
+ "title": "Coast boulevard - the convertible under the fan palms, in the city-pop look",
+ "sky": "summer",
+ "skyline": {
+  "type": "islands",
+  "count": 4
+ },
+ "lights": [
+  {
+   "type": "sun",
+   "azimuth": 20,
+   "elevation": 46,
+   "intensity": 1.1,
+   "color": [
+    1.0,
+    0.96,
+    0.88
+   ]
+  }
+ ],
+ "ambient": [
+  0.62,
+  0.66,
+  0.84
+ ],
+ "fog": {
+  "color": [
+   0.71,
+   0.88,
+   0.96
+  ],
+  "density": 0.003
+ },
+ "roadside": [
+  {
+   "type": "fan_palm",
+   "every": 6,
+   "offset": 0.7,
+   "scale": [
+    6.2,
+    7.6
+   ]
+  },
+  {
+   "type": [
+    "palm",
+    "palm_lean"
+   ],
+   "every": 13,
+   "side": "right",
+   "offset": 3.4,
+   "from": 8,
+   "scale": [
+    3.4,
+    4.2
+   ],
+   "flip": true
+  },
+  {
+   "type": "parasol",
+   "every": 9,
+   "side": "right",
+   "offset": 4.6,
+   "from": 5
+  }
+ ],
+ "sprites": [
+  {
+   "type": "car_compact",
+   "at": 16,
+   "x": -1.5750000000000002,
+   "variant": 2
+  },
+  {
+   "type": "car_sedan",
+   "at": 34,
+   "x": -0.525,
+   "variant": 1
+  },
+  {
+   "type": "car_oncoming",
+   "at": 28,
+   "x": 1.5750000000000002
+  },
+  {
+   "type": "yacht",
+   "at": 60,
+   "x": 16.0,
+   "scale": 3.2,
+   "variant": 0
+  },
+  {
+   "type": "yacht",
+   "at": 90,
+   "x": 24.0,
+   "scale": 3.0,
+   "variant": 2,
+   "flip": true
+  }
+ ],
+ "post": [
+  "citypop"
+ ],
+ "shots": [
+  {
+   "at": 2.0,
+   "x": -0.525,
+   "height": 0.75,
+   "fov": 64,
+   "pitch": 0.1,
+   "vehicle": {
+    "type": "sports_car",
+    "ahead": 2.6
+   }
+  },
+  {
+   "at": 30.0,
+   "x": -2.6,
+   "height": 0.4,
+   "fov": 70,
+   "pitch": 0.22,
+   "yaw": 4
+  },
+  {
+   "at": 2.0,
+   "x": -0.525,
+   "height": 0.75,
+   "fov": 64,
+   "pitch": 0.1,
+   "vehicle": {
+    "type": "sports_car",
+    "ahead": 2.6
+   },
+   "post": [
+    "citypop_dusk",
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 0.8,
+     "radius": 2.0,
+     "spread": 0.4
+    }
+   ],
+   "overrides": {
+    "sky": "sunset",
+    "lights": [
+     {
+      "type": "sun",
+      "azimuth": 262,
+      "elevation": 4,
+      "color": [
+       1.0,
+       0.6,
+       0.42
+      ],
+      "intensity": 0.6,
+      "disc_size": 5
+     }
+    ],
+    "ambient": [
+     0.5,
+     0.42,
+     0.56
+    ],
+    "fog": {
+     "color": [
+      0.82,
+      0.5,
+      0.52
+     ],
+     "density": 0.004
+    },
+    "road": {
+     "sections": [
+      [
+       20,
+       0,
+       0
+      ],
+      [
+       60,
+       -0.22,
+       0.5
+      ],
+      [
+       60,
+       0.3,
+       -0.7
+      ],
+      [
+       80,
+       -0.18,
+       0.4
+      ],
+      [
+       120,
+       0,
+       0
+      ]
+     ],
+     "width": 4.2,
+     "lanes": 4,
+     "surface": "blacktop",
+     "rumble": {
+      "width": 0.14,
+      "colors": [
+       "#f2f0ea",
+       "#f2f0ea"
+      ]
+     },
+     "ground": {
+      "left": [
+       {
+        "width": 1.4,
+        "texture": "pool_deck"
+       },
+       {
+        "texture": "lawn_stripes",
+        "tile": 2
+       }
+      ],
+      "right": [
+       {
+        "width": 1.4,
+        "texture": "pool_deck"
+       },
+       {
+        "width": 4.5,
+        "texture": "white_sand"
+       },
+       {
+        "texture": "summer_sea"
+       }
+      ]
+     },
+     "walls": [
+      {
+       "side": "left",
+       "offset": 3.2,
+       "height": 6.0,
+       "ragged": 3.0,
+       "blocks": 9,
+       "gaps": 0.3,
+       "seed": 4,
+       "tile": [
+        1,
+        1
+       ],
+       "from": 6,
+       "texture": [
+        "ribbon_window_lit",
+        {
+         "base": "ribbon_window_lit",
+         "tint": [
+          1.0,
+          0.82,
+          0.82
+         ]
+        },
+        "ribbon_window_lit",
+        {
+         "base": "ribbon_window_lit",
+         "tint": [
+          1.0,
+          0.9,
+          0.78
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "post": []
+   }
+  }
+ ],
+ "supersample": 2
+}

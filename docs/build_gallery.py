@@ -379,6 +379,18 @@ SHOTS = {
     'gui_menus_02': ('gui_menus', 2),
     'gui_trade_01': ('gui_trade', 1),
     'gui_trade_02': ('gui_trade', 2),
+    # city pop
+    'citypop_pool': ('poolside', 2),
+    'citypop_shadows': ('poolside', 3),
+    'citypop_float': ('poolside', 4),
+    'citypop_pool_dusk': ('poolside', 5),
+    'citypop_terrace': ('seaside_terrace', 1),
+    'citypop_terrace_sunset': ('seaside_terrace', 4),
+    'citypop_boulevard': ('coast_boulevard', 1),
+    'citypop_boulevard_dusk': ('coast_boulevard', 3),
+    'citypop_diner': ('roadside_diner', 1),
+    'citypop_pumps': ('roadside_diner', 2),
+    'citypop_diner_dusk': ('roadside_diner', 3),
 }
 # gallery image -> example whose every shot is tiled at half size, two to a row
 SHEETS = {'post_presets': 'post_presets', 'gui_themes': 'gui_themes', 'village_hours': 'village_hours'}
