@@ -173,11 +173,15 @@ A white house across a turquoise pool: `pool_water` cells sunk with `drop` 0.1, 
 
 ### A boulevard of palms
 
-A road scene: `blacktop` with white kerbs (`rumble` in white), `fan_palm` rows down both sides every 6, palms and parasols on the beach; on the land side `pool_deck` paving and a `lawn_stripes` lawn, hotels as `walls` in `blocks` of `ribbon_window` tiled a storey to a unit (`"tile": [1, 1]`), some tinted pink and peach; on the sea side the beach and `summer_sea`, `yacht`s out on it. Your car is the `sports_car`. At dusk the hotels are `ribbon_window_lit`. See `examples/coast_boulevard.py`.
+A road scene: `blacktop` with white kerbs (`rumble` in white), `fan_palm` rows down both sides every 6, palms and parasols on the beach; on the land side `pool_deck` paving and a `lawn_stripes` lawn, and hotels in 3D - `walls` in `blocks` 8 long with a `depth` of 5, a `setback` of 2.5, whole `storeys`, `ends` of `stucco` - their fronts `ribbon_window` and `hotel_balconies` tiled a storey to a unit (`"tile": [1, 1]`), some tinted pink and peach, a taller row behind; on the sea side the beach and `summer_sea`, `yacht`s out on it. Your car is the `sports_car`. At dusk the walls' `windows` light the rooms one by one from the `_lit` facades (`share` about 0.7, warm tints). See `examples/coast_boulevard.py`.
+
+### A night drive into the city
+
+A road scene in the air: `blacktop` with white lines and amber `edges`, `ground` a strip of `concrete` then `void` both sides, the city at night (`city_night`) far `below`; `jersey_barrier` walls, `highway_lamp`s every 9 with sodium lights over the road. Towers rise past it from the city below (`z` -24): two rows of `walls` in `blocks` with a `depth`, a `setback` and `gaps` 0.45, whole `storeys` of `tower_glass` and `office_bands` (`tile` 2), their `windows` lit one by one - a `share` of 0.3 near and less far, warm and cool tints and the odd neon one - so no two towers are alike. The `vector` sky with a big moon over the road, violet haze (`fog` 0.0045), cars ahead, your `sports_car` with its headlights, `citypop_dusk` and a light bloom. See `examples/night_drive.py`.
 
 ### A roadside diner
 
-A long low block of `diner_front` (one storey) with a `stucco` kitchen behind; a lot of `blacktop` in front with `car` objects in pastel paint; the road `blacktop` with its middle row `blacktop_line`; flat sand round it (`stucco` tinted `[1.0, 0.86, 0.66]`). The `diner_sign` on its pole at one end, `gas_pump`s on a low island under a canopy - a `beam` of `stucco` on two `column`s; `fan_palm`s and `telegraph_pole`s behind; the `mountains` skyline low and pale. At dusk swap in `diner_front_lit` and `diner_sign_lit` and hang a pink light by the sign. See `examples/roadside_diner.py`.
+A long low block of `diner_front` (one storey) with a `stucco` kitchen behind; a lot of `blacktop` in front with `car` objects in pastel paint; the road `blacktop` with its middle row `blacktop_line`; flat sand round it (`stucco` tinted `[1.0, 0.86, 0.66]`). The `diner_sign` object on its pole at one end (turned so its arrow points at the diner), `gas_pump` objects on a low island under a canopy - a `beam` of `stucco` on two `column`s; `fan_palm`s behind, and `telegraph_pole` objects along the old road behind the diner every 6 with their wires - `cable`s from insulator to insulator, `width` 0.035 so they hold together as lines; the `mountains` skyline low and pale. At dusk swap in `diner_front_lit`, set the sign `lit` and the pumps' `lights`. See `examples/roadside_diner.py`.
 
 ## Road scenes
 

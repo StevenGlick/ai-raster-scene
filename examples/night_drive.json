@@ -1,0 +1,600 @@
+{
+ "resolution": [
+  320,
+  200
+ ],
+ "scale": 3,
+ "road": {
+  "sections": [
+   [
+    16,
+    0,
+    0
+   ],
+   [
+    60,
+    0.35,
+    0.6
+   ],
+   [
+    50,
+    -0.45,
+    -0.4
+   ],
+   [
+    80,
+    0.25,
+    0.3
+   ],
+   [
+    300,
+    -0.1,
+    0.0
+   ]
+  ],
+  "width": 4.4,
+  "lanes": 4,
+  "surface": "blacktop",
+  "lines": "#f2f0ea",
+  "edges": "#ffc93a",
+  "rumble": false,
+  "ground": {
+   "left": [
+    {
+     "width": 0.3,
+     "texture": "concrete"
+    },
+    {
+     "texture": "void"
+    }
+   ],
+   "right": [
+    {
+     "width": 0.3,
+     "texture": "concrete"
+    },
+    {
+     "texture": "void"
+    }
+   ]
+  },
+  "below": {
+   "depth": 24,
+   "tile": 14,
+   "haze": 0.3,
+   "texture": "city_night"
+  },
+  "walls": [
+   {
+    "side": "both",
+    "offset": 0.0,
+    "height": 0.28,
+    "texture": "jersey_barrier",
+    "tile": [
+     1.3,
+     0.28
+    ]
+   },
+   {
+    "side": "both",
+    "offset": 11.0,
+    "z": -24.0,
+    "height": 30.0,
+    "ragged": 12.0,
+    "blocks": 6.0,
+    "gaps": 0.45,
+    "setback": 5.0,
+    "depth": 6.0,
+    "storeys": true,
+    "seed": 2,
+    "tile": [
+     2.0,
+     2.0
+    ],
+    "texture": [
+     "tower_glass",
+     "office_bands",
+     "tower_glass"
+    ],
+    "roof": {
+     "base": "concrete",
+     "tint": [
+      0.5,
+      0.48,
+      0.6
+     ]
+    },
+    "windows": {
+     "lit": [
+      "tower_glass_lit",
+      "office_bands_lit",
+      "tower_glass_lit"
+     ],
+     "share": 0.3,
+     "spread": 0.25,
+     "cells": [
+      [
+       4,
+       4
+      ],
+      [
+       2,
+       4
+      ],
+      [
+       4,
+       4
+      ]
+     ],
+     "dim": 0.35,
+     "colors": [
+      [
+       1.0,
+       1.0,
+       1.0
+      ],
+      [
+       1.0,
+       1.0,
+       1.0
+      ],
+      [
+       1.0,
+       0.86,
+       0.62
+      ],
+      [
+       1.0,
+       0.78,
+       0.5
+      ],
+      [
+       0.78,
+       0.88,
+       1.1
+      ],
+      [
+       0.72,
+       0.82,
+       1.12
+      ],
+      [
+       1.0,
+       0.62,
+       0.86
+      ],
+      [
+       0.62,
+       1.05,
+       1.1
+      ]
+     ]
+    }
+   },
+   {
+    "side": "both",
+    "offset": 32.0,
+    "z": -24.0,
+    "height": 52.0,
+    "ragged": 20.0,
+    "blocks": 9.0,
+    "gaps": 0.45,
+    "setback": 5.0,
+    "depth": 6.0,
+    "storeys": true,
+    "seed": 5,
+    "tile": [
+     2.0,
+     2.0
+    ],
+    "texture": [
+     "tower_glass",
+     "office_bands",
+     "tower_glass"
+    ],
+    "roof": {
+     "base": "concrete",
+     "tint": [
+      0.5,
+      0.48,
+      0.6
+     ]
+    },
+    "windows": {
+     "lit": [
+      "tower_glass_lit",
+      "office_bands_lit",
+      "tower_glass_lit"
+     ],
+     "share": 0.24,
+     "spread": 0.25,
+     "cells": [
+      [
+       4,
+       4
+      ],
+      [
+       2,
+       4
+      ],
+      [
+       4,
+       4
+      ]
+     ],
+     "dim": 0.35,
+     "colors": [
+      [
+       1.0,
+       1.0,
+       1.0
+      ],
+      [
+       1.0,
+       1.0,
+       1.0
+      ],
+      [
+       1.0,
+       0.86,
+       0.62
+      ],
+      [
+       1.0,
+       0.78,
+       0.5
+      ],
+      [
+       0.78,
+       0.88,
+       1.1
+      ],
+      [
+       0.72,
+       0.82,
+       1.12
+      ],
+      [
+       1.0,
+       0.62,
+       0.86
+      ],
+      [
+       0.62,
+       1.05,
+       1.1
+      ]
+     ]
+    }
+   }
+  ],
+  "bands": 0.03,
+  "distance": 400
+ },
+ "camera": {
+  "at": 2.0,
+  "x": -0.55,
+  "height": 0.75,
+  "fov": 64,
+  "pitch": 0.08
+ },
+ "title": "Night drive - the convertible into the city at night, in the city-pop look",
+ "sky": "vector",
+ "sky_objects": [
+  {
+   "type": "moon",
+   "azimuth": 266,
+   "elevation": 24,
+   "size": 5.0,
+   "phase": 0.0
+  }
+ ],
+ "ambient": [
+  0.42,
+  0.36,
+  0.56
+ ],
+ "lights": [
+  {
+   "at": 4,
+   "x": 2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 13,
+   "x": -2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 22,
+   "x": 2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 31,
+   "x": -2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 40,
+   "x": 2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 49,
+   "x": -2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 58,
+   "x": 2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 67,
+   "x": -2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 76,
+   "x": 2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 85,
+   "x": -2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 94,
+   "x": 2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 103,
+   "x": -2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 112,
+   "x": 2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 121,
+   "x": -2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 130,
+   "x": 2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 139,
+   "x": -2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 148,
+   "x": 2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  },
+  {
+   "at": 157,
+   "x": -2.6,
+   "z": 2.2,
+   "radius": 4.0,
+   "color": [
+    1.0,
+    0.82,
+    0.55
+   ],
+   "intensity": 1.0
+  }
+ ],
+ "fog": {
+  "color": [
+   0.3,
+   0.2,
+   0.42
+  ],
+  "density": 0.0045
+ },
+ "roadside": [
+  {
+   "type": "highway_lamp",
+   "every": 9,
+   "offset": 0.15,
+   "side": "both",
+   "from": 4
+  }
+ ],
+ "sprites": [
+  {
+   "type": "car_compact",
+   "at": 14,
+   "x": -0.55,
+   "variant": 1
+  },
+  {
+   "type": "car_sedan",
+   "at": 26,
+   "x": -1.6500000000000001,
+   "variant": 3
+  },
+  {
+   "type": "car_compact",
+   "at": 44,
+   "x": -0.55,
+   "variant": 0
+  },
+  {
+   "type": "car_oncoming",
+   "at": 34,
+   "x": 1.6500000000000001
+  }
+ ],
+ "shots": [
+  {
+   "at": 2.0,
+   "x": -0.55,
+   "height": 0.75,
+   "fov": 64,
+   "pitch": 0.08,
+   "post": [
+    "citypop_dusk",
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 0.75,
+     "radius": 2.0,
+     "spread": 0.4
+    }
+   ],
+   "vehicle": {
+    "type": "sports_car",
+    "ahead": 2.6,
+    "headlights": true
+   }
+  },
+  {
+   "at": 40.0,
+   "x": 1.9,
+   "height": 0.6,
+   "fov": 70,
+   "pitch": 0.02,
+   "yaw": 38,
+   "post": [
+    "citypop_dusk",
+    {
+     "fx": "bloom",
+     "source": "light",
+     "strength": 0.75,
+     "radius": 2.0,
+     "spread": 0.4
+    }
+   ]
+  }
+ ],
+ "supersample": 2
+}

@@ -4,10 +4,12 @@ poles along the road and a cobalt sky with cumulus heaped on the horizon. Then t
 lit, the sign and the pumps' globes glowing.
 
 Shows the city-pop kit (scripts/citypop.py) in the American roadside: `diner_front` (and `diner_front_lit` after
-dark), `diner_sign` (and `diner_sign_lit`), `gas_pump` (two paints), `blacktop` for the road, `pool_deck` for the
-lot; `car` objects in pastel paint; a canopy of `stucco` - a `beam` on `column`s; `fan_palm`, `palm` and
-`telegraph_pole` props; the `summer` sky and the `citypop` preset, `side_shade` 1 and `sprite_shadows`. The dusk shot
-swaps the legend, the sprites, the sky and the preset (`citypop_dusk`) in its overrides.
+dark), `blacktop` for the road and the lot, `blacktop_line` down its middle; the objects in 3D - the `diner_sign` on
+its pole (`lit` after dark), two `gas_pump`s (their `paint`; `lights` after dark), `car`s in pastel paint, a canopy of
+`stucco` (a `beam` on `column`s), `telegraph_pole`s along the old road behind with their wires (`cable`s from
+insulator to insulator); `fan_palm` and `palm` props; the `summer` sky and the `citypop`
+preset, `side_shade` 1 and `sprite_shadows`. The dusk shot swaps the legend, the objects, the sky and the preset
+(`citypop_dusk`) in its overrides.
 Run:  python roadside_diner.py  -> writes roadside_diner.json next to this file.
 """
 import os
@@ -29,11 +31,31 @@ def legend(lit=False):
     }
 
 
-def sprites(lit=False):
+def objects(lit=False):
     return [
-        {'x': 21.8, 'y': 12.9, 'type': 'diner_sign_lit' if lit else 'diner_sign'},
-        {'x': 5.6, 'y': 13.5, 'type': 'gas_pump', 'variant': 0},
-        {'x': 6.6, 'y': 13.5, 'type': 'gas_pump', 'variant': 1},
+        {'type': 'diner_sign', 'x': 21.8, 'y': 12.9, 'angle': 270, 'lit': lit},       # its arrow to the diner
+        {'type': 'gas_pump', 'x': 5.6, 'y': 13.5, 'angle': 90, 'paint': '#d9302e', 'lights': lit},
+        {'type': 'gas_pump', 'x': 6.6, 'y': 13.5, 'angle': 90, 'paint': '#15a6c2', 'lights': lit},
+        {'type': 'car', 'x': 13.4, 'y': 13.2, 'angle': 90, 'paint': '#5cd6e2'},
+        {'type': 'car', 'x': 17.8, 'y': 13.0, 'angle': 76, 'paint': '#ff8fa0'},
+        # the canopy over the pumps: a white slab on two columns
+        {'type': 'beam', 'x': 6.1, 'y': 13.5, 'z': 1.25, 'length': 3.4, 'width': 1.8, 'depth': 0.14,
+         'material': 'stucco'},
+        *[{'type': 'column', 'x': x, 'y': 13.5, 'material': 'stucco', 'sides': 8, 'radius': 0.06, 'height': 1.25,
+           'base': 0.0, 'capital': 0.0, 'sink': 0.0, 'casts': True, 'seed': k} for k, x in enumerate((4.8, 7.4))],
+        # telephone poles along the old road behind the diner, and their wires from insulator to insulator
+        *[{'type': 'telegraph_pole', 'x': x, 'y': POLE_Y, 'seed': k} for k, x in enumerate(POLES)],
+        *[{'type': 'cable', 'x': a, 'y': POLE_Y + dy, 'z': z, 'to': [b, POLE_Y + dy, z], 'sag': 0.12, 'width': 0.035,
+           'color': '#1a2238'}
+          for a, b in zip(POLES, POLES[1:]) for dy in (-0.35, 0.35) for z in (2.85, 2.61)],
+    ]
+
+
+POLES, POLE_Y = (1.0, 7.0, 13.0, 19.0, 25.0, 31.0), 4.6
+
+
+def sprites():
+    return [
         # fan palms behind the diner, palms by the lot
         {'x': 8.0, 'y': 6.0, 'type': 'fan_palm', 'scale': 7.2}, {'x': 12.5, 'y': 4.5, 'type': 'fan_palm'},
         {'x': 24.5, 'y': 6.0, 'type': 'fan_palm', 'scale': 7.6}, {'x': 28.0, 'y': 9.5, 'type': 'fan_palm', 'scale': 6.4},
@@ -41,8 +63,6 @@ def sprites(lit=False):
         {'x': 28.2, 'y': 13.2, 'type': 'palm', 'scale': 3.8, 'flip': True},
         {'x': 2.6, 'y': 12.6, 'type': 'palm_lean', 'scale': 3.6},
         {'x': 10.4, 'y': 11.6, 'type': 'agave'}, {'x': 23.4, 'y': 11.6, 'type': 'agave'},
-        # telephone poles along the old road behind the diner
-        *[{'x': x, 'y': 4.6, 'type': 'telegraph_pole'} for x in (1.0, 7.0, 19.0, 25.0, 31.0)],
     ]
 
 
@@ -54,18 +74,9 @@ def roadside_diner():
     g.rect(11, 9, 20, 11, 'D')                     # the diner
     g.rect(12, 7, 19, 8, 'K')                      # its kitchen behind
     g.rect(5, 13, 7, 13, 'i')                      # the pumps' island
-    objects = [
-        {'type': 'car', 'x': 13.4, 'y': 13.2, 'angle': 90, 'paint': '#5cd6e2'},
-        {'type': 'car', 'x': 17.8, 'y': 13.0, 'angle': 76, 'paint': '#ff8fa0'},
-        # the canopy over the pumps: a white slab on two columns
-        {'type': 'beam', 'x': 6.1, 'y': 13.5, 'z': 1.25, 'length': 3.4, 'width': 1.8, 'depth': 0.14,
-         'material': 'stucco'},
-        *[{'type': 'column', 'x': x, 'y': 13.5, 'material': 'stucco', 'sides': 8, 'radius': 0.06, 'height': 1.25,
-           'base': 0.0, 'capital': 0.0, 'sink': 0.0, 'casts': True, 'seed': k} for k, x in enumerate((4.8, 7.4))],
-    ]
     dusk = {
         'legend': legend(lit=True),
-        'sprites': sprites(lit=True),
+        'objects': objects(lit=True),
         'sky': 'sunset',
         'ambient': [0.38, 0.32, 0.48],
         'lights': [{'type': 'sun', 'azimuth': 200, 'elevation': 3, 'color': [1.0, 0.55, 0.42], 'intensity': 0.45,
@@ -87,7 +98,7 @@ def roadside_diner():
         lights=[{'type': 'sun', 'azimuth': 62, 'elevation': 48, 'color': [1.0, 0.96, 0.88], 'intensity': 1.2}],
         fog={'color': [0.71, 0.88, 0.96], 'density': 0.004},
         sprites=sprites(),
-        objects=objects,
+        objects=objects(),
         surface_noise=0,
         light_levels=0,
         side_shade=1.0,

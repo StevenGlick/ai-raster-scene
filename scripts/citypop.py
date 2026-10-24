@@ -306,6 +306,102 @@ def tex_diner_front_lit(name):
     return _diner(True)
 
 
+def _balconies(lit):
+    """A storey of a seaside hotel: under the edge of the balcony slab above and its band of shadow, sliding doors of
+    glass mirroring the sky, two rooms to a unit, and the white parapet of this storey's balconies in front. Lit, the
+    rooms glow warm behind the glass. Two windows to a tile, for a wall's `windows`."""
+    rgb = tex_stucco('stucco')[0].copy()
+    em = np.zeros((T, T), np.float32)
+    rgb[0:5] = FRAME                                       # the edge of the slab over this storey
+    rgb[5:10] = col('#9ea6c8')                             # the shadow under it
+    if lit:
+        y, x = np.mgrid[10:40, 0:T]
+        room = _bands((y - 10) / 29.0, [(0.0, col('#ffcf86')), (0.55, col('#ffe6b0')), (1.0, col('#e8a868'))])
+        rgb[10:40] = room
+        em[10:40] = 0.7
+    else:
+        rgb[10:40] = _sky_glass(30, T)
+    for m in (0, 16, 32, 48):                              # the doors' frames
+        rgb[10:40, m:m + 1] = FRAME * 0.9
+        em[10:40, m:m + 1] = 0.0
+    for m in (0, 32):                                      # and the wall between the rooms
+        rgb[10:40, m:m + 2] = FRAME * 0.95
+        em[10:40, m:m + 2] = 0.0
+    rgb[40:42] = col('#c9cde2')                            # the parapet's shadow on the glass
+    rgb[42:] = FRAME                                       # the parapet
+    rgb[42] = col('#f6f3ec')
+    return np.clip(rgb, 0, 1).astype(np.float32), (em if lit else None)
+
+
+def tex_hotel_balconies(name):
+    return _balconies(False)
+
+
+def tex_hotel_balconies_lit(name):
+    return _balconies(True)
+
+
+def _tower_grid(lit):
+    """A glass tower's face at dusk, four windows across and four storeys to a tile: deep blue-violet glass in dark
+    frames, a floor's band between the storeys, the evening caught in the glass. Lit, every window glows - a room's
+    warm light, paler at its ceiling - for a wall's `windows` to light them one by one."""
+    rgb = np.empty((T, T, 3), np.float32)
+    rgb[:] = col('#2a2f4a')                                 # the frame and spandrels
+    em = np.zeros((T, T), np.float32)
+    yy, xx = np.mgrid[0:T, 0:T]
+    rgb[(yy % 16) >= 13] = col('#20243a')                   # the floor's band
+    for gy in range(4):
+        for gx in range(4):
+            y0, x0 = gy * 16 + 2, gx * 16 + 2
+            win = (yy >= y0) & (yy < y0 + 11) & (xx >= x0) & (xx < x0 + 12)
+            t = (yy[win] - y0) / 10.0
+            if lit:
+                rgb[win] = _lerp(col('#fff2cc'), col('#ffd28a'), t)
+                em[win] = 0.85
+            else:
+                rgb[win] = _lerp(col('#3a3a78'), col('#1a1c3a'), t)
+                glint = win & ((xx - x0) + (yy - y0) < 5)
+                rgb[glint] = col('#5a5490')
+    return rgb, (em if lit else None)
+
+
+def tex_tower_glass(name):
+    return _tower_grid(False)
+
+
+def tex_tower_glass_lit(name):
+    return _tower_grid(True)
+
+
+def _office_bands(lit):
+    """An office block's face at dusk: four storeys to a tile, each a long band of windows - two to a tile across -
+    over a band of pale concrete. Lit, every window glows a cool office white."""
+    rgb = np.empty((T, T, 3), np.float32)
+    rgb[:] = col('#6a6e8a')                                 # the concrete bands
+    em = np.zeros((T, T), np.float32)
+    yy, xx = np.mgrid[0:T, 0:T]
+    for gy in range(4):
+        y0 = gy * 16 + 4
+        band = (yy >= y0) & (yy < y0 + 9)
+        if lit:
+            rgb[band] = _lerp(col('#e8f2ff'), col('#c8dcf8'), (yy[band] - y0) / 8.0)
+            em[band] = 0.8
+        else:
+            rgb[band] = _lerp(col('#34386a'), col('#1c1e38'), (yy[band] - y0) / 8.0)
+        rgb[band & (xx % 32 < 1)] = col('#4a4e6a')          # the mullion between two windows
+        em[band & (xx % 32 < 1)] = 0.0
+        rgb[y0 + 9] = col('#4a4e6a')                        # the sill's shadow
+    return rgb, (em if lit else None)
+
+
+def tex_office_bands(name):
+    return _office_bands(False)
+
+
+def tex_office_bands_lit(name):
+    return _office_bands(True)
+
+
 # ------------------------------------------------------------------ props
 
 PARASOL = ('#d9302e', '#15a6c2', '#ffc93a', '#2658c6')
@@ -521,6 +617,23 @@ def _diner_sign(lit):
     return rgba, np.asarray(glow, np.float32) / 255
 
 
+GLOBES = ('#d9302e', '#15a6c2')
+
+
+def _pump_globe(k):
+    """The glass globe on a gas pump, lit from inside: milk white, a band round it in the pump's colour (0 red, 1
+    turquoise) - the gas_pump object sets one on its top."""
+    n = 12
+    rgba = np.zeros((n, n, 4), np.float32)
+    yy, xx = np.mgrid[0:n, 0:n].astype(np.float32) + 0.5 - n / 2
+    ball = np.hypot(xx, yy) < 5.6
+    rgba[ball, :3] = col('#fff6dc')
+    rgba[ball & (np.abs(yy) < 1.6), :3] = col(GLOBES[k % len(GLOBES)])
+    rgba[ball & (xx + yy > 4), :3] *= 0.86
+    rgba[ball, 3] = 1
+    return rgba, ball.astype(np.float32) * 0.9
+
+
 PUMPS = ('#d9302e', '#15a6c2')
 
 
@@ -553,20 +666,26 @@ TEXTURES = {'stucco': tex_stucco, 'ribbon_window': tex_ribbon_window, 'ribbon_wi
             'pool_water_lit': tex_pool_water_lit, 'pool_tile': tex_pool_tile, 'pool_deck': tex_pool_deck,
             'terracotta_tile': tex_terracotta_tile, 'summer_sea': tex_summer_sea, 'white_railing': tex_white_railing,
             'blacktop': tex_blacktop, 'blacktop_line': tex_blacktop_line, 'lawn_stripes': tex_lawn_stripes,
-            'diner_front': tex_diner_front, 'diner_front_lit': tex_diner_front_lit}
+            'diner_front': tex_diner_front, 'diner_front_lit': tex_diner_front_lit,
+            'hotel_balconies': tex_hotel_balconies, 'hotel_balconies_lit': tex_hotel_balconies_lit,
+            'tower_glass': tex_tower_glass, 'tower_glass_lit': tex_tower_glass_lit, 'office_bands': tex_office_bands,
+            'office_bands_lit': tex_office_bands_lit}
 # drawn clean, and kept clean: the scene's surface noise barely touches them
 TEXTURE_NOISE = {'stucco': 0.15, 'ribbon_window': 0.1, 'ribbon_window_lit': 0.05, 'glass_wall': 0.05,
                  'glass_wall_lit': 0.05, 'pool_water': 0.1, 'pool_water_lit': 0.05, 'pool_tile': 0.2, 'pool_deck': 0.25,
                  'terracotta_tile': 0.3, 'summer_sea': 0.1, 'white_railing': 0.05, 'blacktop': 0.2,
-                 'blacktop_line': 0.2, 'lawn_stripes': 0.2, 'diner_front': 0.1, 'diner_front_lit': 0.05}
+                 'blacktop_line': 0.2, 'lawn_stripes': 0.2, 'diner_front': 0.1, 'diner_front_lit': 0.05,
+                 'hotel_balconies': 0.1, 'hotel_balconies_lit': 0.05, 'tower_glass': 0.1, 'tower_glass_lit': 0.05,
+                 'office_bands': 0.1, 'office_bands_lit': 0.05}
 TEXTURE_REFLECT = {'pool_water': 0.32, 'pool_water_lit': 0.22, 'summer_sea': 0.3}
 
 SPRITES = {'parasol': lambda: _parasol(0), 'fan_palm': spr_fan_palm, 'agave': spr_agave, 'yacht': lambda: _yacht(0),
            'bistro_set': spr_bistro_set, 'diner_sign': lambda: _diner_sign(False),
-           'diner_sign_lit': lambda: _diner_sign(True), 'gas_pump': lambda: _gas_pump(0)}
+           'diner_sign_lit': lambda: _diner_sign(True), 'gas_pump': lambda: _gas_pump(0),
+           'pump_globe': lambda: _pump_globe(0)}
 SPRITE_HEIGHT = {'parasol': 0.95, 'fan_palm': 6.5, 'agave': 0.55, 'yacht': 3.6, 'bistro_set': 0.36,
-                 'diner_sign': 4.4, 'diner_sign_lit': 4.4, 'gas_pump': 0.72}
+                 'diner_sign': 4.4, 'diner_sign_lit': 4.4, 'gas_pump': 0.72, 'pump_globe': 0.12}
 # their own shadows (sprite_shadows) are the ones that matter: a contact blob under them prints as a stain
-PROP_DEFAULTS = {'parasol': {'shadow': False}, 'bistro_set': {'shadow': False}}
-VARIANTS = {'parasol': (4, _parasol), 'yacht': (3, _yacht), 'gas_pump': (2, _gas_pump)}
+PROP_DEFAULTS = {'parasol': {'shadow': False}, 'bistro_set': {'shadow': False}, 'pump_globe': {'shadow': False}}
+VARIANTS = {'parasol': (4, _parasol), 'yacht': (3, _yacht), 'gas_pump': (2, _gas_pump), 'pump_globe': (2, _pump_globe)}
 DECALS = {'pool_ring': dec_pool_ring}

@@ -2061,7 +2061,53 @@ def check_city_pop():
     sky = skies.make_sky('summer', 720, 120, seed=3)
     white = (sky.min(axis=2) > 0.9)
     assert white[-30:].sum() > 200 and white[:30].sum() == 0, 'cumulus on the horizon, none overhead'
-    print('ok city pop (props cast the sun\'s shadow, side_shade, a palette\'s own dither, the summer sky, presets)')
+    # buildings along a road in 3D: their near ends drawn (and roofs, below the eye), whole storeys, staggered, and
+    # their windows lit one by one - each building its own share, the same every render
+    import road as RD
+
+    def street(walls, ground='concrete'):
+        return {'resolution': [160, 100], 'sky': 'day', 'ambient': [0.6, 0.6, 0.6],
+                'road': {'sections': [[200, 0, 0]], 'width': 4, 'rumble': False, 'lines': False, 'ground': ground,
+                         'below': {'depth': 8, 'texture': 'concrete'}, 'walls': walls},
+                'camera': {'at': 1.0, 'height': 0.8}}
+
+    def shot(sc):
+        rr = RD.RoadRenderer(sc)
+        return rr, np.asarray(rr.render(sc['camera']), np.float32)
+    row = {'side': 'left', 'offset': 1.0, 'height': 3.0, 'ragged': 1.4, 'blocks': 6, 'gaps': 0.3, 'seed': 3,
+           'texture': 'stucco', 'tile': [1, 1], 'ends': {'base': 'stucco', 'tint': [0.2, 0.3, 1.0]}}
+    _, fronts = shot(street([row]))
+    _, boxes = shot(street([dict(row, depth=3.0)]))
+    changed = np.abs(boxes - fronts).sum(-1) > 0.05
+    ends = changed & (boxes[..., 2] > boxes[..., 0] * 1.5)
+    assert ends[:, :80].sum() > 30, 'a street with a depth shows its buildings\' ends'
+    assert not changed[:, 80:].any(), 'and nothing on the other side changes'
+    rs = RD.RoadRenderer(street([dict(row, storeys=True)]))
+    tall, _, _ = rs._block(rs.walls[0], np.arange(60.0), -1)
+    assert np.allclose(tall % 1.0, 0.0), 'with storeys every height is a whole number of tiles'
+    back = RD.RoadRenderer(street([dict(row, setback=2.0)]))
+    sb = back._back(back.walls[0], np.arange(60.0), -1)
+    assert sb.min() >= 0 and sb.max() <= 2.0 and len(np.unique(np.round(sb, 3))) > 20, 'each building its setback'
+    # (far enough out past a void side to be seen over the deck's edge: close in, the deck hides it, as it should)
+    low = dict(row, offset=12.0, z=-6.0, height=3.0, depth=4.0, roof={'base': 'stucco', 'tint': [0.2, 1.0, 0.2]})
+    _, roofs = shot(street([low], ground={'left': 'void', 'right': 'concrete'}))
+    green = (roofs[..., 1] > roofs[..., 0] * 1.5) & (roofs[..., 1] > roofs[..., 2] * 1.3) & (roofs[..., 1] > 0.3)
+    assert green[:, :80].sum() > 20, 'a building lower than the eye shows its roof'
+
+    night = dict(row, texture='tower_glass', windows={'lit': 'tower_glass_lit', 'share': 0.4, 'spread': 0.3,
+                                                       'cells': [4, 4]})
+    rn = RD.RoadRenderer(street([night]))
+    wn = rn.walls[0]
+    bi = np.repeat(np.arange(12.0), 64)                     # twelve buildings, 64 windows each
+    cu, cv = np.tile(np.arange(64) % 8, 12), np.tile(np.arange(64) // 8, 12)
+    tu, tv = np.full(len(bi), 6), np.full(len(bi), 6)        # a texel inside a window
+    _, gl, _ = rn._windowed(wn, np.zeros(len(bi), int), tu, tv, bi, -1, cu, cv)
+    _, gl2, _ = rn._windowed(wn, np.zeros(len(bi), int), tu, tv, bi, -1, cu, cv)
+    lit = (gl > 0).reshape(12, 64).mean(1)
+    assert np.array_equal(gl, gl2), 'the same windows are lit every render'
+    assert 0.25 < lit.mean() < 0.55 and lit.std() > 0.05, f'each building its own share of windows lit: {lit}'
+    print('ok city pop (props cast the sun\'s shadow, side_shade, a palette\'s own dither, the summer sky, presets; '
+          'buildings in 3D along a road, windows lit one by one)')
 
 
 def main():

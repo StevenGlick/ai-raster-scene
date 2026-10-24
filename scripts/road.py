@@ -26,7 +26,7 @@ ROAD_KEYS = {'sections', 'width', 'surface', 'lanes', 'lines', 'edges', 'centre'
              'stripe', 'bands', 'segment', 'distance', 'edge', 'roofs', 'walls', 'ceiling', 'below', 'wet',
              'ripple'}
 WALL_KEYS = {'side', 'offset', 'height', 'texture', 'from', 'to', 'z', 'tile', 'light', 'ragged', 'seed', 'blocks',
-             'gaps'}
+             'gaps', 'depth', 'storeys', 'ends', 'roof', 'windows', 'setback'}
 CEILING_KEYS = {'from', 'to', 'height', 'texture', 'tile', 'light'}
 BELOW_KEYS = {'depth', 'texture', 'tile', 'haze'}
 ROADSIDE_KEYS = {'type', 'every', 'density', 'side', 'offset', 'scale', 'jitter', 'from', 'to', 'flip', 'z', 'tint',
@@ -189,6 +189,19 @@ class RoadRenderer:
             texs = tex if isinstance(tex, list) else [tex]          # a street: each building its own facade
             tex = texs[0]
             tile = wl.get('tile', 1.0)
+            win = wl.get('windows')
+            if win:                                # each window lit or not by itself: the facades lit, one for each
+                lit = win.get('lit', texs)
+                lit = lit if isinstance(lit, list) else [lit] * len(texs)
+                assert len(lit) == len(texs), 'a wall\'s windows need one lit facade for each of its textures'
+                win = {'lit': [(assets.get_texture(t), assets.get_alpha(t.get('base') if isinstance(t, dict) else t))
+                               for t in lit],
+                       'share': float(win.get('share', 0.5)), 'spread': float(win.get('spread', 0.25)),
+                       'cells': np.array(win['cells'] if isinstance(win.get('cells', [1, 1])[0], (list, tuple))
+                                         else [win.get('cells', [1, 1])] * len(texs), np.float64),
+                       'colors': np.array([_col(c) for c in win.get('colors', [[1.0, 1.0, 1.0]])], np.float32),
+                       'dim': float(win.get('dim', 0.25))}
+            ends, roof = wl.get('ends'), wl.get('roof', 'concrete')
             self.walls.append({'sides': {'both': (-1, 1), 'left': (-1,), 'right': (1,)}[wl.get('side', 'both')],
                                'offset': float(wl.get('offset', 0.5)), 'height': float(wl.get('height', 1.0)),
                                'z': float(wl.get('z', 0.0)),
@@ -201,7 +214,12 @@ class RoadRenderer:
                                'from': float(wl.get('from', 0.0)), 'to': float(wl.get('to', 1e9)),
                                'tex': assets.get_texture(tex), 'alpha': assets.get_alpha(tex.get('base') if
                                                                                          isinstance(tex, dict) else tex),
-                               'light': float(wl.get('light', 1.0))})
+                               'light': float(wl.get('light', 1.0)), 'windows': win or None,
+                               'depth': float(wl.get('depth', 0.0)), 'storeys': bool(wl.get('storeys', False)),
+                               'setback': float(wl.get('setback', 0.0)),
+                               'ends': None if ends is None else (assets.get_texture(ends), assets.get_alpha(
+                                   ends.get('base') if isinstance(ends, dict) else ends)),
+                               'roof': (assets.get_texture(roof), None)})
         ceil = spec.get('ceiling') or []
         self.ceilings = []
         for c in [ceil] if isinstance(ceil, dict) else ceil:
@@ -622,100 +640,323 @@ class RoadRenderer:
         field = WD.noise_field() if wl['ragged'] else None
         k_far = np.nonzero(P['z2'] > NEAR)[0]
         for sgn in wl['sides']:
-            xo = sgn * (self.half + wl['offset'])
             flat = self._light_wall(sgn) * wl['light']
             for k in k_far[::-1]:
                 a0 = P['idx'][k] * seg
                 if a0 + seg <= wl['from'] or a0 >= wl['to']:
                     continue
-                zn, zf = P['zc1'][k], P['z2'][k]
-                Xn = mid + focal / zn * (P['xc1'][k] + xo - camx)
-                Xf = mid + focal / zf * (P['xf'][k] + xo - camx)
-                c0, c1 = max(0, int(math.ceil(min(Xn, Xf) - 0.5))), min(W, int(math.ceil(max(Xn, Xf) - 0.5)))
-                if c1 <= c0:
-                    continue
-                t = np.clip((np.arange(c0, c1) + 0.5 - Xn) / (Xf - Xn), 0, 1) if abs(Xf - Xn) > 1e-6 \
-                    else np.zeros(c1 - c0)
-                z = 1 / ((1 - t) / zn + t / zf)
-                along = at + z
-                base = P['yc1'][k] + (P['y2'][k] - P['yc1'][k]) * (z - zn) / max(zf - zn, 1e-9) + wl['z']
-                h = np.full(c1 - c0, wl['height'])
-                face = np.zeros(c1 - c0, int)
-                u0 = np.zeros(c1 - c0)
-                if wl['blocks'] > 0:                  # buildings: each block its own height, facade and start
-                    bi = np.floor(along / wl['blocks'])
-                    rnd = _hash01(bi, np.full_like(bi, sgn), wl['seed'])
-                    h = np.maximum(0.0, h + wl['ragged'] * (2 * rnd - 1))
-                    face = (_hash01(bi, np.full_like(bi, sgn), wl['seed'] + 7) * len(wl['texs'])).astype(int)
-                    u0 = bi * wl['blocks']
-                    if wl['gaps'] > 0:                # an alley: the block left out
-                        h = np.where(_hash01(bi, np.full_like(bi, sgn), wl['seed'] + 13) < wl['gaps'], 0.0, h)
-                elif field is not None:               # the top wanders, the same at a place every render
-                    h = np.maximum(0.0, h + wl['ragged'] * (2 * WD.sample_noise(
-                        field, along / max(36.0, 12 * wl['ragged']),
-                        np.full_like(along, 0.13 + 0.29 * wl['seed'] + 0.5 * (sgn > 0))) - 1))
-                ybot = horizon - focal / z * (base - camy)
-                ytop = horizon - focal / z * (base + h - camy)
-                r0, r1 = max(0, int(math.floor(ytop.min()))), min(H, int(math.ceil(ybot.max())))
-                if r1 <= r0:
-                    continue
-                hy = (camy + (horizon - (np.arange(r0, r1)[:, None] + 0.5)) * (z / focal)[None, :]) - base[None, :]
-                in_a = (along >= wl['from']) & (along < wl['to'])
-                m = (hy >= 0) & (hy < h[None, :]) & in_a[None, :] & (depth[r0:r1, c0:c1] > z[None, :])
-                if not m.any():
-                    continue
-                ri, ci = np.nonzero(m)
-                tu = ((along[ci] - u0[ci]) * tu_k).astype(int) % TEX
-                tv = (TEX - 1 - (hy[ri, ci] * tv_k).astype(int)) % TEX
-                fc = face[ci]
-                if len(wl['texs']) > 1:               # the street's facades, each building its own
-                    rgb = np.zeros((len(ri), 3), np.float32)
-                    gl = np.zeros(len(ri), np.float32)
-                    keep = np.ones(len(ri), bool)
-                    for f, ((tx, ex), al) in enumerate(wl['texs']):
-                        q = fc == f
-                        if not q.any():
-                            continue
-                        rgb[q] = tx[tv[q], tu[q]]
-                        if ex is not None:
-                            gl[q] = ex[tv[q], tu[q]]
-                        if al is not None:
-                            keep[q] = al[tv[q], tu[q]] > 0.5
-                    ri, ci, tu, tv, rgb, gl = ri[keep], ci[keep], tu[keep], tv[keep], rgb[keep], gl[keep]
-                    if not len(ri):
+                for xo, only in self._setbacks(wl, sgn, a0, seg):
+                    zn, zf = P['zc1'][k], P['z2'][k]
+                    Xn = mid + focal / zn * (P['xc1'][k] + xo - camx)
+                    Xf = mid + focal / zf * (P['xf'][k] + xo - camx)
+                    c0, c1 = max(0, int(math.ceil(min(Xn, Xf) - 0.5))), min(W, int(math.ceil(max(Xn, Xf) - 0.5)))
+                    if c1 <= c0:
                         continue
-                    ems = gl
-                else:
-                    if alpha is not None:
-                        keep = alpha[tv, tu] > 0.5
-                        ri, ci, tu, tv = ri[keep], ci[keep], tu[keep], tv[keep]
+                    t = np.clip((np.arange(c0, c1) + 0.5 - Xn) / (Xf - Xn), 0, 1) if abs(Xf - Xn) > 1e-6 \
+                        else np.zeros(c1 - c0)
+                    z = 1 / ((1 - t) / zn + t / zf)
+                    along = at + z
+                    base = P['yc1'][k] + (P['y2'][k] - P['yc1'][k]) * (z - zn) / max(zf - zn, 1e-9) + wl['z']
+                    h = np.full(c1 - c0, wl['height'])
+                    face = np.zeros(c1 - c0, int)
+                    u0 = np.zeros(c1 - c0)
+                    bi = np.zeros(c1 - c0)
+                    if wl['blocks'] > 0:                  # buildings: each block its own height, facade and start
+                        bi = np.floor(along / wl['blocks'])
+                        h, face, u0 = self._block(wl, bi, sgn)
+                    elif field is not None:               # the top wanders, the same at a place every render
+                        h = np.maximum(0.0, h + wl['ragged'] * (2 * WD.sample_noise(
+                            field, along / max(36.0, 12 * wl['ragged']),
+                            np.full_like(along, 0.13 + 0.29 * wl['seed'] + 0.5 * (sgn > 0))) - 1))
+                    ybot = horizon - focal / z * (base - camy)
+                    ytop = horizon - focal / z * (base + h - camy)
+                    r0, r1 = max(0, int(math.floor(ytop.min()))), min(H, int(math.ceil(ybot.max())))
+                    if r1 <= r0:
+                        continue
+                    hy = (camy + (horizon - (np.arange(r0, r1)[:, None] + 0.5)) * (z / focal)[None, :]) - base[None, :]
+                    in_a = (along >= wl['from']) & (along < wl['to'])
+                    m = (hy >= 0) & (hy < h[None, :]) & in_a[None, :] & (depth[r0:r1, c0:c1] > z[None, :])
+                    if only is not None:              # set back: only this building's own columns
+                        m &= (bi == only)[None, :]
+                    if not m.any():
+                        continue
+                    ri, ci = np.nonzero(m)
+                    tu = ((along[ci] - u0[ci]) * tu_k).astype(int) % TEX
+                    tv = (TEX - 1 - (hy[ri, ci] * tv_k).astype(int)) % TEX
+                    fc = face[ci]
+                    if wl['windows'] is not None:         # each window lit or not by itself
+                        cells = wl['windows']['cells'][fc]
+                        cu = np.floor((along[ci] - u0[ci]) / wl['tile'][0] * cells[:, 0])
+                        cv = np.floor(hy[ri, ci] / wl['tile'][1] * cells[:, 1])
+                        rgb, ems, keep = self._windowed(wl, fc, tu, tv, bi[ci], sgn, cu, cv)
+                        ri, ci, tu, tv, rgb, ems = ri[keep], ci[keep], tu[keep], tv[keep], rgb[keep], ems[keep]
                         if not len(ri):
                             continue
-                    rgb = tex[tv, tu]
-                    ems = None if em is None else em[tv, tu]
-                zc = z[ci]
-                L = flat[None, :] * self._roof_k(along[ci])[:, None]
-                for lamp in self.frame_lamps:
-                    if abs(lamp['at'] - (a0 + seg / 2)) > lamp['r'] + seg:
-                        continue
-                    d = np.sqrt((along[ci] - lamp['at']) ** 2 + (xo - lamp['x']) ** 2 +
-                                (wl['z'] + hy[ri, ci] - lamp['z']) ** 2)
-                    L = L + (np.clip(1 - d / lamp['r'], 0, 1) ** 2)[:, None] * lamp['c']
-                col = rgb * L
-                glow = np.zeros_like(col)
-                if ems is not None:
-                    glow = ems[:, None] * rgb * 1.6
-                    col = col + glow
-                if self.fog_c is not None and self.fog_d > 0:
-                    fg = np.exp(-self.fog_d * zc)[:, None]
-                    col = col * fg + self.fog_c * (1 - fg)
-                    glow = glow * fg
-                img[r0 + ri, c0 + ci] = col
-                emis[r0 + ri, c0 + ci] = glow
-                depth[r0 + ri, c0 + ci] = zc
-                if self._refl[:, c0:c1].any():
-                    self._reflect_wall(img, emis, depth, wl, flat, z, along, base, h, ybot, ytop, u0, face, c0, c1,
-                                       camy, horizon, focal, H)
+                    elif len(wl['texs']) > 1:             # the street's facades, each building its own
+                        rgb = np.zeros((len(ri), 3), np.float32)
+                        gl = np.zeros(len(ri), np.float32)
+                        keep = np.ones(len(ri), bool)
+                        for f, ((tx, ex), al) in enumerate(wl['texs']):
+                            q = fc == f
+                            if not q.any():
+                                continue
+                            rgb[q] = tx[tv[q], tu[q]]
+                            if ex is not None:
+                                gl[q] = ex[tv[q], tu[q]]
+                            if al is not None:
+                                keep[q] = al[tv[q], tu[q]] > 0.5
+                        ri, ci, tu, tv, rgb, gl = ri[keep], ci[keep], tu[keep], tv[keep], rgb[keep], gl[keep]
+                        if not len(ri):
+                            continue
+                        ems = gl
+                    else:
+                        if alpha is not None:
+                            keep = alpha[tv, tu] > 0.5
+                            ri, ci, tu, tv = ri[keep], ci[keep], tu[keep], tv[keep]
+                            if not len(ri):
+                                continue
+                        rgb = tex[tv, tu]
+                        ems = None if em is None else em[tv, tu]
+                    zc = z[ci]
+                    L = flat[None, :] * self._roof_k(along[ci])[:, None]
+                    for lamp in self.frame_lamps:
+                        if abs(lamp['at'] - (a0 + seg / 2)) > lamp['r'] + seg:
+                            continue
+                        d = np.sqrt((along[ci] - lamp['at']) ** 2 + (xo - lamp['x']) ** 2 +
+                                    (wl['z'] + hy[ri, ci] - lamp['z']) ** 2)
+                        L = L + (np.clip(1 - d / lamp['r'], 0, 1) ** 2)[:, None] * lamp['c']
+                    col = rgb * L
+                    glow = np.zeros_like(col)
+                    if ems is not None:
+                        glow = ems[:, None] * rgb * 1.6
+                        col = col + glow
+                    if self.fog_c is not None and self.fog_d > 0:
+                        fg = np.exp(-self.fog_d * zc)[:, None]
+                        col = col * fg + self.fog_c * (1 - fg)
+                        glow = glow * fg
+                    img[r0 + ri, c0 + ci] = col
+                    emis[r0 + ri, c0 + ci] = glow
+                    depth[r0 + ri, c0 + ci] = zc
+                    if self._refl[:, c0:c1].any():
+                        self._refl_sgn = sgn
+                        self._reflect_wall(img, emis, depth, wl, flat, z, along, base, h, ybot, ytop, u0, face, c0, c1,
+                                           camy, horizon, focal, H)
+            if wl['depth'] > 0 and wl['blocks'] > 0:   # buildings as boxes: their near ends, roofs below the eye
+                self._ends(img, emis, depth, P, wl, sgn, at, camy, camx, focal, horizon, mid, W, H)
+                self._roofs(img, emis, depth, P, wl, sgn, at, camy, camx, focal, horizon, mid, W, H)
+
+    def _block(self, wl, bi, sgn):
+        """The buildings of a wall cut into `blocks`, at block numbers `bi` (one per column, or one per block): each
+        one's height (0 where it is left out - an alley), its facade and where along the road its facade starts.
+        With `storeys` a height is a whole number of tiles, so a building's top never cuts through a window."""
+        sg = np.full_like(bi, sgn)
+        h = np.maximum(0.0, wl['height'] + wl['ragged'] * (2 * _hash01(bi, sg, wl['seed']) - 1))
+        if wl['storeys']:
+            tv = wl['tile'][1]
+            h = np.maximum(tv, np.round(h / tv) * tv)
+        face = (_hash01(bi, sg, wl['seed'] + 7) * len(wl['texs'])).astype(int)
+        if wl['gaps'] > 0:                    # an alley: the block left out
+            h = np.where(_hash01(bi, sg, wl['seed'] + 13) < wl['gaps'], 0.0, h)
+        return h, face, bi * wl['blocks']
+
+    def _back(self, wl, bi, sgn):
+        """How far back from the wall's `offset` buildings `bi` stand (`setback`): each its own, the same every
+        render."""
+        b = np.atleast_1d(np.asarray(bi, np.float64))           # (arrays: numpy wraps their overflow quietly)
+        out = wl['setback'] * _hash01(b, np.full_like(b, sgn), wl['seed'] + 19)
+        return out if np.ndim(bi) else float(out[0])
+
+    def _setbacks(self, wl, sgn, a0, seg):
+        """Where a wall's strip stands across the road on the segment from `a0`: [(x, building)] - one place, or with
+        a `setback` each building on the segment at its own place (and only its own columns drawn there)."""
+        edge = self.half + wl['offset']
+        if wl['setback'] <= 0 or wl['blocks'] <= 0:
+            return [(sgn * edge, None)]
+        lo, hi = math.floor(a0 / wl['blocks']), math.floor((a0 + seg - 1e-9) / wl['blocks'])
+        return [(sgn * (edge + float(self._back(wl, b, sgn))), b) for b in range(lo, hi + 1)]
+
+    def _windowed(self, wl, fc, tu, tv, bi, sgn, cu, cv):
+        """A facade lit window by window (`windows`): texels (tu, tv) of facades `fc`, in buildings `bi`, in window
+        `cu` across and `cv` up. Each building has its own share of windows lit (the wall's `share`, give or take
+        its `spread`); each window is lit or not by itself, the same every render - lit, it is the lit facade's,
+        in one of the `colors`, a little dimmer or brighter (`dim`). Gives colour, glow and which texels are solid."""
+        w = wl['windows']
+        sg = np.full_like(bi, sgn)
+        share = np.clip(w['share'] + w['spread'] * (2 * _hash01(bi, sg, wl['seed'] + 29) - 1), 0, 1)
+        a = bi.astype(np.int64) * 4099 + cu.astype(np.int64)
+        b = cv.astype(np.int64) * 3 + (sgn + 1)
+        lit = _hash01(a, b, wl['seed'] + 31) < share
+        n = len(tu)
+        rgb = np.zeros((n, 3), np.float32)
+        gl = np.zeros(n, np.float32)
+        keep = np.ones(n, bool)
+        for f, (((tx, ex), al), ((lx, le), _)) in enumerate(zip(wl['texs'], w['lit'])):
+            q = fc == f
+            if not q.any():
+                continue
+            on, off = q & lit, q & ~lit
+            rgb[off] = tx[tv[off], tu[off]]
+            rgb[on] = lx[tv[on], tu[on]]
+            if ex is not None:
+                gl[off] = ex[tv[off], tu[off]]
+            if le is not None:
+                gl[on] = le[tv[on], tu[on]]
+            if al is not None:
+                keep[q] = al[tv[q], tu[q]] > 0.5
+        glass = lit & (gl > 0)                 # the lit windows' glass: each its own colour and brightness
+        if glass.any():
+            k = (_hash01(a, b, wl['seed'] + 37) * len(w['colors'])).astype(int)
+            bright = 1 - w['dim'] * _hash01(a, b, wl['seed'] + 41)
+            rgb[glass] = rgb[glass] * w['colors'][k[glass]] * bright[glass][:, None]
+        return rgb, gl, keep
+
+    def _light_end(self, sgn):
+        """The light on the near end of a building along the road, facing back down it toward the camera: the
+        ambient, and the sun or moon by how squarely it faces that way (the road runs along azimuth 270)."""
+        L = self.ambient.copy()
+        for s in self.suns:
+            el = math.radians(float(s.get('elevation', 30)))
+            d = math.radians(float(s.get('azimuth', 270)) - 270)
+            kind = s['type']
+            c = _col(s.get('color'), (1, 0.94, 0.82) if kind == 'sun' else (0.55, 0.65, 0.95))
+            face = -math.cos(d) * math.cos(el)
+            L = L + c * float(s.get('intensity', 0.85 if kind == 'sun' else 0.4)) * max(0.0, face) * 1.15
+        return L
+
+    def _lamp_light(self, L, along, x, z):
+        """The lamps' light added to light L at points (along, x across, z up)."""
+        for lamp in self.frame_lamps:
+            d = np.sqrt((along - lamp['at']) ** 2 + (x - lamp['x']) ** 2 + (z - lamp['z']) ** 2)
+            if np.all(d >= lamp['r']):
+                continue
+            L = L + (np.clip(1 - d / lamp['r'], 0, 1) ** 2)[:, None] * lamp['c']
+        return L
+
+    def _put(self, img, emis, depth, rows, cols, rgb, gl, L, z):
+        """Lit, glowing and fogged texels written where they are nearer than what is there."""
+        col = rgb * L
+        glow = np.zeros_like(col) if gl is None else gl[:, None] * rgb * 1.6
+        col = col + glow
+        if self.fog_c is not None and self.fog_d > 0:
+            fg = np.exp(-self.fog_d * z)[:, None]
+            col = col * fg + self.fog_c * (1 - fg)
+            glow = glow * fg
+        img[rows, cols] = col
+        emis[rows, cols] = glow
+        depth[rows, cols] = z
+
+    def _road_line(self, P):
+        """Distance ahead -> the road's middle across and its height, along the segments in view."""
+        zs = np.concatenate([[P['zc1'][0]], P['z2']])
+        return zs, np.concatenate([[P['xc1'][0]], P['xf']]), np.concatenate([[P['yc1'][0]], P['y2']])
+
+    def _ends(self, img, emis, depth, P, wl, sgn, at, camy, camx, focal, horizon, mid, W, H):
+        """The buildings of a wall in `blocks` as boxes `depth` deep: the near end of each one, facing back down
+        the road - square to the road, so at one distance all over - textured with its own facade (or `ends`),
+        windows and all, from its front corner back, lit as it faces the sun. An alley shows the next one's end."""
+        bl, d = wl['blocks'], wl['depth']
+        zs, xs, _ = self._road_line(P)
+        zmax = float(zs[-1])
+        first, last = math.floor((at + NEAR) / bl) + 1, math.floor((at + zmax) / bl)
+        if last < first:
+            return
+        bis = np.arange(first, last + 1, dtype=np.float64)
+        h, face, _ = self._block(wl, bis, sgn)
+        b0 = bis * bl
+        edges = self.half + wl['offset'] + (self._back(wl, bis, sgn) if wl['setback'] > 0 else 0 * bis)
+        flat = self._light_end(sgn) * wl['light']
+        tu_k, tv_k = TEX / wl['tile'][0], TEX / wl['tile'][1]
+        for j in np.nonzero((h > 0) & (b0 >= wl['from']) & (b0 < wl['to']))[0][::-1]:
+            edge = float(edges[j])
+            z0 = float(b0[j] - at)
+            xr = float(np.interp(z0, zs, xs))
+            base = float(self.road.height(b0[j])) + wl['z']
+            Xa = mid + focal / z0 * (xr + sgn * edge - camx)
+            Xb = mid + focal / z0 * (xr + sgn * (edge + d) - camx)
+            c0, c1 = max(0, int(math.ceil(min(Xa, Xb) - 0.5))), min(W, int(math.ceil(max(Xa, Xb) - 0.5)))
+            ytop = horizon - focal / z0 * (base + h[j] - camy)
+            r0, r1 = max(0, int(math.floor(ytop))), min(H, int(math.ceil(horizon - focal / z0 * (base - camy))))
+            if c1 <= c0 or r1 <= r0:
+                continue
+            s = sgn * ((np.arange(c0, c1) + 0.5 - mid) * z0 / focal + camx - xr) - edge     # back from the front
+            hy = camy + (horizon - (np.arange(r0, r1) + 0.5)) * z0 / focal - base
+            m = ((hy[:, None] >= 0) & (hy[:, None] < h[j]) & (s[None, :] >= 0) & (s[None, :] < d)
+                 & (depth[r0:r1, c0:c1] > z0))
+            if not m.any():
+                continue
+            ri, ci = np.nonzero(m)
+            tu = (s[ci] * tu_k).astype(int) % TEX
+            tv = (TEX - 1 - (hy[ri] * tv_k).astype(int)) % TEX
+            if wl['ends'] is not None:
+                (tx, ex), al = wl['ends']
+                rgb, gl = tx[tv, tu], None if ex is None else ex[tv, tu]
+                keep = np.ones(len(ri), bool) if al is None else al[tv, tu] > 0.5
+            elif wl['windows'] is not None:
+                n = len(ri)
+                cells = wl['windows']['cells'][face[j]]
+                cu = np.floor(s[ci] / wl['tile'][0] * cells[0]) + 2048                     # its own windows
+                cv = np.floor(hy[ri] / wl['tile'][1] * cells[1])
+                rgb, gl, keep = self._windowed(wl, np.full(n, face[j]), tu, tv, np.full(n, bis[j]), sgn, cu, cv)
+            else:
+                (tx, ex), al = wl['texs'][face[j]]
+                rgb, gl = tx[tv, tu], None if ex is None else ex[tv, tu]
+                keep = np.ones(len(ri), bool) if al is None else al[tv, tu] > 0.5
+            ri, ci, rgb = ri[keep], ci[keep], rgb[keep]
+            gl = None if gl is None else gl[keep]
+            if not len(ri):
+                continue
+            L = flat[None, :] * self._roof_k(np.full(len(ri), b0[j]))[:, None]
+            L = self._lamp_light(L, np.full(len(ri), b0[j]), sgn * (edge + s[ci]), wl['z'] + hy[ri])
+            self._put(img, emis, depth, r0 + ri, c0 + ci, rgb, gl, L, np.full(len(ri), z0))
+
+    def _roofs(self, img, emis, depth, P, wl, sgn, at, camy, camx, focal, horizon, mid, W, H):
+        """The roofs of a wall's buildings in `blocks` with a `depth`, where one stands lower than the eye: a flat
+        roof of `roof` over the whole box, seen from above."""
+        bl, d = wl['blocks'], wl['depth']
+        zs, xs, _ = self._road_line(P)
+        zmax = float(zs[-1])
+        first, last = math.floor((at + NEAR) / bl), math.floor((at + zmax) / bl)
+        if last < first:
+            return
+        bis = np.arange(first, last + 1, dtype=np.float64)
+        h, _, _ = self._block(wl, bis, sgn)
+        edges = self.half + wl['offset'] + (self._back(wl, bis, sgn) if wl['setback'] > 0 else 0 * bis)
+        (tx, ex), _ = wl['roof']
+        flat = self._light_flat() * wl['light']
+        for j in np.nonzero(h > 0)[0][::-1]:
+            edge = float(edges[j])
+            b0, b1 = bis[j] * bl, (bis[j] + 1) * bl
+            if b1 <= wl['from'] or b0 >= wl['to']:
+                continue
+            top = float(self.road.height((b0 + b1) / 2)) + wl['z'] + h[j]
+            if top >= camy - 1e-3:
+                continue                          # the roof is above the eye: its underside is never seen
+            za, zb = max(b0 - at, NEAR), min(b1 - at, zmax)
+            if zb <= za:
+                continue
+            r0 = max(0, int(math.floor(horizon + focal * (camy - top) / zb)))
+            r1 = min(H, int(math.ceil(horizon + focal * (camy - top) / za)))
+            zq = np.linspace(za, zb, 8)
+            xq = np.interp(zq, zs, xs)
+            Xq = np.concatenate([mid + focal / zq * (xq + sgn * edge - camx), mid + focal / zq * (xq + sgn * (edge + d)
+                                                                                                  - camx)])
+            c0, c1 = max(0, int(math.floor(Xq.min()))), min(W, int(math.ceil(Xq.max())) + 1)
+            if r1 <= r0 or c1 <= c0:
+                continue
+            z = focal * (camy - top) / np.maximum(np.arange(r0, r1) + 0.5 - horizon, 1e-3)
+            xr = np.interp(z, zs, xs)
+            s = sgn * ((np.arange(c0, c1)[None, :] + 0.5 - mid) * (z / focal)[:, None] + camx - xr[:, None]) - edge
+            m = (z[:, None] >= za) & (z[:, None] <= zb) & (s >= 0) & (s < d) & (depth[r0:r1, c0:c1] > z[:, None])
+            if not m.any():
+                continue
+            ri, ci = np.nonzero(m)
+            along = at + z[ri]
+            tu = (along * TEX / wl['tile'][0]).astype(int) % TEX
+            tv = (s[ri, ci] * TEX / wl['tile'][0]).astype(int) % TEX
+            rgb, gl = tx[tv, tu], None if ex is None else ex[tv, tu]
+            L = flat[None, :] * self._roof_k(along)[:, None]
+            L = self._lamp_light(L, along, sgn * (edge + s[ri, ci]), np.full(len(ri), top))
+            self._put(img, emis, depth, r0 + ri, c0 + ci, rgb, gl, L, z[ri])
 
     def _reflect_wall(self, img, emis, depth, wl, flat, z, along, base, h, ybot, ytop, u0, face, c0, c1, camy,
                       horizon, focal, H):
@@ -736,7 +977,14 @@ class RoadRenderer:
         tu = ((along[ci] - u0[ci]) * TEX / wl['tile'][0]).astype(int) % TEX
         tv = (TEX - 1 - (hy[ri, ci] * TEX / wl['tile'][1]).astype(int)) % TEX
         (tex, em), al = wl['texs'][0] if len(wl['texs']) == 1 else (wl['tex'], wl['alpha'])
-        if len(wl['texs']) > 1:
+        if wl['windows'] is not None:
+            bi = np.floor(along[ci] / wl['blocks']) if wl['blocks'] > 0 else np.zeros(len(ci))
+            cells = wl['windows']['cells'][face[ci]]
+            cu = np.floor((along[ci] - u0[ci]) / wl['tile'][0] * cells[:, 0])
+            cv = np.floor(hy[ri, ci] / wl['tile'][1] * cells[:, 1])
+            rgb, gl, keep = self._windowed(wl, face[ci], tu, tv, bi, self._refl_sgn, cu, cv)
+            ri, ci, rgb, gl = ri[keep], ci[keep], rgb[keep], gl[keep]
+        elif len(wl['texs']) > 1:
             rgb = np.zeros((len(ri), 3), np.float32)
             gl = np.zeros(len(ri), np.float32)
             for f, ((tx, ex), _) in enumerate(wl['texs']):

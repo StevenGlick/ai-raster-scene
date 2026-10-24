@@ -391,6 +391,8 @@ SHOTS = {
     'citypop_diner': ('roadside_diner', 1),
     'citypop_pumps': ('roadside_diner', 2),
     'citypop_diner_dusk': ('roadside_diner', 3),
+    'citypop_night_drive': ('night_drive', 1),
+    'citypop_night_towers': ('night_drive', 2),
 }
 # gallery image -> example whose every shot is tiled at half size, two to a row
 SHEETS = {'post_presets': 'post_presets', 'gui_themes': 'gui_themes', 'village_hours': 'village_hours'}

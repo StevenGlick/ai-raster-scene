@@ -1,12 +1,15 @@
 """Coast boulevard: a road scene (road.py) in the city-pop look - the red convertible down a seaside boulevard on a
 summer afternoon, tall fan palms down both sides, white and pastel hotels standing back on the land side, the
 promenade, the beach and a cobalt sea on the other, cumulus heaped on the horizon. Then the same boulevard at dusk,
-the hotels' windows lit.
+the hotels' rooms lit one by one.
 
-Shows the city-pop kit (scripts/citypop.py) on a road: `fan_palm` rows down both sides (`roadside`), the hotels as
-`walls` cut into `blocks` of `ribbon_window` tiled a storey to a unit (some tinted pink and peach), a promenade of
-`pool_deck`, the beach and `summer_sea` in `ground` bands; the `summer` sky and the `citypop` preset. The dusk shot
-swaps in `ribbon_window_lit`, the `sunset` sky and `citypop_dusk` in its overrides.
+Shows the city-pop kit (scripts/citypop.py) on a road: `fan_palm` rows down both sides (`roadside`), and the hotels
+as buildings in 3D - `walls` cut into `blocks` with a `depth`, so each is a box whose near end shows (`ends` of plain
+`stucco`), each standing back by its own `setback`, its height a whole number of `storeys` - their fronts
+`ribbon_window` and `hotel_balconies` a storey to a unit (some tinted pink and peach), a taller row behind; a
+promenade of `pool_deck`, a `lawn_stripes` lawn, the beach and `summer_sea` in `ground` bands; the `summer` sky and
+the `citypop` preset. At dusk the walls' `windows` light the rooms one by one from the `_lit` facades - each hotel
+its own share of them, each room its own tint - under the `sunset` sky, with `citypop_dusk`.
 Run:  python coast_boulevard.py  -> writes coast_boulevard.json next to this file.
 """
 import os
@@ -17,13 +20,24 @@ from maptools import road_scene  # noqa: E402
 
 LANE = 4.2 / 4                             # two lanes each way on a road 4.2 wide
 PINK, PEACH = [1.0, 0.82, 0.82], [1.0, 0.9, 0.78]
+FACADES = ['ribbon_window', 'hotel_balconies', {'base': 'ribbon_window', 'tint': PINK},
+           {'base': 'hotel_balconies', 'tint': PEACH}]
+LIT = ['ribbon_window_lit', 'hotel_balconies_lit', {'base': 'ribbon_window_lit', 'tint': PINK},
+       {'base': 'hotel_balconies_lit', 'tint': PEACH}]
 
 
 def hotels(lit=False):
-    win = 'ribbon_window_lit' if lit else 'ribbon_window'
-    return {'side': 'left', 'offset': 3.2, 'height': 6.0, 'ragged': 3.0, 'blocks': 9, 'gaps': 0.3, 'seed': 4,
-            'tile': [1, 1], 'from': 6,
-            'texture': [win, {'base': win, 'tint': PINK}, win, {'base': win, 'tint': PEACH}]}
+    """The hotels on the land side: boxes 5 deep, a storey to a unit, white ends; a taller row behind them."""
+    near = {'side': 'left', 'offset': 3.2, 'height': 6.0, 'ragged': 2.5, 'blocks': 8, 'gaps': 0.3, 'seed': 4,
+            'tile': [1, 1], 'from': 6, 'depth': 5.0, 'storeys': True, 'ends': 'stucco', 'setback': 2.5,
+            'texture': FACADES}
+    far = {**near, 'offset': 12.5, 'height': 10.0, 'ragged': 4.0, 'blocks': 12, 'gaps': 0.15, 'seed': 9,
+           'depth': 7.0, 'setback': 3.0}
+    if lit:                                        # the rooms lit one by one, each hotel its own share
+        for wl, share in ((near, 0.68), (far, 0.55)):
+            wl['windows'] = {'lit': LIT, 'share': share, 'spread': 0.2, 'cells': [2, 1], 'dim': 0.3,
+                             'colors': [[1.0, 1.0, 1.0], [1.0, 0.92, 0.8], [1.0, 0.84, 0.66], [0.92, 0.96, 1.05]]}
+    return [near, far]
 
 
 def road(lit=False):
@@ -34,7 +48,7 @@ def road(lit=False):
         'ground': {'left': [{'width': 1.4, 'texture': 'pool_deck'}, {'texture': 'lawn_stripes', 'tile': 2}],
                    'right': [{'width': 1.4, 'texture': 'pool_deck'}, {'width': 4.5, 'texture': 'white_sand'},
                              {'texture': 'summer_sea'}]},
-        'walls': [hotels(lit)],
+        'walls': hotels(lit),
     }
 
 

@@ -4454,6 +4454,157 @@ def diving_board(pl):
     return parts
 
 
+# ------------------------------------------------------------------ a roadside diner (city pop)
+
+def _rgb255(colour):
+    return tuple(int(round(c * 255)) for c in rgb(colour)) + (255,)
+
+
+@functools.lru_cache(maxsize=None)
+def _pump_front(w, h, paint):
+    """A gas pump's front: its paint, a white face with a dark dial and a lit price window, a nozzle in its
+    holster below them."""
+    from PIL import Image, ImageDraw
+    im = Image.new('RGBA', (w, h), _rgb255(paint))
+    d = ImageDraw.Draw(im)
+    d.rectangle([int(w * 0.16), int(h * 0.12), int(w * 0.84), int(h * 0.46)], fill=_rgb255('#f6f3ec'))   # the face
+    d.rectangle([int(w * 0.28), int(h * 0.17), int(w * 0.72), int(h * 0.27)], fill=_rgb255('#1a2238'))   # the dial
+    d.rectangle([int(w * 0.32), int(h * 0.32), int(w * 0.68), int(h * 0.39)], fill=_rgb255('#ffc93a'))   # price
+    d.rectangle([int(w * 0.36), int(h * 0.55), int(w * 0.64), int(h * 0.66)], fill=_rgb255('#2c3652'))   # holster
+    d.rectangle([0, h - 2, w - 1, h - 1], fill=_rgb255('#7a84b2'))
+    rgba = np.asarray(im, np.float32) / 255
+    em = np.zeros((h, w), np.float32)
+    em[int(h * 0.32):int(h * 0.39) + 1, int(w * 0.32):int(w * 0.68) + 1] = 0.8
+    return rgba, em
+
+
+@functools.lru_cache(maxsize=None)
+def _pump_hose(w, h):
+    """A pump's hose hung in a loop down its side: a card, see-through but for the hose."""
+    from PIL import Image, ImageDraw
+    im = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+    ImageDraw.Draw(im).line([(w * 0.8, h * 0.08), (w * 0.95, h * 0.55), (w * 0.55, h * 0.95), (w * 0.15, h * 0.7),
+                             (w * 0.2, h * 0.4)], fill=_rgb255('#1a2238'), width=2)
+    return np.asarray(im, np.float32) / 255, np.zeros((h, w), np.float32)
+
+
+def gas_pump(pl):
+    """An old gas pump on a forecourt, in 3D: a tall body in its `paint` (red by default) with a white face, a dial
+    and a lit price window, the hose looped down its side, a glowing glass globe on top (the `pump_globe` prop) and a
+    kerb of an island under it. Faces +x; `lights` true has the globe light the ground round it."""
+    paint = str(pl.get('paint', '#d9302e'))
+    D, Wd, z0, Hb = 0.06, 0.085, 0.03, 0.5
+    side = _flat(_fill(_fine(2 * D), _fine(Hb), paint) * np.array([0.86, 0.86, 0.86], np.float32))
+    body = _flat(_fill(8, 8, paint))
+    kerb = _flat(_fill(8, 8, '#b6bed9'))
+    parts = box((-D, -Wd, z0), (D, Wd, z0 + Hb),
+                {'front': _pump_front(_fine(2 * Wd), _fine(Hb), paint), 'back': body, 'right': side, 'left': side,
+                 'top': _flat(_fill(8, 8, paint) * 0.8)})
+    parts += box((-D - 0.02, -Wd - 0.02, 0.0), (D + 0.02, Wd + 0.02, z0),
+                 {'front': kerb, 'back': kerb, 'right': kerb, 'left': kerb, 'top': kerb})
+    y = Wd + 0.006
+    parts.append(quad(_pump_hose(_fine(2 * D + 0.04), _fine(0.36)), (-D - 0.02, y, z0 + 0.42), (D + 0.02, y, z0 + 0.42),
+                      (-D - 0.02, y, z0 + 0.06)))
+    globes = [rgb('#d9302e'), rgb('#15a6c2')]
+    k = int(np.argmin([float(((rgb(paint) - g) ** 2).sum()) for g in globes]))
+    parts.append(sprite('pump_globe', 0.0, 0.0, z=z0 + Hb, variant=k))
+    if pl.get('lights'):
+        parts.append(light(0.0, 0.0, z0 + Hb + 0.06, 1.4, (1.0, 0.94, 0.8), 0.35))
+    parts.append(shadow(0.0, 0.0, 0.3, 0.4))
+    return parts
+
+
+@functools.lru_cache(maxsize=None)
+def _sign_board(w, h, lit):
+    """A diner sign's board: DINER in red on white inside a red border - lit, pink neon letters on a dark board in a
+    turquoise border, glowing."""
+    from PIL import Image, ImageDraw
+    from pixelfont import PixelFont
+    board, edge, ink = (('#1a2238', '#53e6ff', '#ff86c8') if lit else ('#f6f3ec', '#d9302e', '#d9302e'))
+    im = Image.new('RGBA', (w, h), _rgb255(edge))
+    glow = Image.new('L', (w, h), 235 if lit else 0)
+    d, g = ImageDraw.Draw(im), ImageDraw.Draw(glow)
+    d.rectangle([3, 3, w - 4, h - 4], fill=_rgb255(board))
+    g.rectangle([3, 3, w - 4, h - 4], fill=0)
+    mask = PixelFont().render_mask('DINER', scale=max(1, min((w - 12) // 30, (h - 12) // 9)))
+    x0, y0 = (w - mask.width) // 2, (h - mask.height) // 2 + 1
+    im.paste(Image.new('RGBA', mask.size, _rgb255(ink)), (x0, y0), mask)
+    if lit:
+        glow.paste(245, (x0, y0), mask)
+    return np.asarray(im, np.float32) / 255, np.asarray(glow, np.float32) / 255
+
+
+@functools.lru_cache(maxsize=None)
+def _sign_arrow(w, h, lit, mirror):
+    """A diner sign's arrow, pointing to the texture's right (`mirror`: to its left, for the far side), a row of
+    bulbs along it - lit, they glow gold."""
+    from PIL import Image, ImageDraw
+    im = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+    glow = Image.new('L', (w, h), 0)
+    d, g = ImageDraw.Draw(im), ImageDraw.Draw(glow)
+    head = int(w * 0.82)
+    d.polygon([(0, h * 0.28), (head, h * 0.28), (head, 0), (w - 1, h * 0.5), (head, h - 1), (head, h * 0.72),
+               (0, h * 0.72)], fill=_rgb255('#1a2238' if lit else '#d9302e'))
+    for x in range(4, head - 2, 6):
+        d.rectangle([x, int(h * 0.44), x + 1, int(h * 0.56)], fill=_rgb255('#ffcf70' if lit else '#ffc93a'))
+        if lit:
+            g.rectangle([x, int(h * 0.44), x + 1, int(h * 0.56)], fill=245)
+    rgba, em = np.asarray(im, np.float32) / 255, np.asarray(glow, np.float32) / 255
+    return (rgba[:, ::-1].copy(), em[:, ::-1].copy()) if mirror else (rgba, em)
+
+
+def diner_sign(pl):
+    """A roadside diner's sign in 3D: a turquoise pole 3 tall, on it a board 2 wide and a hand deep with DINER on both
+    faces in a red border, its edges red, and under it an arrow of bulbs - `lit` true and the board goes dark, the
+    letters pink neon, its edges and border turquoise, the bulbs gold, all glowing, with a pink light. Its faces
+    look along +x and -x: turn it so they face the road."""
+    lit = bool(pl.get('lit', False))
+    teal = rgb('#15a6c2')
+    pole = _flat(_fill(8, 8, '#15a6c2'))
+    pole_side = _flat(np.array(np.broadcast_to(teal * 0.8, (8, 8, 3)), np.float32))
+    parts = box((-0.045, -0.045, 0.0), (0.045, 0.045, 3.06),
+                {'front': pole, 'back': pole_side, 'right': pole, 'left': pole_side})
+    D, Wd, zb, zt = 0.06, 1.0, 3.04, 4.2
+    face = _sign_board(_texels(2 * Wd), _texels(zt - zb), lit)
+    edge = (_fill(8, 8, '#53e6ff'), np.full((8, 8), 0.9, np.float32)) if lit else (_fill(8, 8, '#d9302e'), None)
+    edge = _flat(edge[0]) if edge[1] is None else (np.concatenate([edge[0], np.ones((8, 8, 1), np.float32)], -1),
+                                                   edge[1])
+    parts += box((-D, -Wd, zb), (D, Wd, zt), {'front': face, 'back': face, 'right': edge, 'left': edge, 'top': edge,
+                                               'bottom': edge})
+    aw, ah = _texels(1.9), _texels(0.42)
+    za, zz = 2.52, 2.94
+    parts.append(quad(_sign_arrow(aw, ah, lit, False), (0.02, 0.95, zz), (0.02, -0.95, zz), (0.02, 0.95, za),
+                      cull=True))                                                     # the arrow, from the front
+    parts.append(quad(_sign_arrow(aw, ah, lit, True), (-0.02, -0.95, zz), (-0.02, 0.95, zz), (-0.02, -0.95, za),
+                      cull=True))                                                     # and from behind
+    if lit:
+        parts.append(light(0.6, 0.0, 3.6, 5.0, (1.0, 0.5, 0.78), 0.8))
+    return parts
+
+
+def telegraph_pole(pl):
+    """A wooden utility pole in 3D, `height` tall (default 2.9): a weathered pole of eight faces tapering a little
+    up, `count` crossarms near its top (default 2) running across the line the wires take - along its y: face it the
+    way the wires run - each with four porcelain insulators standing on it. String the wires with `cable` objects
+    from insulator to insulator: the outer pair stands 0.35 either side of the pole, a hand over its arm."""
+    H = float(pl.get('height', 2.9))
+    n = max(1, int(pl.get('count', 2)))
+    seed = int(pl.get('seed', 1))
+    parts = column({'material': 'wood', 'sides': 8, 'radius': 0.045, 'top': 0.75, 'height': H, 'base': 0.0,
+                    'capital': 0.0, 'sink': 0.0, 'seed': seed, 'angle': pl.get('angle', 0.0)})
+    arm = _flat(_fill(8, 8, '#7e5638'))
+    arm_top = _flat(_fill(8, 8, '#a87a52'))
+    pin = _flat(_fill(4, 4, '#e6e6ee'))
+    for k in range(n):
+        z = H - 0.16 - 0.24 * k
+        parts += box((-0.032, -0.48, z), (0.032, 0.48, z + 0.06), {'front': arm, 'back': arm, 'right': arm,
+                                                                  'left': arm, 'top': arm_top, 'bottom': arm})
+        for y in (-0.35, -0.15, 0.15, 0.35):
+            parts += box((-0.014, y - 0.014, z + 0.06), (0.014, y + 0.014, z + 0.11),
+                         {'front': pin, 'back': pin, 'right': pin, 'left': pin, 'top': pin})
+    return parts
+
+
 def sign(pl):
     """A sign with lettering on it (scripts/lettering.py): `text` (a newline starts another line) in a `style` -
     `painted` (a board, the default), `neon` (glowing tubes on a dark backing: it throws their light), `plaque`
@@ -4501,4 +4652,5 @@ OBJECTS = {'noodle_stand': noodle_stand, 'car': car, 'rock_wall': rock_wall, 'bo
            'card_table': card_table, 'saloon_chair': saloon_chair, 'piano': piano, 'pew': pew, 'tower': tower,
            'city_block': city_block, 'searchlight': searchlight, 'ray': ray, 'cable': cable, 'bridge': bridge, 'mountain': mountain, 'village': village,
            'portal': portal, 'screen': screen,
-           'sign': sign, 'lounger': lounger, 'pool_ladder': pool_ladder, 'diving_board': diving_board}
+           'sign': sign, 'lounger': lounger, 'pool_ladder': pool_ladder, 'diving_board': diving_board,
+           'gas_pump': gas_pump, 'diner_sign': diner_sign, 'telegraph_pole': telegraph_pole}
